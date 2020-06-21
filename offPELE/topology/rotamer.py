@@ -4,9 +4,9 @@ from collections import defaultdict
 
 class Rotamer(object):
     def __init__(self, atom1, atom2, resolution=30):
-        self.atom1 = atom1
-        self.atom2 = atom2
-        self.resolution = resolution
+        self._atom1 = atom1
+        self._atom2 = atom2
+        self._resolution = resolution
 
     @property
     def atom1(self):
@@ -22,7 +22,7 @@ class Rotamer(object):
 
 
 class RotamerLibrary(object):
-    def __init__(self, residue_name):
+    def __init__(self, residue_name='LIG'):
         self._residue_name = residue_name
         self._rotamers = defaultdict(list)
 
@@ -31,13 +31,13 @@ class RotamerLibrary(object):
 
     def to_file(self, path):
         with open(path, 'w') as file:
-            file.write('rot assign res {} &\n')
+            file.write('rot assign res {} &\n'.format(self.residue_name))
             for i, group in enumerate(self.rotamers.keys()):
                 if i > 0:
                     file.write('     newgrp &\n')
                 for rotamer in self.rotamers[group]:
                     file.write('   sidelib FREE{} {} {} &\n'.format(
-                        rotamer.atom1, rotamer.atom2, rotamer.resolution))
+                        rotamer.resolution, rotamer.atom1, rotamer.atom2))
 
     @property
     def residue_name(self):
@@ -46,11 +46,3 @@ class RotamerLibrary(object):
     @property
     def rotamers(self):
         return self._rotamers
-
-
-class RotamerLibraryBuilder(object):
-    def build_from_molecule(self, molecule):
-        try:
-            from rdkit import Chem
-        except ImportError:
-            raise Exception('RDKit Python API not found')
