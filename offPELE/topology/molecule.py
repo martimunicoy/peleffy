@@ -3,7 +3,15 @@
 from collections import defaultdict
 from copy import deepcopy
 from pathlib import Path
+import subprocess
+import tempfile
+import os
+
+import numpy as np
+from simtk import unit
+
 from .rotamer import RotamerLibrary, Rotamer
+from offPELE.utils import temporary_cd
 
 
 class Atom(object):
@@ -35,6 +43,16 @@ class Atom(object):
         self.core = False
 
 
+class Bond(object):
+    def __init__(self, index=-1, atom1_idx=None, atom2_idx=None,
+                 spring_constant=None, eq_dist=None):
+        self.index = index
+        self.atom1_idx = atom1_idx
+        self.atom2_idx = atom2_idx
+        self.spring_constant = spring_constant
+        self.eq_dist = eq_dist
+
+
 class Molecule(object):
     def __init__(self, path=None):
         if isinstance(path, str):
@@ -48,6 +66,10 @@ class Molecule(object):
                     '{} is not a valid extension'.format(extension))
         else:
             self._initialize()
+
+    class ChargeCalculationError(Exception):
+        """An external error when calculating charges"""
+        pass
 
     def _initialize(self):
         self._name = ''
@@ -110,9 +132,17 @@ class Molecule(object):
             raise Exception('Invalid forcefield type')
 
         print(' - Computing partial charges with am1bcc')
-        # self._off_molecule.compute_partial_charges_am1bcc()
+        self._calculate_am1bcc_charges()
 
         self._build_atoms()
+
+        self._build_bonds()
+
+        self._build_angles()
+
+        self._build_dihedrals()
+
+        self._build_impropers()
 
     def _compute_rotamer_graph(self, rot_bonds_atom_ids):
         import networkx as nx
@@ -347,15 +377,60 @@ class Molecule(object):
         except AssertionError:
             raise Exception('Molecule not parameterized')
 
-    def _build_atoms(self):
-        self._assert_parameterized()
+    def _calculate_am1bcc_charges(self):
+        try:
+            from rdkit import Chem
+        except ImportError:
+            raise Exception('RDKit Python API not found')
 
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                net_charge = self.off_molecule.total_charge / \
+                    unit.elementary_charge
+                with open('molecule.sdf', 'w') as f:
+                    writer = Chem.SDWriter(f)
+                    writer.write(self.rdkit_molecule)
+                    writer.close()
+                subprocess.check_output([
+                    "antechamber", "-i", "molecule.sdf", "-fi", "sdf",
+                    "-o", "charged.ac", "-fo", "ac", "-pf", "yes", "-dr", "n",
+                    "-c", "bcc", "-nc", str(net_charge)])
+                # Write out just charges
+                subprocess.check_output([
+                    "antechamber", "-dr", "n", "-i", "charged.ac", "-fi", "ac",
+                    "-o", "charged2.ac", "-fo", "ac", "-c", "wc",
+                    "-cf", "charges.txt", "-pf", "yes"])
+                if not os.path.exists('charges.txt'):
+                    # TODO: copy files into local directory to aid debugging?
+                    raise self.ChargeCalculationError(
+                        "Antechamber/sqm partial charge calculation failed on "
+                        "molecule {} (SMILES {})".format(
+                            self.off_molecule.name,
+                            self.off_molecule.to_smiles()))
+                # Read the charges
+                with open('charges.txt', 'r') as infile:
+                    contents = infile.read()
+                text_charges = contents.split()
+                charges = np.zeros([self.off_molecule.n_atoms], np.float64)
+                for index, token in enumerate(text_charges):
+                    charges[index] = float(token)
+
+        charges = unit.Quantity(charges, unit.elementary_charge)
+        self.off_molecule.partial_charges = charges
+
+    def _build_atoms(self):
         # PELE needs underscores instead of whitespaces
         pdb_atom_names = [name.replace(' ', '_',)
                           for name in self.get_pdb_atom_names()]
 
         for index, atom in enumerate(self.off_molecule.atoms):
-            self._add_atom(Atom(index=index, PDB_name=pdb_atom_names[index]))
+            self._add_atom(Atom(index=index, PDB_name=pdb_atom_names[index],
+                                OPLS_type=None, unknown=None, z_matrix_x=None,
+                                z_matrix_y=None, z_matrix_z=None,
+                                sigma=None, epsilon=None,
+                                charge=None, born_radius=None,
+                                SASA_radius=None, nonpolar_gamma=None,
+                                nonpolar_alpha=None))
 
     def _add_atom(self, atom):
         self._atoms.append(atom)
@@ -370,6 +445,9 @@ class Molecule(object):
             pdb_atom_names.append(pdb_info.GetName())
 
         return pdb_atom_names
+
+    def _build_bonds(self):
+        pass
 
     def to_impact(self, path):
         pass

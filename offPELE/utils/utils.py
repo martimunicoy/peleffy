@@ -1,5 +1,6 @@
 from pkg_resources import resource_filename
 import os
+import contextlib
 
 
 def get_data_file_path(relative_path):
@@ -13,3 +14,13 @@ def get_data_file_path(relative_path):
             + " re-install")
 
     return fn
+
+
+@contextlib.contextmanager
+def temporary_cd(path):
+    old_path = os.getcwd()
+    os.chdir(os.path.abspath(path))
+    try:
+        yield
+    finally:
+        os.chdir(old_path)
