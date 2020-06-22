@@ -158,6 +158,8 @@ class AmberToolkitWrapper(ToolkitWrapper):
 
         charges = unit.Quantity(charges, unit.elementary_charge)
 
+        return charges
+
 
 class OpenForceFieldToolkitWrapper(ToolkitWrapper):
     _toolkit_name = 'OpenForceField Toolkit'
