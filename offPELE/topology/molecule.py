@@ -5,7 +5,9 @@ from copy import deepcopy
 from pathlib import Path
 
 from .rotamer import RotamerLibrary, Rotamer
-from offPELE.utils.toolkits import AmberToolkitWrapper
+from offPELE.utils.toolkits import (AmberToolkitWrapper,
+                                    RDKitToolkitWrapper,
+                                    OpenForceFieldToolkitWrapper)
 
 
 class Atom(object):
@@ -77,49 +79,39 @@ class Molecule(object):
         self._initialize()
         print(' - Loading molecule from RDKit')
 
-        try:
-            from rdkit import Chem
-        except ImportError:
-            raise Exception('RDKit Python API not found')
-
-        filename = Path(path).stem
-        if len(filename) > 2:
-            self._name = filename[0:3].upper()
-
-        self._rdkit_molecule = Chem.rdmolfiles.MolFromPDBFile(path,
-                                                              removeHs=False)
+        rdkit_toolkit = RDKitToolkitWrapper()
+        self._rdkit_molecule = rdkit_toolkit.from_pdb(path)
 
         # RDKit must generate stereochemistry specifically from 3D coords
-        Chem.rdmolops.AssignStereochemistryFrom3D(self._rdkit_molecule)
+        rdkit_toolkit.assign_stereochemistry_from_3D(self)
 
-        try:
-            from openforcefield.topology.molecule import Molecule as \
-                OFFMolecule
-        except ImportError:
-            raise Exception('OpenForceField package not found')
+        openforcefield_toolkit = OpenForceFieldToolkitWrapper()
 
-        self._off_molecule = OFFMolecule.from_rdkit(self.rdkit_molecule)
+        self._off_molecule = openforcefield_toolkit.from_rdkit(self)
+
+        name = Path(path).stem
+        if len(name) > 2:
+            self.set_name(name)
+
+    def set_name(self, name):
+        if isinstance(name, str) and len(name) > 2:
+            name = name[0:3].upper()
+            self._name = name
+
+            if self.off_molecule:
+                self.off_molecule.name = name
 
     def parameterize(self, forcefield):
-        try:
-            from openforcefield.topology.molecule import Molecule as \
-                OFFMolecule
-            from openforcefield.typing.engines.smirnoff import ForceField as \
-                OFFForceField
-        except ImportError:
-            raise Exception('OpenForceField package not found')
-
-        if not isinstance(self._off_molecule, OFFMolecule):
+        if not self.off_molecule and not self.rdkit_molecule:
             raise Exception('OpenForceField molecule was not initialized '
                             + 'correctly')
 
         print(' - Loading forcefield')
-        if isinstance(forcefield, str):
-            forcefield = OFFForceField(forcefield)
-        elif isinstance(forcefield, OFFForceField):
-            pass
-        else:
-            raise Exception('Invalid forcefield type')
+        openforcefield_toolkit = OpenForceFieldToolkitWrapper()
+        parameters = openforcefield_toolkit.get_parameters_from_forcefield(
+            forcefield, self)
+
+        self.parameters = parameters
 
         print(' - Computing partial charges with am1bcc')
         self._calculate_am1bcc_charges()
