@@ -3,15 +3,9 @@
 from collections import defaultdict
 from copy import deepcopy
 from pathlib import Path
-import subprocess
-import tempfile
-import os
-
-import numpy as np
-from simtk import unit
 
 from .rotamer import RotamerLibrary, Rotamer
-from offPELE.utils import temporary_cd
+from offPELE.utils.toolkits import AmberToolkitWrapper
 
 
 class Atom(object):
@@ -66,10 +60,6 @@ class Molecule(object):
                     '{} is not a valid extension'.format(extension))
         else:
             self._initialize()
-
-    class ChargeCalculationError(Exception):
-        """An external error when calculating charges"""
-        pass
 
     def _initialize(self):
         self._name = ''
@@ -378,44 +368,10 @@ class Molecule(object):
             raise Exception('Molecule not parameterized')
 
     def _calculate_am1bcc_charges(self):
-        try:
-            from rdkit import Chem
-        except ImportError:
-            raise Exception('RDKit Python API not found')
+        ambertoolkit = AmberToolkitWrapper()
 
-        with tempfile.TemporaryDirectory() as tmpdir:
-            with temporary_cd(tmpdir):
-                net_charge = self.off_molecule.total_charge / \
-                    unit.elementary_charge
-                with open('molecule.sdf', 'w') as f:
-                    writer = Chem.SDWriter(f)
-                    writer.write(self.rdkit_molecule)
-                    writer.close()
-                subprocess.check_output([
-                    "antechamber", "-i", "molecule.sdf", "-fi", "sdf",
-                    "-o", "charged.ac", "-fo", "ac", "-pf", "yes", "-dr", "n",
-                    "-c", "bcc", "-nc", str(net_charge)])
-                # Write out just charges
-                subprocess.check_output([
-                    "antechamber", "-dr", "n", "-i", "charged.ac", "-fi", "ac",
-                    "-o", "charged2.ac", "-fo", "ac", "-c", "wc",
-                    "-cf", "charges.txt", "-pf", "yes"])
-                if not os.path.exists('charges.txt'):
-                    # TODO: copy files into local directory to aid debugging?
-                    raise self.ChargeCalculationError(
-                        "Antechamber/sqm partial charge calculation failed on "
-                        "molecule {} (SMILES {})".format(
-                            self.off_molecule.name,
-                            self.off_molecule.to_smiles()))
-                # Read the charges
-                with open('charges.txt', 'r') as infile:
-                    contents = infile.read()
-                text_charges = contents.split()
-                charges = np.zeros([self.off_molecule.n_atoms], np.float64)
-                for index, token in enumerate(text_charges):
-                    charges[index] = float(token)
+        charges = ambertoolkit.compute_partial_charges_am1bcc(self)
 
-        charges = unit.Quantity(charges, unit.elementary_charge)
         self.off_molecule.partial_charges = charges
 
     def _build_atoms(self):
@@ -424,16 +380,32 @@ class Molecule(object):
                           for name in self.get_pdb_atom_names()]
 
         for index, atom in enumerate(self.off_molecule.atoms):
-            self._add_atom(Atom(index=index, PDB_name=pdb_atom_names[index],
-                                OPLS_type=None, unknown=None, z_matrix_x=None,
-                                z_matrix_y=None, z_matrix_z=None,
-                                sigma=None, epsilon=None,
-                                charge=None, born_radius=None,
-                                SASA_radius=None, nonpolar_gamma=None,
-                                nonpolar_alpha=None))
+            atom = Atom(index=index, PDB_name=pdb_atom_names[index],
+                        OPLS_type=None, unknown=None, z_matrix_x=None,
+                        z_matrix_y=None, z_matrix_z=None,
+                        sigma=None,
+                        epsilon=None,
+                        charge=self.off_molecule.partial_charges[index],
+                        born_radius=None,
+                        SASA_radius=None,
+                        nonpolar_gamma=None,
+                        nonpolar_alpha=None)
+            self._add_atom(atom)
 
     def _add_atom(self, atom):
         self._atoms.append(atom)
+
+    def _build_bonds(self):
+        pass
+
+    def _build_angles(self):
+        pass
+
+    def _build_dihedrals(self):
+        pass
+
+    def _build_impropers(self):
+        pass
 
     def get_pdb_atom_names(self):
         self._assert_parameterized()
@@ -445,9 +417,6 @@ class Molecule(object):
             pdb_atom_names.append(pdb_info.GetName())
 
         return pdb_atom_names
-
-    def _build_bonds(self):
-        pass
 
     def to_impact(self, path):
         pass
