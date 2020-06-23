@@ -2,6 +2,8 @@ from pkg_resources import resource_filename
 import os
 import contextlib
 
+from simtk import unit
+
 
 def get_data_file_path(relative_path):
 
@@ -24,3 +26,17 @@ def temporary_cd(path):
         yield
     finally:
         os.chdir(old_path)
+
+
+def rmin_halves_to_sigmas(rmin_halves):
+    """
+    Convert rmin_half values to sigmas according to: http://ambermd.org/Questions/vdwequation.pdf
+    """
+    FACTOR = 1.122462048309373  # The sixth root of 2
+
+    sigmas = dict()
+    for indexes, rmin_half in rmin_halves.items():
+        sigma = FACTOR * rmin_half
+        sigmas[indexes] = sigma
+
+    return sigmas

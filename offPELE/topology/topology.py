@@ -90,6 +90,17 @@ class Dihedral(TopologyElement):
         self.prefactor = prefactor
         self.constant = constant
 
+    def plot(self):
+        from matplotlib import pyplot
+        import numpy as np
+
+        x = unit.Quantity(np.arange(0, np.pi, 0.1), unit=unit.radians)
+        pyplot.plot(x, self.constant * (1 + self.prefactor
+                                        * np.cos(self.periodicity * x)),
+                    'r--')
+
+        pyplot.show()
+
 
 class Proper(Dihedral):
     _name = 'Proper'
@@ -99,7 +110,10 @@ class Improper(Dihedral):
     _name = 'Improper'
 
 
-class OFFDihedral(object):
+class OFFDihedral(TopologyElement):
+    _name = 'OFFDihedral'
+    _writable_attrs = ['atom1_idx', 'atom2_idx', 'atom3_idx', 'atom4_idx',
+                       'periodicity', 'phase', 'k', 'idivf']
     _to_PELE_class = Dihedral
 
     def __init__(self, index=-1, atom1_idx=None, atom2_idx=None,
@@ -129,22 +143,42 @@ class OFFDihedral(object):
         assert self.idivf == 1, 'Expected values for idivf is 1, ' \
             'obtained {}'.format(self.divf)
 
-        # TODO Convert OFF's dihedrals equation to PELE's
+        if self.phase.value_in_unit(unit.degree) == 180:
+            PELE_prefactor = -1
+        else:
+            PELE_prefactor = 1
+
+        # TODO doublecheck idivf term in OFF's torsion equation
+        PELE_constant = self.k / self.idivf
+
         PELE_dihedral_kwargs = {'index': self.index,
                                 'atom1_idx': self.atom1_idx,
                                 'atom2_idx': self.atom2_idx,
                                 'atom3_idx': self.atom3_idx,
                                 'atom4_idx': self.atom4_idx,
                                 'periodicity': self.periodicity,
-                                'prefactor': 1,
-                                'constant': self.k}
+                                'prefactor': PELE_prefactor,
+                                'constant': PELE_constant}
 
         return self._to_PELE_class(**PELE_dihedral_kwargs)
 
+    def plot(self):
+        from matplotlib import pyplot
+        import numpy as np
+
+        x = unit.Quantity(np.arange(0, np.pi, 0.1), unit=unit.radians)
+        pyplot.plot(x,
+                    self.k * (1 + np.cos(self.periodicity * x - self.phase)),
+                    'r--')
+
+        pyplot.show()
+
 
 class OFFProper(OFFDihedral):
+    _name = 'OFFProper'
     _to_PELE_class = Proper
 
 
 class OFFImproper(OFFDihedral):
+    _name = 'OFFImproper'
     _to_PELE_class = Improper

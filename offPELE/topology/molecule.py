@@ -62,7 +62,9 @@ class Molecule(object):
         self._bonds = list()
         self._angles = list()
         self._propers = list()
+        self._OFF_propers = list()
         self._impropers = list()
+        self._OFF_impropers = list()
         self._rdkit_molecule = None
         self._off_molecule = None
         self._rotamer_library = None
@@ -480,6 +482,7 @@ class Molecule(object):
             PELE_proper = off_proper.to_PELE()
             if PELE_proper:
                 self._add_proper(PELE_proper)
+                self._add_OFF_proper(off_proper)
 
             off_proper = OFFProper(index=index, atom1_idx=atom1_idx,
                                    atom2_idx=atom2_idx, atom3_idx=atom3_idx,
@@ -492,6 +495,7 @@ class Molecule(object):
             PELE_proper = off_proper.to_PELE()
             if PELE_proper:
                 self._add_proper(PELE_proper)
+                self._add_OFF_proper(off_proper)
 
             off_proper = OFFProper(index=index, atom1_idx=atom1_idx,
                                    atom2_idx=atom2_idx, atom3_idx=atom3_idx,
@@ -504,9 +508,13 @@ class Molecule(object):
             PELE_proper = off_proper.to_PELE()
             if PELE_proper:
                 self._add_proper(PELE_proper)
+                self._add_OFF_proper(off_proper)
 
     def _add_proper(self, proper):
         self._propers.append(proper)
+
+    def _add_OFF_proper(self, proper):
+        self._OFF_propers.append(proper)
 
     def _build_impropers(self):
         periodicity1s = self.parameters.get_dihedral_periodicity1s()

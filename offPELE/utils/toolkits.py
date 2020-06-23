@@ -230,12 +230,15 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
                         (atomstr, parameter.id, parameter.smirks)
             return output
 
-        def _build_list(self, parameters, attribute_name):
-            try:
-                return [(index, getattr(parameter, attribute_name))
-                        for index, parameter in parameters.items()]
-            except AttributeError:
-                pass
+        def _build_dict(self, parameters, attribute_name):
+            output_dict = dict()
+            for index, parameter in parameters.items():
+                try:
+                    output_dict[index] = getattr(parameter, attribute_name)
+                except IndexError:
+                    output_dict[index] = None
+
+            return output_dict
 
         # Van der Waals parameters
         def get_vdW_parameters(self):
@@ -244,15 +247,15 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
 
         def get_vdW_sigmas(self):
             parameters = self.get_vdW_parameters()
-            return self._build_list(parameters, 'sigma')
+            return self._build_dict(parameters, 'sigma')
 
         def get_vdW_epsilons(self):
             parameters = self.get_vdW_parameters()
-            return self._build_list(parameters, 'epsilon')
+            return self._build_dict(parameters, 'epsilon')
 
         def get_vdW_rmin_halves(self):
             parameters = self.get_vdW_parameters()
-            return self._build_list(parameters, 'rmin_half')
+            return self._build_dict(parameters, 'rmin_half')
 
         # Bond parameters
         def get_bond_parameters(self):
@@ -261,11 +264,11 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
 
         def get_bond_lengths(self):
             parameters = self.get_bond_parameters()
-            return self._build_list(parameters, 'length')
+            return self._build_dict(parameters, 'length')
 
         def get_bond_ks(self):
             parameters = self.get_bond_parameters()
-            return self._build_list(parameters, 'k')
+            return self._build_dict(parameters, 'k')
 
         # Angle parameters
         def get_angle_parameters(self):
@@ -274,11 +277,11 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
 
         def get_angle_angles(self):
             parameters = self.get_angle_parameters()
-            return self._build_list(parameters, 'angle')
+            return self._build_dict(parameters, 'angle')
 
         def get_angle_ks(self):
             parameters = self.get_angle_parameters()
-            return self._build_list(parameters, 'k')
+            return self._build_dict(parameters, 'k')
 
         # Dihedral parameters
         def get_dihedral_parameters(self):
@@ -287,51 +290,51 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
 
         def get_dihedral_periodicity1s(self):
             parameters = self.get_dihedral_parameters()
-            return self._build_list(parameters, 'periodicity1')
+            return self._build_dict(parameters, 'periodicity1')
 
         def get_dihedral_periodicity2s(self):
             parameters = self.get_dihedral_parameters()
-            return self._build_list(parameters, 'periodicity2')
+            return self._build_dict(parameters, 'periodicity2')
 
         def get_dihedral_periodicity3s(self):
             parameters = self.get_dihedral_parameters()
-            return self._build_list(parameters, 'periodicity3')
+            return self._build_dict(parameters, 'periodicity3')
 
         def get_dihedral_phase1s(self):
             parameters = self.get_dihedral_parameters()
-            return self._build_list(parameters, 'phase1')
+            return self._build_dict(parameters, 'phase1')
 
         def get_dihedral_phase2s(self):
             parameters = self.get_dihedral_parameters()
-            return self._build_list(parameters, 'phase2')
+            return self._build_dict(parameters, 'phase2')
 
         def get_dihedral_phase3s(self):
             parameters = self.get_dihedral_parameters()
-            return self._build_list(parameters, 'phase3')
+            return self._build_dict(parameters, 'phase3')
 
         def get_dihedral_k1s(self):
             parameters = self.get_dihedral_parameters()
-            return self._build_list(parameters, 'k1')
+            return self._build_dict(parameters, 'k1')
 
         def get_dihedral_k2s(self):
             parameters = self.get_dihedral_parameters()
-            return self._build_list(parameters, 'k2')
+            return self._build_dict(parameters, 'k2')
 
         def get_dihedral_k3s(self):
             parameters = self.get_dihedral_parameters()
-            return self._build_list(parameters, 'k3')
+            return self._build_dict(parameters, 'k3')
 
-        def get_dihedral_idiv1s(self):
+        def get_dihedral_idivf1s(self):
             parameters = self.get_dihedral_parameters()
-            return self._build_list(parameters, 'idiv1')
+            return self._build_dict(parameters, 'idivf1')
 
-        def get_dihedral_idiv2s(self):
+        def get_dihedral_idivf2s(self):
             parameters = self.get_dihedral_parameters()
-            return self._build_list(parameters, 'idiv2')
+            return self._build_dict(parameters, 'idivf2')
 
-        def get_dihedral_idiv3s(self):
+        def get_dihedral_idivf3s(self):
             parameters = self.get_dihedral_parameters()
-            return self._build_list(parameters, 'idiv3')
+            return self._build_dict(parameters, 'idivf3')
 
         # Improper parameters
         def get_improper_parameters(self):
@@ -340,48 +343,48 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
 
         def get_improper_periodicity1s(self):
             parameters = self.get_improper_parameters()
-            return self._build_list(parameters, 'periodicity1')
+            return self._build_dict(parameters, 'periodicity1')
 
         def get_improper_periodicity2s(self):
             parameters = self.get_improper_parameters()
-            return self._build_list(parameters, 'periodicity2')
+            return self._build_dict(parameters, 'periodicity2')
 
         def get_improper_periodicity3s(self):
             parameters = self.get_improper_parameters()
-            return self._build_list(parameters, 'periodicity3')
+            return self._build_dict(parameters, 'periodicity3')
 
         def get_improper_phase1s(self):
             parameters = self.get_improper_parameters()
-            return self._build_list(parameters, 'phase1')
+            return self._build_dict(parameters, 'phase1')
 
         def get_improper_phase2s(self):
             parameters = self.get_improper_parameters()
-            return self._build_list(parameters, 'phase2')
+            return self._build_dict(parameters, 'phase2')
 
         def get_improper_phase3s(self):
             parameters = self.get_improper_parameters()
-            return self._build_list(parameters, 'phase3')
+            return self._build_dict(parameters, 'phase3')
 
         def get_improper_k1s(self):
             parameters = self.get_improper_parameters()
-            return self._build_list(parameters, 'k1')
+            return self._build_dict(parameters, 'k1')
 
         def get_improper_k2s(self):
             parameters = self.get_improper_parameters()
-            return self._build_list(parameters, 'k2')
+            return self._build_dict(parameters, 'k2')
 
         def get_improper_k3s(self):
             parameters = self.get_improper_parameters()
-            return self._build_list(parameters, 'k3')
+            return self._build_dict(parameters, 'k3')
 
         def get_improper_idiv1s(self):
             parameters = self.get_improper_parameters()
-            return self._build_list(parameters, 'idiv1')
+            return self._build_dict(parameters, 'idiv1')
 
         def get_improper_idiv2s(self):
             parameters = self.get_improper_parameters()
-            return self._build_list(parameters, 'idiv2')
+            return self._build_dict(parameters, 'idiv2')
 
         def get_improper_idiv3s(self):
             parameters = self.get_improper_parameters()
-            return self._build_list(parameters, 'idiv3')
+            return self._build_dict(parameters, 'idiv3')
