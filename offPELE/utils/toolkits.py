@@ -218,6 +218,24 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
             for key, value in parameters_list.items():
                 self[key] = value
 
+        def sigmas_from_rmin_halves(func):
+            """
+            Convert rmin_half values to sigmas according to:
+            http://ambermd.org/Questions/vdwequation.pdf
+            """
+            FACTOR = 1.122462048309373  # The sixth root of 2
+
+            def function_wrapper(x):
+                rmin_halves = func(x)
+
+                sigmas = dict()
+                for indexes, rmin_half in rmin_halves.items():
+                    sigma = FACTOR * rmin_half
+                    sigmas[indexes] = sigma
+
+                return sigmas
+            return function_wrapper
+
         def __str__(self):
             output = ''
             for force_tag, force_dict in self.items():
@@ -256,6 +274,10 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
         def get_vdW_rmin_halves(self):
             parameters = self.get_vdW_parameters()
             return self._build_dict(parameters, 'rmin_half')
+
+        @sigmas_from_rmin_halves
+        def get_vdW_sigmas_from_rmin_halves(self):
+            return self.get_vdW_rmin_halves()
 
         # Bond parameters
         def get_bond_parameters(self):

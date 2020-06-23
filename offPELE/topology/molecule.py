@@ -9,7 +9,6 @@ from .topology import Bond, Angle, OFFProper, OFFImproper
 from offPELE.utils.toolkits import (AmberToolkitWrapper,
                                     RDKitToolkitWrapper,
                                     OpenForceFieldToolkitWrapper)
-from offPELE.utils import rmin_halves_to_sigmas
 
 
 class Atom(object):
@@ -369,7 +368,7 @@ class Molecule(object):
         OPLS_types = {i: None
                       for i in self.parameters.get_vdW_parameters().keys()}
 
-        # TODO Do we need to assign unknown value? Which is its purpose?
+        # TODO Which is the purpose of unknown value? Is it important?
         unknowns = {i: None
                     for i in self.parameters.get_vdW_parameters().keys()}
 
@@ -382,8 +381,7 @@ class Molecule(object):
         sigmas = self.parameters.get_vdW_sigmas()
 
         if all([sigma is None for sigma in sigmas.values()]):
-            rmin_halves = self.parameters.get_vdW_rmin_halves()
-            sigmas = rmin_halves_to_sigmas(rmin_halves)
+            sigmas = self.parameters.get_vdW_sigmas_from_rmin_halves()
 
         epsilons = self.parameters.get_vdW_epsilons()
 
