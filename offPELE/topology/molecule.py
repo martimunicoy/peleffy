@@ -5,9 +5,11 @@ from copy import deepcopy
 from pathlib import Path
 
 from .rotamer import RotamerLibrary, Rotamer
+from .topology import Bond, Angle, OFFProper, OFFImproper
 from offPELE.utils.toolkits import (AmberToolkitWrapper,
                                     RDKitToolkitWrapper,
                                     OpenForceFieldToolkitWrapper)
+from offPELE.utils import rmin_halves_to_sigmas
 
 
 class Atom(object):
@@ -39,16 +41,6 @@ class Atom(object):
         self.core = False
 
 
-class Bond(object):
-    def __init__(self, index=-1, atom1_idx=None, atom2_idx=None,
-                 spring_constant=None, eq_dist=None):
-        self.index = index
-        self.atom1_idx = atom1_idx
-        self.atom2_idx = atom2_idx
-        self.spring_constant = spring_constant
-        self.eq_dist = eq_dist
-
-
 class Molecule(object):
     def __init__(self, path=None):
         if isinstance(path, str):
@@ -69,7 +61,7 @@ class Molecule(object):
         self._atoms = list()
         self._bonds = list()
         self._angles = list()
-        self._dihedrals = list()
+        self._propers = list()
         self._impropers = list()
         self._rdkit_molecule = None
         self._off_molecule = None
@@ -122,7 +114,7 @@ class Molecule(object):
 
         self._build_angles()
 
-        self._build_dihedrals()
+        self._build_propers()
 
         self._build_impropers()
 
@@ -360,44 +352,220 @@ class Molecule(object):
             raise Exception('Molecule not parameterized')
 
     def _calculate_am1bcc_charges(self):
-        ambertoolkit = AmberToolkitWrapper()
+        amber_toolkit = AmberToolkitWrapper()
 
-        charges = ambertoolkit.compute_partial_charges_am1bcc(self)
+        charges = amber_toolkit.compute_partial_charges_am1bcc(self)
 
         self.off_molecule.partial_charges = charges
 
     def _build_atoms(self):
         # PELE needs underscores instead of whitespaces
-        pdb_atom_names = [name.replace(' ', '_',)
-                          for name in self.get_pdb_atom_names()]
+        pdb_atom_names = {(i, ): name.replace(' ', '_',)
+                          for i, name in enumerate(self.get_pdb_atom_names())}
 
-        for index, atom in enumerate(self.off_molecule.atoms):
+        # TODO should we assign an OPLS type? How can we do this with OFF?
+        OPLS_types = {i: None
+                      for i in self.parameters.get_vdW_parameters().keys()}
+
+        # TODO Do we need to assign unknown value? Which is its purpose?
+        unknowns = {i: None
+                    for i in self.parameters.get_vdW_parameters().keys()}
+
+        # TODO Create z-matrix from 3D coordinates
+        z_matrix_xs, z_matrix_ys, z_matrix_zs = (
+            {i: None for i in self.parameters.get_vdW_parameters().keys()},
+            {i: None for i in self.parameters.get_vdW_parameters().keys()},
+            {i: None for i in self.parameters.get_vdW_parameters().keys()})
+
+        sigmas = self.parameters.get_vdW_sigmas()
+
+        if all([sigma is None for sigma in sigmas.values()]):
+            rmin_halves = self.parameters.get_vdW_rmin_halves()
+            sigmas = rmin_halves_to_sigmas(rmin_halves)
+
+        epsilons = self.parameters.get_vdW_epsilons()
+
+        # TODO Find a way to assign implicit solvent parameters to atoms with OFF
+        born_radii = {i: None
+                      for i in self.parameters.get_vdW_parameters().keys()}
+        SASA_radii = {i: None
+                      for i in self.parameters.get_vdW_parameters().keys()}
+        nonpolar_gammas = {i: None for i in
+                           self.parameters.get_vdW_parameters().keys()}
+        nonpolar_alphas = {i: None for i in
+                           self.parameters.get_vdW_parameters().keys()}
+
+        for index in self.parameters.get_vdW_parameters().keys():
             atom = Atom(index=index, PDB_name=pdb_atom_names[index],
-                        OPLS_type=None, unknown=None, z_matrix_x=None,
-                        z_matrix_y=None, z_matrix_z=None,
-                        sigma=None,
-                        epsilon=None,
+                        OPLS_type=OPLS_types[index],
+                        unknown=unknowns[index],
+                        z_matrix_x=z_matrix_xs[index],
+                        z_matrix_y=z_matrix_ys[index],
+                        z_matrix_z=z_matrix_zs[index],
+                        sigma=sigmas[index],
+                        epsilon=epsilons[index],
                         charge=self.off_molecule.partial_charges[index],
-                        born_radius=None,
-                        SASA_radius=None,
-                        nonpolar_gamma=None,
-                        nonpolar_alpha=None)
+                        born_radius=born_radii[index],
+                        SASA_radius=SASA_radii[index],
+                        nonpolar_gamma=nonpolar_gammas[index],
+                        nonpolar_alpha=nonpolar_alphas[index])
             self._add_atom(atom)
 
     def _add_atom(self, atom):
         self._atoms.append(atom)
 
     def _build_bonds(self):
-        pass
+        lengths = self.parameters.get_bond_lengths()
+
+        ks = self.parameters.get_bond_ks()
+
+        bond_indexes = self.parameters.get_bond_parameters().keys()
+
+        for index, atom_indexes in enumerate(bond_indexes):
+            (atom1_idx, atom2_idx) = atom_indexes
+            bond = Bond(index=index, atom1_idx=atom1_idx, atom2_idx=atom2_idx,
+                        spring_constant=ks[atom_indexes],
+                        eq_dist=lengths[atom_indexes])
+            self._add_bond(bond)
+
+    def _add_bond(self, bond):
+        self._bonds.append(bond)
 
     def _build_angles(self):
-        pass
+        angles = self.parameters.get_angle_angles()
 
-    def _build_dihedrals(self):
-        pass
+        ks = self.parameters.get_angle_ks()
+
+        angle_indexes = self.parameters.get_angle_parameters().keys()
+
+        for index, atom_indexes in enumerate(angle_indexes):
+            atom1_idx, atom2_idx, atom3_idx = atom_indexes
+            angle = Angle(index=index, atom1_idx=atom1_idx,
+                          atom2_idx=atom2_idx, atom3_idx=atom3_idx,
+                          spring_constant=ks[atom_indexes],
+                          eq_angle=angles[atom_indexes])
+            self._add_angle(angle)
+
+    def _add_angle(self, angle):
+        self._angles.append(angle)
+
+    def _build_propers(self):
+        periodicity1s = self.parameters.get_dihedral_periodicity1s()
+        phase1s = self.parameters.get_dihedral_phase1s()
+        k1s = self.parameters.get_dihedral_k1s()
+        idivf1s = self.parameters.get_dihedral_idivf1s()
+
+        periodicity2s = self.parameters.get_dihedral_periodicity2s()
+        phase2s = self.parameters.get_dihedral_phase2s()
+        k2s = self.parameters.get_dihedral_k2s()
+        idivf2s = self.parameters.get_dihedral_idivf2s()
+
+        periodicity3s = self.parameters.get_dihedral_periodicity3s()
+        phase3s = self.parameters.get_dihedral_phase3s()
+        k3s = self.parameters.get_dihedral_k3s()
+        idivf3s = self.parameters.get_dihedral_idivf3s()
+
+        dihedral_indexes = self.parameters.get_dihedral_parameters().keys()
+
+        for index, atom_indexes in enumerate(dihedral_indexes):
+            atom1_idx, atom2_idx, atom3_idx, atom4_idx = atom_indexes
+            off_proper = OFFProper(index=index, atom1_idx=atom1_idx,
+                                   atom2_idx=atom2_idx, atom3_idx=atom3_idx,
+                                   atom4_idx=atom4_idx,
+                                   periodicity=periodicity1s[atom_indexes],
+                                   phase=phase1s[atom_indexes],
+                                   k=k1s[atom_indexes],
+                                   idivf=idivf1s[atom_indexes])
+
+            PELE_proper = off_proper.to_PELE()
+            if PELE_proper:
+                self._add_proper(PELE_proper)
+
+            off_proper = OFFProper(index=index, atom1_idx=atom1_idx,
+                                   atom2_idx=atom2_idx, atom3_idx=atom3_idx,
+                                   atom4_idx=atom4_idx,
+                                   periodicity=periodicity2s[atom_indexes],
+                                   phase=phase2s[atom_indexes],
+                                   k=k2s[atom_indexes],
+                                   idivf=idivf2s[atom_indexes])
+
+            PELE_proper = off_proper.to_PELE()
+            if PELE_proper:
+                self._add_proper(PELE_proper)
+
+            off_proper = OFFProper(index=index, atom1_idx=atom1_idx,
+                                   atom2_idx=atom2_idx, atom3_idx=atom3_idx,
+                                   atom4_idx=atom4_idx,
+                                   periodicity=periodicity3s[atom_indexes],
+                                   phase=phase3s[atom_indexes],
+                                   k=k3s[atom_indexes],
+                                   idivf=idivf3s[atom_indexes])
+
+            PELE_proper = off_proper.to_PELE()
+            if PELE_proper:
+                self._add_proper(PELE_proper)
+
+    def _add_proper(self, proper):
+        self._propers.append(proper)
 
     def _build_impropers(self):
-        pass
+        periodicity1s = self.parameters.get_dihedral_periodicity1s()
+        phase1s = self.parameters.get_dihedral_phase1s()
+        k1s = self.parameters.get_dihedral_k1s()
+        idivf1s = self.parameters.get_dihedral_idivf1s()
+
+        periodicity2s = self.parameters.get_dihedral_periodicity2s()
+        phase2s = self.parameters.get_dihedral_phase2s()
+        k2s = self.parameters.get_dihedral_k2s()
+        idivf2s = self.parameters.get_dihedral_idivf2s()
+
+        periodicity3s = self.parameters.get_dihedral_periodicity3s()
+        phase3s = self.parameters.get_dihedral_phase3s()
+        k3s = self.parameters.get_dihedral_k3s()
+        idivf3s = self.parameters.get_dihedral_idivf3s()
+
+        dihedral_indexes = self.parameters.get_dihedral_parameters().keys()
+
+        for index, atom_indexes in enumerate(dihedral_indexes):
+            atom1_idx, atom2_idx, atom3_idx, atom4_idx = atom_indexes
+            off_improper = OFFImproper(index=index, atom1_idx=atom1_idx,
+                                       atom2_idx=atom2_idx, atom3_idx=atom3_idx,
+                                       atom4_idx=atom4_idx,
+                                       periodicity=periodicity1s[atom_indexes],
+                                       phase=phase1s[atom_indexes],
+                                       k=k1s[atom_indexes],
+                                       idivf=idivf1s[atom_indexes])
+
+            PELE_improper = off_improper.to_PELE()
+            if PELE_improper:
+                self._add_improper(PELE_improper)
+
+            off_improper = OFFImproper(index=index, atom1_idx=atom1_idx,
+                                       atom2_idx=atom2_idx, atom3_idx=atom3_idx,
+                                       atom4_idx=atom4_idx,
+                                       periodicity=periodicity2s[atom_indexes],
+                                       phase=phase2s[atom_indexes],
+                                       k=k2s[atom_indexes],
+                                       idivf=idivf2s[atom_indexes])
+
+            PELE_improper = off_improper.to_PELE()
+            if PELE_improper:
+                self._add_improper(PELE_improper)
+
+            off_improper = OFFImproper(index=index, atom1_idx=atom1_idx,
+                                       atom2_idx=atom2_idx, atom3_idx=atom3_idx,
+                                       atom4_idx=atom4_idx,
+                                       periodicity=periodicity3s[atom_indexes],
+                                       phase=phase3s[atom_indexes],
+                                       k=k3s[atom_indexes],
+                                       idivf=idivf3s[atom_indexes])
+
+            PELE_improper = off_improper.to_PELE()
+            if PELE_improper:
+                self._add_improper(PELE_improper)
+
+    def _add_improper(self, improper):
+        self._impropers.append(improper)
 
     def get_pdb_atom_names(self):
         self._assert_parameterized()
@@ -432,3 +600,19 @@ class Molecule(object):
     @property
     def atoms(self):
         return self._atoms
+
+    @property
+    def bonds(self):
+        return self._bonds
+
+    @property
+    def angles(self):
+        return self._angles
+
+    @property
+    def propers(self):
+        return self._propers
+
+    @property
+    def impropers(self):
+        return self._impropers
