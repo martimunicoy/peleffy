@@ -450,63 +450,52 @@ class Molecule(object):
         self._angles.append(angle)
 
     def _build_propers(self):
-        periodicity1s = self.parameters.get_dihedral_periodicity1s()
-        phase1s = self.parameters.get_dihedral_phase1s()
-        k1s = self.parameters.get_dihedral_k1s()
-        idivf1s = self.parameters.get_dihedral_idivf1s()
+        periodicities = self.parameters.get_dihedral_periodicities()
+        phases = self.parameters.get_dihedral_phases()
+        ks = self.parameters.get_dihedral_ks()
+        idivfs = self.parameters.get_dihedral_idivfs()
 
-        periodicity2s = self.parameters.get_dihedral_periodicity2s()
-        phase2s = self.parameters.get_dihedral_phase2s()
-        k2s = self.parameters.get_dihedral_k2s()
-        idivf2s = self.parameters.get_dihedral_idivf2s()
+        # idivf is a optional parameter in OpenForceField
+        if len(idivfs) == 0:
+            for period_by_index in periodicities:
+                idivfs.append(dict(zip(period_by_index.keys(),
+                                       [1, ] * len(period_by_index.keys()))))
 
-        periodicity3s = self.parameters.get_dihedral_periodicity3s()
-        phase3s = self.parameters.get_dihedral_phase3s()
-        k3s = self.parameters.get_dihedral_k3s()
-        idivf3s = self.parameters.get_dihedral_idivf3s()
+        assert len(periodicities) == len(phases) and \
+            len(periodicities) == len(ks) and \
+            len(periodicities) == len(idivfs), 'Unconsistent set of ' \
+            'OpenForceField\'s torsional parameters. They all should have ' \
+            'equal lengths'
 
-        dihedral_indexes = self.parameters.get_dihedral_parameters().keys()
+        for period_by_index, phase_by_index, k_by_index, idivf_by_index in \
+                zip(periodicities, phases, ks, idivfs):
 
-        for index, atom_indexes in enumerate(dihedral_indexes):
-            atom1_idx, atom2_idx, atom3_idx, atom4_idx = atom_indexes
-            off_proper = OFFProper(index=index, atom1_idx=atom1_idx,
-                                   atom2_idx=atom2_idx, atom3_idx=atom3_idx,
-                                   atom4_idx=atom4_idx,
-                                   periodicity=periodicity1s[atom_indexes],
-                                   phase=phase1s[atom_indexes],
-                                   k=k1s[atom_indexes],
-                                   idivf=idivf1s[atom_indexes])
+            assert period_by_index.keys() == phase_by_index.keys() and \
+                period_by_index.keys() == k_by_index.keys() and \
+                period_by_index.keys() == idivf_by_index.keys(), 'Unconsistent ' \
+                'torsional parameter indexes. Keys should match.'
 
-            PELE_proper = off_proper.to_PELE()
-            if PELE_proper:
-                self._add_proper(PELE_proper)
-                self._add_OFF_proper(off_proper)
+            for index in period_by_index.keys():
+                atom1_idx, atom2_idx, atom3_idx, atom4_idx = index
 
-            off_proper = OFFProper(index=index, atom1_idx=atom1_idx,
-                                   atom2_idx=atom2_idx, atom3_idx=atom3_idx,
-                                   atom4_idx=atom4_idx,
-                                   periodicity=periodicity2s[atom_indexes],
-                                   phase=phase2s[atom_indexes],
-                                   k=k2s[atom_indexes],
-                                   idivf=idivf2s[atom_indexes])
+                period = period_by_index[index]
+                phase = phase_by_index[index]
+                k = k_by_index[index]
+                idivf = idivf_by_index[index]
 
-            PELE_proper = off_proper.to_PELE()
-            if PELE_proper:
-                self._add_proper(PELE_proper)
-                self._add_OFF_proper(off_proper)
+                if period and phase and k and idivf:
+                    off_proper = OFFProper(atom1_idx=atom1_idx,
+                                           atom2_idx=atom2_idx,
+                                           atom3_idx=atom3_idx,
+                                           atom4_idx=atom4_idx,
+                                           periodicity=period,
+                                           phase=phase,
+                                           k=k,
+                                           idivf=idivf)
 
-            off_proper = OFFProper(index=index, atom1_idx=atom1_idx,
-                                   atom2_idx=atom2_idx, atom3_idx=atom3_idx,
-                                   atom4_idx=atom4_idx,
-                                   periodicity=periodicity3s[atom_indexes],
-                                   phase=phase3s[atom_indexes],
-                                   k=k3s[atom_indexes],
-                                   idivf=idivf3s[atom_indexes])
-
-            PELE_proper = off_proper.to_PELE()
-            if PELE_proper:
-                self._add_proper(PELE_proper)
-                self._add_OFF_proper(off_proper)
+                    PELE_proper = off_proper.to_PELE()
+                    self._add_proper(PELE_proper)
+                    self._add_OFF_proper(off_proper)
 
     def _add_proper(self, proper):
         self._propers.append(proper)
@@ -515,63 +504,58 @@ class Molecule(object):
         self._OFF_propers.append(proper)
 
     def _build_impropers(self):
-        periodicity1s = self.parameters.get_dihedral_periodicity1s()
-        phase1s = self.parameters.get_dihedral_phase1s()
-        k1s = self.parameters.get_dihedral_k1s()
-        idivf1s = self.parameters.get_dihedral_idivf1s()
+        periodicities = self.parameters.get_improper_periodicities()
+        phases = self.parameters.get_improper_phases()
+        ks = self.parameters.get_improper_ks()
+        idivfs = self.parameters.get_improper_idivfs()
 
-        periodicity2s = self.parameters.get_dihedral_periodicity2s()
-        phase2s = self.parameters.get_dihedral_phase2s()
-        k2s = self.parameters.get_dihedral_k2s()
-        idivf2s = self.parameters.get_dihedral_idivf2s()
+        # idivf is a optional parameter in OpenForceField
+        if len(idivfs) == 0:
+            for period_by_index in periodicities:
+                idivfs.append(dict(zip(period_by_index.keys(),
+                                       [1, ] * len(period_by_index.keys()))))
 
-        periodicity3s = self.parameters.get_dihedral_periodicity3s()
-        phase3s = self.parameters.get_dihedral_phase3s()
-        k3s = self.parameters.get_dihedral_k3s()
-        idivf3s = self.parameters.get_dihedral_idivf3s()
+        assert len(periodicities) == len(phases) and \
+            len(periodicities) == len(ks) and \
+            len(periodicities) == len(idivfs), 'Unconsistent set of ' \
+            'OpenForceField\'s improper parameters. They all should have ' \
+            'equal lengths'
 
-        dihedral_indexes = self.parameters.get_dihedral_parameters().keys()
+        for period_by_index, phase_by_index, k_by_index, idivf_by_index in \
+                zip(periodicities, phases, ks, idivfs):
 
-        for index, atom_indexes in enumerate(dihedral_indexes):
-            atom1_idx, atom2_idx, atom3_idx, atom4_idx = atom_indexes
-            off_improper = OFFImproper(index=index, atom1_idx=atom1_idx,
-                                       atom2_idx=atom2_idx, atom3_idx=atom3_idx,
-                                       atom4_idx=atom4_idx,
-                                       periodicity=periodicity1s[atom_indexes],
-                                       phase=phase1s[atom_indexes],
-                                       k=k1s[atom_indexes],
-                                       idivf=idivf1s[atom_indexes])
+            assert period_by_index.keys() == phase_by_index.keys() and \
+                period_by_index.keys() == k_by_index.keys() and \
+                period_by_index.keys() == idivf_by_index.keys(), 'Unconsistent ' \
+                'torsional parameter indexes. Keys should match.'
 
-            PELE_improper = off_improper.to_PELE()
-            if PELE_improper:
-                self._add_improper(PELE_improper)
+            for index in period_by_index.keys():
+                atom1_idx, atom2_idx, atom3_idx, atom4_idx = index
 
-            off_improper = OFFImproper(index=index, atom1_idx=atom1_idx,
-                                       atom2_idx=atom2_idx, atom3_idx=atom3_idx,
-                                       atom4_idx=atom4_idx,
-                                       periodicity=periodicity2s[atom_indexes],
-                                       phase=phase2s[atom_indexes],
-                                       k=k2s[atom_indexes],
-                                       idivf=idivf2s[atom_indexes])
+                period = period_by_index[index]
+                phase = phase_by_index[index]
+                k = k_by_index[index]
+                idivf = idivf_by_index[index]
 
-            PELE_improper = off_improper.to_PELE()
-            if PELE_improper:
-                self._add_improper(PELE_improper)
+                if period and phase and k and idivf:
+                    off_improper = OFFImproper(atom1_idx=atom1_idx,
+                                               atom2_idx=atom2_idx,
+                                               atom3_idx=atom3_idx,
+                                               atom4_idx=atom4_idx,
+                                               periodicity=period,
+                                               phase=phase,
+                                               k=k,
+                                               idivf=idivf)
 
-            off_improper = OFFImproper(index=index, atom1_idx=atom1_idx,
-                                       atom2_idx=atom2_idx, atom3_idx=atom3_idx,
-                                       atom4_idx=atom4_idx,
-                                       periodicity=periodicity3s[atom_indexes],
-                                       phase=phase3s[atom_indexes],
-                                       k=k3s[atom_indexes],
-                                       idivf=idivf3s[atom_indexes])
-
-            PELE_improper = off_improper.to_PELE()
-            if PELE_improper:
-                self._add_improper(PELE_improper)
+                    PELE_improper = off_improper.to_PELE()
+                    self._add_improper(PELE_improper)
+                    self._add_OFF_improper(off_improper)
 
     def _add_improper(self, improper):
         self._impropers.append(improper)
+
+    def _add_OFF_improper(self, improper):
+        self._OFF_impropers.append(improper)
 
     def get_pdb_atom_names(self):
         self._assert_parameterized()
