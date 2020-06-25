@@ -56,7 +56,7 @@ class Molecule(object):
 
     def _initialize(self):
         self._name = ''
-        self._forcefield = ''
+        self._forcefield = None
         self._atoms = list()
         self._bonds = list()
         self._angles = list()
@@ -105,6 +105,9 @@ class Molecule(object):
             forcefield, self)
 
         self.parameters = parameters
+        # TODO Is there a way to retrieve the name of the OFF's ForceField object?
+        if isinstance(forcefield, str):
+            self._forcefield = Path(forcefield).stem
 
         print(' - Computing partial charges with am1bcc')
         self._calculate_am1bcc_charges()
@@ -586,6 +589,10 @@ class Molecule(object):
     @property
     def name(self):
         return self._name
+
+    @property
+    def forcefield(self):
+        return self._forcefield
 
     @property
     def atoms(self):

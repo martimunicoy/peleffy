@@ -194,6 +194,16 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
         rdkit_molecule = molecule.rdkit_molecule
         return Molecule.from_rdkit(rdkit_molecule)
 
+    def get_forcefield(self, forcefield_name):
+        from openforcefield.typing.engines.smirnoff import ForceField
+
+        if isinstance(forcefield_name, str):
+            forcefield = ForceField(forcefield_name)
+        else:
+            raise Exception('Invalid forcefield type')
+
+        return forcefield
+
     def get_parameters_from_forcefield(self, forcefield, molecule):
         from openforcefield.typing.engines.smirnoff import ForceField
         from openforcefield.topology import Topology
