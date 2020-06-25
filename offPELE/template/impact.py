@@ -1,6 +1,9 @@
 
 # Global imports
+from copy import deepcopy
+
 import offPELE
+from offPELE.topology import ZMatrix
 
 
 class Impact(object):
@@ -41,10 +44,10 @@ class Impact(object):
         # number of bond parameters
         file.write('{:6d}'.format(len(self.molecule.bonds)))
         # number of angle parameters
-        file.write('{:7d}'.format(len(self.molecule.angles)))
+        file.write('{:6d}'.format(len(self.molecule.angles)))
         # number of dihedral parameters
         # TODO doublecheck that it is indeed the sum of propers and impropers
-        file.write('{:7d}'.format(len(self.molecule.propers)
+        file.write('{:8d}'.format(len(self.molecule.propers)
                                   + len(self.molecule.impropers)))
         # # number of non-null elements in the interactions matrix
         # TODO It might not be always 0
@@ -52,9 +55,30 @@ class Impact(object):
         file.write('\n')
 
     def _write_nbon(self, file):
-        for atom in self.molecule.atoms:
+        zmatrix = ZMatrix(self.molecule)
+
+        for i, atom in enumerate(self.molecule.atoms):
+            w_atom = WritableAtom(atom)
             # atom id number
-            file.write('{:5d}'.format(atom.index))
+            file.write('{:5d}'.format(w_atom.index))
+            file.write(' ')
+            file.write('{:5d}'.format(w_atom.parent.index))
+            file.write(' ')
+            file.write('{:1}'.format(w_atom.core))
+            file.write('   ')
+            file.write('{:4}'.format(w_atom.OPLS_type))
+            file.write(' ')
+            file.write('{:4}'.format(w_atom.PDB_name))
+            file.write(' ')
+            file.write('{:5}'.format(w_atom.unknown))
+            file.write(' ')
+            file.write('{: 11.6f}'.format(zmatrix[i][0]))
+            file.write(' ')
+            file.write('{: 11.6f}'.format(zmatrix[i][1]))
+            file.write(' ')
+            file.write('{: 11.6f}'.format(zmatrix[i][2]))
+            file.write(' ')
+            file.write('\n')
 
     def _write_bond(self, file):
         pass
@@ -74,3 +98,71 @@ class Impact(object):
     @property
     def molecule(self):
         return self._molecule
+
+
+class WritableAtom(offPELE.topology.molecule.Atom):
+    def __init__(self, atom):
+        # We do not want to modify the original object
+        atom = deepcopy(atom)
+
+        assert isinstance(atom, (offPELE.topology.molecule.Atom,
+                                 offPELE.topology.molecule.DummyAtom)), \
+            'Wrong type: {}'.format(type(atom))
+
+        super().__init__(atom.index, atom.core, atom.OPLS_type, atom.PDB_name,
+                         atom.unknown, atom.x, atom.y, atom.z, atom.sigma,
+                         atom.epsilon, atom.charge, atom.born_radius,
+                         atom.SASA_radius, atom.nonpolar_gamma,
+                         atom.nonpolar_alpha, atom.parent)
+
+    def none_to_zero(f):
+        def function_wrapper(*args, **kwargs):
+            out = f(*args, **kwargs)
+            if out is None:
+                out = int(0)
+            return out
+        return function_wrapper
+
+    def dummy_to_writable(f):
+        def function_wrapper(*args, **kwargs):
+            out = f(*args, **kwargs)
+            out = WritableAtom(out)
+            return out
+        return function_wrapper
+
+    def none_to_dummy(f):
+        def function_wrapper(*args, **kwargs):
+            out = f(*args, **kwargs)
+            if out is None:
+                out = offPELE.topology.molecule.DummyAtom(index=-1)
+            return out
+        return function_wrapper
+
+    @property
+    @dummy_to_writable
+    @none_to_dummy
+    def parent(self):
+        return super().parent
+
+    @property
+    def index(self):
+        return int(self._index) + 1
+
+    @property
+    def core(self):
+        if self._core:
+            return 'M'
+        else:
+            return 'S'
+
+    # TODO Consider removing any reference to OPLS, if possible
+    # Otherwise, use SMIRks to find the best match
+    @property
+    def OPLS_type(self):
+        return 'OFFT'  # stands for OpenForceField type
+
+    # TODO Review the actual purpose of this attribute in PELE
+    @property
+    @none_to_zero
+    def unknown(self):
+        return super().unknown

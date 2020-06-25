@@ -15,35 +15,111 @@ from offPELE.utils.toolkits import (AmberToolkitWrapper,
 
 class Atom(object):
     def __init__(self, index=-1, core=None, OPLS_type=None, PDB_name=None,
-                 unknown=None, z_matrix_x=None, z_matrix_y=None,
-                 z_matrix_z=None, sigma=None, epsilon=None, charge=None,
-                 born_radius=None, SASA_radius=None, nonpolar_gamma=None,
-                 nonpolar_alpha=None, parent=None):
-        self.index = index
-        self.core = core
-        self.OPLS_type = OPLS_type
-        self.PDB_name = PDB_name
-        self.unknown = unknown
-        self.z_matrix_x = z_matrix_x
-        self.z_matrix_y = z_matrix_y
-        self.z_matrix_z = z_matrix_z
-        self.sigma = sigma
-        self.epsilon = epsilon
-        self.charge = charge
-        self.born_radius = born_radius  # Rad. Non Polar SGB
-        self.SASA_radius = SASA_radius  # Rad. Non Polar Type
-        self.nonpolar_gamma = nonpolar_gamma  # SGB Non Polar gamma
-        self.nonpolar_alpha = nonpolar_alpha  # SGB Non Polar type
-        self.parent = parent
+                 unknown=None, x=None, y=None, z=None, sigma=None,
+                 epsilon=None, charge=None, born_radius=None, SASA_radius=None,
+                 nonpolar_gamma=None, nonpolar_alpha=None, parent=None):
+        self._index = index
+        self._core = core
+        self._OPLS_type = OPLS_type
+        self._PDB_name = PDB_name
+        self._unknown = unknown
+        self._x = x
+        self._y = y
+        self._z = z
+        self._sigma = sigma
+        self._epsilon = epsilon
+        self._charge = charge
+        self._born_radius = born_radius  # Rad. Non Polar SGB
+        self._SASA_radius = SASA_radius  # Rad. Non Polar Type
+        self._nonpolar_gamma = nonpolar_gamma  # SGB Non Polar gamma
+        self._nonpolar_alpha = nonpolar_alpha  # SGB Non Polar type
+        self._parent = parent
 
     def set_as_core(self):
-        self.core = True
+        self._core = True
 
     def set_as_branch(self):
-        self.core = False
+        self._core = False
 
     def set_parent(self, parent):
-        self.parent = parent
+        self._parent = parent
+
+    def set_coords(self, coords):
+        assert len(coords) == 3, '3D array is expected'
+
+        self._x, self._y, self._z = coords
+
+    @property
+    def index(self):
+        return self._index
+
+    @property
+    def core(self):
+        return self._core
+
+    @property
+    def OPLS_type(self):
+        return self._OPLS_type
+
+    @property
+    def PDB_name(self):
+        return self._PDB_name
+
+    @property
+    def unknown(self):
+        return self._unknown
+
+    @property
+    def x(self):
+        return self._x
+
+    @property
+    def y(self):
+        return self._y
+
+    @property
+    def z(self):
+        return self._z
+
+    @property
+    def sigma(self):
+        return self._sigma
+
+    @property
+    def epsilon(self):
+        return self._epsilon
+
+    @property
+    def charge(self):
+        return self._charge
+
+    @property
+    def born_radius(self):
+        return self._born_radius
+
+    @property
+    def SASA_radius(self):
+        return self._SASA_radius
+
+    @property
+    def nonpolar_gamma(self):
+        return self._nonpolar_gamma
+
+    @property
+    def nonpolar_alpha(self):
+        return self._nonpolar_alpha
+
+    @property
+    def parent(self):
+        return self._parent
+
+
+class DummyAtom(Atom):
+    def __init__(self, index=-1, PDB_name='DUMM', parent=None):
+        if parent is None:
+            parent = self
+        super().__init__(index, False, None, PDB_name, None, None, None, None,
+                         None, None, None, None, None, None, None, parent)
 
 
 class MolecularGraph(nx.Graph):
@@ -427,10 +503,8 @@ class Molecule(object):
                     for i in self.parameters.get_vdW_parameters().keys()}
 
         # TODO Create z-matrix from 3D coordinates
-        z_matrix_xs, z_matrix_ys, z_matrix_zs = (
-            {i: None for i in self.parameters.get_vdW_parameters().keys()},
-            {i: None for i in self.parameters.get_vdW_parameters().keys()},
-            {i: None for i in self.parameters.get_vdW_parameters().keys()})
+
+        coords = RDKitToolkitWrapper().get_coordinates(self)
 
         sigmas = self.parameters.get_vdW_sigmas()
 
@@ -455,9 +529,9 @@ class Molecule(object):
                         PDB_name=pdb_atom_names[index],
                         OPLS_type=OPLS_types[index],
                         unknown=unknowns[index],
-                        z_matrix_x=z_matrix_xs[index],
-                        z_matrix_y=z_matrix_ys[index],
-                        z_matrix_z=z_matrix_zs[index],
+                        x=coords[index][0],
+                        y=coords[index][1],
+                        z=coords[index][2],
                         sigma=sigmas[index],
                         epsilon=epsilons[index],
                         charge=self.off_molecule.partial_charges[index],

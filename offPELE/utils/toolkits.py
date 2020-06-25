@@ -4,6 +4,7 @@ import tempfile
 import os
 import subprocess
 from collections import defaultdict
+from pathlib import Path
 
 import numpy as np
 from simtk import unit
@@ -85,11 +86,38 @@ class RDKitToolkitWrapper(ToolkitWrapper):
     def to_sfd_file(self, molecule, path):
         from rdkit import Chem
 
+        assert Path(path).suffix == '.sdf', 'Wrong extension'
+
         rdkit_molecule = molecule.rdkit_molecule
-        with open('molecule.sdf', 'w') as f:
+        with open(path, 'w') as f:
             writer = Chem.SDWriter(f)
             writer.write(rdkit_molecule)
             writer.close()
+
+    def to_xyz_file(self, molecule, path):
+        from rdkit import Chem
+
+        assert Path(path).suffix == '.xyz', 'Wrong extension'
+
+        rdkit_molecule = molecule.rdkit_molecule
+        Chem.MolToXYZFile(rdkit_molecule, path)
+
+    def get_atom_ids_with_rotatable_bonds(self, molecule):
+        from rdkit import Chem
+
+        rdkit_molecule = molecule.rdkit_molecule
+        # Fins rotatable bond ids as in Lipinski module in RDKit
+        # https://github.com/rdkit/rdkit/blob/1bf6ef3d65f5c7b06b56862b3fb9116a3839b229/rdkit/Chem/Lipinski.py#L47
+        rot_bonds_atom_ids = rdkit_molecule.GetSubstructMatches(
+            Chem.MolFromSmarts('[!$(*#*)&!D1]-&!@[!$(*#*)&!D1]'))
+
+        return rot_bonds_atom_ids
+
+    def get_coordinates(self, molecule):
+        rdkit_molecule = molecule.rdkit_molecule
+
+        conformer = rdkit_molecule.GetConformer()
+        return conformer.GetPositions()
 
 
 class AmberToolkitWrapper(ToolkitWrapper):
@@ -129,7 +157,8 @@ class AmberToolkitWrapper(ToolkitWrapper):
                 net_charge = off_molecule.total_charge / \
                     unit.elementary_charge
 
-                self._rdkit_toolkit_wrapper.to_sfd_file(molecule, tmpdir)
+                self._rdkit_toolkit_wrapper.to_sfd_file(
+                    molecule, tmpdir + '/molecule.sdf')
 
                 subprocess.check_output([
                     "antechamber", "-i", "molecule.sdf", "-fi", "sdf",
