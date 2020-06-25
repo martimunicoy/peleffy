@@ -399,7 +399,9 @@ class Molecule(object):
                            self.parameters.get_vdW_parameters().keys()}
 
         for index in self.parameters.get_vdW_parameters().keys():
-            atom = Atom(index=index, PDB_name=pdb_atom_names[index],
+            assert len(index) == 1, 'Index should be a tupple of length 1'
+            atom = Atom(index=int(index[0]),
+                        PDB_name=pdb_atom_names[index],
                         OPLS_type=OPLS_types[index],
                         unknown=unknowns[index],
                         z_matrix_x=z_matrix_xs[index],
