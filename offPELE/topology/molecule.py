@@ -4,6 +4,8 @@ from collections import defaultdict
 from copy import deepcopy
 from pathlib import Path
 
+import networkx as nx
+
 from .rotamer import RotamerLibrary, Rotamer
 from .topology import Bond, Angle, OFFProper, OFFImproper
 from offPELE.utils.toolkits import (AmberToolkitWrapper,
@@ -16,7 +18,7 @@ class Atom(object):
                  unknown=None, z_matrix_x=None, z_matrix_y=None,
                  z_matrix_z=None, sigma=None, epsilon=None, charge=None,
                  born_radius=None, SASA_radius=None, nonpolar_gamma=None,
-                 nonpolar_alpha=None):
+                 nonpolar_alpha=None, parent=None):
         self.index = index
         self.core = core
         self.OPLS_type = OPLS_type
@@ -32,12 +34,237 @@ class Atom(object):
         self.SASA_radius = SASA_radius  # Rad. Non Polar Type
         self.nonpolar_gamma = nonpolar_gamma  # SGB Non Polar gamma
         self.nonpolar_alpha = nonpolar_alpha  # SGB Non Polar type
+        self.parent = parent
 
     def set_as_core(self):
         self.core = True
 
     def set_as_branch(self):
         self.core = False
+
+    def set_parent(self, parent):
+        self.parent = parent
+
+
+class MolecularGraph(nx.Graph):
+    def __init__(self, molecule):
+        super().__init__(self)
+        self._molecule = molecule
+        self._compute_rotamer_graph(molecule)
+
+    def _compute_rotamer_graph(self, molecule):
+        rdkit_toolkit = RDKitToolkitWrapper()
+        rot_bonds_atom_ids = \
+            rdkit_toolkit.get_atom_ids_with_rotatable_bonds(molecule)
+
+        rdkit_molecule = molecule.rdkit_molecule
+
+        for atom in rdkit_molecule.GetAtoms():
+            pdb_info = atom.GetPDBResidueInfo()
+            self.add_node(atom.GetIdx(), pdb_name=pdb_info.GetName(),
+                          nrot_neighbors=list())
+
+        for bond in rdkit_molecule.GetBonds():
+            atom1 = bond.GetBeginAtomIdx()
+            atom2 = bond.GetEndAtomIdx()
+            if ((atom1, atom2) in rot_bonds_atom_ids
+                    or (atom2, atom2) in rot_bonds_atom_ids):
+                rotatable = True
+            else:
+                rotatable = False
+                self.nodes[atom1]['nrot_neighbors'].append(atom2)
+                self.nodes[atom2]['nrot_neighbors'].append(atom1)
+
+            self.add_edge(bond.GetBeginAtomIdx(),
+                          bond.GetEndAtomIdx(),
+                          weight=int(rotatable))
+
+        for i, j in rot_bonds_atom_ids:
+            self[i][j]['weight'] = 1
+            self.nodes[i]['rotatable'] = True
+            self.nodes[j]['rotatable'] = True
+
+    def set_core(self):
+        def get_all_nrot_neighbors(self, atom_id, visited_neighbors):
+            if atom_id in visited_neighbors:
+                return visited_neighbors
+            visited_neighbors.add(atom_id)
+            nrot_neighbors = self.nodes[atom_id]['nrot_neighbors']
+            for nrot_neighbor in nrot_neighbors:
+                visited_neighbors = get_all_nrot_neighbors(
+                    self, nrot_neighbor, visited_neighbors)
+            return visited_neighbors
+
+        from networkx.algorithms.shortest_paths.generic import \
+            shortest_path_length
+        from networkx.algorithms.distance_measures import eccentricity
+
+        # Calculate graph distances according to weight values
+        weighted_distances = dict(shortest_path_length(self, weight="weight"))
+
+        # Calculate eccentricites using weighted distances
+        eccentricities = eccentricity(self, sp=weighted_distances)
+
+        # Group nodes by eccentricity
+        nodes_by_eccentricities = defaultdict(list)
+        for node, ecc in eccentricities.items():
+            nodes_by_eccentricities[ecc].append(node)
+
+        # Core atoms must have the minimum eccentricity
+        _, centered_nodes = sorted(nodes_by_eccentricities.items())[0]
+
+        # Construct nrot groups with centered nodes
+        already_visited = set()
+        centered_node_groups = list()
+        for node in centered_nodes:
+            if node in already_visited:
+                continue
+            centered_node_groups.append(get_all_nrot_neighbors(self, node,
+                                                               set()))
+
+        # In case of more than one group, core will be the largest
+        node_group = sorted(centered_node_groups, key=len, reverse=True)[0]
+
+        for atom in self.molecule.atoms:
+            if atom.index in node_group:
+                atom.set_as_core()
+            else:
+                atom.set_as_branch()
+
+    def set_parents(self):
+        def recursive_child_visitor(parent, already_visited=set()):
+            if parent in already_visited:
+                return already_visited
+
+            already_visited.add(parent)
+
+            childs = [self.molecule.atoms[n] for n in self.neighbors(parent.index)]
+
+            for child in childs:
+                if child in already_visited:
+                    continue
+                child.set_parent(parent)
+                already_visited = recursive_child_visitor(child,
+                                                          already_visited)
+
+            return already_visited
+
+        # Start from an atom from the core
+        parent = None
+        for atom in self.molecule.atoms:
+            if atom.core:
+                parent = atom
+                break
+
+        # Assert a parent was found
+        assert parent is not None, 'No core atom found in molecule ' \
+            '{}'.format(self.molecule.name)
+
+        already_visited = recursive_child_visitor(parent)
+
+        # Assert all nodes were explored
+        assert len(already_visited) == len(self.molecule.atoms), 'Not all ' \
+            'nodes were explored'
+
+        # Assert absolut parent is the only with None parent value
+        assert parent.parent is None and \
+            sum([int(a.parent is not None) for a in self.molecule.atoms]) \
+            == len(self.molecule.atoms) - 1, 'Found descendant without parent'
+
+    def _get_rot_bonds_per_group(self, branch_groups):
+        rot_bonds_per_group = list()
+        for group in branch_groups:
+            rot_bonds = list()
+            visited_bonds = set()
+            for node in group:
+                bonds = self.edges(node)
+                for bond in bonds:
+                    if bond in visited_bonds:
+                        continue
+                    if self[bond[0]][bond[1]]['weight'] == 1:
+                        rot_bonds.append(bond)
+                    visited_bonds.add(bond)
+                    visited_bonds.add((bond[1], bond[0]))
+            rot_bonds_per_group.append(rot_bonds)
+
+        return rot_bonds_per_group
+
+    def _get_core_atom_per_group(self, rot_bonds_per_group, core_indexes):
+        core_atom_per_group = list()
+        for rot_bonds in rot_bonds_per_group:
+            for (a1, a2) in rot_bonds:
+                if a1 in core_indexes:
+                    core_atom_per_group.append(a1)
+                    break
+                elif a2 in core_indexes:
+                    core_atom_per_group.append(a2)
+                    break
+            else:
+                core_atom_per_group.append(None)
+
+        return core_atom_per_group
+
+    def _get_sorted_bonds_per_group(self, core_atom_per_group,
+                                    rot_bonds_per_group, distances):
+        sorted_rot_bonds_per_group = list()
+        for core_atom, rot_bonds in zip(core_atom_per_group,
+                                        rot_bonds_per_group):
+            sorting_dict = dict()
+            for bond in rot_bonds:
+                min_d = min([distances[core_atom][bond[0]],
+                             distances[core_atom][bond[1]]])
+                sorting_dict[bond] = min_d
+
+            sorted_rot_bonds_per_group.append(
+                [i[0] for i in
+                 sorted(sorting_dict.items(), key=lambda item: item[1])])
+
+        return sorted_rot_bonds_per_group
+
+    def build_rotamer_library(self, resolution):
+        core_atoms = set()
+        for atom in self.molecule.atoms:
+            if atom.core:
+                core_atoms.add(atom)
+        core_indexes = [atom.index for atom in core_atoms]
+
+        assert len(core_atoms) > 0, 'No core atoms were found'
+
+        branch_graph = deepcopy(self)
+
+        for core_atom in core_atoms:
+            branch_graph.remove_node(core_atom.index)
+
+        branch_groups = list(nx.connected_components(branch_graph))
+
+        rot_bonds_per_group = self._get_rot_bonds_per_group(branch_groups)
+
+        core_atom_per_group = self._get_core_atom_per_group(
+            rot_bonds_per_group, core_indexes)
+
+        distances = dict(nx.shortest_path_length(self))
+
+        sorted_rot_bonds_per_group = self._get_sorted_bonds_per_group(
+            core_atom_per_group, rot_bonds_per_group, distances)
+
+        rotamer_library = RotamerLibrary(self.molecule.name)
+
+        # PELE needs underscores instead of whitespaces
+        pdb_atom_names = [name.replace(' ', '_',)
+                          for name in self.molecule.get_pdb_atom_names()]
+
+        for group_id, rot_bonds in enumerate(sorted_rot_bonds_per_group):
+            for (atom1_index, atom2_index) in rot_bonds:
+                atom1_name = pdb_atom_names[atom1_index]
+                atom2_name = pdb_atom_names[atom2_index]
+                rotamer = Rotamer(atom1_name, atom2_name, resolution)
+                rotamer_library.add_rotamer(rotamer, group_id)
+
+        return rotamer_library
+
+    @property
+    def molecule(self):
+        return self._molecule
 
 
 class Molecule(object):
@@ -67,6 +294,7 @@ class Molecule(object):
         self._rdkit_molecule = None
         self._off_molecule = None
         self._rotamer_library = None
+        self._graph = None
 
     def _initialize_from_pdb(self, path):
         self._initialize()
@@ -122,195 +350,18 @@ class Molecule(object):
 
         self._build_impropers()
 
-    def _compute_rotamer_graph(self, rot_bonds_atom_ids):
-        import networkx as nx
-        graph = nx.Graph()
-
-        for atom in self.rdkit_molecule.GetAtoms():
-            pdb_info = atom.GetPDBResidueInfo()
-            graph.add_node(atom.GetIdx(), pdb_name=pdb_info.GetName(),
-                           nrot_neighbors=list())
-
-        for bond in self.rdkit_molecule.GetBonds():
-            atom1 = bond.GetBeginAtomIdx()
-            atom2 = bond.GetEndAtomIdx()
-            if ((atom1, atom2) in rot_bonds_atom_ids
-                    or (atom2, atom2) in rot_bonds_atom_ids):
-                rotatable = True
-            else:
-                rotatable = False
-                graph.nodes[atom1]['nrot_neighbors'].append(atom2)
-                graph.nodes[atom2]['nrot_neighbors'].append(atom1)
-
-            graph.add_edge(bond.GetBeginAtomIdx(),
-                           bond.GetEndAtomIdx(),
-                           weight=int(rotatable))
-
-        for i, j in rot_bonds_atom_ids:
-            graph[i][j]['weight'] = 1
-            graph.nodes[i]['rotatable'] = True
-            graph.nodes[j]['rotatable'] = True
-
-        return graph
-
-    def _set_core(self, graph, rot_bonds_atom_ids):
-        def get_all_nrot_neighbors(atom_id, visited_neighbors):
-            if atom_id in visited_neighbors:
-                return visited_neighbors
-            visited_neighbors.add(atom_id)
-            nrot_neighbors = graph.nodes[atom_id]['nrot_neighbors']
-            for nrot_neighbor in nrot_neighbors:
-                visited_neighbors = get_all_nrot_neighbors(
-                    nrot_neighbor, visited_neighbors)
-            return visited_neighbors
-
-        from networkx.algorithms.shortest_paths.generic import \
-            shortest_path_length
-        from networkx.algorithms.distance_measures import eccentricity
-
-        # Calculate graph distances according to weight values
-        weighted_distances = dict(shortest_path_length(graph, weight="weight"))
-
-        # Calculate eccentricites using weighted distances
-        eccentricities = eccentricity(graph, sp=weighted_distances)
-
-        # Group nodes by eccentricity
-        nodes_by_eccentricities = defaultdict(list)
-        for node, ecc in eccentricities.items():
-            nodes_by_eccentricities[ecc].append(node)
-
-        # Core atoms must have the minimum eccentricity
-        _, centered_nodes = sorted(nodes_by_eccentricities.items())[0]
-
-        # Construct nrot groups with centered nodes
-        already_visited = set()
-        centered_node_groups = list()
-        for node in centered_nodes:
-            if node in already_visited:
-                continue
-            centered_node_groups.append(get_all_nrot_neighbors(node, set()))
-
-        # In case of more than one group, core will be the largest
-        node_group = sorted(centered_node_groups, key=len, reverse=True)[0]
-
-        for atom in self.atoms:
-            if atom.index in node_group:
-                atom.set_as_core()
-            else:
-                atom.set_as_branch()
-
-    def _get_rot_bonds_per_group(self, graph, branch_groups):
-        rot_bonds_per_group = list()
-        for group in branch_groups:
-            rot_bonds = list()
-            visited_bonds = set()
-            for node in group:
-                bonds = graph.edges(node)
-                for bond in bonds:
-                    if bond in visited_bonds:
-                        continue
-                    if graph[bond[0]][bond[1]]['weight'] == 1:
-                        rot_bonds.append(bond)
-                    visited_bonds.add(bond)
-                    visited_bonds.add((bond[1], bond[0]))
-            rot_bonds_per_group.append(rot_bonds)
-
-        return rot_bonds_per_group
-
-    def _get_core_atom_per_group(self, rot_bonds_per_group, core_indexes):
-        core_atom_per_group = list()
-        for rot_bonds in rot_bonds_per_group:
-            for (a1, a2) in rot_bonds:
-                if a1 in core_indexes:
-                    core_atom_per_group.append(a1)
-                    break
-                elif a2 in core_indexes:
-                    core_atom_per_group.append(a2)
-                    break
-            else:
-                core_atom_per_group.append(None)
-
-        return core_atom_per_group
-
-    def _get_sorted_bonds_per_group(self, core_atom_per_group,
-                                    rot_bonds_per_group, distances):
-        sorted_rot_bonds_per_group = list()
-        for core_atom, rot_bonds in zip(core_atom_per_group,
-                                        rot_bonds_per_group):
-            sorting_dict = dict()
-            for bond in rot_bonds:
-                min_d = min([distances[core_atom][bond[0]],
-                             distances[core_atom][bond[1]]])
-                sorting_dict[bond] = min_d
-
-            sorted_rot_bonds_per_group.append(
-                [i[0] for i in
-                 sorted(sorting_dict.items(), key=lambda item: item[1])])
-
-        return sorted_rot_bonds_per_group
-
-    def _build_rotamer_library(self, graph, resolution):
-        import networkx as nx
-
-        core_atoms = set()
-        for atom in self.atoms:
-            if atom.core:
-                core_atoms.add(atom)
-        core_indexes = [atom.index for atom in core_atoms]
-
-        assert len(core_atoms) > 0, 'No core atoms were found'
-
-        branch_graph = deepcopy(graph)
-
-        for core_atom in core_atoms:
-            branch_graph.remove_node(core_atom.index)
-
-        branch_groups = list(nx.connected_components(branch_graph))
-
-        rot_bonds_per_group = self._get_rot_bonds_per_group(
-            graph, branch_groups)
-
-        core_atom_per_group = self._get_core_atom_per_group(
-            rot_bonds_per_group, core_indexes)
-
-        distances = dict(nx.shortest_path_length(graph))
-
-        sorted_rot_bonds_per_group = self._get_sorted_bonds_per_group(
-            core_atom_per_group, rot_bonds_per_group, distances)
-
-        self._rotamer_library = RotamerLibrary(self.name)
-
-        # PELE needs underscores instead of whitespaces
-        pdb_atom_names = [name.replace(' ', '_',)
-                          for name in self.get_pdb_atom_names()]
-
-        for group_id, rot_bonds in enumerate(sorted_rot_bonds_per_group):
-            for (atom1_index, atom2_index) in rot_bonds:
-                atom1_name = pdb_atom_names[atom1_index]
-                atom2_name = pdb_atom_names[atom2_index]
-                rotamer = Rotamer(atom1_name, atom2_name, resolution)
-                self.rotamer_library.add_rotamer(rotamer, group_id)
-
     def build_rotamer_library(self, resolution):
         self._assert_parameterized()
 
-        try:
-            from rdkit import Chem
-        except ImportError:
-            raise Exception('RDKit Python API not found')
-
         print(' - Generating rotamer library')
 
-        # Fins rotatable bond ids as in Lipinski module in RDKit
-        # https://github.com/rdkit/rdkit/blob/1bf6ef3d65f5c7b06b56862b3fb9116a3839b229/rdkit/Chem/Lipinski.py#L47
-        rot_bonds_atom_ids = self._rdkit_molecule.GetSubstructMatches(
-            Chem.MolFromSmarts('[!$(*#*)&!D1]-&!@[!$(*#*)&!D1]'))
+        self._graph = MolecularGraph(self)
 
-        graph = self._compute_rotamer_graph(rot_bonds_atom_ids)
+        self.graph.set_core()
 
-        self._set_core(graph, rot_bonds_atom_ids)
+        self.graph.set_parents()
 
-        self._build_rotamer_library(graph, resolution)
+        self._rotamer_library = self.graph.build_rotamer_library(resolution)
 
     def plot_rotamer_graph(self):
         self._assert_parameterized()
@@ -615,3 +666,7 @@ class Molecule(object):
     @property
     def impropers(self):
         return self._impropers
+
+    @property
+    def graph(self):
+        return self._graph
