@@ -35,6 +35,9 @@ class Atom(object):
         self._nonpolar_alpha = nonpolar_alpha  # SGB Non Polar type
         self._parent = parent
 
+    def set_index(self, index):
+        self._index = index
+
     def set_as_core(self):
         self._core = True
 

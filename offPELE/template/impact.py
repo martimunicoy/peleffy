@@ -17,7 +17,48 @@ class Impact(object):
             raise Exception('Invalid input molecule for Impact template')
 
     def _initialize_from_molecule(self, molecule):
-        self._molecule = molecule
+        # We will work with a copy to prevent the modification of the original
+        # object
+        self._molecule = deepcopy(molecule)
+        self._sort()
+
+    def _sort(self):
+        sorted_atoms = list()
+
+        # Sort by core attribute and parent index
+        for atom in sorted(self.molecule.atoms,
+                           key=lambda a: (WritableAtom(a).core,
+                                          WritableAtom(a).parent.index)):
+            sorted_atoms.append(atom)
+
+        # Define reindexer and reindex atoms
+        reindexer = dict()
+        for new_index, atom in enumerate(sorted_atoms):
+            old_index = atom._index
+            reindexer[old_index] = new_index
+            atom.set_index(new_index)
+
+        # Replace old atom list by the sorted one
+        self.molecule._atoms = sorted_atoms
+
+        # Reindex bonds, angles, propers and impropers
+        for bond in self.molecule.bonds:
+            bond.set_atom1_idx(reindexer[bond.atom1_idx])
+            bond.set_atom2_idx(reindexer[bond.atom2_idx])
+        for angle in self.molecule.angles:
+            angle.set_atom1_idx(reindexer[angle.atom1_idx])
+            angle.set_atom2_idx(reindexer[angle.atom2_idx])
+            angle.set_atom3_idx(reindexer[angle.atom3_idx])
+        for proper in self.molecule.propers:
+            proper.set_atom1_idx(reindexer[proper.atom1_idx])
+            proper.set_atom2_idx(reindexer[proper.atom2_idx])
+            proper.set_atom3_idx(reindexer[proper.atom3_idx])
+            proper.set_atom4_idx(reindexer[proper.atom4_idx])
+        for improper in self.molecule.impropers:
+            improper.set_atom1_idx(reindexer[improper.atom1_idx])
+            improper.set_atom2_idx(reindexer[improper.atom2_idx])
+            improper.set_atom3_idx(reindexer[improper.atom3_idx])
+            improper.set_atom4_idx(reindexer[improper.atom4_idx])
 
     def write(self, path):
         with open(path, 'w') as file:
@@ -129,12 +170,10 @@ class Impact(object):
             file.write('{:5d}'.format(idx2))
             file.write(' ')
             # Spring constant
-            file.write('{: 9.3f}'.format(spring.value_in_unit(
-                unit.kilocalorie / (unit.angstrom**2 * unit.mole))))
+            file.write('{: 9.3f}'.format(spring))
             file.write(' ')
             # Equilibrium distance
-            file.write('{: 6.3f}\n'.format(eq_dist.value_in_unit(
-                unit.angstrom)))
+            file.write('{: 6.3f}\n'.format(eq_dist))
 
     def _write_thet(self, file):
         file.write('THET\n')
@@ -155,11 +194,9 @@ class Impact(object):
             file.write('{:5d}'.format(idx3))
             file.write(' ')
             # Spring constant
-            file.write('{: 11.5f}'.format(spring.value_in_unit(
-                unit.kilocalorie / (unit.degree**2 * unit.mole))))
+            file.write('{: 11.5f}'.format(spring))
             # Equilibrium angle
-            file.write('{: 11.5f}\n'.format(eq_angl.value_in_unit(
-                unit.degree)))
+            file.write('{: 11.5f}\n'.format(eq_angl))
 
     def _write_phi(self, file):
         file.write('PHI\n')
@@ -223,7 +260,7 @@ class Impact(object):
     def _write_end(self, file):
         file.write('END\n')
 
-    @ property
+    @property
     def molecule(self):
         return self._molecule
 
@@ -274,6 +311,29 @@ class WritableWrapper(object):
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
             return out.value_in_unit(unit.elementary_charge)
+        return function_wrapper
+
+    @staticmethod
+    def in_kcal_deg2mol(f):
+        def function_wrapper(*args, **kwargs):
+            out = f(*args, **kwargs)
+            return out.value_in_unit(unit.kilocalorie
+                                     / (unit.degree**2 * unit.mole))
+        return function_wrapper
+
+    @staticmethod
+    def in_deg(f):
+        def function_wrapper(*args, **kwargs):
+            out = f(*args, **kwargs)
+            return out.value_in_unit(unit.degree)
+        return function_wrapper
+
+    @staticmethod
+    def in_kcal_angstrom2mol(f):
+        def function_wrapper(*args, **kwargs):
+            out = f(*args, **kwargs)
+            return out.value_in_unit(unit.kilocalorie
+                                     / (unit.angstrom**2 * unit.mole))
         return function_wrapper
 
 
@@ -379,6 +439,16 @@ class WritableBond(offPELE.topology.Bond, WritableWrapper):
     def atom2_idx(self):
         return super().atom2_idx + 1
 
+    @property
+    @WritableWrapper.in_kcal_angstrom2mol
+    def spring_constant(self):
+        return super().spring_constant
+
+    @property
+    @WritableWrapper.in_angstrom
+    def eq_dist(self):
+        return super().eq_dist
+
 
 class WritableAngle(offPELE.topology.Angle, WritableWrapper):
     def __init__(self, angle):
@@ -405,6 +475,16 @@ class WritableAngle(offPELE.topology.Angle, WritableWrapper):
     @property
     def atom3_idx(self):
         return super().atom3_idx + 1
+
+    @property
+    @WritableWrapper.in_kcal_deg2mol
+    def spring_constant(self):
+        return super().spring_constant
+
+    @property
+    @WritableWrapper.in_deg
+    def eq_angle(self):
+        return super().eq_angle
 
 
 class WritableProper(offPELE.topology.Proper, WritableWrapper):

@@ -57,6 +57,12 @@ class Bond(TopologyElement):
         self._spring_constant = spring_constant
         self._eq_dist = eq_dist
 
+    def set_atom1_idx(self, index):
+        self._atom1_idx = index
+
+    def set_atom2_idx(self, index):
+        self._atom2_idx = index
+
     @property
     def index(self):
         return self._index
@@ -91,6 +97,15 @@ class Angle(TopologyElement):
         self._atom3_idx = atom3_idx
         self._spring_constant = spring_constant
         self._eq_angle = eq_angle
+
+    def set_atom1_idx(self, index):
+        self._atom1_idx = index
+
+    def set_atom2_idx(self, index):
+        self._atom2_idx = index
+
+    def set_atom3_idx(self, index):
+        self._atom3_idx = index
 
     @property
     def index(self):
@@ -133,6 +148,18 @@ class Dihedral(TopologyElement):
         self._periodicity = periodicity
         self._prefactor = prefactor
         self._constant = constant
+
+    def set_atom1_idx(self, index):
+        self._atom1_idx = index
+
+    def set_atom2_idx(self, index):
+        self._atom2_idx = index
+
+    def set_atom3_idx(self, index):
+        self._atom3_idx = index
+
+    def set_atom4_idx(self, index):
+        self._atom4_idx = index
 
     def plot(self):
         from matplotlib import pyplot
