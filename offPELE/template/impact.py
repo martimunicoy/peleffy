@@ -169,8 +169,8 @@ class Impact(object):
             # Atom 2 id
             file.write('{:5d}'.format(idx2))
             file.write(' ')
-            # Spring constant
-            file.write('{: 9.3f}'.format(spring))
+            # Spring constant (PELE works with half of the OFF's spring)
+            file.write('{: 9.3f}'.format(spring / 2.0))
             file.write(' ')
             # Equilibrium distance
             file.write('{: 6.3f}\n'.format(eq_dist))
@@ -193,8 +193,8 @@ class Impact(object):
             # Atom 3 id
             file.write('{:5d}'.format(idx3))
             file.write(' ')
-            # Spring constant
-            file.write('{: 11.5f}'.format(spring))
+            # Spring constant (PELE works with half of the OFF's spring)
+            file.write('{: 11.5f}'.format(spring / 2.0))
             # Equilibrium angle
             file.write('{: 11.5f}\n'.format(eq_angl))
 
@@ -314,11 +314,11 @@ class WritableWrapper(object):
         return function_wrapper
 
     @staticmethod
-    def in_kcal_deg2mol(f):
+    def in_kcal_rad2mol(f):
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
             return out.value_in_unit(unit.kilocalorie
-                                     / (unit.degree**2 * unit.mole))
+                                     / (unit.radian**2 * unit.mole))
         return function_wrapper
 
     @staticmethod
@@ -477,7 +477,7 @@ class WritableAngle(offPELE.topology.Angle, WritableWrapper):
         return super().atom3_idx + 1
 
     @property
-    @WritableWrapper.in_kcal_deg2mol
+    @WritableWrapper.in_kcal_rad2mol
     def spring_constant(self):
         return super().spring_constant
 
