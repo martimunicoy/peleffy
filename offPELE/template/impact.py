@@ -402,7 +402,7 @@ class WritableAtom(offPELE.topology.molecule.Atom, WritableWrapper):
         return super().born_radius
 
     @property
-    @WritableWrapper.none_to_zero
+    @WritableWrapper.in_angstrom
     def SASA_radius(self):
         return super().SASA_radius
 

@@ -263,14 +263,14 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
             Convert rmin_half values to sigmas according to:
             http://ambermd.org/Questions/vdwequation.pdf
             """
-            FACTOR = 1.122462048309373  # The sixth root of 2
+            FACTOR = 0.8908987181403393  # The inverse of the sixth root of 2
 
             def function_wrapper(x):
                 rmin_halves = func(x)
 
                 sigmas = dict()
                 for indexes, rmin_half in rmin_halves.items():
-                    sigma = FACTOR * rmin_half
+                    sigma = FACTOR * 2 * rmin_half
                     sigmas[indexes] = sigma
 
                 return sigmas

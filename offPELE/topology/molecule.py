@@ -519,8 +519,11 @@ class Molecule(object):
         # TODO Find a way to assign implicit solvent parameters to atoms with OFF
         born_radii = {i: None
                       for i in self.parameters.get_vdW_parameters().keys()}
-        SASA_radii = {i: None
-                      for i in self.parameters.get_vdW_parameters().keys()}
+
+        # TODO Doublecheck this relation
+        SASA_radii = {i: j / 2.0 for i, j in sigmas.items()}
+
+        # TODO Find a way to assign implicit solvent parameters to atoms with OFF
         nonpolar_gammas = {i: None for i in
                            self.parameters.get_vdW_parameters().keys()}
         nonpolar_alphas = {i: None for i in
