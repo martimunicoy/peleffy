@@ -51,11 +51,31 @@ class Bond(TopologyElement):
 
     def __init__(self, index=-1, atom1_idx=None, atom2_idx=None,
                  spring_constant=None, eq_dist=None):
-        self.index = index
-        self.atom1_idx = atom1_idx
-        self.atom2_idx = atom2_idx
-        self.spring_constant = spring_constant
-        self.eq_dist = eq_dist
+        self._index = index
+        self._atom1_idx = atom1_idx
+        self._atom2_idx = atom2_idx
+        self._spring_constant = spring_constant
+        self._eq_dist = eq_dist
+
+    @property
+    def index(self):
+        return self._index
+
+    @property
+    def atom1_idx(self):
+        return self._atom1_idx
+
+    @property
+    def atom2_idx(self):
+        return self._atom2_idx
+
+    @property
+    def spring_constant(self):
+        return self._spring_constant
+
+    @property
+    def eq_dist(self):
+        return self._eq_dist
 
 
 class Angle(TopologyElement):
@@ -65,30 +85,54 @@ class Angle(TopologyElement):
 
     def __init__(self, index=-1, atom1_idx=None, atom2_idx=None,
                  atom3_idx=None, spring_constant=None, eq_angle=None):
-        self.index = index
-        self.atom1_idx = atom1_idx
-        self.atom2_idx = atom2_idx
-        self.atom3_idx = atom3_idx
-        self.spring_constant = spring_constant
-        self.eq_angle = eq_angle
+        self._index = index
+        self._atom1_idx = atom1_idx
+        self._atom2_idx = atom2_idx
+        self._atom3_idx = atom3_idx
+        self._spring_constant = spring_constant
+        self._eq_angle = eq_angle
+
+    @property
+    def index(self):
+        return self._index
+
+    @property
+    def atom1_idx(self):
+        return self._atom1_idx
+
+    @property
+    def atom2_idx(self):
+        return self._atom2_idx
+
+    @property
+    def atom3_idx(self):
+        return self._atom3_idx
+
+    @property
+    def spring_constant(self):
+        return self._spring_constant
+
+    @property
+    def eq_angle(self):
+        return self._eq_angle
 
 
 class Dihedral(TopologyElement):
     _name = 'Dihedral'
     _writable_attrs = ['atom1_idx', 'atom2_idx', 'atom3_idx', 'atom4_idx',
-                       'periodicity', 'prefactor', 'constant']
+                       'constant', 'prefactor', 'periodicity']
 
     def __init__(self, index=-1, atom1_idx=None, atom2_idx=None,
                  atom3_idx=None, atom4_idx=None, periodicity=None,
                  prefactor=None, constant=None):
-        self.index = index
-        self.atom1_idx = atom1_idx
-        self.atom2_idx = atom2_idx
-        self.atom3_idx = atom3_idx
-        self.atom4_idx = atom4_idx
-        self.periodicity = periodicity
-        self.prefactor = prefactor
-        self.constant = constant
+        self._index = index
+        self._atom1_idx = atom1_idx
+        self._atom2_idx = atom2_idx
+        self._atom3_idx = atom3_idx
+        self._atom4_idx = atom4_idx
+        self._periodicity = periodicity
+        self._prefactor = prefactor
+        self._constant = constant
 
     def plot(self):
         from matplotlib import pyplot
@@ -100,6 +144,38 @@ class Dihedral(TopologyElement):
                     'r--')
 
         pyplot.show()
+
+    @property
+    def index(self):
+        return self._index
+
+    @property
+    def atom1_idx(self):
+        return self._atom1_idx
+
+    @property
+    def atom2_idx(self):
+        return self._atom2_idx
+
+    @property
+    def atom3_idx(self):
+        return self._atom3_idx
+
+    @property
+    def atom4_idx(self):
+        return self._atom4_idx
+
+    @property
+    def periodicity(self):
+        return self._periodicity
+
+    @property
+    def prefactor(self):
+        return self._prefactor
+
+    @property
+    def constant(self):
+        return self._constant
 
 
 class Proper(Dihedral):
