@@ -24,3 +24,7 @@ def temporary_cd(path):
         yield
     finally:
         os.chdir(old_path)
+
+
+def warning_on_one_line(message, category, filename, lineno, file=None, line=None):
+    return ' %s:%s: %s:%s' % (filename, lineno, category.__name__, message)
