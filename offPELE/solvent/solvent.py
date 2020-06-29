@@ -1,7 +1,7 @@
 import numpy as np
 from simtk import unit
 
-from offPELE.utils import get_data_file_path
+from offPELE.utils import get_data_file_path, warning_on_one_line
 from offPELE.utils.toolkits import OpenForceFieldToolkitWrapper
 
 
@@ -105,6 +105,11 @@ class OBC1(_SolventWrapper):
     _name = 'OBC1'
 
     def __init__(self, molecule):
+        # Not implemented in PELE
+        import warnings
+        warnings.formatwarning = warning_on_one_line
+        warnings.warn("OBC1 is not implemented in PELE", Warning)
+
         super().__init__(molecule)
 
     def _initialize_from_molecule(self):
