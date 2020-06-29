@@ -520,7 +520,7 @@ class Molecule(object):
         born_radii = {i: None
                       for i in self.parameters.get_vdW_parameters().keys()}
 
-        # TODO Doublecheck this relation
+        # TODO Doublecheck later this relation
         SASA_radii = {i: j / 2.0 for i, j in sigmas.items()}
 
         # TODO Find a way to assign implicit solvent parameters to atoms with OFF

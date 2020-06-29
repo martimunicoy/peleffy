@@ -253,6 +253,19 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
             'expected'
         return self.OpenForceFieldParameters(molecule_parameters_list[0])
 
+    def get_parameter_handler_from_forcefield(self, parameter_handler_name,
+                                              forcefield):
+        from openforcefield.typing.engines.smirnoff import ForceField
+
+        if isinstance(forcefield, str):
+            forcefield = ForceField(forcefield)
+        elif isinstance(forcefield, ForceField):
+            pass
+        else:
+            raise Exception('Invalid forcefield type')
+
+        return forcefield.get_parameter_handler(parameter_handler_name)
+
     class OpenForceFieldParameters(dict):
         def __init__(self, parameters_list):
             for key, value in parameters_list.items():
@@ -289,38 +302,40 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
             return output
 
         def _build_dict(self, parameters, attribute_name):
-            value_by_index = dict()
-            for index, parameter in parameters.items():
-                value_by_index[index] = getattr(parameter, attribute_name)
+            if parameters:
+                value_by_index = dict()
+                for index, parameter in parameters.items():
+                    value_by_index[index] = getattr(parameter, attribute_name)
 
-            return value_by_index
+                return value_by_index
 
         def _build_dynamic_dicts(self, parameters, attr_core_name):
-            parameters_by_index = defaultdict(dict)
-            all_attr_ids_found = set()
-            for index, parameter in parameters.items():
-                counter = int(1)
-                attr_name = attr_core_name + str(counter)
-                while(attr_name in parameter.to_dict()):
-                    all_attr_ids_found.add(counter)
-                    attr_value = getattr(parameter, attr_name)
-                    parameters_by_index[index][counter] = attr_value
-                    counter += 1
+            if parameters:
+                parameters_by_index = defaultdict(dict)
+                all_attr_ids_found = set()
+                for index, parameter in parameters.items():
+                    counter = int(1)
                     attr_name = attr_core_name + str(counter)
+                    while(attr_name in parameter.to_dict()):
+                        all_attr_ids_found.add(counter)
+                        attr_value = getattr(parameter, attr_name)
+                        parameters_by_index[index][counter] = attr_value
+                        counter += 1
+                        attr_name = attr_core_name + str(counter)
 
-            output_list = list()
-            for attr_id in sorted(all_attr_ids_found):
-                value_by_index = dict()
-                for index in parameters.keys():
-                    if attr_id in parameters_by_index[index]:
-                        value_by_index[index] = \
-                            parameters_by_index[index][attr_id]
-                    else:
-                        value_by_index[index] = None
+                output_list = list()
+                for attr_id in sorted(all_attr_ids_found):
+                    value_by_index = dict()
+                    for index in parameters.keys():
+                        if attr_id in parameters_by_index[index]:
+                            value_by_index[index] = \
+                                parameters_by_index[index][attr_id]
+                        else:
+                            value_by_index[index] = None
 
-                output_list.append(value_by_index)
+                    output_list.append(value_by_index)
 
-            return output_list
+                return output_list
 
         # Van der Waals parameters
         def get_vdW_parameters(self):
@@ -410,3 +425,16 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
         def get_improper_idivfs(self):
             parameters = self.get_improper_parameters()
             return self._build_dynamic_dicts(parameters, 'idivf')
+
+        # GBSA solvent parameters
+        def get_GBSA_parameters(self):
+            if 'GBSA' in self:
+                return self['GBSA']
+
+        def get_GBSA_radii(self):
+            parameters = self.get_GBSA_parameters()
+            return self._build_dict(parameters, 'radius')
+
+        def get_GBSA_scales(self):
+            parameters = self.get_GBSA_parameters()
+            return self._build_dict(parameters, 'scale')
