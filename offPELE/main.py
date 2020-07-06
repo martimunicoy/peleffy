@@ -35,8 +35,8 @@ def parse_args():
                         + str(DEFAULT_OFF_FORCEFIELD),
                         default=DEFAULT_OFF_FORCEFIELD)
     parser.add_argument("-r", "--resolution", metavar="INT",
-                        help="Rotamer library resolution. Default is "
-                        + str(DEFAULT_RESOLUTION),
+                        help="Rotamer library resolution in degrees. "
+                        + "Default is " + str(DEFAULT_RESOLUTION),
                         default=DEFAULT_RESOLUTION)
     parser.add_argument("-o", "--output", metavar="PATH",
                         help="Output path. Default is the current working "
