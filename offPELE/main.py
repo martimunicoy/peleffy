@@ -122,7 +122,7 @@ def main():
         solvent = OBC2(molecule)
         solvent.to_json_file(solvent_out)
 
-    print(' - All files were generated with successfully')
+    print(' - All files were generated successfully')
     print('-' * 60)
 
 
