@@ -35,9 +35,9 @@ setup(
         "License :: OSI Approved :: MIT",
         "Programming Language :: Python :: 3",
         "Operating System :: Unix"
-    ]
+    ],
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     package_data={'offPELE': find_package_data(
-        'offPELE')}
+        'offPELE/data', 'offPELE')}
 )
