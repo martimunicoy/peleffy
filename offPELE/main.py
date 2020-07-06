@@ -89,6 +89,7 @@ def handle_output_paths(molecule, args):
 
 def main():
     args = parse_args()
+    print('-' * 60)
     print('Open Force Field parameterizer for PELE v'
           '{}'.format(offPELE.__version__))
     print('-' * 60)
@@ -97,7 +98,7 @@ def main():
     print(' - Rotamer library resolution: {}'.format(args.resolution))
     print(' - Output path: {}'.format(args.output))
     print(' - DataLocal-like output: {}'.format(args.as_datalocal))
-    print('-' * 60 + '\n')
+    print('-' * 60)
 
     # Supress OpenForceField toolkit warnings
     import logging
@@ -122,6 +123,7 @@ def main():
         solvent.to_json_file(solvent_out)
 
     print(' - All files were generated with successfully')
+    print('-' * 60)
 
 
 if __name__ == '__main__':
