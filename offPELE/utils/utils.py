@@ -28,3 +28,18 @@ def temporary_cd(path):
 
 def warning_on_one_line(message, category, filename, lineno, file=None, line=None):
     return ' %s:%s: %s:%s' % (filename, lineno, category.__name__, message)
+
+
+def check_if_path_exists(path):
+    from pathlib import Path
+
+    if not isinstance(path, Path):
+        path = Path(path)
+
+    if not path.is_dir():
+        raise ValueError('Invalid path to {}'.format(path))
+
+
+def create_path(path):
+    import os
+    os.makedirs(str(path), exist_ok=True)
