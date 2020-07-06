@@ -76,7 +76,7 @@ class Impact(object):
         if self.molecule.forcefield:
             file.write(' ({})'.format(self.molecule.forcefield))
         file.write('\n')
-        file.write('* File generated with offPELE {}\n'.format(
+        file.write('* File generated with offPELE-{}\n'.format(
             offPELE.__version__))
         file.write('*\n')
 
