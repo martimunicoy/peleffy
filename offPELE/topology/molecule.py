@@ -385,13 +385,13 @@ class Molecule(object):
         # RDKit must generate stereochemistry specifically from 3D coords
         rdkit_toolkit.assign_stereochemistry_from_3D(self)
 
+        # Set molecule name according to PDB's residue name
+        name = rdkit_toolkit.get_residue_name(self)
+        self.set_name(name)
+
         openforcefield_toolkit = OpenForceFieldToolkitWrapper()
 
         self._off_molecule = openforcefield_toolkit.from_rdkit(self)
-
-        name = Path(path).stem
-        if len(name) > 2:
-            self.set_name(name)
 
     def set_name(self, name):
         if isinstance(name, str) and len(name) > 2:

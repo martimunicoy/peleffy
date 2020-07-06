@@ -83,6 +83,12 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         rdkit_molecule = molecule.rdkit_molecule
         Chem.rdmolops.AssignStereochemistryFrom3D(rdkit_molecule)
 
+    def get_residue_name(self, molecule):
+        rdkit_molecule = molecule.rdkit_molecule
+
+        first_atom = list(rdkit_molecule.GetAtoms())[0]
+        return first_atom.GetPDBResidueInfo().GetResidueName()
+
     def to_sfd_file(self, molecule, path):
         from rdkit import Chem
 
