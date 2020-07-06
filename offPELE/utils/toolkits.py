@@ -54,8 +54,8 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         if not self.is_available():
             raise ToolkitUnavailableException(
-                'The required toolkit {self.toolkit_name} is not '
-                'available.')
+                'The required toolkit {} is not '.format(self.toolkit_name)
+                + 'available.')
 
     @staticmethod
     def is_available():
