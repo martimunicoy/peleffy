@@ -30,9 +30,9 @@ def parse_args():
     parser = ap.ArgumentParser()
     parser.add_argument("pdb_file", metavar="PDB FILE", type=str,
                         help="Path PDB file to parameterize")
-    parser.add_argument("-f", "--forcefield", metavar="OFF FORCEFIELD",
-                        type=str, help="OFF forcefield name. Default is "
-                        + str(DEFAULT_OFF_FORCEFIELD),
+    parser.add_argument("-f", "--forcefield", metavar="NAME",
+                        type=str, help="OpenForceField's forcefield name. "
+                        + "Default is " + str(DEFAULT_OFF_FORCEFIELD),
                         default=DEFAULT_OFF_FORCEFIELD)
     parser.add_argument("-r", "--resolution", metavar="INT",
                         help="Rotamer library resolution in degrees. "
