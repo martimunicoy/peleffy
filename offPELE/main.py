@@ -42,7 +42,7 @@ def parse_args():
                         help="Output path. Default is the current working "
                         + "directory")
     parser.add_argument('--with_solvent', dest='with_solvent',
-                        help="Generate OBC solvent parameters",
+                        help="Generate solvent parameters for OBC",
                         action='store_true')
     parser.add_argument('--as_DataLocal', dest='as_datalocal',
                         help="Output will be saved following PELE's DataLocal "
