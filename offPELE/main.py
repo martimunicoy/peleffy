@@ -18,7 +18,7 @@ __email__ = "marti.municoy@bsc.es"
 
 
 # Constants
-DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-1.1.1.offxml'
+DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-1.2.0.offxml'
 DEFAULT_RESOLUTION = int(30)
 IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OFF/Parsley/HeteroAtoms/'
 ROTAMER_LIBRARY_PATH = 'DataLocal/LigandRotamerLibs/'
