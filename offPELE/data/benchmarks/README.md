@@ -3,13 +3,16 @@ Datasets to be used in benchmarking studies for offPELE.
 
 ## Content
 _Content under construction_
-- GPCRs
-- PPI (Protein-protein inhibitors)
-- Small molecule set
-- Small molecule set with experimental hydration free energies
+- GPCRs (5c1m, 6dde, and crossPELE)
+- PPIs (6y8H, 4ipf)
+- Small molecule set (ligands_plop)
+- Small molecule set with experimental hydration free energies (Need to search)
 
 ## Analysis features
 _Content under construction_
+
+data: ligands_plop/ligands.zip
+
 - Rotamer library comparison between offPELE and PlopRotTemp
 - Experimental hydration free energies comparison _(inside the PELE-platform)_
 - Comparison of parameters between offPELE and PlopRotTemp (bonds, angles, dihedrals, nonbonding and OBC)
