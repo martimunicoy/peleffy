@@ -1,5 +1,8 @@
+"""
+This module contains any class or function related with PELE's Impact
+template.
+"""
 
-# Global imports
 from copy import deepcopy
 
 from simtk import unit
@@ -9,7 +12,34 @@ from offPELE.topology import ZMatrix
 
 
 class Impact(object):
+    """
+    It is in charge of writing a Molecule object as a PELE's Impact
+    template.
+    """
+
     def __init__(self, molecule):
+        """
+        Initiate and Impact object.
+
+        Parameters
+        ----------
+        molecule : An offPELE.topology.Molecule
+            A Molecule object to be written as an Impact file
+
+        Examples
+        --------
+
+        Write the Impact template of a offPELE's molecule
+
+        >>> from  offPELE.topology import Molecule
+        >>> from offPELE.template import Impact
+
+        >>> molecule = Molecule('molecule.pdb')
+        >>> molecule.parameterize('openff_unconstrained-1.1.1.offxml')
+        >>> impact = Impact(molecule)
+        >>> impact.write('molz')
+
+        """
         if (isinstance(molecule, offPELE.topology.Molecule)
                 or isinstance(molecule, offPELE.topology.molecule.Molecule)):
             self._initialize_from_molecule(molecule)
@@ -17,12 +47,21 @@ class Impact(object):
             raise Exception('Invalid input molecule for Impact template')
 
     def _initialize_from_molecule(self, molecule):
+        """
+        Initializes an Impact object from an offPELE.topology.Molecule.
+
+        Parameters
+        ----------
+        molecule : An offPELE.topology.Molecule
+            A Molecule object to be written as an Impact file
+        """
         # We will work with a copy to prevent the modification of the original
         # object
         self._molecule = deepcopy(molecule)
         self._sort()
 
     def _sort(self):
+        """ Sort and reindex atoms in a Molecule."""
         sorted_atoms = list()
 
         # Sort by core attribute and parent index
@@ -61,6 +100,14 @@ class Impact(object):
             improper.set_atom4_idx(reindexer[improper.atom4_idx])
 
     def write(self, path):
+        """
+        It writes the Impact template to a file.
+
+        Parameters
+        ----------
+        path : str
+            Path to write to
+        """
         with open(path, 'w') as file:
             self._write_header(file)
             self._write_resx(file)
@@ -72,6 +119,14 @@ class Impact(object):
             self._write_end(file)
 
     def _write_header(self, file):
+        """
+        It writes the header of the Impact file.
+
+        Parameters
+        ----------
+        file : file object
+            File to write to
+        """
         file.write('* LIGAND DATABASE FILE')
         if self.molecule.forcefield:
             file.write(' ({})'.format(self.molecule.forcefield))
@@ -81,6 +136,14 @@ class Impact(object):
         file.write('*\n')
 
     def _write_resx(self, file):
+        """
+        It writes the resx section of the Impact file.
+
+        Parameters
+        ----------
+        file : file object
+            File to write to
+        """
         # template name
         file.write('{:5}'.format(self.molecule.name))
         # number of non bonding parameters
@@ -124,6 +187,14 @@ class Impact(object):
         # TODO Should we add the interactions matrix here?
 
     def _write_nbon(self, file):
+        """
+        It writes the nbon section of the Impact file.
+
+        Parameters
+        ----------
+        file : file object
+            File to write to
+        """
         file.write('NBON\n')
         for atom in self.molecule.atoms:
             w_atom = WritableAtom(atom)
@@ -156,6 +227,14 @@ class Impact(object):
             file.write('\n')
 
     def _write_bond(self, file):
+        """
+        It writes the bond section of the Impact file.
+
+        Parameters
+        ----------
+        file : file object
+            File to write to
+        """
         file.write('BOND\n')
         for bond in self.molecule.bonds:
             w_bond = WritableBond(bond)
@@ -176,6 +255,14 @@ class Impact(object):
             file.write('{: 6.3f}\n'.format(eq_dist))
 
     def _write_thet(self, file):
+        """
+        It writes the thet section of the Impact file.
+
+        Parameters
+        ----------
+        file : file object
+            File to write to
+        """
         file.write('THET\n')
         for angle in self.molecule.angles:
             w_angle = WritableAngle(angle)
@@ -199,6 +286,14 @@ class Impact(object):
             file.write('{: 11.5f}\n'.format(eq_angl))
 
     def _write_phi(self, file):
+        """
+        It writes the phi section of the Impact file.
+
+        Parameters
+        ----------
+        file : file object
+            File to write to
+        """
         file.write('PHI\n')
         for proper in self.molecule.propers:
             w_proper = WritableProper(proper)
@@ -227,6 +322,14 @@ class Impact(object):
             file.write('\n')
 
     def _write_iphi(self, file):
+        """
+        It writes the iphi section of the Impact file.
+
+        Parameters
+        ----------
+        file : file object
+            File to write to
+        """
         file.write('IPHI\n')
         for improper in self.molecule.impropers:
             w_improper = WritableImproper(improper)
@@ -258,16 +361,49 @@ class Impact(object):
             file.write('\n')
 
     def _write_end(self, file):
+        """
+        It writes the ending line of the Impact file.
+
+        Parameters
+        ----------
+        file : file object
+            File to write to
+        """
         file.write('END\n')
 
     @property
     def molecule(self):
+        """
+        The offPELE's Molecule.
+
+        Returns
+        -------
+        molecule : an offPELE.topology.Molecule
+            The offPELE's Molecule object
+        """
         return self._molecule
 
 
 class WritableWrapper(object):
+    """
+    Wrapper class for writable parameters.
+    """
+
     @staticmethod
     def none_to_zero(f):
+        """
+        It converts a returned None to zero.
+
+        Parameters
+        ----------
+        f : function
+            The function to apply the decorator to
+
+        Returns
+        -------
+        out : function's output
+            It is set to zero in case that it is None
+        """
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
             if out is None:
@@ -277,6 +413,19 @@ class WritableWrapper(object):
 
     @staticmethod
     def dummy_to_writable(f):
+        """
+        It converts a returned DummyAtom to a WritableAtom.
+
+        Parameters
+        ----------
+        f : function
+            The function to apply the decorator to
+
+        Returns
+        -------
+        out : WritableAtom
+            A WritableAtom object
+        """
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
             out = WritableAtom(out)
@@ -285,6 +434,19 @@ class WritableWrapper(object):
 
     @staticmethod
     def none_to_dummy(f):
+        """
+        It converts a returned None to a DummyAtom.
+
+        Parameters
+        ----------
+        f : function
+            The function to apply the decorator to
+
+        Returns
+        -------
+        out : DummyAtom
+            A DummyAtom object
+        """
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
             if out is None:
@@ -294,6 +456,19 @@ class WritableWrapper(object):
 
     @staticmethod
     def in_angstrom(f):
+        """
+        It expresses a simtk.unit.Quantity in angstroms.
+
+        Parameters
+        ----------
+        f : function
+            The function to apply the decorator to
+
+        Returns
+        -------
+        out : float
+            simtk.unit.Quantity expressed in angstroms
+        """
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
             return out.value_in_unit(unit.angstrom)
@@ -301,6 +476,19 @@ class WritableWrapper(object):
 
     @staticmethod
     def in_kcalmol(f):
+        """
+        It expresses a simtk.unit.Quantity in kcal/mol.
+
+        Parameters
+        ----------
+        f : function
+            The function to apply the decorator to
+
+        Returns
+        -------
+        out : float
+            simtk.unit.Quantity expressed in kcal/mol
+        """
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
             return out.value_in_unit(unit.kilocalorie / unit.mole)
@@ -308,6 +496,19 @@ class WritableWrapper(object):
 
     @staticmethod
     def in_elementarycharge(f):
+        """
+        It expresses a simtk.unit.Quantity in elementary charges.
+
+        Parameters
+        ----------
+        f : function
+            The function to apply the decorator to
+
+        Returns
+        -------
+        out : float
+            simtk.unit.Quantity expressed in elementary charges
+        """
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
             return out.value_in_unit(unit.elementary_charge)
@@ -315,6 +516,19 @@ class WritableWrapper(object):
 
     @staticmethod
     def in_kcal_rad2mol(f):
+        """
+        It expresses a simtk.unit.Quantity in kcal/rad2mol.
+
+        Parameters
+        ----------
+        f : function
+            The function to apply the decorator to
+
+        Returns
+        -------
+        out : float
+            simtk.unit.Quantity expressed in kcal/rad2mol
+        """
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
             return out.value_in_unit(unit.kilocalorie
@@ -323,6 +537,19 @@ class WritableWrapper(object):
 
     @staticmethod
     def in_deg(f):
+        """
+        It expresses a simtk.unit.Quantity in degrees.
+
+        Parameters
+        ----------
+        f : function
+            The function to apply the decorator to
+
+        Returns
+        -------
+        out : float
+            simtk.unit.Quantity expressed in degrees
+        """
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
             return out.value_in_unit(unit.degree)
@@ -330,6 +557,19 @@ class WritableWrapper(object):
 
     @staticmethod
     def in_kcal_angstrom2mol(f):
+        """
+        It expresses a simtk.unit.Quantity in kcal/angstrom2mol.
+
+        Parameters
+        ----------
+        f : function
+            The function to apply the decorator to
+
+        Returns
+        -------
+        out : float
+            simtk.unit.Quantity expressed in kcal/angstrom2mol
+        """
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
             return out.value_in_unit(unit.kilocalorie
@@ -338,7 +578,19 @@ class WritableWrapper(object):
 
 
 class WritableAtom(offPELE.topology.molecule.Atom, WritableWrapper):
+    """
+    Writable offPELE's Atom class
+    """
+
     def __init__(self, atom):
+        """
+        It initializes a WritableAtom object.
+
+        Parameters
+        ----------
+        atom : an offPELE.topology.molecule.Atom
+            The Atom to create the WritableAtom with
+        """
         # We do not want to modify the original object
         atom = deepcopy(atom)
 
@@ -356,69 +608,184 @@ class WritableAtom(offPELE.topology.molecule.Atom, WritableWrapper):
     @WritableWrapper.dummy_to_writable
     @WritableWrapper.none_to_dummy
     def parent(self):
+        """
+        Atom's parent.
+
+        Returns
+        -------
+        parent : an offPELE.topology.molecule.Atom
+            The parent of this Atom object
+        """
         return super().parent
 
     @property
     def index(self):
+        """
+        Atom's index.
+
+        Returns
+        -------
+        index : int
+            The index of this Atom object
+        """
         return int(self._index) + 1
 
     @property
     def core(self):
+        """
+        Atom's core char.
+
+        Returns
+        -------
+        index : str
+            The core type of this Atom object
+        """
         if self._core:
             return 'M'
         else:
             return 'S'
 
-    # TODO Consider removing any reference to OPLS, if possible
-    # Otherwise, use SMIRks to find the best match
     @property
     def OPLS_type(self):
+        """
+        Atom's OPLS type.
+
+        .. todo ::
+
+           * Consider removing any reference to OPLS, if possible
+             Otherwise, use SMIRks to find the best match
+
+        Returns
+        -------
+        index : str
+            The OLPS type of this Atom object
+        """
         return 'OFFT'  # stands for OpenForceField type
 
-    # TODO Review the actual purpose of this attribute in PELE
+    # TODO
     @property
     @WritableWrapper.none_to_zero
     def unknown(self):
+        """
+        Atom's unknown int.
+
+        .. todo ::
+
+           * Review the actual purpose of this attribute in PELE
+
+        Returns
+        -------
+        unknown : int
+            The unknown int of this Atom object
+        """
         return super().unknown
 
     @property
     @WritableWrapper.in_angstrom
     def sigma(self):
+        """
+        Atom's sigma.
+
+        Returns
+        -------
+        sigma : float
+            The sigma of this Atom object, expressed in angstroms
+        """
         return super().sigma
 
     @property
     @WritableWrapper.in_kcalmol
     def epsilon(self):
+        """
+        Atom's epsilon.
+
+        Returns
+        -------
+        epsilon : float
+            The epsilon of this Atom object, expressed in kcal/mol
+        """
         return super().epsilon
 
     @property
     @WritableWrapper.in_elementarycharge
     def charge(self):
+        """
+        Atom's charge.
+
+        Returns
+        -------
+        charge : float
+            The charge of this Atom object, expressed in elementary units
+        """
         return super().charge
 
     @property
     @WritableWrapper.none_to_zero
     def born_radius(self):
+        """
+        Atom's Born radius.
+
+        Returns
+        -------
+        born_radius : float
+            The Born radius of this Atom object
+        """
         return super().born_radius
 
     @property
     @WritableWrapper.in_angstrom
     def SASA_radius(self):
+        """
+        Atom's SASA radius.
+
+        Returns
+        -------
+        SASA_radius : float
+            The SASA radius of this Atom object, expressed in angstroms
+        """
         return super().SASA_radius
 
     @property
     @WritableWrapper.none_to_zero
     def nonpolar_gamma(self):
+        """
+        Atom's nonpolar gamma.
+
+        Returns
+        -------
+        nonpolar_gamma : float
+            The nonpolar gamma of this Atom object
+        """
         return super().nonpolar_gamma
 
     @property
     @WritableWrapper.none_to_zero
     def nonpolar_alpha(self):
+        """
+        Atom's nonpolar alpha.
+
+        Returns
+        -------
+        nonpolar_alpha : float
+            The nonpolar alpha of this Atom object
+        """
         return super().nonpolar_alpha
 
 
 class WritableBond(offPELE.topology.Bond, WritableWrapper):
+    """
+    Writable offPELE's Bond class
+    """
+
     def __init__(self, bond):
+        """
+        It initializes a WritableBond object.
+
+        Parameters
+        ----------
+        bond : an offPELE.topology.Bond
+            The Bond to create the WritableBond with
+        """
         # We do not want to modify the original object
         bond = deepcopy(bond)
 
@@ -433,25 +800,69 @@ class WritableBond(offPELE.topology.Bond, WritableWrapper):
 
     @property
     def atom1_idx(self):
+        """
+        Bond's atom1 index.
+
+        Returns
+        -------
+        atom1_idx : int
+            The index of the first atom involved in this Bond object
+        """
         return super().atom1_idx + 1
 
     @property
     def atom2_idx(self):
+        """
+        Bond's atom2 index.
+
+        Returns
+        -------
+        atom2_idx : int
+            The index of the second atom involved in this Bond object
+        """
         return super().atom2_idx + 1
 
     @property
     @WritableWrapper.in_kcal_angstrom2mol
     def spring_constant(self):
+        """
+        Bond's spring constant.
+
+        Returns
+        -------
+        spring_constant : float
+            The spring constant of this Bond object
+        """
         return super().spring_constant
 
     @property
     @WritableWrapper.in_angstrom
     def eq_dist(self):
+        """
+        Bond's equilibrium distance.
+
+        Returns
+        -------
+        eq_dist : float
+            The equilibrium distance of this Bond object
+        """
         return super().eq_dist
 
 
 class WritableAngle(offPELE.topology.Angle, WritableWrapper):
+    """
+    Writable offPELE's Angle class
+    """
+
     def __init__(self, angle):
+        """
+        It initializes a WritableAngle object.
+
+        Parameters
+        ----------
+        angle : an offPELE.topology.Angle
+            The Angle to create the WritableAngle with
+        """
         # We do not want to modify the original object
         angle = deepcopy(angle)
 
@@ -466,29 +877,81 @@ class WritableAngle(offPELE.topology.Angle, WritableWrapper):
 
     @property
     def atom1_idx(self):
+        """
+        Angle's atom1 index.
+
+        Returns
+        -------
+        atom1_idx : int
+            The index of the first atom involved in this Angle object
+        """
         return super().atom1_idx + 1
 
     @property
     def atom2_idx(self):
+        """
+        Angle's atom2 index.
+
+        Returns
+        -------
+        atom2_idx : int
+            The index of the second atom involved in this Angle object
+        """
         return super().atom2_idx + 1
 
     @property
     def atom3_idx(self):
+        """
+        Angle's atom3 index.
+
+        Returns
+        -------
+        atom3_idx : int
+            The index of the third atom involved in this Angle object
+        """
         return super().atom3_idx + 1
 
     @property
     @WritableWrapper.in_kcal_rad2mol
     def spring_constant(self):
+        """
+        Angle's spring constant.
+
+        Returns
+        -------
+        spring_constant : float
+            The spring constant of this Angle object
+        """
         return super().spring_constant
 
     @property
     @WritableWrapper.in_deg
     def eq_angle(self):
+        """
+        Angle's equilibrium distance.
+
+        Returns
+        -------
+        eq_angle : float
+            The equilibrium angle of this Angle object
+        """
         return super().eq_angle
 
 
 class WritableProper(offPELE.topology.Proper, WritableWrapper):
+    """
+    Writable offPELE's Proper class
+    """
+
     def __init__(self, proper):
+        """
+        It initializes a WritableProper object.
+
+        Parameters
+        ----------
+        proper : an offPELE.topology.Proper
+            The Proper to create the WritableProper with
+        """
         # We do not want to modify the original object
         proper = deepcopy(proper)
 
@@ -506,28 +969,80 @@ class WritableProper(offPELE.topology.Proper, WritableWrapper):
 
     @property
     def atom1_idx(self):
+        """
+        Proper's atom1 index.
+
+        Returns
+        -------
+        atom1_idx : int
+            The index of the first atom involved in this Proper object
+        """
         return super().atom1_idx + 1
 
     @property
     def atom2_idx(self):
+        """
+        Proper's atom2 index.
+
+        Returns
+        -------
+        atom2_idx : int
+            The index of the second atom involved in this Proper object
+        """
         return super().atom2_idx + 1
 
     @property
     def atom3_idx(self):
+        """
+        Proper's atom3 index.
+
+        Returns
+        -------
+        atom3_idx : int
+            The index of the third atom involved in this Proper object
+        """
         return super().atom3_idx + 1
 
     @property
     def atom4_idx(self):
+        """
+        Proper's atom4 index.
+
+        Returns
+        -------
+        atom4_idx : int
+            The index of the fourth atom involved in this Proper object
+        """
         return super().atom4_idx + 1
 
     @property
     @WritableWrapper.in_kcalmol
     def constant(self):
+        """
+        Proper's constant.
+
+        Returns
+        -------
+        constant : float
+            The constant of this Proper object, expressed in kcal/mol
+        """
         return super().constant
 
 
 class WritableImproper(offPELE.topology.Improper, WritableWrapper):
+    """
+    Writable offPELE's Improper class
+    """
+
     def __init__(self, improper):
+        """
+        It initializes a WritableImproper object.
+
+        Parameters
+        ----------
+        improper : an offPELE.topology.Improper
+            The Improper to create the WritableImproper with
+        """
         # We do not want to modify the original object
         improper = deepcopy(improper)
 
@@ -545,21 +1060,61 @@ class WritableImproper(offPELE.topology.Improper, WritableWrapper):
 
     @property
     def atom1_idx(self):
+        """
+        Improper's atom1 index.
+
+        Returns
+        -------
+        atom1_idx : int
+            The index of the first atom involved in this Improper object
+        """
         return super().atom1_idx + 1
 
     @property
     def atom2_idx(self):
+        """
+        Improper's atom2 index.
+
+        Returns
+        -------
+        atom2_idx : int
+            The index of the second atom involved in this Improper object
+        """
         return super().atom2_idx + 1
 
     @property
     def atom3_idx(self):
+        """
+        Improper's atom3 index.
+
+        Returns
+        -------
+        atom3_idx : int
+            The index of the third atom involved in this Improper object
+        """
         return super().atom3_idx + 1
 
     @property
     def atom4_idx(self):
+        """
+        Improper's atom4 index.
+
+        Returns
+        -------
+        atom4_idx : int
+            The index of the fourth atom involved in this Improper object
+        """
         return super().atom4_idx + 1
 
     @property
     @WritableWrapper.in_kcalmol
     def constant(self):
+        """
+        Improper's constant.
+
+        Returns
+        -------
+        constant : float
+            The constant of this Improper object, expressed in kcal/mol
+        """
         return super().constant
