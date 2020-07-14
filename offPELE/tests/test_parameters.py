@@ -1,3 +1,7 @@
+"""
+This module contains the tests to check offPELE's parameters.
+"""
+
 import pytest
 
 from simtk import unit
@@ -10,7 +14,15 @@ from offPELE.topology import Molecule
 
 
 class TestDihedrals(object):
+    """
+    It wraps all tests that involve the dihedral parameters.
+    """
+
     def test_OFF_to_PELE_conversion(self):
+        """
+        It checks the difference between dihedral equations from PELE and
+        Open Force Field. Their values should match throughout all the domain.
+        """
         MAX_THRESHOLD = 1e-10
         FORCEFIELD_NAME = 'openff_unconstrained-1.1.1.offxml'
 
