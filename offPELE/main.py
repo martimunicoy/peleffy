@@ -1,35 +1,37 @@
 # -*- coding: utf-8 -*-
+"""
+This module is designed to run offPELE through the command-line.
+"""
 
-
-# Global imports
-import os
-import warnings
-import argparse as ap
-
-import offPELE
-from offPELE.utils import check_if_path_exists, create_path
-
-
-# Script information
 __author__ = "Marti Municoy"
 __license__ = "GPL"
 __maintainer__ = "Marti Municoy"
 __email__ = "marti.municoy@bsc.es"
 
 
-# Constants
+import os
+import argparse as ap
+
+import offPELE
+from offPELE.utils import check_if_path_exists, create_path
+
+
 DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-1.2.0.offxml'
 DEFAULT_RESOLUTION = int(30)
 IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OFF/Parsley/HeteroAtoms/'
 ROTAMER_LIBRARY_PATH = 'DataLocal/LigandRotamerLibs/'
 SOLVENT_TEMPLATE_PATH = 'DataLocal/OBC/'
-DEFAULT_OUTPUT = False
-DEFAULT_DATA_LOCAL = False
-DEFAULT_SOLVENT = True
 
 
-# Functions
 def parse_args():
+    """
+    It parses the command-line arguments.
+
+    Returns
+    -------
+    args : argparse.Namespace
+        It contains the command-line arguments that are supplied by the user
+    """
     parser = ap.ArgumentParser()
     parser.add_argument("pdb_file", metavar="PDB FILE", type=str,
                         help="Path PDB file to parameterize")
@@ -56,13 +58,32 @@ def parse_args():
 
     args = parser.parse_args()
 
-    if args.output is None:
-        args.output = os.getcwd()
-
     return args
 
 
 def handle_output_paths(molecule, output, as_datalocal):
+    """
+    It handles the output paths where offPELE's output files will be saved.
+
+    Parameters
+    ----------
+    molecule : offPELE.topology.Molecule
+        A Molecule object
+    output : str
+        The output path supplied by the user
+    as_datalocal : bool
+        Whether to save output files following PELE's DataLocal hierarchy or
+        not
+
+    Returns
+    -------
+    rotlib_path : pathlib.Path
+        The output path for the rotamer library
+    impact_path : pathlib.Path
+        The output path for the Impact template
+    solvent_path : pathlib.Path
+        The output path for the solvent template
+    """
     from pathlib import Path
     name = molecule.name
     output_path = Path(output)
@@ -90,9 +111,29 @@ def handle_output_paths(molecule, output, as_datalocal):
         solvent_path.joinpath(solvent_name)
 
 
-def main(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD, resolution=DEFAULT_RESOLUTION, 
-    output=DEFAULT_OUTPUT, as_datalocal=DEFAULT_DATA_LOCAL,
-    with_solvent=DEFAULT_SOLVENT):
+def run_offPELE(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
+                resolution=DEFAULT_RESOLUTION, output=None,
+                with_solvent=False, as_datalocal=False,):
+    """
+    It runs offPELE.
+
+    Parameters
+    ----------
+    pdb_file : str
+        The path to the pdb_file to parameterize with offPELE
+    forcefield : str
+        The name of an OpenForceField's forcefield
+    resolution : float
+        The resolution in degrees for the rotamer library
+    output : str
+        Path where output files will be saved
+    with_solvent : bool
+        Whether to generate and save the solvent parameters for the input
+        molecule or not
+    as_datalocal : bool
+        Whether to save output files following PELE's DataLocal hierarchy or
+        not
+    """
     print('-' * 60)
     print('Open Force Field parameterizer for PELE v'
           '{}'.format(offPELE.__version__))
@@ -133,7 +174,23 @@ def main(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD, resolution=DEFAULT_RESOLUT
     print('-' * 60)
 
 
-if __name__ == '__main__':
+def main():
+    """
+    It reads the command-line arguments and calls offPELE.
+
+    Examples
+    --------
+
+    From the command-line:
+
+    >>> python main.py molecule.pdb -f openff_unconstrained-1.1.1.offxml -r 30
+        -o output_path/ --with_solvent --as_DataLocal
+
+    """
     args = parse_args()
-    main(args.pdb_file, args.forcefield, args.resolution,
-        args.output, args.as_datalocal)
+    run_offPELE(args.pdb_file, args.forcefield, args.resolution, args.output,
+                args.as_datalocal)
+
+
+if __name__ == '__main__':
+    main()
