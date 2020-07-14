@@ -142,6 +142,7 @@ def run_offPELE(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     print(' - Force field: {}'.format(forcefield))
     print(' - Rotamer library resolution: {}'.format(resolution))
     print(' - Output path: {}'.format(output))
+    print(' - Write solvent parameters: {}'.format(with_solvent))
     print(' - DataLocal-like output: {}'.format(as_datalocal))
     print('-' * 60)
 
@@ -189,7 +190,7 @@ def main():
     """
     args = parse_args()
     run_offPELE(args.pdb_file, args.forcefield, args.resolution, args.output,
-                args.as_datalocal)
+                args.with_solvent, args.as_datalocal)
 
 
 if __name__ == '__main__':
