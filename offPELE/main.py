@@ -23,6 +23,9 @@ DEFAULT_RESOLUTION = int(30)
 IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OFF/Parsley/HeteroAtoms/'
 ROTAMER_LIBRARY_PATH = 'DataLocal/LigandRotamerLibs/'
 SOLVENT_TEMPLATE_PATH = 'DataLocal/OBC/'
+DEFAULT_OUTPUT = False
+DEFAULT_DATA_LOCAL = False
+DEFAULT_SOLVENT = True
 
 
 # Functions
@@ -59,10 +62,10 @@ def parse_args():
     return args
 
 
-def handle_output_paths(molecule, args):
+def handle_output_paths(molecule, output, as_datalocal):
     from pathlib import Path
     name = molecule.name
-    output_path = Path(args.output)
+    output_path = Path(output)
     check_if_path_exists(output_path)
 
     rotlib_path = output_path
@@ -73,7 +76,7 @@ def handle_output_paths(molecule, args):
     impact_name = name.lower() + 'z'
     solvent_name = name.lower() + '_solv.json'
 
-    if args.as_datalocal:
+    if as_datalocal:
         rotlib_path = rotlib_path.joinpath(ROTAMER_LIBRARY_PATH)
         impact_path = impact_path.joinpath(IMPACT_TEMPLATE_PATH)
         solvent_path = solvent_path.joinpath(SOLVENT_TEMPLATE_PATH)
@@ -87,17 +90,18 @@ def handle_output_paths(molecule, args):
         solvent_path.joinpath(solvent_name)
 
 
-def main():
-    args = parse_args()
+def main(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD, resolution=DEFAULT_RESOLUTION, 
+    output=DEFAULT_OUTPUT, as_datalocal=DEFAULT_DATA_LOCAL,
+    with_solvent=DEFAULT_SOLVENT):
     print('-' * 60)
     print('Open Force Field parameterizer for PELE v'
           '{}'.format(offPELE.__version__))
     print('-' * 60)
-    print(' - PDB to parameterize: {}'.format(args.pdb_file))
-    print(' - Force field: {}'.format(args.forcefield))
-    print(' - Rotamer library resolution: {}'.format(args.resolution))
-    print(' - Output path: {}'.format(args.output))
-    print(' - DataLocal-like output: {}'.format(args.as_datalocal))
+    print(' - PDB to parameterize: {}'.format(pdb_file))
+    print(' - Force field: {}'.format(forcefield))
+    print(' - Rotamer library resolution: {}'.format(resolution))
+    print(' - Output path: {}'.format(output))
+    print(' - DataLocal-like output: {}'.format(as_datalocal))
     print('-' * 60)
 
     # Supress OpenForceField toolkit warnings
@@ -108,17 +112,20 @@ def main():
     from offPELE.template import Impact
     from offPELE.solvent import OBC2
 
-    molecule = Molecule(args.pdb_file)
-    molecule.parameterize(args.forcefield)
+    if not output:
+        output = os.getcwd()
 
-    rotlib_out, impact_out, solvent_out = handle_output_paths(molecule, args)
+    molecule = Molecule(pdb_file)
+    molecule.parameterize(forcefield)
 
-    molecule.build_rotamer_library(resolution=args.resolution)
+    rotlib_out, impact_out, solvent_out = handle_output_paths(molecule, output, as_datalocal)
+
+    molecule.build_rotamer_library(resolution=resolution)
     molecule.rotamer_library.to_file(rotlib_out)
     impact = Impact(molecule)
     impact.write(impact_out)
 
-    if args.with_solvent:
+    if with_solvent:
         solvent = OBC2(molecule)
         solvent.to_json_file(solvent_out)
 
@@ -127,4 +134,6 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    args = parse_args()
+    main(args.pdb_file, args.forcefield, args.resolution,
+        args.output, args.as_datalocal)
