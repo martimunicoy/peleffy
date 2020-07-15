@@ -3,7 +3,6 @@ This module contains classes and functions involved in the manipulation of
 PELE's solvent templates.
 """
 
-import numpy as np
 from simtk import unit
 
 from offpele.utils import get_data_file_path, warning_on_one_line
@@ -27,8 +26,12 @@ class _SolventWrapper(object):
             A Molecule object to be written as an Impact file
         """
         self._molecule = molecule
-        self._radii = np.zeros(len(self.molecule.atoms))
-        self._scales = np.zeros(len(self.molecule.atoms))
+        self._radii = dict.fromkeys([tuple((idx, ))
+                                     for idx in range(0, len(molecule.atoms))],
+                                    unit.Quantity())
+        self._scales = dict.fromkeys([tuple((idx, ))
+                                      for idx in range(0, len(molecule.atoms))],
+                                     unit.Quantity())
         self._solvent_dielectric = float(0)
         self._solute_dielectric = float(0)
         self._surface_area_penalty = float(0)
@@ -131,42 +134,93 @@ class _SolventWrapper(object):
     @property
     def radii(self):
         """
-        The list of radii of the parameterized molecule.
+        The dict of radii of the parameterized molecule.
 
         Returns
         -------
-        radii : numpy.array
-            List of radii
+        radii : dict[atom indexes: simtk.unit.Quantity]
+            The radius assigned to each atom of the molecule
         """
-        # TODO assert is a numpy array
         return self._radii
 
     @property
     def scales(self):
+        """
+        The dict of scales of the parameterized molecule.
+
+        Returns
+        -------
+        scales : dict[atom indexes: simtk.unit.Quantity]
+            The scale assigned to each atom of the molecule
+        """
         return self._scales
 
     @property
     def solvent_dielectric(self):
+        """
+        The solvent dielectric value of this solvent object.
+
+        Returns
+        -------
+        solvent_dielectric : float
+            The solvent dielectric value
+        """
         return self._solvent_dielectric
 
     @property
     def solute_dielectric(self):
+        """
+        The solute dielectric value of this solvent object.
+
+        Returns
+        -------
+        solute_dielectric : float
+            The solute dielectric value
+        """
         return self._solute_dielectric
 
     @property
     def surface_area_penalty(self):
+        """
+        The surface area penalty value of this solvent object.
+
+        Returns
+        -------
+        surface_area_penalty : float
+            The surface area penalty value
+        """
         return self._surface_area_penalty
 
     @property
     def solvent_radius(self):
+        """
+        The solvent radius value of this solvent object.
+
+        Returns
+        -------
+        solvent_radius : float
+            The solvent radius value
+        """
         return self._solvent_radius
 
 
 class OBC1(_SolventWrapper):
+    """
+    Implementation of the OBC1 solvent.
+    """
+
     _ff_file = get_data_file_path('forcefields/GBSA_OBC1-1.0.offxml')
     _name = 'OBC1'
 
     def __init__(self, molecule):
+        """
+        Initializes an OBC1 object.
+
+        Parameters
+        ----------
+        molecule : An offpele.topology.Molecule
+            A Molecule object to be written as an Impact file
+        """
         # Not implemented in PELE
         import warnings
         warnings.formatwarning = warning_on_one_line
@@ -175,15 +229,46 @@ class OBC1(_SolventWrapper):
         super().__init__(molecule)
 
     def _initialize_from_molecule(self):
+        """
+        Initializes the OBC1 solvent using an offpele's Molecule.
+        """
         super()._initialize_from_molecule()
 
 
 class OBC2(_SolventWrapper):
+    """
+    Implementation of the OBC1 solvent.
+    """
+
     _ff_file = get_data_file_path('forcefields/GBSA_OBC1-1.0.offxml')
     _name = 'OBC2'
 
     def __init__(self, molecule):
+        """
+        Initializes an OBC2 object.
+
+        Parameters
+        ----------
+        molecule : An offpele.topology.Molecule
+            A Molecule object to be written as an Impact file
+
+        Examples
+        --------
+
+        Generate the solvent parameters of a molecule
+
+        >>> from  offpele.topology import Molecule
+        >>> from offpele.solvent import OBC2
+
+        >>> molecule = Molecule('molecule.pdb')
+        >>> solvent = OBC2(molecule)
+        >>> solvent.to_json_file('molecule_solv.json')
+
+        """
         super().__init__(molecule)
 
     def _initialize_from_molecule(self):
+        """
+        Initializes the OBC2 solvent using an offpele's Molecule.
+        """
         super()._initialize_from_molecule()
