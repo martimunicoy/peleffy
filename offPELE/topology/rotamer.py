@@ -3,7 +3,7 @@ from collections import defaultdict
 import networkx as nx
 from copy import deepcopy
 
-from offPELE.utils.toolkits import RDKitToolkitWrapper
+from offpele.utils.toolkits import RDKitToolkitWrapper
 
 
 class Rotamer(object):

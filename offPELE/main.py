@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This module is designed to run offPELE through the command-line.
+This module is designed to run offpele through the command-line.
 """
 
 __author__ = "Marti Municoy"
@@ -12,8 +12,8 @@ __email__ = "marti.municoy@bsc.es"
 import os
 import argparse as ap
 
-import offPELE
-from offPELE.utils import check_if_path_exists, create_path
+import offpele
+from offpele.utils import check_if_path_exists, create_path
 
 
 DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-1.2.0.offxml'
@@ -63,11 +63,11 @@ def parse_args():
 
 def handle_output_paths(molecule, output, as_datalocal):
     """
-    It handles the output paths where offPELE's output files will be saved.
+    It handles the output paths where offpele's output files will be saved.
 
     Parameters
     ----------
-    molecule : offPELE.topology.Molecule
+    molecule : offpele.topology.Molecule
         A Molecule object
     output : str
         The output path supplied by the user
@@ -111,16 +111,16 @@ def handle_output_paths(molecule, output, as_datalocal):
         solvent_path.joinpath(solvent_name)
 
 
-def run_offPELE(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
-                resolution=DEFAULT_RESOLUTION, output=None,
-                with_solvent=False, as_datalocal=False,):
+def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
+                  resolution=DEFAULT_RESOLUTION, output=None,
+                  with_solvent=False, as_datalocal=False,):
     """
-    It runs offPELE.
+    It runs offpele.
 
     Parameters
     ----------
     pdb_file : str
-        The path to the pdb_file to parameterize with offPELE
+        The path to the pdb_file to parameterize with offpele
     forcefield : str
         The name of an OpenForceField's forcefield
     resolution : float
@@ -136,7 +136,7 @@ def run_offPELE(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     """
     print('-' * 60)
     print('Open Force Field parameterizer for PELE v'
-          '{}'.format(offPELE.__version__))
+          '{}'.format(offpele.__version__))
     print('-' * 60)
     print(' - PDB to parameterize: {}'.format(pdb_file))
     print(' - Force field: {}'.format(forcefield))
@@ -150,9 +150,9 @@ def run_offPELE(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     import logging
     logging.getLogger().setLevel(logging.ERROR)
 
-    from offPELE.topology import Molecule
-    from offPELE.template import Impact
-    from offPELE.solvent import OBC2
+    from offpele.topology import Molecule
+    from offpele.template import Impact
+    from offpele.solvent import OBC2
 
     if not output:
         output = os.getcwd()
@@ -177,7 +177,7 @@ def run_offPELE(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
 
 def main():
     """
-    It reads the command-line arguments and calls offPELE.
+    It reads the command-line arguments and calls offpele.
 
     Examples
     --------
@@ -189,8 +189,8 @@ def main():
 
     """
     args = parse_args()
-    run_offPELE(args.pdb_file, args.forcefield, args.resolution, args.output,
-                args.with_solvent, args.as_datalocal)
+    run_offpele(args.pdb_file, args.forcefield, args.resolution, args.output,
+                  args.with_solvent, args.as_datalocal)
 
 
 if __name__ == '__main__':

@@ -1,15 +1,31 @@
+"""
+This module contains classes and functions involved in the manipulation of
+PELE's solvent templates.
+"""
+
 import numpy as np
 from simtk import unit
 
-from offPELE.utils import get_data_file_path, warning_on_one_line
-from offPELE.utils.toolkits import OpenForceFieldToolkitWrapper
+from offpele.utils import get_data_file_path, warning_on_one_line
+from offpele.utils.toolkits import OpenForceFieldToolkitWrapper
 
 
 class _SolventWrapper(object):
+    """
+    A wrapper for any solvent-like class.
+    """
     _ff_file = None
     _name = None
 
     def __init__(self, molecule):
+        """
+        Initializes a SolventWrapper object.
+
+        Parameters
+        ----------
+        molecule : An offpele.topology.Molecule
+            A Molecule object to be written as an Impact file
+        """
         self._molecule = molecule
         self._radii = np.zeros(len(self.molecule.atoms))
         self._scales = np.zeros(len(self.molecule.atoms))
@@ -20,6 +36,11 @@ class _SolventWrapper(object):
         self._initialize_from_molecule()
 
     def _initialize_from_molecule(self):
+        """
+        Initializes a SolventWrapper object using an offpele's Molecule.
+        """
+        print(' - Loading solvent parameters')
+
         off_toolkit = OpenForceFieldToolkitWrapper()
 
         GBSA_handler = off_toolkit.get_parameter_handler_from_forcefield(
@@ -37,6 +58,14 @@ class _SolventWrapper(object):
         self._scales = parameters.get_GBSA_scales()
 
     def to_dict(self):
+        """
+        Returns this SolventWrapper object as a dictionary.
+
+        Returns
+        -------
+        data : dict
+            A dictionary containing the data of this SolventWrapper object
+        """
         data = dict()
         data['SolventParameters'] = dict()
         data['SolventParameters']['Name'] = self.name
@@ -63,20 +92,53 @@ class _SolventWrapper(object):
         return data
 
     def to_json_file(self, path):
+        """
+        Writes this SolventWrapper object to a json file.
+
+        Parameters
+        ----------
+        path : str
+            Path to save the json file to
+        """
         import json
         with open(path, 'w') as file:
             json.dump(self.to_dict(), file, indent=4)
 
     @property
     def name(self):
+        """
+        The name of the solvent.
+
+        Returns
+        -------
+        name : str
+            The name of this solvent object.
+        """
         return self._name
 
     @property
     def molecule(self):
+        """
+        The offpele's Molecule to parameterize.
+
+        Returns
+        -------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+        """
         return self._molecule
 
     @property
     def radii(self):
+        """
+        The list of radii of the parameterized molecule.
+
+        Returns
+        -------
+        radii : numpy.array
+            List of radii
+        """
+        # TODO assert is a numpy array
         return self._radii
 
     @property

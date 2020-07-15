@@ -5,7 +5,7 @@ import contextlib
 
 def get_data_file_path(relative_path):
 
-    fn = resource_filename('offPELE', os.path.join(
+    fn = resource_filename('offpele', os.path.join(
         'data', relative_path))
 
     if not os.path.exists(fn):

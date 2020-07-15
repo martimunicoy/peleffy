@@ -2,7 +2,7 @@ from copy import deepcopy
 
 import numpy as np
 
-from offPELE.topology.molecule import Atom, DummyAtom
+from offpele.topology.molecule import Atom, DummyAtom
 
 
 class ZMatrix(np.ndarray):
@@ -130,7 +130,7 @@ class ZMatrix(np.ndarray):
 
             assert atom1 is not None and atom2 is not None \
                 and atom3 is not None and atom4 is not None, \
-                'None parent is not expected'
+                'A None as parent is not expected'
 
             x1, y1, z1 = (atom1.x, atom1.y, atom1.z)
             x2, y2, z2 = (atom2.x, atom2.y, atom2.z)

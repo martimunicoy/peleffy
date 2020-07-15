@@ -15,7 +15,7 @@ def apply_PELE_dihedral_equation(proper, x):
 
     Parameters
     ----------
-    proper : an offPELE.topology.Proper
+    proper : an offpele.topology.Proper
         The proper whose parameters will be applied to equation
     x : float
         Equation's x value
@@ -31,7 +31,7 @@ def apply_OFF_dihedral_equation(proper, x):
 
     Parameters
     ----------
-    proper : an offPELE.topology.Proper
+    proper : an offpele.topology.Proper
         The proper whose parameters will be applied to equation
     x : float
         Equation's x value

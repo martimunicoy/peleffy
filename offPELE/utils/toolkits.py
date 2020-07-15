@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 from simtk import unit
 
-from offPELE.utils import temporary_cd
+from offpele.utils import temporary_cd
 
 
 # Exceptions

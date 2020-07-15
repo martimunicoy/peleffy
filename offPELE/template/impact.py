@@ -7,8 +7,8 @@ from copy import deepcopy
 
 from simtk import unit
 
-import offPELE
-from offPELE.topology import ZMatrix
+import offpele
+from offpele.topology import ZMatrix
 
 
 class Impact(object):
@@ -19,20 +19,20 @@ class Impact(object):
 
     def __init__(self, molecule):
         """
-        Initiate and Impact object.
+        Initializes an Impact object.
 
         Parameters
         ----------
-        molecule : An offPELE.topology.Molecule
+        molecule : An offpele.topology.Molecule
             A Molecule object to be written as an Impact file
 
         Examples
         --------
 
-        Write the Impact template of a offPELE's molecule
+        Write the Impact template of a offpele's molecule
 
-        >>> from  offPELE.topology import Molecule
-        >>> from offPELE.template import Impact
+        >>> from  offpele.topology import Molecule
+        >>> from offpele.template import Impact
 
         >>> molecule = Molecule('molecule.pdb')
         >>> molecule.parameterize('openff_unconstrained-1.1.1.offxml')
@@ -40,19 +40,19 @@ class Impact(object):
         >>> impact.write('molz')
 
         """
-        if (isinstance(molecule, offPELE.topology.Molecule)
-                or isinstance(molecule, offPELE.topology.molecule.Molecule)):
+        if (isinstance(molecule, offpele.topology.Molecule)
+                or isinstance(molecule, offpele.topology.molecule.Molecule)):
             self._initialize_from_molecule(molecule)
         else:
             raise Exception('Invalid input molecule for Impact template')
 
     def _initialize_from_molecule(self, molecule):
         """
-        Initializes an Impact object from an offPELE.topology.Molecule.
+        Initializes an Impact object from an offpele.topology.Molecule.
 
         Parameters
         ----------
-        molecule : An offPELE.topology.Molecule
+        molecule : An offpele.topology.Molecule
             A Molecule object to be written as an Impact file
         """
         # We will work with a copy to prevent the modification of the original
@@ -131,8 +131,8 @@ class Impact(object):
         if self.molecule.forcefield:
             file.write(' ({})'.format(self.molecule.forcefield))
         file.write('\n')
-        file.write('* File generated with offPELE-{}\n'.format(
-            offPELE.__version__))
+        file.write('* File generated with offpele-{}\n'.format(
+            offpele.__version__))
         file.write('*\n')
 
     def _write_resx(self, file):
@@ -374,12 +374,12 @@ class Impact(object):
     @property
     def molecule(self):
         """
-        The offPELE's Molecule.
+        The offpele's Molecule.
 
         Returns
         -------
-        molecule : an offPELE.topology.Molecule
-            The offPELE's Molecule object
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
         """
         return self._molecule
 
@@ -450,7 +450,7 @@ class WritableWrapper(object):
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
             if out is None:
-                out = offPELE.topology.molecule.DummyAtom(index=-1)
+                out = offpele.topology.molecule.DummyAtom(index=-1)
             return out
         return function_wrapper
 
@@ -577,9 +577,9 @@ class WritableWrapper(object):
         return function_wrapper
 
 
-class WritableAtom(offPELE.topology.molecule.Atom, WritableWrapper):
+class WritableAtom(offpele.topology.molecule.Atom, WritableWrapper):
     """
-    Writable offPELE's Atom class
+    Writable offpele's Atom class
     """
 
     def __init__(self, atom):
@@ -588,14 +588,14 @@ class WritableAtom(offPELE.topology.molecule.Atom, WritableWrapper):
 
         Parameters
         ----------
-        atom : an offPELE.topology.molecule.Atom
+        atom : an offpele.topology.molecule.Atom
             The Atom to create the WritableAtom with
         """
         # We do not want to modify the original object
         atom = deepcopy(atom)
 
-        assert isinstance(atom, (offPELE.topology.molecule.Atom,
-                                 offPELE.topology.molecule.DummyAtom)), \
+        assert isinstance(atom, (offpele.topology.molecule.Atom,
+                                 offpele.topology.molecule.DummyAtom)), \
             'Wrong type: {}'.format(type(atom))
 
         super().__init__(atom.index, atom.core, atom.OPLS_type, atom.PDB_name,
@@ -613,7 +613,7 @@ class WritableAtom(offPELE.topology.molecule.Atom, WritableWrapper):
 
         Returns
         -------
-        parent : an offPELE.topology.molecule.Atom
+        parent : an offpele.topology.molecule.Atom
             The parent of this Atom object
         """
         return super().parent
@@ -772,9 +772,9 @@ class WritableAtom(offPELE.topology.molecule.Atom, WritableWrapper):
         return super().nonpolar_alpha
 
 
-class WritableBond(offPELE.topology.Bond, WritableWrapper):
+class WritableBond(offpele.topology.Bond, WritableWrapper):
     """
-    Writable offPELE's Bond class
+    Writable offpele's Bond class
     """
 
     def __init__(self, bond):
@@ -783,14 +783,14 @@ class WritableBond(offPELE.topology.Bond, WritableWrapper):
 
         Parameters
         ----------
-        bond : an offPELE.topology.Bond
+        bond : an offpele.topology.Bond
             The Bond to create the WritableBond with
         """
         # We do not want to modify the original object
         bond = deepcopy(bond)
 
-        assert isinstance(bond, (offPELE.topology.Bond,
-                                 offPELE.topology.topology.Bond)), \
+        assert isinstance(bond, (offpele.topology.Bond,
+                                 offpele.topology.topology.Bond)), \
             'Wrong type: {}'.format(type(bond))
 
         super().__init__(index=bond.index, atom1_idx=bond.atom1_idx,
@@ -849,9 +849,9 @@ class WritableBond(offPELE.topology.Bond, WritableWrapper):
         return super().eq_dist
 
 
-class WritableAngle(offPELE.topology.Angle, WritableWrapper):
+class WritableAngle(offpele.topology.Angle, WritableWrapper):
     """
-    Writable offPELE's Angle class
+    Writable offpele's Angle class
     """
 
     def __init__(self, angle):
@@ -860,14 +860,14 @@ class WritableAngle(offPELE.topology.Angle, WritableWrapper):
 
         Parameters
         ----------
-        angle : an offPELE.topology.Angle
+        angle : an offpele.topology.Angle
             The Angle to create the WritableAngle with
         """
         # We do not want to modify the original object
         angle = deepcopy(angle)
 
-        assert isinstance(angle, (offPELE.topology.Angle,
-                                  offPELE.topology.topology.Angle)), \
+        assert isinstance(angle, (offpele.topology.Angle,
+                                  offpele.topology.topology.Angle)), \
             'Wrong type: {}'.format(type(angle))
 
         super().__init__(index=angle.index, atom1_idx=angle.atom1_idx,
@@ -938,9 +938,9 @@ class WritableAngle(offPELE.topology.Angle, WritableWrapper):
         return super().eq_angle
 
 
-class WritableProper(offPELE.topology.Proper, WritableWrapper):
+class WritableProper(offpele.topology.Proper, WritableWrapper):
     """
-    Writable offPELE's Proper class
+    Writable offpele's Proper class
     """
 
     def __init__(self, proper):
@@ -949,14 +949,14 @@ class WritableProper(offPELE.topology.Proper, WritableWrapper):
 
         Parameters
         ----------
-        proper : an offPELE.topology.Proper
+        proper : an offpele.topology.Proper
             The Proper to create the WritableProper with
         """
         # We do not want to modify the original object
         proper = deepcopy(proper)
 
-        assert isinstance(proper, (offPELE.topology.Proper,
-                                   offPELE.topology.topology.Proper)), \
+        assert isinstance(proper, (offpele.topology.Proper,
+                                   offpele.topology.topology.Proper)), \
             'Wrong type: {}'.format(type(proper))
 
         super().__init__(index=proper.index, atom1_idx=proper.atom1_idx,
@@ -1029,9 +1029,9 @@ class WritableProper(offPELE.topology.Proper, WritableWrapper):
         return super().constant
 
 
-class WritableImproper(offPELE.topology.Improper, WritableWrapper):
+class WritableImproper(offpele.topology.Improper, WritableWrapper):
     """
-    Writable offPELE's Improper class
+    Writable offpele's Improper class
     """
 
     def __init__(self, improper):
@@ -1040,14 +1040,14 @@ class WritableImproper(offPELE.topology.Improper, WritableWrapper):
 
         Parameters
         ----------
-        improper : an offPELE.topology.Improper
+        improper : an offpele.topology.Improper
             The Improper to create the WritableImproper with
         """
         # We do not want to modify the original object
         improper = deepcopy(improper)
 
-        assert isinstance(improper, (offPELE.topology.Improper,
-                                     offPELE.topology.topology.Improper)), \
+        assert isinstance(improper, (offpele.topology.Improper,
+                                     offpele.topology.topology.Improper)), \
             'Wrong type: {}'.format(type(improper))
 
         super().__init__(index=improper.index, atom1_idx=improper.atom1_idx,

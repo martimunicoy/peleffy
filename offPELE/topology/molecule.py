@@ -3,7 +3,7 @@
 from pathlib import Path
 
 from .topology import Bond, Angle, OFFProper, OFFImproper
-from offPELE.utils.toolkits import (AmberToolkitWrapper,
+from offpele.utils.toolkits import (AmberToolkitWrapper,
                                     RDKitToolkitWrapper,
                                     OpenForceFieldToolkitWrapper)
 from .rotamer import MolecularGraph

@@ -1,5 +1,5 @@
 """
-This module contains the tests to check offPELE's parameters.
+This module contains the tests to check offpele's parameters.
 """
 
 import pytest
@@ -7,10 +7,10 @@ import pytest
 from simtk import unit
 import numpy as np
 
-from offPELE.utils import get_data_file_path
+from offpele.utils import get_data_file_path
 from .utils import (SET_OF_LIGAND_PATHS, apply_PELE_dihedral_equation,
                     apply_OFF_dihedral_equation)
-from offPELE.topology import Molecule
+from offpele.topology import Molecule
 
 
 class TestDihedrals(object):
