@@ -1,3 +1,8 @@
+"""
+This module contains the classes and functions to generate the zmatrix of
+a molecule.
+"""
+
 from copy import deepcopy
 
 import numpy as np
@@ -7,14 +12,32 @@ from offpele.topology.molecule import Atom, DummyAtom
 
 class ZMatrix(np.ndarray):
     """
-    Inspired by the PlopRotTemp algorithm
+    It generates the zmatrix of a molecule as a numpy.array.
+
+    Inspired by the PlopRotTemp algorithm.
     """
 
     def __init__(self, molecule):
+        """
+        It initializes a ZMatrix object.
+
+        Parameters
+        ----------
+        molecule : An offpele.topology.Molecule
+            A Molecule object to be written as an Impact file
+        """
         # We will work on a copy of the molecule's object to modify it freely
         self._molecule = deepcopy(molecule)
 
     def __new__(cls, molecule):
+        """
+        It customizes the creation of the numpy.array.
+
+        Parameters
+        ----------
+        molecule : An offpele.topology.Molecule
+            A Molecule object to be written as an Impact file
+        """
         molecule = deepcopy(molecule)
         obj = np.zeros((len(molecule.atoms), 3)).view(cls)
         coords = cls._extract_coords(molecule)
@@ -23,6 +46,19 @@ class ZMatrix(np.ndarray):
         return obj
 
     def _extract_coords(molecule):
+        """
+        It extracts the coordinates of the molecule's atoms.
+
+        Parameters
+        ----------
+        molecule : An offpele.topology.Molecule
+            A Molecule object to be written as an Impact file
+
+        Returns
+        -------
+        coords : list[tuple[float]]
+            The coordinates of the molecule
+        """
         coords = list()
         for atom in molecule.atoms:
             coords.append((atom.x, atom.y, atom.z))
@@ -30,6 +66,19 @@ class ZMatrix(np.ndarray):
         return coords
 
     def _get_absolute_parent(molecule):
+        """
+        It returns the absolute parent in the topology of the molecule.
+
+        Parameters
+        ----------
+        molecule : An offpele.topology.Molecule
+            A Molecule object to be written as an Impact file
+
+        Returns
+        -------
+        absolute_parent : offpele.topology.molecule.Atom
+            The absolute parent of the molecule
+        """
         absolute_parent = list()
         for atom in molecule.atoms:
             if atom.parent is None:
@@ -40,6 +89,29 @@ class ZMatrix(np.ndarray):
         return absolute_parent[0]
 
     def _calculate_bond(x1, y1, z1, x2, y2, z2):
+        """
+        It calculates the bond distance between two sets of coordinates.
+
+        Parameters
+        ----------
+        x1 : float
+            The x1 coordinate
+        y1 : float
+            The y1 coordinate
+        z1 : float
+            The z1 coordinate
+        x2 : float
+            The x2 coordinate
+        y2 : float
+            The y2 coordinate
+        z2 : float
+            The z2 coordinate
+
+        Returns
+        -------
+        distance : float
+            The bond distance between the two sets of coordinates
+        """
         dx = x1 - x2
         dy = y1 - y2
         dz = z1 - z2
@@ -47,6 +119,35 @@ class ZMatrix(np.ndarray):
         return np.sqrt(dx * dx + dy * dy + dz * dz)
 
     def _calculate_angle(x1, y1, z1, x2, y2, z2, x3, y3, z3):
+        """
+        It calculates the angle between three sets of coordinates.
+
+        Parameters
+        ----------
+        x1 : float
+            The x1 coordinate
+        y1 : float
+            The y1 coordinate
+        z1 : float
+            The z1 coordinate
+        x2 : float
+            The x2 coordinate
+        y2 : float
+            The y2 coordinate
+        z2 : float
+            The z2 coordinate
+        x3 : float
+            The x3 coordinate
+        y3 : float
+            The y3 coordinate
+        z3 : float
+            The z3 coordinate
+
+        Returns
+        -------
+        angle : float
+            The angle between the three sets of coordinates
+        """
         dx_12 = x1 - x2
         dy_12 = y1 - y2
         dz_12 = z1 - z2
@@ -72,6 +173,41 @@ class ZMatrix(np.ndarray):
         return np.arccos(xang) * 180.0 / np.pi
 
     def _calculate_dihedral(x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4):
+        """
+        It calculates the dihedral between four sets of coordinates.
+
+        Parameters
+        ----------
+        x1 : float
+            The x1 coordinate
+        y1 : float
+            The y1 coordinate
+        z1 : float
+            The z1 coordinate
+        x2 : float
+            The x2 coordinate
+        y2 : float
+            The y2 coordinate
+        z2 : float
+            The z2 coordinate
+        x3 : float
+            The x3 coordinate
+        y3 : float
+            The y3 coordinate
+        z3 : float
+            The z3 coordinate
+        x4 : float
+            The x4 coordinate
+        y4 : float
+            The y4 coordinate
+        z4 : float
+            The z4 coordinate
+
+        Returns
+        -------
+        dihedral : float
+            The dihedral between the four sets of coordinates
+        """
         dx_12 = x1 - x2
         dy_12 = y1 - y2
         dz_12 = z1 - z2
@@ -111,7 +247,26 @@ class ZMatrix(np.ndarray):
         return phi * 180.0 / np.pi
 
     def _build_zmatrix(cls, obj, coords, molecule):
+        """
+        It buils the zmatrix.
 
+        Parameters
+        ----------
+        cls : ZMatrix class
+            The ZMatrix class
+        obj : ZMatrix object
+            The ZMatrix object
+        coords : list[tuple[float]]
+            The coordinates of the molecule
+        molecule : An offpele.topology.Molecule
+            A Molecule object to be written as an Impact file
+
+        Returns
+        -------
+        obj :  ZMatrix object
+            The ZMatrix object which is a numpy.array with the corresponding
+            zmatrix initialized.
+        """
         dummy1 = DummyAtom(index=-3, PDB_name='DUM1', parent=None)
         dummy2 = DummyAtom(index=-2, PDB_name='DUM2', parent=dummy1)
         dummy3 = DummyAtom(index=-1, PDB_name='DUM3', parent=dummy2)
