@@ -7,7 +7,7 @@ from copy import deepcopy
 
 import numpy as np
 
-from offpele.topology.molecule import Atom, DummyAtom
+from offpele.topology.molecule import DummyAtom
 
 
 class ZMatrix(np.ndarray):
