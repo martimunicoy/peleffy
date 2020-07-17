@@ -31,7 +31,7 @@ class Impact(object):
 
         Write the Impact template of a offpele's molecule
 
-        >>> from  offpele.topology import Molecule
+        >>> from offpele.topology import Molecule
         >>> from offpele.template import Impact
 
         >>> molecule = Molecule('molecule.pdb')
