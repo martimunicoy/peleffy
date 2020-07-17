@@ -370,14 +370,14 @@ class Molecule(object):
 
         Load a molecule from a PDB file and parameterize it
 
-        >>> from  offpele.topology import Molecule
+        >>> from offpele.topology import Molecule
 
         >>> molecule = Molecule('molecule.pdb')
         >>> molecule.parameterize('openff_unconstrained-1.1.1.offxml')
 
         Generate the rotamer library of a molecule
 
-        >>> from  offpele.topology import Molecule
+        >>> from offpele.topology import Molecule
 
         >>> molecule = Molecule('molecule.pdb')
         >>> molecule.parameterize('openff_unconstrained-1.1.1.offxml')
