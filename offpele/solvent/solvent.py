@@ -237,7 +237,7 @@ class OBC1(_SolventWrapper):
 
 class OBC2(_SolventWrapper):
     """
-    Implementation of the OBC1 solvent.
+    Implementation of the OBC2 solvent.
     """
 
     _ff_file = get_data_file_path('forcefields/GBSA_OBC1-1.0.offxml')
@@ -257,7 +257,7 @@ class OBC2(_SolventWrapper):
 
         Generate the solvent parameters of a molecule
 
-        >>> from  offpele.topology import Molecule
+        >>> from offpele.topology import Molecule
         >>> from offpele.solvent import OBC2
 
         >>> molecule = Molecule('molecule.pdb')
