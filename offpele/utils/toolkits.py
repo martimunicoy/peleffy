@@ -1,5 +1,6 @@
 """
-This module contains miscellaneous set of handy classes and functions.
+This module contains external toolkit wrappers that are required by the
+main offpele modules.
 """
 
 import importlib
