@@ -1,3 +1,7 @@
+"""
+This module contains miscellaneous set of handy classes and functions.
+"""
+
 import importlib
 from distutils.spawn import find_executable
 import tempfile
@@ -12,7 +16,6 @@ from simtk import unit
 from offpele.utils import temporary_cd
 
 
-# Exceptions
 class ToolkitUnavailableException(Exception):
     """The requested toolkit is unavailable."""
     pass
@@ -27,11 +30,20 @@ class ToolkitWrapper(object):
     """
     Toolkit wrapper base class.
     """
+
     _is_available = None
     _toolkit_name = None
 
     @property
     def toolkit_name(self):
+        """
+        The name of the toolkit.
+
+        Returns
+        -------
+        toolkit_name : str
+            The name of this ToolkitWrapper object
+        """
         return self._toolkit_name
 
     @staticmethod
@@ -47,9 +59,16 @@ class ToolkitWrapper(object):
 
 
 class RDKitToolkitWrapper(ToolkitWrapper):
+    """
+    RDKitToolkitWrapper class.
+    """
+
     _toolkit_name = 'RDKit Toolkit'
 
     def __init__(self):
+        """
+        It initializes a RDKitToolkitWrapper object.
+        """
         super().__init__()
 
         if not self.is_available():
@@ -61,6 +80,7 @@ class RDKitToolkitWrapper(ToolkitWrapper):
     def is_available():
         """
         Check whether the RDKit toolkit can be imported
+
         Returns
         -------
         is_installed : bool
@@ -73,23 +93,69 @@ class RDKitToolkitWrapper(ToolkitWrapper):
             return False
 
     def from_pdb(self, path):
+        """
+        It initializes an RDKit's Molecule object from a PDB file.
+
+        Parameters
+        ----------
+        path : str
+            The path to the molecule's PDB file.
+
+        Returns
+        -------
+        molecule : an rdkit.Chem.rdchem.Mol object
+            The RDKit's Molecule object
+        """
         from rdkit import Chem
 
         return Chem.rdmolfiles.MolFromPDBFile(path, removeHs=False)
 
     def assign_stereochemistry_from_3D(self, molecule):
+        """
+        It assigns the stereochemistry to an RDKit molecule according to the
+        3D coordinates in the PDB structure.
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+        """
         from rdkit import Chem
 
         rdkit_molecule = molecule.rdkit_molecule
         Chem.rdmolops.AssignStereochemistryFrom3D(rdkit_molecule)
 
     def get_residue_name(self, molecule):
+        """
+        It returns the name of the residue according to the RDKit molecule
+        object.
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+
+        Returns
+        -------
+        residue_name : str
+            The name of the residue
+        """
         rdkit_molecule = molecule.rdkit_molecule
 
         first_atom = list(rdkit_molecule.GetAtoms())[0]
         return first_atom.GetPDBResidueInfo().GetResidueName()
 
     def to_sfd_file(self, molecule, path):
+        """
+        It writes the RDKit molecule to an sdf file.
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+        path : str
+            Path to write to
+        """
         from rdkit import Chem
 
         assert Path(path).suffix == '.sdf', 'Wrong extension'
@@ -101,6 +167,16 @@ class RDKitToolkitWrapper(ToolkitWrapper):
             writer.close()
 
     def to_xyz_file(self, molecule, path):
+        """
+        It writes the RDKit molecule to an xyz file.
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+        path : str
+            Path to write to
+        """
         from rdkit import Chem
 
         assert Path(path).suffix == '.xyz', 'Wrong extension'
@@ -109,6 +185,20 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         Chem.MolToXYZFile(rdkit_molecule, path)
 
     def get_atom_ids_with_rotatable_bonds(self, molecule):
+        """
+        It returns the atom ids with rotatable bonds according to the
+        RDKit molecule.
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+
+        Returns
+        -------
+        rot_bonds_atom_ids : tuple[tuple[int, int]]
+            The set of atom id pairs that belong to rotatable bonds
+        """
         from rdkit import Chem
 
         rdkit_molecule = molecule.rdkit_molecule
@@ -120,6 +210,19 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         return rot_bonds_atom_ids
 
     def get_coordinates(self, molecule):
+        """
+        It returns the 3D coordinates of all atoms in the RDKit molecule.
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+
+        Returns
+        -------
+        coordinates : numpy.ndarray
+            The array of 3D coordinates of all the atoms in the molecule
+        """
         rdkit_molecule = molecule.rdkit_molecule
 
         conformer = rdkit_molecule.GetConformer()
@@ -127,9 +230,16 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
 
 class AmberToolkitWrapper(ToolkitWrapper):
+    """
+    AmberToolkitWrapper class.
+    """
+
     _toolkit_name = 'Amber Toolkit'
 
     def __init__(self):
+        """
+        It initializes a AmberToolkitWrapper object.
+        """
         super().__init__()
 
         if not self.is_available():
@@ -143,6 +253,7 @@ class AmberToolkitWrapper(ToolkitWrapper):
     def is_available():
         """
         Check whether the AmberTools toolkit is installed
+
         Returns
         -------
         is_installed : bool
@@ -156,6 +267,20 @@ class AmberToolkitWrapper(ToolkitWrapper):
         return True
 
     def compute_partial_charges_am1bcc(self, molecule):
+        """
+        It computes the partial charges using antechamber and the am1bcc
+        method.
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+
+        Returns
+        -------
+        charges : simtk.unit.Quantity
+            The array of partial charges
+        """
         off_molecule = molecule.off_molecule
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -198,9 +323,16 @@ class AmberToolkitWrapper(ToolkitWrapper):
 
 
 class OpenForceFieldToolkitWrapper(ToolkitWrapper):
+    """
+    OpenForceFieldToolkitWrapper class.
+    """
+
     _toolkit_name = 'OpenForceField Toolkit'
 
     def __init__(self):
+        """
+        It initializes a OpenForceFieldToolkitWrapper object.
+        """
         super().__init__()
 
         if not self.is_available():
@@ -212,6 +344,7 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
     def is_available():
         """
         Check whether the OpenForceField toolkit is installed
+
         Returns
         -------
         is_installed : bool
@@ -224,12 +357,41 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
             return False
 
     def from_rdkit(self, molecule):
+        """
+        It initializes an OpenForceField's Molecule object from an RDKit
+        molecule.
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+
+        Returns
+        -------
+        molecule : an openforcefield.topology.molecule object
+            The OpenForceField's Molecule
+        """
         from openforcefield.topology.molecule import Molecule
 
         rdkit_molecule = molecule.rdkit_molecule
         return Molecule.from_rdkit(rdkit_molecule)
 
     def get_forcefield(self, forcefield_name):
+        """
+        It returns the OpenForceField's object that matches with the name
+        that is supplied.
+
+        Parameters
+        ----------
+        forcefield_name : str
+            The name of the requested forcefield
+
+        Returns
+        -------
+        forcefield : an openforcefield.typing.engines.smirnoff.ForceField
+                     object
+            The OpenForceField's forcefield
+        """
         from openforcefield.typing.engines.smirnoff import ForceField
 
         if isinstance(forcefield_name, str):
@@ -240,6 +402,23 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
         return forcefield
 
     def get_parameters_from_forcefield(self, forcefield, molecule):
+        """
+        It returns the parameters that are obtained with the supplied
+        forcefield for a certain offpele's molecule.
+
+        Parameters
+        ----------
+        forcefield : an openforcefield.typing.engines.smirnoff.ForceField
+                     object
+            The forcefield from which the parameters will be obtained
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+
+        Returns
+        -------
+        openforcefield_parameters : an OpenForceFieldParameters object
+            The OpenForceFieldParameters object
+        """
         from openforcefield.typing.engines.smirnoff import ForceField
         from openforcefield.topology import Topology
 
@@ -261,6 +440,24 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
 
     def get_parameter_handler_from_forcefield(self, parameter_handler_name,
                                               forcefield):
+        """
+        It returns a parameter handler from the forcefield based on its
+        name.
+
+        Parameters
+        ----------
+        parameter_handler_name : str
+            The name of the parameter handler that is requested
+        forcefield : an openforcefield.typing.engines.smirnoff.ForceField
+                     object
+            The forcefield from which the parameter handler will be obtained
+
+        Returns
+        -------
+        parameter_handler : an openforcefield.typing.engines.smirnoff.parameters.ParameterHandler
+                            object
+            The ParameterHandler that was requested
+        """
         from openforcefield.typing.engines.smirnoff import ForceField
 
         if isinstance(forcefield, str):
@@ -273,13 +470,23 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
         return forcefield.get_parameter_handler(parameter_handler_name)
 
     class OpenForceFieldParameters(dict):
+        """
+        OpenForceFieldParameters class that inherits from dict.
+        """
+
         def __init__(self, parameters_list):
+            """
+            It initializes an OpenForceFieldParameters object.
+
+            parameters_list : dict
+                A dictionary keyed by force type
+            """
             for key, value in parameters_list.items():
                 self[key] = value
 
         def sigmas_from_rmin_halves(func):
             """
-            Convert rmin_half values to sigmas according to:
+            It converts rmin_half values to sigmas according to:
             http://ambermd.org/Questions/vdwequation.pdf
             """
             FACTOR = 0.8908987181403393  # The inverse of the sixth root of 2
@@ -296,6 +503,14 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
             return function_wrapper
 
         def __str__(self):
+            """
+            It returns the readable representation string of this object.
+
+            Returns
+            -------
+            output : str
+                The readable representation string
+            """
             output = ''
             for force_tag, force_dict in self.items():
                 output += f"\n{force_tag}:\n"
@@ -308,6 +523,23 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
             return output
 
         def _build_dict(self, parameters, attribute_name):
+            """
+            It builds the dictionary of parameters of a specific force type.
+
+            Parameters
+            ----------
+            parameters : dict[tuple, openforcefield.typing.engines.smirnoff.parameters.ParameterHandler]
+                The parameters of a specific force type grouped by tuples
+                with the atom ids that the parameters belong to
+            attribute_name : str
+                The name of the attribute that is requested
+
+            Returns
+            -------
+            value_by_index : dict[tuple, parameter_value]
+                The parameter values that were requested grouped by the atom
+                ids they belong to (arranged as a tuple)
+            """
             if parameters:
                 value_by_index = dict()
                 for index, parameter in parameters.items():
@@ -316,6 +548,31 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
                 return value_by_index
 
         def _build_dynamic_dicts(self, parameters, attr_core_name):
+            """
+            It builds the dynamically the dictionaries of parameters of a
+            specific force type.
+
+            It works with the same idea as _build_dict(), however it can
+            handle multiple dictionary definitions were consecutive
+            parameters of the same type are found in the force type's
+            parameters dictionary. It works, for example, with the multiple
+            proper and improper definitions found in the OpenForceField API.
+            More information in the <ProperTorsions> and <ImproperTorsions>
+            sections at: https://open-forcefield-toolkit.readthedocs.io/en/0.7.0/smirnoff.html
+
+            Parameters
+            ----------
+            parameters : dict[tuple, openforcefield.typing.engines.smirnoff.parameters.ParameterHandler]
+                The parameters of a specific force type grouped by tuples
+                with the atom ids that the parameters belong to
+            attribute_name : str
+                The name of the attribute that is requested
+
+            Returns
+            -------
+            value_by_index : dict[tuple, parameter_value]
+                The parameter values that were requested grouped by the atom
+                ids they belong to (arranged as a tuple)            """
             if parameters:
                 parameters_by_index = defaultdict(dict)
                 all_attr_ids_found = set()
@@ -345,102 +602,330 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
 
         # Van der Waals parameters
         def get_vdW_parameters(self):
+            """
+            It returns the parameters that belong to the van der Waals force
+            type.
+
+            Returns
+            -------
+            vdW_parameters : dict[tuple, openforcefield.typing.engines.smirnoff.parameters.ParameterHandler]
+                The parameters grouped by the atom ids they belong to
+                (arranged as tuples)
+            """
             if 'vdW' in self:
                 return self['vdW']
 
         def get_vdW_sigmas(self):
+            """
+            It gets the sigma values of the parameterized molecule.
+
+            Returns
+            -------
+            sigmas : dict[tuple[int], simtk.unit.Quantity]
+                The dictionary of sigma values grouped by the atom ids
+                they belong to (arranged as tuples)
+            """
             parameters = self.get_vdW_parameters()
             return self._build_dict(parameters, 'sigma')
 
         def get_vdW_epsilons(self):
+            """
+            It gets the epsilon values of the parameterized molecule.
+
+            Returns
+            -------
+            epsilons : dict[tuple[int], simtk.unit.Quantity]
+                The dictionary of epsilon values grouped by the atom ids
+                they belong to (arranged as tuples)
+            """
             parameters = self.get_vdW_parameters()
             return self._build_dict(parameters, 'epsilon')
 
         def get_vdW_rmin_halves(self):
+            """
+            It gets the rmin half values of the parameterized molecule.
+
+            Returns
+            -------
+            rmin_halves : dict[tuple[int], simtk.unit.Quantity]
+                The dictionary of rmin half values grouped by the atom ids
+                they belong to (arranged as tuples)
+            """
             parameters = self.get_vdW_parameters()
             return self._build_dict(parameters, 'rmin_half')
 
         @sigmas_from_rmin_halves
         def get_vdW_sigmas_from_rmin_halves(self):
+            """
+            It gets the rmin half values of the parameterized molecule.
+            Then, a decorator converts them into sigmas.
+
+            Returns
+            -------
+            sigmas : dict[tuple[int], simtk.unit.Quantity]
+                The dictionary of sigma values grouped by the atom ids
+                they belong to (arranged as tuples)
+            """
             return self.get_vdW_rmin_halves()
 
         # Bond parameters
         def get_bond_parameters(self):
+            """
+            It returns the parameters that belong to the bonding force type.
+
+            Returns
+            -------
+            bond_parameters : dict[tuple, openforcefield.typing.engines.smirnoff.parameters.ParameterHandler]
+                The parameters grouped by the atom ids they belong to
+                (arranged as tuples)
+            """
             if 'Bonds' in self:
                 return self['Bonds']
 
         def get_bond_lengths(self):
+            """
+            It gets the bond length values of the parameterized molecule.
+
+            Returns
+            -------
+            bond_lengths : dict[tuple[int], simtk.unit.Quantity]
+                The dictionary of bond length values grouped by the atom ids
+                they belong to (arranged as tuples)
+            """
             parameters = self.get_bond_parameters()
             return self._build_dict(parameters, 'length')
 
         def get_bond_ks(self):
+            """
+            It gets the bond k values of the parameterized molecule.
+
+            Returns
+            -------
+            bond_ks : dict[tuple[int], simtk.unit.Quantity]
+                The dictionary of bond k values grouped by the atom ids
+                they belong to (arranged as tuples)
+            """
             parameters = self.get_bond_parameters()
             return self._build_dict(parameters, 'k')
 
         # Angle parameters
         def get_angle_parameters(self):
+            """
+            It returns the parameters that belong to the angular force type.
+
+            Returns
+            -------
+            angle_parameters : dict[tuple, openforcefield.typing.engines.smirnoff.parameters.ParameterHandler]
+                The parameters grouped by the atom ids they belong to
+                (arranged as tuples)
+            """
             if 'Angles' in self:
                 return self['Angles']
 
         def get_angle_angles(self):
+            """
+            It gets the angle values of the parameterized molecule.
+
+            Returns
+            -------
+            angles : dict[tuple[int], simtk.unit.Quantity]
+                The dictionary of angle values grouped by the atom ids
+                they belong to (arranged as tuples)
+            """
             parameters = self.get_angle_parameters()
             return self._build_dict(parameters, 'angle')
 
         def get_angle_ks(self):
+            """
+            It gets the angle k values of the parameterized molecule.
+
+            Returns
+            -------
+            angle_ks : dict[tuple[int], simtk.unit.Quantity]
+                The dictionary of angle k values grouped by the atom ids
+                they belong to (arranged as tuples)
+            """
             parameters = self.get_angle_parameters()
             return self._build_dict(parameters, 'k')
 
         # Dihedral parameters
         def get_dihedral_parameters(self):
+            """
+            It returns the parameters that belong to the proper dihedrals
+            force type.
+
+            Returns
+            -------
+            proper_parameters : dict[tuple, openforcefield.typing.engines.smirnoff.parameters.ParameterHandler]
+                The parameters grouped by the atom ids they belong to
+                (arranged as tuples)
+            """
             if 'ProperTorsions' in self:
                 return self['ProperTorsions']
 
         def get_dihedral_periodicities(self):
+            """
+            It gets the dihedral periodicity values of the parameterized
+            molecule.
+
+            Returns
+            -------
+            dihedral_periodicities : list[dict[tuple[int], simtk.unit.Quantity]]
+                The list of dictionaries of dihedral periodicity values
+                grouped by the atom ids they belong to (arranged as tuples)
+            """
             parameters = self.get_dihedral_parameters()
             return self._build_dynamic_dicts(parameters, 'periodicity')
 
         def get_dihedral_phases(self):
+            """
+            It gets the dihedral phase values of the parameterized
+            molecule.
+
+            Returns
+            -------
+            dihedral_phases : list[dict[tuple[int], simtk.unit.Quantity]]
+                The list of dictionaries of dihedral phase values grouped
+                by the atom ids they belong to (arranged as tuples)
+            """
             parameters = self.get_dihedral_parameters()
             return self._build_dynamic_dicts(parameters, 'phase')
 
         def get_dihedral_ks(self):
+            """
+            It gets the dihedral periodicity values of the parameterized
+            molecule.
+
+            Returns
+            -------
+            dihedral_periodicities : list[dict[tuple[int], simtk.unit.Quantity]]
+                The list of dictionaries of dihedral periodicity values
+                grouped by the atom ids they belong to (arranged as tuples)
+            """
             parameters = self.get_dihedral_parameters()
             return self._build_dynamic_dicts(parameters, 'k')
 
         def get_dihedral_idivfs(self):
+            """
+            It gets the dihedral idivf values of the parameterized
+            molecule.
+
+            Returns
+            -------
+            dihedral_idivfs : list[dict[tuple[int], simtk.unit.Quantity]]
+                The list of dictionaries of dihedral idivf values
+                grouped by the atom ids they belong to (arranged as tuples)
+            """
             parameters = self.get_dihedral_parameters()
             return self._build_dynamic_dicts(parameters, 'idivf')
 
         # Improper parameters
         def get_improper_parameters(self):
+            """
+            It returns the parameters that belong to the improper dihedrals
+            force type.
+
+            Returns
+            -------
+           improper_parameters : dict[tuple, openforcefield.typing.engines.smirnoff.parameters.ParameterHandler]
+                The parameters grouped by the atom ids they belong to
+                (arranged as tuples)
+            """
             if 'ImproperTorsions' in self:
                 return self['ImproperTorsions']
 
         def get_improper_periodicities(self):
+            """
+            It gets the improper periodicity values of the parameterized
+            molecule.
+
+            Returns
+            -------
+            improper_periodicities : list[dict[tuple[int], simtk.unit.Quantity]]
+                The list of dictionaries of improper periodicity values
+                grouped by the atom ids they belong to (arranged as tuples)
+            """
             parameters = self.get_improper_parameters()
             return self._build_dynamic_dicts(parameters, 'periodicity')
 
         def get_improper_phases(self):
+            """
+            It gets the improper phase values of the parameterized
+            molecule.
+
+            Returns
+            -------
+            improper_phases : list[dict[tuple[int], simtk.unit.Quantity]]
+                The list of dictionaries of improper phase values
+                grouped by the atom ids they belong to (arranged as tuples)
+            """
             parameters = self.get_improper_parameters()
             return self._build_dynamic_dicts(parameters, 'phase')
 
         def get_improper_ks(self):
+            """
+            It gets the improper k values of the parameterized
+            molecule.
+
+            Returns
+            -------
+            improper_ks : list[dict[tuple[int], simtk.unit.Quantity]]
+                The list of dictionaries of improper k values
+                grouped by the atom ids they belong to (arranged as tuples)
+            """
             parameters = self.get_improper_parameters()
             return self._build_dynamic_dicts(parameters, 'k')
 
         def get_improper_idivfs(self):
+            """
+            It gets the improper idivf values of the parameterized
+            molecule.
+
+            Returns
+            -------
+            improper_idivfs : list[dict[tuple[int], simtk.unit.Quantity]]
+                The list of dictionaries of improper idivf values
+                grouped by the atom ids they belong to (arranged as tuples)
+            """
             parameters = self.get_improper_parameters()
             return self._build_dynamic_dicts(parameters, 'idivf')
 
         # GBSA solvent parameters
         def get_GBSA_parameters(self):
+            """
+            It returns the parameters that belong to the GBSA force type.
+
+            Returns
+            -------
+           GSBA_parameters : dict[tuple, openforcefield.typing.engines.smirnoff.parameters.ParameterHandler]
+                The parameters grouped by the atom ids they belong to
+                (arranged as tuples)
+            """
             if 'GBSA' in self:
                 return self['GBSA']
 
         def get_GBSA_radii(self):
+            """
+            It gets the GBSA radius values of the parameterized molecule.
+
+            Returns
+            -------
+            GBSA_radii : dict[tuple[int], simtk.unit.Quantity]
+                The dictionary of GBSA radius values grouped by the atom ids
+                they belong to (arranged as tuples)
+            """
             parameters = self.get_GBSA_parameters()
             return self._build_dict(parameters, 'radius')
 
         def get_GBSA_scales(self):
+            """
+            It gets the GBSA scale values of the parameterized molecule.
+
+            Returns
+            -------
+            GBSA_scales : dict[tuple[int], simtk.unit.Quantity]
+                The dictionary of GBSA scale values grouped by the atom ids
+                they belong to (arranged as tuples)
+            """
             parameters = self.get_GBSA_parameters()
             return self._build_dict(parameters, 'scale')
