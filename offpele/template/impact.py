@@ -61,7 +61,7 @@ class Impact(object):
         self._sort()
 
     def _sort(self):
-        """ Sort and reindex atoms in a Molecule."""
+        """Sort and reindex atoms in a Molecule."""
         sorted_atoms = list()
 
         # Sort by core attribute and parent index
