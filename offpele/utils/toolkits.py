@@ -369,7 +369,7 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
 
         Returns
         -------
-        molecule : an openforcefield.topology.molecule object
+        molecule : an openforcefield.topology.Molecule object
             The OpenForceField's Molecule
         """
         from openforcefield.topology.molecule import Molecule
@@ -409,7 +409,7 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
 
         Parameters
         ----------
-        forcefield : an openforcefield.typing.engines.smirnoff.ForceField
+        forcefield : str or an openforcefield.typing.engines.smirnoff.ForceField
                      object
             The forcefield from which the parameters will be obtained
         molecule : an offpele.topology.Molecule
