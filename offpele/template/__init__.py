@@ -1,1 +1,0 @@
-from .impact import Impact
