@@ -1,0 +1,184 @@
+{ 
+ s_m_m2io_version
+ :::
+ 2.0.0 
+} 
+
+f_m_ct { 
+ s_m_title
+ s_m_entry_id
+ s_m_entry_name
+ s_pdb_PDB_TITLE
+ s_pdb_PDB_ID
+ r_pdb_PDB_CRYST1_a
+ r_pdb_PDB_CRYST1_b
+ r_pdb_PDB_CRYST1_c
+ r_pdb_PDB_CRYST1_alpha
+ r_pdb_PDB_CRYST1_beta
+ r_pdb_PDB_CRYST1_gamma
+ s_pdb_PDB_CRYST1_Space_Group
+ i_pdb_PDB_CRYST1_z
+ s_pdb_PDB_CLASSIFICATION
+ s_pdb_PDB_DEPOSITION_DATE
+ s_pdb_PDB_format_version
+ r_pdb_PDB_R
+ r_pdb_PDB_Rfree
+ r_pdb_PDB_RESOLUTION
+ s_pdb_PDB_EXPDTA
+ r_pdb_PDB_EXPDTA_TEMPERATURE
+ r_pdb_PDB_EXPDTA_PH
+ s_pdb_PDB_REMARK_350_Biomolecule_1_Chains
+ s_pdb_PDB_REMARK_350_Biomolecule_1_Transformation_1
+ s_m_Source_Path
+ s_m_Source_File
+ i_m_Source_File_Index
+ s_ppw_entry_id_backup
+ b_ppw_prepared
+ s_ppw_prepared_with_version
+ b_ppw_assigned_bond_orders
+ b_ppw_added_hydrogens
+ b_ppw_treated_metals
+ b_ppw_created_disulfur
+ b_ppw_deleted_far_waters
+ i_psp_model_num
+ r_psp_Prime_Coulomb
+ r_psp_Prime_Covalent
+ r_psp_Prime_Solv_GB
+ r_psp_Prime_Lipo
+ s_psp_Prime_Energy_Force_Field
+ s_psp_Prime_Energy_Solvent_Model
+ r_psp_Prime_Hbond
+ r_psp_Prime_Packing
+ r_psp_Prime_SelfCont
+ i_m_ct_format
+ :::
+ "4W52 - preprocessed" 
+  4 
+  4w52.1 
+  "T4 LYSOZYME L99A WITH BENZENE BOUND" 
+  4W52 
+  60.35
+  60.35
+  96.61
+  90
+  90
+  120
+  "P 32 2 1" 
+  6
+  HYDROLASE 
+  16-AUG-14 
+  3.30 
+  0.165000006556511
+  0.181999996304512
+  1.5
+  "X-RAY DIFFRACTION" 
+  100
+  7.5
+  A 
+  "1.000000 0.000000 0.000000   0.000000;0.000000 1.000000 0.000000   0.000000;0.000000 0.000000 1.000000   0.000000" 
+  /home/municoy/builds/PELE/FEPSimulation 
+  4w52.pdb 
+  1
+  2 
+  1
+  2018-2 
+  1
+  1
+  1
+  1
+  1
+  0
+  inf
+  687.113646057117
+  -1117.61415217671
+  -410.651549686176
+  OPLS3e 
+  VSGB2.1 
+  -107.883308693242
+  -14.5414873816691
+  -34.8272744969634
+  2
+ m_atom[12] { 
+  # First column is atom index #
+  i_m_mmod_type
+  r_m_x_coord
+  r_m_y_coord
+  r_m_z_coord
+  i_m_residue_number
+  s_m_chain_name
+  i_m_color
+  r_m_charge1
+  r_m_charge2
+  s_m_pdb_residue_name
+  s_m_pdb_atom_name
+  i_m_atomic_number
+  i_m_representation
+  s_m_color_rgb
+  s_m_atom_name
+  s_m_label_format
+  i_m_label_color
+  s_m_label_user_text
+  r_m_pdb_occupancy
+  r_m_pdb_tfactor
+  i_m_Hcount
+  i_m_pdb_convert_problem
+  i_pdb_PDB_serial
+  i_ppw_anum
+  i_ppw_het
+  i_psp_resnum
+  s_ppw_CCD_assignment_status
+  :::
+  1 2 -32.969000 6.196000 2.877000 1 L 10 -0.12885 -0.12885 "BNZ " " C1 " 6 3 1EE11E  "C1288"  "%UT"  10 ""  0.7 15.06 1 4 1360 1309 3 200 "CCD match" 
+  2 2 -32.945000 7.046000 3.973000 1 L 10 -0.12885 -0.12885 "BNZ " " C2 " 6 3 1EE11E  "C1289"  "%UT"  10 ""  0.7 12.84 1 4 1361 1310 3 200 "CCD match" 
+  3 2 -33.719000 6.798000 5.113000 1 L 10 -0.12885 -0.12885 "BNZ " " C3 " 6 3 1EE11E  "C1290"  "%UT"  10 ""  0.7 12.24 1 4 1362 1311 3 200 "CCD match" 
+  4 2 -34.540000 5.680000 5.143000 1 L 10 -0.12885 -0.12885 "BNZ " " C4 " 6 3 1EE11E  "C1291"  "%UT"  10 ""  0.7 13.09 1 4 1363 1312 3 200 "CCD match" 
+  5 2 -34.545000 4.825000 4.044000 1 L 10 -0.12885 -0.12885 "BNZ " " C5 " 6 3 1EE11E  "C1292"  "%UT"  10 ""  0.7 12.54 1 4 1364 1313 3 200 "CCD match" 
+  6 2 -33.787000 5.069000 2.915000 1 L 10 -0.12885 -0.12885 "BNZ " " C6 " 6 3 1EE11E  "C1293"  "%UT"  10 ""  0.7 14.23 1 4 1365 1314 3 200 "CCD match" 
+  7 41 -32.359568 6.412714 2.012114 1 L 21 0.12885 0.12885 "BNZ " " H1 " 1 3 FFFFFF  ""  ""  21 ""  <> <> 0 <> <> <> <> 200 <>
+  8 41 -32.318044 7.925305 3.960797 1 L 21 0.12885 0.12885 "BNZ " " H2 " 1 3 FFFFFF  ""  ""  21 ""  <> <> 0 <> <> <> <> 200 <>
+  9 41 -33.672323 7.473059 5.954735 1 L 21 0.12885 0.12885 "BNZ " " H3 " 1 3 FFFFFF  ""  ""  21 ""  <> <> 0 <> <> <> <> 200 <>
+  10 41 -35.158445 5.487222 6.007154 1 L 21 0.12885 0.12885 "BNZ " " H4 " 1 3 FFFFFF  ""  ""  21 ""  <> <> 0 <> <> <> <> 200 <>
+  11 41 -35.156258 3.934698 4.055241 1 L 21 0.12885 0.12885 "BNZ " " H5 " 1 3 FFFFFF  ""  ""  21 ""  <> <> 0 <> <> <> <> 200 <>
+  12 41 -33.822915 4.399036 2.068680 1 L 21 0.12885 0.12885 "BNZ " " H6 " 1 3 FFFFFF  ""  ""  21 ""  <> <> 0 <> <> <> <> 200 <>
+  :::
+ } 
+ m_bond[12] { 
+  # First column is bond index #
+  i_m_from
+  i_m_to
+  i_m_order
+  i_m_from_rep
+  i_m_to_rep
+  :::
+  1 1 2 2 3 3
+  2 1 6 1 3 3
+  3 1 7 1 3 3
+  4 2 3 1 3 3
+  5 2 8 1 3 3
+  6 3 4 2 3 3
+  7 3 9 1 3 3
+  8 4 5 1 3 3
+  9 4 10 1 3 3
+  10 5 6 2 3 3
+  11 5 11 1 3 3
+  12 6 12 1 3 3
+  :::
+ } 
+ m_PDB_SEQRES[1] { 
+  s_pdb_chain_id
+  s_pdb_SEQRES
+  :::
+  1 A  "MET ASN ILE PHE GLU MET LEU ARG ILE ASP GLU GLY LEU ARG LEU LYS ILE TYR LYS ASP THR GLU GLY TYR TYR THR ILE GLY ILE GLY HIS LEU LEU THR LYS SER PRO SER LEU ASN ALA ALA LYS SER GLU LEU ASP LYS ALA ILE GLY ARG ASN CYS ASN GLY VAL ILE THR LYS ASP GLU ALA GLU LYS LEU PHE ASN GLN ASP VAL ASP ALA ALA VAL ARG GLY ILE LEU ARG ASN ALA LYS LEU LYS PRO VAL TYR ASP SER LEU ASP ALA VAL ARG ARG CYS ALA ALA ILE ASN MET VAL PHE GLN MET GLY GLU THR GLY VAL ALA GLY PHE THR ASN SER LEU ARG MET LEU GLN GLN LYS ARG TRP ASP GLU ALA ALA VAL ASN LEU ALA LYS SER ARG TRP TYR ASN GLN THR PRO ASN ARG ALA LYS ARG VAL ILE THR THR PHE ARG THR GLY THR TRP ASP ALA TYR LYS ASN LEU LEU GLU HIS HIS HIS HIS HIS HIS " 
+  :::
+ } 
+ m_PDB_het_residues[2] { 
+  s_pdb_het_id
+  s_pdb_het_name
+  s_pdb_het_formula
+  :::
+  1 BNZ  "BENZENE"  "C6 H6" 
+  2 EPE  "4-(2-HYDROXYETHYL)-1-PIPERAZINE ETHANESULFONIC ACID"  "C8 H18 N2 O4 S" 
+  :::
+ } 
+} 
+

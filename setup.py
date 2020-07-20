@@ -17,14 +17,14 @@ def find_package_data(data_root, package_root):
 
 
 setup(
-    name="offPELE",
+    name="offpele",
     author="Martí Municoy",
     author_email="martimunicoy@gmail.com",
-    description=("Open Forcield Open Energy Project"),
+    description=("Open Force Field to PELE"),
     license="MIT",
     keywords="molecular mechanics, forcefield, potential energy",
-    url="http://github.com/martimunicoy/offPELE",
-    packages=['offPELE'],
+    url="http://github.com/martimunicoy/offpele",
+    packages=['offpele'],
     long_description=read('README.md'),
     classifiers=[
         "Development Status :: 1 - Planning",
@@ -38,6 +38,6 @@ setup(
     ],
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
-    package_data={'offPELE': find_package_data(
-        'offPELE/data', 'offPELE')}
+    package_data={'offpele': find_package_data(
+        'offpele/data', 'offpele')},
 )

@@ -1,0 +1,113 @@
+HEADER    HYDROLASE                               16-AUG-14   4W52
+REMARK   4 4W52 COMPLIES WITH FORMAT V. 3.30,
+REMARK 888
+REMARK 888 WRITTEN BY MAESTRO (A PRODUCT OF SCHRODINGER, LLC)
+TITLE     T4 LYSOZYME L99A WITH BENZENE BOUND
+EXPDTA    X-RAY DIFFRACTION
+REMARK   2 RESOLUTION.    1.50 ANGSTROMS
+REMARK   3  R VALUE : 0.165000
+REMARK   3  FREE R VALUE : 0.182000
+REMARK 200  TEMPERATURE           (KELVIN) : 100.00
+REMARK 200  PH                             : 7.50
+REMARK 350 BIOMOLECULE: 1
+REMARK 350 APPLY THE FOLLOWING TO CHAINS: A
+REMARK 350   BIOMT1  1   1.000000 0.000000 0.000000   0.000000
+REMARK 350   BIOMT2  1   0.000000 1.000000 0.000000   0.000000
+REMARK 350   BIOMT3  1   0.000000 0.000000 1.000000   0.000000
+CRYST1   60.350   60.350   96.610  90.00  90.00 120.00 P 32 2 1      6
+HET    BNZ  L   1      38
+HETNAM     BNZ BENZENE
+FORMUL   1  BNZ    C6 H6
+MODEL        1
+HETATM    1  C1  BNZ L   1     -33.582   6.460   2.611  0.70 15.06           C  
+HETATM    2  C2  BNZ L   1     -33.631   7.357   3.696  0.70 12.84           C  
+HETATM    3  C3  BNZ L   1     -33.786   6.873   5.012  0.70 12.24           C  
+HETATM    4  C4  BNZ L   1     -33.919   5.485   5.223  0.70 13.09           C  
+HETATM    5  C5  BNZ L   1     -33.896   4.576   4.142  0.70 12.54           C  
+HETATM    6  C6  BNZ L   1     -33.714   5.075   2.831  0.70 14.23           C  
+HETATM    7  C7  BNZ L   1     -33.872   7.783   6.160  1.00  0.00           C  
+HETATM    8  C8  BNZ L   1     -34.085   3.091   4.441  1.00  0.00           C  
+HETATM    9  C9  BNZ L   1     -33.822   9.127   6.080  1.00  0.00           C  
+HETATM   10  C10 BNZ L   1     -34.100   2.160   3.217  1.00  0.00           C  
+HETATM   11  C11 BNZ L   1     -33.933  11.924   9.346  1.00  0.00           C  
+HETATM   12  C12 BNZ L   1     -33.831  12.383   8.017  1.00  0.00           C  
+HETATM   13  C13 BNZ L   1     -33.789  11.448   6.961  1.00  0.00           C  
+HETATM   14  C14 BNZ L   1     -33.846  10.061   7.218  1.00  0.00           C  
+HETATM   15  C15 BNZ L   1     -33.964   9.616   8.554  1.00  0.00           C  
+HETATM   16  C16 BNZ L   1     -33.997  10.544   9.614  1.00  0.00           C  
+HETATM   17  C17 BNZ L   1     -33.776  13.874   7.729  1.00  0.00           C  
+HETATM   18  C18 BNZ L   1     -32.492  14.526   8.257  1.00  0.00           C  
+HETATM   19  H1  BNZ L   1     -33.446   6.838   1.609  1.00  0.00           H  
+HETATM   20  H2  BNZ L   1     -33.524   8.414   3.510  1.00  0.00           H  
+HETATM   21  H3  BNZ L   1     -34.060   5.113   6.226  1.00  0.00           H  
+HETATM   22  H4  BNZ L   1     -33.681   4.413   1.977  1.00  0.00           H  
+HETATM   23  H5  BNZ L   1     -33.298   2.771   5.124  1.00  0.00           H  
+HETATM   24  H6  BNZ L   1     -35.024   2.973   4.985  1.00  0.00           H  
+HETATM   25  H7  BNZ L   1     -34.259   1.123   3.515  1.00  0.00           H  
+HETATM   26  H8  BNZ L   1     -34.902   2.426   2.527  1.00  0.00           H  
+HETATM   27  H9  BNZ L   1     -33.154   2.202   2.677  1.00  0.00           H  
+HETATM   28  H10 BNZ L   1     -33.962  12.631  10.164  1.00  0.00           H  
+HETATM   29  H11 BNZ L   1     -33.717  11.794   5.940  1.00  0.00           H  
+HETATM   30  H12 BNZ L   1     -34.006   8.563   8.787  1.00  0.00           H  
+HETATM   31  H13 BNZ L   1     -34.070  10.196  10.634  1.00  0.00           H  
+HETATM   32  H14 BNZ L   1     -33.858  14.046   6.656  1.00  0.00           H  
+HETATM   33  H15 BNZ L   1     -34.649  14.347   8.181  1.00  0.00           H  
+HETATM   34  H16 BNZ L   1     -32.467  15.590   8.021  1.00  0.00           H  
+HETATM   35  H17 BNZ L   1     -32.408  14.428   9.339  1.00  0.00           H  
+HETATM   36  H18 BNZ L   1     -31.610  14.066   7.812  1.00  0.00           H  
+HETATM   37  H19 BNZ L   1     -33.748   9.587   5.105  1.00  0.00           H  
+HETATM   38  H20 BNZ L   1     -33.961   7.304   7.125  1.00  0.00           H  
+CONECT    1    2    6   19
+CONECT    1    2
+CONECT    2    1    3   20
+CONECT    2    1
+CONECT    3    2    4    7
+CONECT    3    4
+CONECT    4    3    5   21
+CONECT    4    3
+CONECT    5    4    6    8
+CONECT    5    6
+CONECT    6    1    5   22
+CONECT    6    5
+CONECT   19    1
+CONECT   20    2
+CONECT    7    3    9   38
+CONECT    7    9
+CONECT   21    4
+CONECT    8    5   10   23   24
+CONECT   22    6
+CONECT    9    7   14   37
+CONECT    9    7
+CONECT   10    8   25   26   27
+CONECT   23    8
+CONECT   24    8
+CONECT   25   10
+CONECT   26   10
+CONECT   27   10
+CONECT   11   12   16   28
+CONECT   11   12
+CONECT   12   11   13   17
+CONECT   12   11
+CONECT   13   12   14   29
+CONECT   13   14
+CONECT   14    9   13   15
+CONECT   14   13
+CONECT   15   14   16   30
+CONECT   15   16
+CONECT   16   11   15   31
+CONECT   16   15
+CONECT   28   11
+CONECT   17   12   32   33   18
+CONECT   29   13
+CONECT   30   15
+CONECT   31   16
+CONECT   32   17
+CONECT   33   17
+CONECT   18   17   34   35   36
+CONECT   34   18
+CONECT   35   18
+CONECT   36   18
+CONECT   37    9
+CONECT   38    7
+ENDMDL
+END   
