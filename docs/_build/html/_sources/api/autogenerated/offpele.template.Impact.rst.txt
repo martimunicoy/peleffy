@@ -1,0 +1,24 @@
+offpele.template.Impact
+=======================
+
+.. currentmodule:: offpele.template
+
+.. autoclass:: Impact
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: write
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Impact.molecule
+   
+   

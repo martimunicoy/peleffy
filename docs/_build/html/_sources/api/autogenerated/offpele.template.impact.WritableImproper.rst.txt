@@ -1,0 +1,46 @@
+offpele.template.impact.WritableImproper
+========================================
+
+.. currentmodule:: offpele.template.impact
+
+.. autoclass:: WritableImproper
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: dummy_to_writable
+      .. automethod:: in_angstrom
+      .. automethod:: in_deg
+      .. automethod:: in_elementarycharge
+      .. automethod:: in_kcal_angstrom2mol
+      .. automethod:: in_kcal_rad2mol
+      .. automethod:: in_kcalmol
+      .. automethod:: none_to_dummy
+      .. automethod:: none_to_zero
+      .. automethod:: plot
+      .. automethod:: set_atom1_idx
+      .. automethod:: set_atom2_idx
+      .. automethod:: set_atom3_idx
+      .. automethod:: set_atom4_idx
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~WritableImproper.atom1_idx
+      ~WritableImproper.atom2_idx
+      ~WritableImproper.atom3_idx
+      ~WritableImproper.atom4_idx
+      ~WritableImproper.constant
+      ~WritableImproper.index
+      ~WritableImproper.n_writable_attrs
+      ~WritableImproper.name
+      ~WritableImproper.periodicity
+      ~WritableImproper.prefactor
+   
+   
