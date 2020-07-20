@@ -10,8 +10,9 @@ User guide
 ----------
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+  :maxdepth: 1
+
+  installation
 
 
 API documentation
