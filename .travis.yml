@@ -11,3 +11,4 @@ deploy:
   on:
     tags: true
     branch: master
+    skip_existing: true
