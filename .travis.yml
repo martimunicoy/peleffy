@@ -1,7 +1,7 @@
 language: python
-
 python:
-  - "3.6"
-
+- '3.6'
 script:
-  - touch foo
+- touch foo
+deploy-password:
+  secure: O1pO6XT9DOvhFT2F+O/qJCSfEfGORpkuQETMabkCsDCIeinQx1XBkjBZPbVZxjaeWTarc6NZn0qO7DaDNP79tqQ9antmFrE14iCrp4V0WaEfgVP42iTxa3+o90dbCG1DdkfuZHr5eOmRLt2ChnwvFP0AvMhoNqTn8pJvH5Ls1+tv8lqYIAjG9YctFv7Z/7iXaOcGfjr2Z0bJ4iUxtr5o/y6G6wLhl+yFUIajN//JoH6M2LdD+CUiAV80j83o5UZmYcsdB5W9PWwfWDsXDGWUypNSEO0RWnhAcOvaEgTOyBtB/ZwVh5rEV71+CkHtHd27gsHp6dhioPZpH6VEKXWmeAM25I/UKpVsYIl8MYtExfZQ4ClYvSgkTBIu2tml4qNQyeU2JhATtgo/0US20o57OM2VvoULIhTFenvBIQx+F+WarkjM7HPmq8ZF2kMy5eJOCHgSceM0T9D9YpWNmPaiFJ/m1m6RrVvgn2tb3W0NrkJIjkrO4lnnPJxmzdR8ZVIMeffdONjQ9Y0IxwopFc9AXj37SWQfmLeVbCG1GVCTpFoH10OlJkj5bXzqdGPfykuKM0EOmwD6izF7KiXks/x+IYqPs3KSqbcsoOM7O8OkOpLLyZoXhvt5VkWRvz/WlH/qGk09L5BUmj/TPnLOgESWgg1dNvYzrqP3jmOpDLpshkI=
