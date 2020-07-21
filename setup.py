@@ -32,7 +32,7 @@ setup(
         "Environment :: Console",
         "Intended Audience :: Science/Research",
         "Topic :: Utilities",
-        "License :: OSI Approved :: MIT",
+        "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
         "Operating System :: Unix"
     ],
