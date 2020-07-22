@@ -24,7 +24,7 @@ requirements:
     - networkx
     - rdkit
     - ambertools
-    - openforcefield>=0.7.1
+    - openforcefield==0.7.1
 
 about:
   home: https://github.com/martimunicoy/offpele
