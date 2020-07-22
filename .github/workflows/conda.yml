@@ -1,6 +1,6 @@
 name: Conda deployment
 
-on: [release]
+on: [push]
 
 jobs:
   build:
@@ -20,4 +20,4 @@ jobs:
           conda-channels: anaconda, conda-forge
       - run: conda --version
       - run: which python
-      - run: conda build 'devtools/conda'
+      - run: conda build -c rdkit -c omnia 'devtools/conda'
