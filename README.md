@@ -7,4 +7,4 @@
 The `offpele` (Open Force Field to PELE) is a Python package that builds PELE-compatible force field templates using the Open Force Field toolkit.
 
 ## Documentation
-The [documentation](https://martimunicoy.github.io/offpele) for the `offpele` package is available at [GitHub Pages](https://martimunicoy.github.io/offpele).
+The documentation for the `offpele` package is available at [GitHub Pages](https://martimunicoy.github.io/offpele).
