@@ -22,7 +22,11 @@ jobs:
           conda-channels: anaconda, conda-forge
       - name: Install conda-build
         run: conda install conda-build
+      - name: Install anaconda-client
+        run: conda install anaconda-client
       - name: Configurate conda-build
         run: conda config --set anaconda_upload yes
+      - name: Configurate anaconda-client
+        run: anaconda login --username ${{ secrets.ANACONDA_USER }} --password ${{ secrets.ANACONDA_PASSWD }}
       - name: Deploy package to conda
         run: conda build -c rdkit -c omnia 'devtools/conda'
