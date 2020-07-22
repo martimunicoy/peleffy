@@ -1,6 +1,6 @@
 name: PyPI deployment
 
-on: [push]
+on: [release]
 
 jobs:
   build:
