@@ -29,3 +29,14 @@ jobs:
       run: |
         cd docs/
         make github
+
+    # https://github.com/peaceiris/actions-gh-pages
+    - name: Deploy documentation
+      if: success()
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+          publish_branch: gh-pages
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/html/
+          user_name: 'Martí Municoy'
+          user_email: 'martimunicoy@gmail.com'
