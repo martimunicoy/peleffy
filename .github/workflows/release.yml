@@ -41,10 +41,10 @@ jobs:
           user_name: 'Martí Municoy'
           user_email: 'martimunicoy@gmail.com'
 
-    - name: Publish Conda
-      uses: fcakyon/conda-publish-action@v1.3
-      with:
+   # - name: Publish Conda
+   #   uses: fcakyon/conda-publish-action@v1.3
+   #   with:
         # Sub-directory with conda recipe
-        subdir: 'devtools/conda/'
-        anacondatoken: ${{ secrets.ANACONDA_TOKEN }}
-        platforms: 'osx linux'
+   #     subdir: 'devtools/conda/'
+   #     anacondatoken: ${{ secrets.ANACONDA_TOKEN }}
+   #     platforms: 'osx linux'
