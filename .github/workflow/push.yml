@@ -1,4 +1,4 @@
-name: release
+name: push
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -29,22 +29,3 @@ jobs:
       run: |
         cd docs/
         make github
-
-    # https://github.com/peaceiris/actions-gh-pages
-    - name: Deploy documentation
-      if: success()
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-          publish_branch: gh-pages
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/html/
-          user_name: 'Martí Municoy'
-          user_email: 'martimunicoy@gmail.com'
-
-   # - name: Publish Conda
-   #   uses: fcakyon/conda-publish-action@v1.3
-   #   with:
-        # Sub-directory with conda recipe
-   #     subdir: 'devtools/conda/'
-   #     anacondatoken: ${{ secrets.ANACONDA_TOKEN }}
-   #     platforms: 'osx linux'
