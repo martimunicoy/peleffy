@@ -5,7 +5,17 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
+    python-version:
     steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+        
+      - name: Build distribution
+        run: python setup.py sdist
       - name: Deployment
         uses: pypa/gh-action-pypi-publish@v1.3.1
         with:
