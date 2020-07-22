@@ -1,16 +1,14 @@
 name: Conda deployment
 
-on: [push]
+on: [release]
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        #os: [ubuntu-latest, macOS-latest]
-        #python-version: [3.6, 3.7]
-        os: [ubuntu-latest]
-        python-version: [3.6]
+        os: [ubuntu-latest, macOS-latest]
+        python-version: [3.6, 3.7]
     name: Python ${{ matrix.python-version }} at ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
