@@ -9,7 +9,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macOS-latest]
         python-version: [3.6, 3.7]
-    name: Python ${{ matrix.python-version }} deployment at ${{ matrix.os }}
+    name: Python ${{ matrix.python-version }} at ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
       - name: Setup conda
@@ -20,4 +20,5 @@ jobs:
           conda-channels: anaconda, conda-forge
       - run: conda --version
       - run: which python
+      - run: conda install conda-build
       - run: conda build -c rdkit -c omnia 'devtools/conda'
