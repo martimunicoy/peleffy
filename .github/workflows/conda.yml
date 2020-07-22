@@ -31,6 +31,7 @@ jobs:
         run: |
           anaconda logout
           anaconda login --username ${{ secrets.ANACONDA_USER }} --password ${{ secrets.ANACONDA_PASSWD }}
-          anaconda logout
       - name: Deploy package to conda
         run: conda build -c rdkit -c omnia 'devtools/conda'
+      - name: Logout from anaconda
+        run: anaconda logout
