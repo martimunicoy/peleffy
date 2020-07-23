@@ -31,6 +31,11 @@ jobs:
       run: |
         conda install conda-build flake8 pytest
 
+    - name: Install offpele
+      run: |
+        conda build 'devtools/conda'
+        conda install --use-local offpele
+
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
