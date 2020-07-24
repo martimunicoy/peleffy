@@ -1,0 +1,186 @@
+REMARK   4      COMPLIES WITH FORMAT V. 3.0, 1-DEC-2006
+REMARK 888
+REMARK 888 WRITTEN BY MAESTRO (A PRODUCT OF SCHRODINGER, LLC)
+TITLE     Structure59
+MODEL        1
+HETATM    1  C1  MI4 C   1      22.898  28.043  20.851  1.00  0.00           C  
+HETATM    2  C2  MI4 C   1      22.545  26.930  21.609  1.00  0.00           C  
+HETATM    3  C3  MI4 C   1      23.520  26.148  22.247  1.00  0.00           C  
+HETATM    4  C4  MI4 C   1      24.881  26.520  22.132  1.00  0.00           C  
+HETATM    5  C5  MI4 C   1      25.217  27.642  21.357  1.00  0.00           C  
+HETATM    6  C6  MI4 C   1      24.236  28.396  20.721  1.00  0.00           C  
+HETATM    7  C7  MI4 C   1      23.077  24.921  23.067  1.00  0.00           C  
+HETATM    8  C8  MI4 C   1      22.718  25.318  24.510  1.00  0.00           C  
+HETATM    9  C9  MI4 C   1      21.945  24.103  22.409  1.00  0.00           C  
+HETATM   10  C10 MI4 C   1      25.989  25.727  22.846  1.00  0.00           C  
+HETATM   11  C11 MI4 C   1      29.835  27.674  23.391  1.00  0.00           C  
+HETATM   12  C12 MI4 C   1      28.766  27.975  24.261  1.00  0.00           C  
+HETATM   13  C13 MI4 C   1      27.520  27.357  24.087  1.00  0.00           C  
+HETATM   14  C14 MI4 C   1      27.330  26.437  23.049  1.00  0.00           C  
+HETATM   15  C15 MI4 C   1      28.392  26.135  22.197  1.00  0.00           C  
+HETATM   16  C16 MI4 C   1      29.643  26.748  22.335  1.00  0.00           C  
+HETATM   17  C17 MI4 C   1      30.720  26.369  21.336  1.00  0.00           C  
+HETATM   18  O1  MI4 C   1      30.873  25.188  21.015  1.00  0.00           O  
+HETATM   19  N1  MI4 C   1      31.429  27.401  20.829  1.00  0.00           N  
+HETATM   20  C18 MI4 C   1      34.449  27.490  17.924  1.00  0.00           C  
+HETATM   21  C19 MI4 C   1      34.388  28.456  18.930  1.00  0.00           C  
+HETATM   22  C20 MI4 C   1      33.375  28.399  19.883  1.00  0.00           C  
+HETATM   23  C21 MI4 C   1      32.430  27.372  19.844  1.00  0.00           C  
+HETATM   24  C22 MI4 C   1      32.489  26.408  18.825  1.00  0.00           C  
+HETATM   25  C23 MI4 C   1      33.500  26.468  17.870  1.00  0.00           C  
+HETATM   26  S1  MI4 C   1      35.751  27.545  16.684  1.00  0.00           S  
+HETATM   27  O2  MI4 C   1      36.438  28.834  16.837  1.00  0.00           O  
+HETATM   28  O3  MI4 C   1      35.090  27.188  15.425  1.00  0.00           O  
+HETATM   29  C24 MI4 C   1      38.617  24.153  17.943  1.00  0.00           C  
+HETATM   30  C25 MI4 C   1      38.717  24.636  16.644  1.00  0.00           C  
+HETATM   31  C26 MI4 C   1      37.937  25.713  16.168  1.00  0.00           C  
+HETATM   32  C27 MI4 C   1      36.967  26.252  17.072  1.00  0.00           C  
+HETATM   33  C28 MI4 C   1      36.909  25.769  18.390  1.00  0.00           C  
+HETATM   34  C29 MI4 C   1      37.722  24.732  18.824  1.00  0.00           C  
+HETATM   35  C30 MI4 C   1      38.206  26.202  14.698  1.00  0.00           C  
+HETATM   36  C31 MI4 C   1      37.245  25.482  13.721  1.00  0.00           C  
+HETATM   37  C32 MI4 C   1      39.654  25.864  14.215  1.00  0.00           C  
+HETATM   38  C33 MI4 C   1      38.113  27.744  14.521  1.00  0.00           C  
+HETATM   39  O4  MI4 C   1      30.966  28.239  23.588  1.00  0.00           O1-
+HETATM   40  O5  MI4 C   1      28.925  28.876  25.295  1.00  0.00           O  
+HETATM   41  O6  MI4 C   1      26.479  27.657  24.934  1.00  0.00           O  
+HETATM   42  H1  MI4 C   1      22.133  28.631  20.364  1.00  0.00           H  
+HETATM   43  H2  MI4 C   1      21.497  26.686  21.697  1.00  0.00           H  
+HETATM   44  H3  MI4 C   1      26.246  27.946  21.240  1.00  0.00           H  
+HETATM   45  H4  MI4 C   1      24.514  29.258  20.132  1.00  0.00           H  
+HETATM   46  H5  MI4 C   1      23.911  24.221  23.113  1.00  0.00           H  
+HETATM   47  H6  MI4 C   1      23.547  25.827  25.002  1.00  0.00           H  
+HETATM   48  H7  MI4 C   1      22.471  24.442  25.111  1.00  0.00           H  
+HETATM   49  H8  MI4 C   1      21.859  25.989  24.536  1.00  0.00           H  
+HETATM   50  H9  MI4 C   1      22.188  23.850  21.376  1.00  0.00           H  
+HETATM   51  H10 MI4 C   1      20.994  24.636  22.409  1.00  0.00           H  
+HETATM   52  H11 MI4 C   1      21.783  23.165  22.942  1.00  0.00           H  
+HETATM   53  H12 MI4 C   1      25.644  25.418  23.832  1.00  0.00           H  
+HETATM   54  H13 MI4 C   1      26.146  24.801  22.290  1.00  0.00           H  
+HETATM   55  H14 MI4 C   1      28.229  25.421  21.402  1.00  0.00           H  
+HETATM   56  H15 MI4 C   1      31.271  28.303  21.255  1.00  0.00           H  
+HETATM   57  H16 MI4 C   1      35.117  29.251  18.980  1.00  0.00           H  
+HETATM   58  H17 MI4 C   1      33.334  29.154  20.656  1.00  0.00           H  
+HETATM   59  H18 MI4 C   1      31.755  25.620  18.749  1.00  0.00           H  
+HETATM   60  H19 MI4 C   1      33.542  25.723  17.090  1.00  0.00           H  
+HETATM   61  H20 MI4 C   1      39.243  23.334  18.266  1.00  0.00           H  
+HETATM   62  H21 MI4 C   1      39.438  24.135  16.021  1.00  0.00           H  
+HETATM   63  H22 MI4 C   1      36.222  26.182  19.112  1.00  0.00           H  
+HETATM   64  H23 MI4 C   1      37.647  24.372  19.840  1.00  0.00           H  
+HETATM   65  H24 MI4 C   1      37.398  25.813  12.693  1.00  0.00           H  
+HETATM   66  H25 MI4 C   1      36.197  25.646  13.954  1.00  0.00           H  
+HETATM   67  H26 MI4 C   1      37.400  24.402  13.739  1.00  0.00           H  
+HETATM   68  H27 MI4 C   1      39.817  24.796  14.076  1.00  0.00           H  
+HETATM   69  H28 MI4 C   1      40.407  26.233  14.912  1.00  0.00           H  
+HETATM   70  H29 MI4 C   1      39.878  26.306  13.242  1.00  0.00           H  
+HETATM   71  H30 MI4 C   1      38.596  28.087  13.605  1.00  0.00           H  
+HETATM   72  H31 MI4 C   1      38.598  28.271  15.344  1.00  0.00           H  
+HETATM   73  H32 MI4 C   1      37.097  28.111  14.423  1.00  0.00           H  
+HETATM   74  H33 MI4 C   1      28.130  28.995  25.817  1.00  0.00           H  
+HETATM   75  H34 MI4 C   1      26.712  28.302  25.605  1.00  0.00           H  
+CONECT    1    2    6   42
+CONECT    1    2
+CONECT    2    1    3   43
+CONECT    2    1
+CONECT    3    2    4    7
+CONECT    3    4
+CONECT    4    3    5   10
+CONECT    4    3
+CONECT    5    4    6   44
+CONECT    5    6
+CONECT    6    1    5   45
+CONECT    6    5
+CONECT   42    1
+CONECT   43    2
+CONECT   44    5
+CONECT   45    6
+CONECT    7    3   46    8    9
+CONECT   46    7
+CONECT    8    7   47   48   49
+CONECT   47    8
+CONECT   48    8
+CONECT   49    8
+CONECT    9    7   50   51   52
+CONECT   50    9
+CONECT   51    9
+CONECT   52    9
+CONECT   10    4   53   54   14
+CONECT   53   10
+CONECT   54   10
+CONECT   11   12   16   39
+CONECT   11   12
+CONECT   12   11   13   40
+CONECT   12   11
+CONECT   13   12   14   41
+CONECT   13   14
+CONECT   14   10   13   15
+CONECT   14   13
+CONECT   15   14   16   55
+CONECT   15   16
+CONECT   16   11   15   17
+CONECT   16   15
+CONECT   55   15
+CONECT   17   16   18   19
+CONECT   17   18
+CONECT   18   17
+CONECT   18   17
+CONECT   19   17   56   23
+CONECT   56   19
+CONECT   20   21   25   26
+CONECT   20   21
+CONECT   21   20   22   57
+CONECT   21   20
+CONECT   22   21   23   58
+CONECT   22   23
+CONECT   23   19   22   24
+CONECT   23   22
+CONECT   24   23   25   59
+CONECT   24   25
+CONECT   25   20   24   60
+CONECT   25   24
+CONECT   57   21
+CONECT   58   22
+CONECT   59   24
+CONECT   60   25
+CONECT   26   20   27   28   32
+CONECT   26   27   28
+CONECT   27   26
+CONECT   27   26
+CONECT   28   26
+CONECT   28   26
+CONECT   29   30   34   61
+CONECT   29   30
+CONECT   30   29   31   62
+CONECT   30   29
+CONECT   31   30   32   35
+CONECT   31   32
+CONECT   32   26   31   33
+CONECT   32   31
+CONECT   33   32   34   63
+CONECT   33   34
+CONECT   34   29   33   64
+CONECT   34   33
+CONECT   61   29
+CONECT   62   30
+CONECT   63   33
+CONECT   64   34
+CONECT   35   31   36   37   38
+CONECT   36   35   65   66   67
+CONECT   65   36
+CONECT   66   36
+CONECT   67   36
+CONECT   37   35   68   69   70
+CONECT   68   37
+CONECT   69   37
+CONECT   70   37
+CONECT   38   35   71   72   73
+CONECT   71   38
+CONECT   72   38
+CONECT   73   38
+CONECT   39   11
+CONECT   40   12   74
+CONECT   74   40
+CONECT   41   13   75
+CONECT   75   41
+ENDMDL
+END   

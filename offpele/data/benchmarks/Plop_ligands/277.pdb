@@ -1,0 +1,28 @@
+REMARK   4      COMPLIES WITH FORMAT V. 3.0, 1-DEC-2006
+REMARK 888
+REMARK 888 WRITTEN BY MAESTRO (A PRODUCT OF SCHRODINGER, LLC)
+MODEL        1
+HETATM    1  P1  LIG Z   1      22.213  -1.790   6.059  1.00  0.00           P  
+HETATM    2  O1  LIG Z   1      22.220  -2.043   7.677  1.00  0.00           O  
+HETATM    3  O2  LIG Z   1      21.931  -3.129   5.422  1.00  0.00           O  
+HETATM    4  O3  LIG Z   1      23.589  -1.263   5.706  1.00  0.00           O  
+HETATM    5  O4  LIG Z   1      21.122  -0.775   5.779  1.00  0.00           O  
+HETATM    6  C1  LIG Z   1      20.924  -2.163   8.248  1.00  0.00           C  
+HETATM    7  C2  LIG Z   1      20.985  -2.622   9.699  1.00  0.00           C  
+HETATM    8  O5  LIG Z   1      21.937  -2.211  10.399  1.00  0.00           O  
+HETATM    9  O6  LIG Z   1      20.061  -3.368  10.089  1.00  0.00           O  
+HETATM   10  H1  LIG Z   1      20.330  -2.871   7.675  1.00  0.00           H  
+HETATM   11  H2  LIG Z   1      20.413  -1.201   8.225  1.00  0.00           H  
+CONECT    1    2    3    4    5
+CONECT    2    1    6
+CONECT    3    1
+CONECT    4    1
+CONECT    5    1
+CONECT    6    2    7   10   11
+CONECT    7    6    8    9
+CONECT    8    7
+CONECT    9    7
+CONECT   10    6
+CONECT   11    6
+ENDMDL
+END   

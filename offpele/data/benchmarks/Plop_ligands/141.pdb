@@ -1,0 +1,42 @@
+REMARK   4      COMPLIES WITH FORMAT V. 3.0, 1-DEC-2006
+REMARK 888
+REMARK 888 WRITTEN BY MAESTRO (A PRODUCT OF SCHRODINGER, LLC)
+MODEL        1
+HETATM    1  C1  LIG Z   1      85.484  67.621   3.365  1.00  0.00           C  
+HETATM    2  O1  LIG Z   1      86.000  66.838   4.191  1.00  0.00           O  
+HETATM    3  O2  LIG Z   1      85.038  68.750   3.680  1.00  0.00           O  
+HETATM    4  C2  LIG Z   1      85.370  67.124   1.908  1.00  0.00           C  
+HETATM    5  O3  LIG Z   1      85.071  68.232   1.068  1.00  0.00           O  
+HETATM    6  C3  LIG Z   1      84.340  65.941   1.780  1.00  0.00           C  
+HETATM    7  C4  LIG Z   1      84.329  65.209   0.404  1.00  0.00           C  
+HETATM    8  C5  LIG Z   1      85.456  64.187   0.261  1.00  0.00           C  
+HETATM    9  O4  LIG Z   1      86.448  64.517  -0.421  1.00  0.00           O  
+HETATM   10  O5  LIG Z   1      85.285  63.075   0.806  1.00  0.00           O  
+HETATM   11  C6  LIG Z   1      82.914  66.388   2.131  1.00  0.00           C  
+HETATM   12  O6  LIG Z   1      82.602  66.372   3.341  1.00  0.00           O  
+HETATM   13  O7  LIG Z   1      82.148  66.719   1.201  1.00  0.00           O  
+HETATM   14  H1  LIG Z   1      86.358  66.756   1.626  1.00  0.00           H  
+HETATM   15  H2  LIG Z   1      85.151  67.971   0.164  1.00  0.00           H  
+HETATM   16  H3  LIG Z   1      84.598  65.194   2.533  1.00  0.00           H  
+HETATM   17  H4  LIG Z   1      84.380  65.921  -0.420  1.00  0.00           H  
+HETATM   18  H5  LIG Z   1      83.400  64.656   0.261  1.00  0.00           H  
+CONECT    1    2    3    4
+CONECT    2    1
+CONECT    3    1
+CONECT    4    1    5    6   14
+CONECT    5    4   15
+CONECT    6    4    7   11   16
+CONECT    7    6    8   17   18
+CONECT    8    7    9   10
+CONECT    9    8
+CONECT   10    8
+CONECT   11    6   12   13
+CONECT   12   11
+CONECT   13   11
+CONECT   14    4
+CONECT   15    5
+CONECT   16    6
+CONECT   17    7
+CONECT   18    7
+ENDMDL
+END   

@@ -1,0 +1,86 @@
+REMARK   4      COMPLIES WITH FORMAT V. 3.0, 1-DEC-2006
+REMARK 888
+REMARK 888 WRITTEN BY MAESTRO (A PRODUCT OF SCHRODINGER, LLC)
+MODEL        1
+HETATM    1  P1  LIG Z   1      14.899  -9.183  51.699  1.00  0.00           P  
+HETATM    2  O1  LIG Z   1      13.696  -8.276  51.529  1.00  0.00           O  
+HETATM    3  O2  LIG Z   1      16.206  -8.465  51.472  1.00  0.00           O  
+HETATM    4  O3  LIG Z   1      14.862  -9.946  53.006  1.00  0.00           O  
+HETATM    5  O4  LIG Z   1      14.773 -10.255  50.499  1.00  0.00           O  
+HETATM    6  P2  LIG Z   1      15.726 -11.168  49.457  1.00  0.00           P  
+HETATM    7  O5  LIG Z   1      16.609 -12.038  50.258  1.00  0.00           O  
+HETATM    8  O6  LIG Z   1      16.309 -10.251  48.454  1.00  0.00           O  
+HETATM    9  O7  LIG Z   1      14.591 -12.145  48.666  1.00  0.00           O  
+HETATM   10  C1  LIG Z   1      13.886 -13.143  49.372  1.00  0.00           C  
+HETATM   11  C2  LIG Z   1      13.649 -14.381  48.512  1.00  0.00           C  
+HETATM   12  O8  LIG Z   1      12.797 -13.999  47.436  1.00  0.00           O  
+HETATM   13  C3  LIG Z   1      14.917 -14.977  47.889  1.00  0.00           C  
+HETATM   14  O9  LIG Z   1      14.765 -16.387  47.844  1.00  0.00           O  
+HETATM   15  C4  LIG Z   1      14.930 -14.353  46.502  1.00  0.00           C  
+HETATM   16 O10  LIG Z   1      15.624 -15.153  45.565  1.00  0.00           O  
+HETATM   17  C5  LIG Z   1      13.430 -14.244  46.221  1.00  0.00           C  
+HETATM   18  N1  LIG Z   1      13.118 -13.099  45.322  1.00  0.00           N  
+HETATM   19  C6  LIG Z   1      13.559 -11.797  45.379  1.00  0.00           C  
+HETATM   20  N2  LIG Z   1      13.129 -11.045  44.406  1.00  0.00           N  
+HETATM   21  C7  LIG Z   1      12.284 -11.880  43.686  1.00  0.00           C  
+HETATM   22  C8  LIG Z   1      11.503 -11.621  42.515  1.00  0.00           C  
+HETATM   23 O11  LIG Z   1      11.418 -10.580  41.877  1.00  0.00           O  
+HETATM   24  N3  LIG Z   1      10.768 -12.738  42.109  1.00  0.00           N  
+HETATM   25  C9  LIG Z   1      10.794 -13.967  42.753  1.00  0.00           C  
+HETATM   26  N4  LIG Z   1      10.037 -14.936  42.230  1.00  0.00           N  
+HETATM   27  N5  LIG Z   1      11.521 -14.210  43.825  1.00  0.00           N  
+HETATM   28 C10  LIG Z   1      12.255 -13.136  44.252  1.00  0.00           C  
+HETATM   29  H1  LIG Z   1      12.927 -12.736  49.661  1.00  0.00           H  
+HETATM   30  H2  LIG Z   1      14.412 -13.412  50.288  1.00  0.00           H  
+HETATM   31  H3  LIG Z   1      13.131 -15.118  49.126  1.00  0.00           H  
+HETATM   32  H4  LIG Z   1      15.819 -14.739  48.454  1.00  0.00           H  
+HETATM   33  H5  LIG Z   1      13.872 -16.592  47.598  1.00  0.00           H  
+HETATM   34  H6  LIG Z   1      15.387 -13.367  46.556  1.00  0.00           H  
+HETATM   35  H7  LIG Z   1      15.191 -15.995  45.509  1.00  0.00           H  
+HETATM   36  H8  LIG Z   1      13.015 -15.140  45.758  1.00  0.00           H  
+HETATM   37  H9  LIG Z   1      14.221 -11.427  46.146  1.00  0.00           H  
+HETATM   38 H10  LIG Z   1      10.167 -12.628  41.296  1.00  0.00           H  
+HETATM   39 H11  LIG Z   1      10.069 -15.870  42.624  1.00  0.00           H  
+HETATM   40 H12  LIG Z   1       9.550 -14.775  41.354  1.00  0.00           H  
+CONECT    1    2    3    4    5
+CONECT    2    1
+CONECT    3    1
+CONECT    4    1
+CONECT    5    1    6
+CONECT    6    5    7    8    9
+CONECT    7    6
+CONECT    8    6
+CONECT    9    6   10
+CONECT   10    9   11   29   30
+CONECT   11   10   12   13   31
+CONECT   12   11   17
+CONECT   13   11   14   15   32
+CONECT   14   13   33
+CONECT   15   13   16   17   34
+CONECT   16   15   35
+CONECT   17   12   15   18   36
+CONECT   18   17   19   28
+CONECT   19   18   20   37
+CONECT   20   19   21
+CONECT   21   20   22   28
+CONECT   22   21   23   24
+CONECT   23   22
+CONECT   24   22   25   38
+CONECT   25   24   26   27
+CONECT   26   25   39   40
+CONECT   27   25   28
+CONECT   28   18   21   27
+CONECT   29   10
+CONECT   30   10
+CONECT   31   11
+CONECT   32   13
+CONECT   33   14
+CONECT   34   15
+CONECT   35   16
+CONECT   36   17
+CONECT   37   19
+CONECT   38   24
+CONECT   39   26
+CONECT   40   26
+ENDMDL
+END   

@@ -1,0 +1,66 @@
+REMARK   4      COMPLIES WITH FORMAT V. 3.0, 1-DEC-2006
+REMARK 888
+REMARK 888 WRITTEN BY MAESTRO (A PRODUCT OF SCHRODINGER, LLC)
+MODEL        1
+HETATM    1  C1  LIG Z   1      44.096  -3.047  26.161  1.00  0.00           C  
+HETATM    2  C2  LIG Z   1      43.252  -3.604  27.144  1.00  0.00           C  
+HETATM    3  C3  LIG Z   1      43.021  -2.941  28.370  1.00  0.00           C  
+HETATM    4  C4  LIG Z   1      43.632  -1.676  28.593  1.00  0.00           C  
+HETATM    5  C5  LIG Z   1      44.491  -1.132  27.620  1.00  0.00           C  
+HETATM    6  C6  LIG Z   1      44.730  -1.812  26.416  1.00  0.00           C  
+HETATM    7  C7  LIG Z   1      42.152  -3.625  29.355  1.00  0.00           C  
+HETATM    8  C8  LIG Z   1      44.314  -3.745  24.891  1.00  0.00           C  
+HETATM    9  O1  LIG Z   1      43.410  -0.945  29.728  1.00  0.00           O  
+HETATM   10  N1  LIG Z   1      44.611  -3.067  23.777  1.00  0.00           N  
+HETATM   11  N2  LIG Z   1      44.251  -5.078  24.794  1.00  0.00           N  
+HETATM   12  N3  LIG Z   1      41.929  -3.221  30.537  1.00  0.00           N  
+HETATM   13  C9  LIG Z   1      41.052  -3.982  31.402  1.00  0.00           C  
+HETATM   14 C10  LIG Z   1      41.863  -5.025  32.191  1.00  0.00           C  
+HETATM   15 C11  LIG Z   1      40.323  -3.019  32.350  1.00  0.00           C  
+HETATM   16  O2  LIG Z   1      39.130  -3.283  32.613  1.00  0.00           O  
+HETATM   17  O3  LIG Z   1      40.945  -2.017  32.764  1.00  0.00           O  
+HETATM   18  H1  LIG Z   1      42.775  -4.555  26.959  1.00  0.00           H  
+HETATM   19  H2  LIG Z   1      44.971  -0.182  27.800  1.00  0.00           H  
+HETATM   20  H3  LIG Z   1      45.398  -1.369  25.692  1.00  0.00           H  
+HETATM   21  H4  LIG Z   1      41.687  -4.552  29.006  1.00  0.00           H  
+HETATM   22  H5  LIG Z   1      43.153  -0.063  29.504  1.00  0.00           H  
+HETATM   23  H6  LIG Z   1      44.907  -3.561  22.940  1.00  0.00           H  
+HETATM   24  H7  LIG Z   1      44.607  -2.054  23.789  1.00  0.00           H  
+HETATM   25  H8  LIG Z   1      44.487  -5.533  23.916  1.00  0.00           H  
+HETATM   26  H9  LIG Z   1      44.017  -5.645  25.600  1.00  0.00           H  
+HETATM   27 H10  LIG Z   1      40.283  -4.501  30.823  1.00  0.00           H  
+HETATM   28 C12  LIG Z   1      41.221  -5.587  32.869  1.00  0.00           H  
+HETATM   29 C13  LIG Z   1      42.336  -5.746  31.523  1.00  0.00           H  
+HETATM   30 C14  LIG Z   1      42.651  -4.562  32.785  1.00  0.00           H  
+CONECT    1    2    6    8
+CONECT    2    1    3   18
+CONECT    3    2    4    7
+CONECT    4    3    5    9
+CONECT    5    4    6   19
+CONECT    6    1    5   20
+CONECT    7    3   12   21
+CONECT    8    1   10   11
+CONECT    9    4   22
+CONECT   10    8   23   24
+CONECT   11    8   25   26
+CONECT   12    7   13
+CONECT   13   12   14   15   27
+CONECT   14   13   28   29   30
+CONECT   15   13   16   17
+CONECT   16   15
+CONECT   17   15
+CONECT   18    2
+CONECT   19    5
+CONECT   20    6
+CONECT   21    7
+CONECT   22    9
+CONECT   23   10
+CONECT   24   10
+CONECT   25   11
+CONECT   26   11
+CONECT   27   13
+CONECT   28   14
+CONECT   29   14
+CONECT   30   14
+ENDMDL
+END   

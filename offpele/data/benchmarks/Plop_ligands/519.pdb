@@ -1,0 +1,42 @@
+REMARK   4      COMPLIES WITH FORMAT V. 3.0, 1-DEC-2006
+REMARK 888
+REMARK 888 WRITTEN BY MAESTRO (A PRODUCT OF SCHRODINGER, LLC)
+MODEL        1
+HETATM    1  N1  LIG Z   1      25.968  17.243  57.655  1.00  0.00           N  
+HETATM    2  C1  LIG Z   1      24.559  17.169  57.247  1.00  0.00           C  
+HETATM    3  C2  LIG Z   1      23.824  16.072  57.992  1.00  0.00           C  
+HETATM    4  C3  LIG Z   1      24.261  14.733  57.891  1.00  0.00           C  
+HETATM    5  C4  LIG Z   1      23.578  13.711  58.579  1.00  0.00           C  
+HETATM    6  C5  LIG Z   1      22.448  14.022  59.360  1.00  0.00           C  
+HETATM    7  C6  LIG Z   1      22.003  15.354  59.453  1.00  0.00           C  
+HETATM    8  C7  LIG Z   1      22.690  16.377  58.773  1.00  0.00           C  
+HETATM    9  H1  LIG Z   1      26.438  17.975  57.132  1.00  0.00           H  
+HETATM   10  H2  LIG Z   1      26.019  17.470  58.640  1.00  0.00           H  
+HETATM   11  H3  LIG Z   1      26.433  16.362  57.480  1.00  0.00           H  
+HETATM   12  H4  LIG Z   1      24.506  16.979  56.179  1.00  0.00           H  
+HETATM   13  H5  LIG Z   1      24.090  18.137  57.424  1.00  0.00           H  
+HETATM   14  H6  LIG Z   1      25.121  14.484  57.288  1.00  0.00           H  
+HETATM   15  H7  LIG Z   1      23.919  12.690  58.503  1.00  0.00           H  
+HETATM   16  H8  LIG Z   1      21.925  13.241  59.890  1.00  0.00           H  
+HETATM   17  H9  LIG Z   1      21.140  15.592  60.055  1.00  0.00           H  
+HETATM   18 H10  LIG Z   1      22.335  17.393  58.850  1.00  0.00           H  
+CONECT    1    2    9   10   11
+CONECT    2    1    3   12   13
+CONECT    3    2    4    8
+CONECT    4    3    5   14
+CONECT    5    4    6   15
+CONECT    6    5    7   16
+CONECT    7    6    8   17
+CONECT    8    3    7   18
+CONECT    9    1
+CONECT   10    1
+CONECT   11    1
+CONECT   12    2
+CONECT   13    2
+CONECT   14    4
+CONECT   15    5
+CONECT   16    6
+CONECT   17    7
+CONECT   18    8
+ENDMDL
+END   

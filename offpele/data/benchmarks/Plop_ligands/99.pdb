@@ -1,0 +1,64 @@
+REMARK   4      COMPLIES WITH FORMAT V. 3.0, 1-DEC-2006
+REMARK 888
+REMARK 888 WRITTEN BY MAESTRO (A PRODUCT OF SCHRODINGER, LLC)
+MODEL        1
+HETATM    1  O5* U   Z   1      33.304  52.154  11.098  1.00  0.00           O  
+HETATM    2  C5* U   Z   1      34.165  52.084  12.213  1.00  0.00           C  
+HETATM    3  C4* U   Z   1      35.586  51.725  11.757  1.00  0.00           C  
+HETATM    4  O4* U   Z   1      35.574  50.361  11.338  1.00  0.00           O  
+HETATM    5  C3* U   Z   1      36.112  52.557  10.571  1.00  0.00           C  
+HETATM    6  O3* U   Z   1      37.490  52.827  10.751  1.00  0.00           O  
+HETATM    7  C2* U   Z   1      35.920  51.631   9.382  1.00  0.00           C  
+HETATM    8  O2* U   Z   1      36.863  51.892   8.362  1.00  0.00           O  
+HETATM    9  C1* U   Z   1      36.106  50.272  10.057  1.00  0.00           C  
+HETATM   10  N1  U   Z   1      35.383  49.202   9.298  1.00  0.00           N  
+HETATM   11  C2  U   Z   1      36.130  48.319   8.492  1.00  0.00           C  
+HETATM   12  O2  U   Z   1      37.355  48.283   8.469  1.00  0.00           O  
+HETATM   13  N3  U   Z   1      35.417  47.490   7.645  1.00  0.00           N  
+HETATM   14  C4  U   Z   1      34.033  47.463   7.528  1.00  0.00           C  
+HETATM   15  O4  U   Z   1      33.537  46.826   6.616  1.00  0.00           O  
+HETATM   16  C5  U   Z   1      33.313  48.303   8.477  1.00  0.00           C  
+HETATM   17  C6  U   Z   1      33.999  49.127   9.300  1.00  0.00           C  
+HETATM   18 HO5* U   Z   1      32.447  52.442  11.382  1.00  0.00           H  
+HETATM   19 H5*1 U   Z   1      33.791  51.354  12.929  1.00  0.00           H  
+HETATM   20 H5*2 U   Z   1      34.169  53.052  12.710  1.00  0.00           H  
+HETATM   21  H4* U   Z   1      36.253  51.812  12.616  1.00  0.00           H  
+HETATM   22  H3* U   Z   1      35.590  53.506  10.448  1.00  0.00           H  
+HETATM   23 HO3* U   Z   1      37.808  53.234   9.959  1.00  0.00           H  
+HETATM   24  H2* U   Z   1      34.907  51.722   8.993  1.00  0.00           H  
+HETATM   25 HO2* U   Z   1      36.693  51.303   7.643  1.00  0.00           H  
+HETATM   26  H1* U   Z   1      37.144  49.978  10.157  1.00  0.00           H  
+HETATM   27  HN3 U   Z   1      35.961  46.875   7.044  1.00  0.00           H  
+HETATM   28  H5  U   Z   1      32.234  48.294   8.495  1.00  0.00           H  
+HETATM   29  H6  U   Z   1      33.436  49.759   9.970  1.00  0.00           H  
+CONECT    1    2   18
+CONECT    2    1    3   19   20
+CONECT    3    2    4    5   21
+CONECT    4    3    9
+CONECT    5    3    6    7   22
+CONECT    6    5   23
+CONECT    7    5    8    9   24
+CONECT    8    7   25
+CONECT    9    4    7   10   26
+CONECT   10    9   11   17
+CONECT   11   10   12   13
+CONECT   12   11
+CONECT   13   11   14   27
+CONECT   14   13   15   16
+CONECT   15   14
+CONECT   16   14   17   28
+CONECT   17   10   16   29
+CONECT   18    1
+CONECT   19    2
+CONECT   20    2
+CONECT   21    3
+CONECT   22    5
+CONECT   23    6
+CONECT   24    7
+CONECT   25    8
+CONECT   26    9
+CONECT   27   13
+CONECT   28   16
+CONECT   29   17
+ENDMDL
+END   
