@@ -29,11 +29,12 @@ jobs:
     
     - name: Install dependencies
       run: |
-        conda install conda-build flake8 pytest
+        conda config --add channels omnia --add channels conda-forge
+        conda update --all
 
     - name: Install offpele
       run: |
-        conda build -c rdkit -c omnia 'devtools/conda'
+        conda build devtools/conda
         conda install --use-local offpele
 
     - name: Lint with flake8
