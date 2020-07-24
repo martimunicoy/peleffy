@@ -6,6 +6,8 @@ channels:
 dependencies:
   - python
   - pip
+  - flake8
+  - pytest
   - ambertools
   - rdkit
   - openforcefield ==0.7.1
