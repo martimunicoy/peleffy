@@ -19,20 +19,13 @@ jobs:
         python-version: [3.6, 3.7]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Conda setup
-      uses: s-weigand/setup-conda@v1.0.3
+    - uses: goanpeca/setup-miniconda@v1
+      name:  Conda setup
       with:
-       activate-conda: true
-       update-conda: true
-       python-version: ${{ matrix.python-version }}
-    
-    - name: Install dependencies
-      run: |
-        conda -V
-        conda config --add channels omnia --add channels conda-forge
-        conda update --all
-        conda install conda-build==3.15.1 python==3.7.6
+        python-version: ${{ matrix.python-version }}
+        activate-environment: test
+        environment-file: devtools/envs/standard.yaml
+        auto-activate-base: false
 
     - name: Install offpele
       run: |
