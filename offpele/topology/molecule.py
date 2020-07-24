@@ -1,19 +1,64 @@
+"""
+This module handles all classes and functions related with molecular
+representations.
+"""
 
-# Global imports
 from pathlib import Path
 
 from .topology import Bond, Angle, OFFProper, OFFImproper
-from offPELE.utils.toolkits import (AmberToolkitWrapper,
+from offpele.utils.toolkits import (AmberToolkitWrapper,
                                     RDKitToolkitWrapper,
                                     OpenForceFieldToolkitWrapper)
 from .rotamer import MolecularGraph
 
 
 class Atom(object):
+    """
+    It represents the properties of an atom.
+    """
+
     def __init__(self, index=-1, core=None, OPLS_type=None, PDB_name=None,
                  unknown=None, x=None, y=None, z=None, sigma=None,
                  epsilon=None, charge=None, born_radius=None, SASA_radius=None,
                  nonpolar_gamma=None, nonpolar_alpha=None, parent=None):
+        """
+        It initializes an Atom object.
+
+        Parameters
+        ----------
+        index : int
+            The index of the atom
+        core : bool
+            Whether atom is in the core or in a branch
+        OPLS_type : str
+            The OPLS type of the atom
+        PDB_name : str
+            The PDB name of the atom
+        unknown : int
+            The unknown value of the atom
+        x : float
+            The x coordinate of the atom
+        y : float
+            The y coordinate of the atom
+        z : float
+            The z coordinate of the atom
+        sigma : simtk.unit.Quantity
+            The sigma parameter of the atom
+        epsilon : simtk.unit.Quantity
+            The epsilon parameter of the atom
+        charge : simtk.unit.Quantity
+            The partial charge parameter of the atom
+        born_radius : simtk.unit.Quantity
+            The SGB born parameter radius of the atom
+        SASA_radius : simtk.unit.Quantity
+            The SASA radius parameter of the atom
+        nonpolar_gamma : simtk.unit.Quantity
+            The nonpolar gamma parameter of the atom
+        nonpolar_alpha : simtk.unit.Quantity
+            The nonpolar alpha parameter of the atom
+        parent : offpele.topology.Atom
+            The parent of the atom
+        """
         self._index = index
         self._core = core
         self._OPLS_type = OPLS_type
@@ -32,89 +77,273 @@ class Atom(object):
         self._parent = parent
 
     def set_index(self, index):
+        """
+        It sets the index of the atom.
+
+        Parameters
+        ----------
+        index : int
+            The index of this Atom object
+        """
         self._index = index
 
     def set_as_core(self):
+        """It sets the atom as core"""
         self._core = True
 
     def set_as_branch(self):
+        """It sets the atom as branch"""
         self._core = False
 
     def set_parent(self, parent):
+        """
+        It sets the parent of the atom.
+
+        Parameters
+        ----------
+        parent : offpele.topology.Atom
+            The parent of the atom
+        """
         self._parent = parent
 
     def set_coords(self, coords):
+        """
+        It sets the coordinates of the atom.
+
+        Parameters
+        ----------
+        coords : list
+            The coordinates array to set to this Atom object
+        """
         assert len(coords) == 3, '3D array is expected'
 
         self._x, self._y, self._z = coords
 
     @property
     def index(self):
+        """
+        Atom's index.
+
+        Returns
+        -------
+        index : int
+            The index of this Atom object
+        """
         return self._index
 
     @property
     def core(self):
+        """
+        Atom's core position.
+
+        Returns
+        -------
+        core : bool
+            Whether this Atom object is in the core or in a branch
+        """
         return self._core
 
     @property
     def OPLS_type(self):
+        """
+        Atom's OPLS type.
+
+        .. todo ::
+
+           * Consider removing any reference to OPLS, if possible
+             Otherwise, use SMIRks to find the best match
+
+        Returns
+        -------
+        OPLS_type : str
+            The OLPS type of this Atom object
+        """
         return self._OPLS_type
 
     @property
     def PDB_name(self):
+        """
+        Atom's PDB name.
+
+        .. todo ::
+
+           * Consider removing any reference to OPLS, if possible
+             Otherwise, use SMIRks to find the best match
+
+        Returns
+        -------
+        PDB_name : str
+            The PDB name of this Atom object
+        """
         return self._PDB_name
 
     @property
     def unknown(self):
+        """
+        Atom's unknown int.
+
+        .. todo ::
+
+           * Review the actual purpose of this attribute in PELE
+
+        Returns
+        -------
+        unknown : int
+            The unknown int of this Atom object
+        """
         return self._unknown
 
     @property
     def x(self):
+        """
+        Atom's x coordinate.
+
+        Returns
+        -------
+        x : float
+            The x coordinate of this Atom object
+        """
         return self._x
 
     @property
     def y(self):
+        """
+        Atom's y coordinate.
+
+        Returns
+        -------
+        y : float
+            The y coordinate of this Atom object
+        """
         return self._y
 
     @property
     def z(self):
+        """
+        Atom's z coordinate.
+
+        Returns
+        -------
+        z : float
+            The z coordinate of this Atom object
+        """
         return self._z
 
     @property
     def sigma(self):
+        """
+        Atom's sigma.
+
+        Returns
+        -------
+        sigma : simtk.unit.Quantity
+            The sigma parameter of this Atom object
+        """
         return self._sigma
 
     @property
     def epsilon(self):
+        """
+        Atom's epsilon.
+
+        Returns
+        -------
+        epsilon : simtk.unit.Quantity
+            The epsilon parameter of this Atom object
+        """
         return self._epsilon
 
     @property
     def charge(self):
+        """
+        Atom's charge.
+
+        Returns
+        -------
+        charge : simtk.unit.Quantity
+            The charge parameter of this Atom object
+        """
         return self._charge
 
     @property
     def born_radius(self):
+        """
+        Atom's born radius.
+
+        Returns
+        -------
+        born_radius : simtk.unit.Quantity
+            The SGB Born radius parameter of this Atom object
+        """
         return self._born_radius
 
     @property
     def SASA_radius(self):
+        """
+        Atom's SASA radius.
+
+        Returns
+        -------
+        SASA_radius : simtk.unit.Quantity
+            The SASA radius parameter of this Atom object
+        """
         return self._SASA_radius
 
     @property
     def nonpolar_gamma(self):
+        """
+        Atom's nonpolar gamma.
+
+        Returns
+        -------
+        nonpolar_gamma : simtk.unit.Quantity
+            The nonpolar gamma parameter of this Atom object
+        """
         return self._nonpolar_gamma
 
     @property
     def nonpolar_alpha(self):
+        """
+        Atom's nonpolar alpha.
+
+        Returns
+        -------
+        nonpolar_alpha : simtk.unit.Quantity
+            The nonpolar alpha parameter of this Atom object
+        """
         return self._nonpolar_alpha
 
     @property
     def parent(self):
+        """
+        Atom's parent.
+
+        Returns
+        -------
+        parent : simtk.unit.Quantity
+            The nonpolar gamma parameter of this Atom object
+        """
         return self._parent
 
 
 class DummyAtom(Atom):
+    """
+    It represents a dummy atom.
+    """
+
     def __init__(self, index=-1, PDB_name='DUMM', parent=None):
+        """
+        It initializes a DummyAtom object.
+
+        Parameters
+        ----------
+        index : int
+            The index of the atom
+        PDB_name : str
+            The PDB name of the atom
+        parent : offpele.topology.Atom
+            The parent of the atom
+        """
         if parent is None:
             parent = self
         super().__init__(index, False, None, PDB_name, None, None, None, None,
@@ -122,7 +351,40 @@ class DummyAtom(Atom):
 
 
 class Molecule(object):
+    """
+    It represent wraps up all the tools to parameterize a molecule with
+    the OpenForceField toolkit for PELE.
+    """
+
     def __init__(self, path=None):
+        """
+        It initializes a Molecule object.
+
+        Parameters
+        ----------
+        path : str
+            The path to a PDB with the molecule structure
+
+        Examples
+        --------
+
+        Load a molecule from a PDB file and parameterize it
+
+        >>> from offpele.topology import Molecule
+
+        >>> molecule = Molecule('molecule.pdb')
+        >>> molecule.parameterize('openff_unconstrained-1.1.1.offxml')
+
+        Generate the rotamer library of a molecule
+
+        >>> from offpele.topology import Molecule
+
+        >>> molecule = Molecule('molecule.pdb')
+        >>> molecule.parameterize('openff_unconstrained-1.1.1.offxml')
+        >>> molecule.build_rotamer_library(resolution=30)
+        >>> molecule.rotamer_library.to_file('MOL.rot.assign')
+
+        """
         if isinstance(path, str):
             from pathlib import Path
             extension = Path(path).suffix
@@ -136,6 +398,7 @@ class Molecule(object):
             self._initialize()
 
     def _initialize(self):
+        """It initializes an empty molecule."""
         self._name = ''
         self._forcefield = None
         self._atoms = list()
@@ -151,6 +414,15 @@ class Molecule(object):
         self._graph = None
 
     def _initialize_from_pdb(self, path):
+        """
+        It initializes a molecule with the molecule structure read from
+        a PDB file.
+
+        Parameters
+        ----------
+        path : str
+            The path to a PDB with the molecule structure
+        """
         self._initialize()
         print(' - Loading molecule from RDKit')
 
@@ -169,6 +441,14 @@ class Molecule(object):
         self._off_molecule = openforcefield_toolkit.from_rdkit(self)
 
     def set_name(self, name):
+        """
+        It sets the name of the molecule.
+
+        Parameters
+        ----------
+        name : str
+            The name to set to the molecule
+        """
         if isinstance(name, str) and len(name) > 2:
             name = name[0:3].upper()
             self._name = name
@@ -177,6 +457,15 @@ class Molecule(object):
                 self.off_molecule.name = name
 
     def parameterize(self, forcefield):
+        """
+        It parameterizes the molecule with a certain forcefield.
+
+        Parameters
+        ----------
+        forcefield : str or openforcefield.typing.engines.smirnoff.ForceField
+                     object
+            The forcefield from which the parameters will be obtained
+        """
         if not self.off_molecule and not self.rdkit_molecule:
             raise Exception('OpenForceField molecule was not initialized '
                             + 'correctly')
@@ -205,6 +494,18 @@ class Molecule(object):
         self._build_impropers()
 
     def build_rotamer_library(self, resolution):
+        """
+        It builds the rotamer library of a parameterized molecule.
+
+        .. todo ::
+
+            * Consider moving this to the rotamer module.
+
+        Parameters
+        ----------
+        resolution : float
+            The resolution to discretize the rotamer's conformational space
+        """
         self._assert_parameterized()
 
         print(' - Generating rotamer library')
@@ -218,6 +519,7 @@ class Molecule(object):
         self._rotamer_library = self.graph.build_rotamer_library(resolution)
 
     def plot_rotamer_graph(self):
+        """It plots the rotamer graph in screen."""
         self._assert_parameterized()
 
         try:
@@ -225,7 +527,7 @@ class Molecule(object):
         except ImportError:
             raise Exception('RDKit Python API not found')
 
-        # Fins rotatable bond ids as in Lipinski module in RDKit
+        # Find rotatable bond ids as in Lipinski module in RDKit
         # https://github.com/rdkit/rdkit/blob/1bf6ef3d65f5c7b06b56862b3fb9116a3839b229/rdkit/Chem/Lipinski.py#L47
         rot_bonds_atom_ids = self._rdkit_molecule.GetSubstructMatches(
             Chem.MolFromSmarts('[!$(*#*)&!D1]-&!@[!$(*#*)&!D1]'))
@@ -255,12 +557,17 @@ class Molecule(object):
         plt.show()
 
     def _assert_parameterized(self):
+        """
+        It checks that the molecule has been parameterized, raises an
+        AssertionError otherwise.
+        """
         try:
             assert self.off_molecule is not None
         except AssertionError:
             raise Exception('Molecule not parameterized')
 
     def _calculate_am1bcc_charges(self):
+        """It computes the partial charges using the am1bcc method."""
         amber_toolkit = AmberToolkitWrapper()
 
         charges = amber_toolkit.compute_partial_charges_am1bcc(self)
@@ -268,6 +575,7 @@ class Molecule(object):
         self.off_molecule.partial_charges = charges
 
     def _build_atoms(self):
+        """It builds the atoms of the molecule."""
         # PELE needs underscores instead of whitespaces
         pdb_atom_names = {(i, ): name.replace(' ', '_',)
                           for i, name in enumerate(self.get_pdb_atom_names())}
@@ -323,9 +631,18 @@ class Molecule(object):
             self._add_atom(atom)
 
     def _add_atom(self, atom):
+        """
+        It adds an atom to the molecule's list of atoms.
+
+        Parameters
+        ----------
+        atom : an offpele.topology.Atom
+            The Atom to add
+        """
         self._atoms.append(atom)
 
     def _build_bonds(self):
+        """It builds the bonds of the molecule."""
         lengths = self.parameters.get_bond_lengths()
 
         ks = self.parameters.get_bond_ks()
@@ -340,9 +657,18 @@ class Molecule(object):
             self._add_bond(bond)
 
     def _add_bond(self, bond):
+        """
+        It adds a bond to the molecule's list of bonds.
+
+        Parameters
+        ----------
+        bond : an offpele.topology.Bond
+            The Bond to add
+        """
         self._bonds.append(bond)
 
     def _build_angles(self):
+        """It builds the angles of the molecule."""
         angles = self.parameters.get_angle_angles()
 
         ks = self.parameters.get_angle_ks()
@@ -358,9 +684,18 @@ class Molecule(object):
             self._add_angle(angle)
 
     def _add_angle(self, angle):
+        """
+        It adds an angle to the molecule's list of angles.
+
+        Parameters
+        ----------
+        angle : an offpele.topology.Angle
+            The Angle to add
+        """
         self._angles.append(angle)
 
     def _build_propers(self):
+        """It builds the propers of the molecule."""
         periodicities = self.parameters.get_dihedral_periodicities()
         phases = self.parameters.get_dihedral_phases()
         ks = self.parameters.get_dihedral_ks()
@@ -409,12 +744,29 @@ class Molecule(object):
                     self._add_OFF_proper(off_proper)
 
     def _add_proper(self, proper):
+        """
+        It adds a proper dihedral to the molecule's list of propers.
+
+        Parameters
+        ----------
+        proper : an offpele.topology.Proper
+            The Proper to add
+        """
         self._propers.append(proper)
 
     def _add_OFF_proper(self, proper):
+        """
+        It adds a proper dihedral to the molecule's list of OFF propers.
+
+        Parameters
+        ----------
+        proper : an offpele.topology.OFFProper
+            The OFFProper to add
+        """
         self._OFF_propers.append(proper)
 
     def _build_impropers(self):
+        """It builds the impropers of the molecule."""
         periodicities = self.parameters.get_improper_periodicities()
         phases = self.parameters.get_improper_phases()
         ks = self.parameters.get_improper_ks()
@@ -463,12 +815,36 @@ class Molecule(object):
                     self._add_OFF_improper(off_improper)
 
     def _add_improper(self, improper):
+        """
+        It adds an improper dihedral to the molecule's list of impropers.
+
+        Parameters
+        ----------
+        improper : an offpele.topology.Improper
+            The Improper to add
+        """
         self._impropers.append(improper)
 
     def _add_OFF_improper(self, improper):
+        """
+        It adds an improper dihedral to the molecule's list of OFF impropers.
+
+        Parameters
+        ----------
+        improper : an offpele.topology.OFFImproper
+            The OFFImproper to add
+        """
         self._OFF_impropers.append(improper)
 
     def get_pdb_atom_names(self):
+        """
+        It returns the PDB atom names of all the atoms in the molecule.
+
+        Returns
+        -------
+        pdb_atom_names : str
+            The PDB atom names of all the atoms in this Molecule object
+        """
         self._assert_parameterized()
 
         pdb_atom_names = list()
@@ -480,48 +856,141 @@ class Molecule(object):
         return pdb_atom_names
 
     def to_impact(self, path):
+        """
+        .. todo ::
+
+            * We still need to implement this
+        """
         pass
 
     @property
     def off_molecule(self):
-        return self._off_molecule
+        """
+        The OpenForceField's molecule instance linked to the molecule.
+
+        Returns
+        -------
+        off_molecule : an openforcefield.topology.Molecule
+            The OpenForceField's molecule linked to this Molecule object
+        """
 
     @property
     def rdkit_molecule(self):
+        """
+        The RDKit's molecule instance linked to the molecule.
+
+        Returns
+        -------
+        rdkit_molecule : an rdkit.Chem.rdchem.Mol object
+            The RDKit's molecule linked to this Molecule object
+        """
         return self._rdkit_molecule
 
     @property
     def rotamer_library(self):
+        """
+        The rotamer library of the molecule.
+
+        Returns
+        -------
+        rotamer_library : an offpele.topology.rotamer.RotamerLibrary object
+            The rotamer library of this Molecule object
+        """
         return self._rotamer_library
 
     @property
     def name(self):
+        """
+        Molecule's name.
+
+        Returns
+        -------
+        name : str
+            The name of this Molecule object
+        """
         return self._name
 
     @property
     def forcefield(self):
+        """
+        The forcefield employed to parameterize the molecule.
+
+        Returns
+        -------
+        forcefield : an openforcefield.typing.engines.smirnoff.ForceField
+                     object
+            The forcefield employed to parameterize this Molecule object
+        """
         return self._forcefield
 
     @property
     def atoms(self):
+        """
+        The list of atoms of the molecule.
+
+        Returns
+        -------
+        atoms : list[offpele.topology.molecule.Atom]
+            The list of atoms of this Molecule object.
+        """
         return self._atoms
 
     @property
     def bonds(self):
+        """
+        The list of bonds of the molecule.
+
+        Returns
+        -------
+        bonds : list[offpele.topology.Bond]
+            The list of bonds of this Molecule object.
+        """
         return self._bonds
 
     @property
     def angles(self):
+        """
+        The list of angles of the molecule.
+
+        Returns
+        -------
+        angles : list[offpele.topology.Angle]
+            The list of angles of this Molecule object.
+        """
         return self._angles
 
     @property
     def propers(self):
+        """
+        The list of propers of the molecule.
+
+        Returns
+        -------
+        propers : list[offpele.topology.Proper]
+            The list of propers of this Molecule object.
+        """
         return self._propers
 
     @property
     def impropers(self):
+        """
+        The list of impropers of the molecule.
+
+        Returns
+        -------
+        impropers : list[offpele.topology.Improper]
+            The list of impropers of this Molecule object.
+        """
         return self._impropers
 
     @property
     def graph(self):
+        """
+        The topological graph of the molecule.
+
+        Returns
+        -------
+        graph : an offpele.topology.rotamer.MolecularGraph object
+            The topological graph of this Molecule object.
+        """
         return self._graph
