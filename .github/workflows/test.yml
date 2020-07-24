@@ -52,3 +52,6 @@ jobs:
       shell: bash -l {0}
       run: |
         pytest
+
+    - name: Codecov
+      uses: codecov/codecov-action@v1
