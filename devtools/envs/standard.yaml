@@ -1,0 +1,11 @@
+name: standard
+channels:
+  - conda-forge
+  - omnia
+
+dependencies:
+  - python
+  - pip
+  - ambertools
+  - rdkit
+  - openforcefield ==0.7.1
