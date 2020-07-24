@@ -27,7 +27,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
         activate-environment: standard
         environment-file: devtools/envs/standard.yaml
-        auto-activate-base: false
+        auto-activate-base: true
         
     - name: Activate environment
       run: |
