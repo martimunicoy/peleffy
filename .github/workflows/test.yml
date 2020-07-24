@@ -32,6 +32,7 @@ jobs:
     - name: Activate environment
       run: |
         conda init bash
+        source /home/runner/.bashrc
         conda activate standard
 
     - name: Install offpele
