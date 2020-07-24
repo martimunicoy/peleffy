@@ -31,8 +31,7 @@ jobs:
 
     - name: Install offpele
       run: |
-        conda build devtools/conda
-        conda install --use-local offpele
+        python -m pip install --no-deps -v .
 
     - name: Lint with flake8
       run: |
