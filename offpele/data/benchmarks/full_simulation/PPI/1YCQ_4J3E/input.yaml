@@ -1,0 +1,15 @@
+usesrun: true
+pele_license: "/work/NBD_Utilities/PELE/licenses"
+system: '1ycq_prep.pdb'
+chain: 'Z'
+protein: 'A'
+ligand_pdb: "4j3e_ligand.pdb"
+resname: 'LIG'
+center_of_interface: "A:54:CA"
+seed: 12345
+ppi: true
+steps: 200
+cpus: 50
+atom_dist:
+- "Z:201:C17"
+- "A:54:CA"

@@ -1,0 +1,14 @@
+system: '4loo_prep.pdb'
+chain: 'Z'
+protein: 'A'
+ligand_pdb: "ligand.pdb"
+resname: 'LIG'
+center_of_interface: "A:273:O"
+seed: 12345
+ppi: true
+steps: 200
+cpus: 50
+atom_dist:
+- "A:273:O"
+- "Z:412:C26"
+traj: trajectory.xtc 

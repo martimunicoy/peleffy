@@ -1,0 +1,11 @@
+system: "5C1M_32_processed.pdb"
+resname: "032"
+chain: "Z"
+seed: 1234
+gpcr_orth: true
+orthosteric_site: "A:147:CG"
+initial_site: "A:303:NZ"
+cpus: 64
+atom_dist:
+    - 1374
+    - 4697
