@@ -54,5 +54,6 @@ jobs:
         pytest -r fE --tb=short --cov=offpele --cov-config=setup.cfg offpele/
 
     - name: Codecov
+      shell: bash -l {0}
       run: |
         codecov --token=${{ secrets.CODECOV_TOKEN }}
