@@ -8,6 +8,7 @@ dependencies:
   - pip
   - flake8
   - pytest
+  - pytest-cov
   - ambertools
   - rdkit
   - openforcefield ==0.7.1
