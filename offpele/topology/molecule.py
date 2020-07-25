@@ -466,7 +466,7 @@ class Molecule(object):
                      object
             The forcefield from which the parameters will be obtained
         """
-        if not self.off_molecule and not self.rdkit_molecule:
+        if not self.off_molecule or not self.rdkit_molecule:
             raise Exception('OpenForceField molecule was not initialized '
                             + 'correctly')
 
@@ -873,6 +873,7 @@ class Molecule(object):
         off_molecule : an openforcefield.topology.Molecule
             The OpenForceField's molecule linked to this Molecule object
         """
+        return self._off_molecule
 
     @property
     def rdkit_molecule(self):
