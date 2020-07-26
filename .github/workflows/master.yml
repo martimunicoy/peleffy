@@ -38,7 +38,6 @@ jobs:
 
     # https://github.com/peaceiris/actions-gh-pages
     - name: Deploy documentation
-      shell: bash -l {0}
       if: success()
       uses: peaceiris/actions-gh-pages@v3
       with:
