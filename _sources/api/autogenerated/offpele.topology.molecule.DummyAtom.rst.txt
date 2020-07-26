@@ -1,0 +1,43 @@
+offpele.topology.molecule.DummyAtom
+===================================
+
+.. currentmodule:: offpele.topology.molecule
+
+.. autoclass:: DummyAtom
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: set_as_branch
+      .. automethod:: set_as_core
+      .. automethod:: set_coords
+      .. automethod:: set_index
+      .. automethod:: set_parent
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~DummyAtom.OPLS_type
+      ~DummyAtom.PDB_name
+      ~DummyAtom.SASA_radius
+      ~DummyAtom.born_radius
+      ~DummyAtom.charge
+      ~DummyAtom.core
+      ~DummyAtom.epsilon
+      ~DummyAtom.index
+      ~DummyAtom.nonpolar_alpha
+      ~DummyAtom.nonpolar_gamma
+      ~DummyAtom.parent
+      ~DummyAtom.sigma
+      ~DummyAtom.unknown
+      ~DummyAtom.x
+      ~DummyAtom.y
+      ~DummyAtom.z
+   
+   
