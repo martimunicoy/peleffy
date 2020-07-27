@@ -456,7 +456,7 @@ class Molecule(object):
             if self.off_molecule:
                 self.off_molecule.name = name
 
-    def parameterize(self, forcefield):
+    def parameterize(self, forcefield, charges_calculator=Am1bccCalculator()):
         """
         It parameterizes the molecule with a certain forcefield.
 
@@ -465,7 +465,10 @@ class Molecule(object):
         forcefield : str or openforcefield.typing.engines.smirnoff.ForceField
                      object
             The forcefield from which the parameters will be obtained
+        charges_calculator : An offpele.topology.charges.PartialChargesCalculator
+            object
         """
+
         if not self.off_molecule or not self.rdkit_molecule:
             raise Exception('OpenForceField molecule was not initialized '
                             + 'correctly')
@@ -480,8 +483,9 @@ class Molecule(object):
         if isinstance(forcefield, str):
             self._forcefield = Path(forcefield).stem
 
-        print(' - Computing partial charges with am1bcc')
-        self._calculate_am1bcc_charges()
+        print(' - Computing partial charges with '
+              + '{}'.format(charges_calculator.name))
+        self._calculate_charges(charges_calculator)
 
         self._build_atoms()
 
@@ -566,7 +570,7 @@ class Molecule(object):
         except AssertionError:
             raise Exception('Molecule not parameterized')
 
-    def _calculate_am1bcc_charges(self):
+    def _calculate_charges(self, method):
         """It computes the partial charges using the am1bcc method."""
         amber_toolkit = AmberToolkitWrapper()
 
