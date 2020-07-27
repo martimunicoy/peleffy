@@ -1,0 +1,33 @@
+{% set data = load_setup_py_data() %}
+
+package:
+  name: offpele
+  version: {{ data.get('version') }}
+
+source:
+  path: ../../
+
+build:
+  script: python -m pip install . --no-deps
+  number: 0
+
+requirements:
+  build:
+    # Note that rdkit does not support Python 3.8 yet
+    - python 3.6|3.7
+    - setuptools
+
+  run:
+    # Note that rdkit does not support Python 3.8 yet
+    - python 3.6|3.7
+    - numpy
+    - matplotlib
+    - pytest
+    - networkx
+    - rdkit
+    - ambertools
+    - openforcefield==0.7.1
+
+about:
+  home: https://github.com/martimunicoy/offpele
+  license: MIT

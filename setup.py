@@ -1,6 +1,6 @@
 import os
 from os.path import relpath, join
-from setuptools import setup
+from setuptools import setup, find_packages
 import versioneer
 
 
@@ -24,7 +24,15 @@ setup(
     license="MIT",
     keywords="molecular mechanics, forcefield, potential energy",
     url="http://github.com/martimunicoy/offpele",
-    packages=['offpele'],
+    packages=[
+        'offpele',
+        'offpele/tests',
+        'offpele/data',
+        'offpele/template',
+        'offpele/solvent',
+        'offpele/topology',
+        'offpele/utils',
+        ],
     long_description=read('README.md'),
     classifiers=[
         "Development Status :: 1 - Planning",
@@ -32,7 +40,7 @@ setup(
         "Environment :: Console",
         "Intended Audience :: Science/Research",
         "Topic :: Utilities",
-        "License :: OSI Approved :: MIT",
+        "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
         "Operating System :: Unix"
     ],

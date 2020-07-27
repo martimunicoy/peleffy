@@ -1,0 +1,16 @@
+name: standard
+channels:
+  - conda-forge
+  - omnia
+
+dependencies:
+  - python
+  - pip
+  - flake8
+  - pytest
+  - pytest-cov
+  - codecov
+  - coverage < 5.0
+  - ambertools
+  - rdkit
+  - openforcefield ==0.7.1
