@@ -4,7 +4,7 @@
 | **Installation** | [![Conda](https://img.shields.io/conda/v/martimunicoy/offpele.svg)](https://anaconda.org/martimunicoy/offpele) [![PyPI](https://img.shields.io/pypi/v/offpele)](https://pypi.org/project/offpele/) |
 
 # Open Force Field to PELE
-The `offpele` (Open Force Field to PELE) is a Python package that builds PELE-compatible force field templates using the [Open Force Field toolkit](https://github.com/openforcefield/openforcefield).
+The `offpele` (Open Force Field to PELE) is a Python package that builds [PELE](https://pele.bsc.es/pele.wt)-compatible force field templates using the [Open Force Field toolkit](https://github.com/openforcefield/openforcefield).
 
 ## Documentation
 The documentation for the `offpele` package is available at [GitHub Pages](https://martimunicoy.github.io/offpele).
