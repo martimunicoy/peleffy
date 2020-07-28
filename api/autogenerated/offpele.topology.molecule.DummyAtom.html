@@ -1,0 +1,368 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>offpele.topology.molecule.DummyAtom &mdash; Open Force Field for PELE  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="offpele.topology.topology.OFFDihedral" href="offpele.topology.topology.OFFDihedral.html" />
+    <link rel="prev" title="offpele.topology.Improper" href="offpele.topology.Improper.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Open Force Field for PELE
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.1.gdd22f98
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../topology.html">Topology representations</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../topology.html#primary-objects">Primary objects</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../topology.html#secondary-objects">Secondary objects</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="offpele.topology.Atom.html">offpele.topology.Atom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="offpele.topology.Bond.html">offpele.topology.Bond</a></li>
+<li class="toctree-l3"><a class="reference internal" href="offpele.topology.Angle.html">offpele.topology.Angle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="offpele.topology.Dihedral.html">offpele.topology.Dihedral</a></li>
+<li class="toctree-l3"><a class="reference internal" href="offpele.topology.Proper.html">offpele.topology.Proper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="offpele.topology.Improper.html">offpele.topology.Improper</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">offpele.topology.molecule.DummyAtom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="offpele.topology.topology.OFFDihedral.html">offpele.topology.topology.OFFDihedral</a></li>
+<li class="toctree-l3"><a class="reference internal" href="offpele.topology.topology.OFFProper.html">offpele.topology.topology.OFFProper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="offpele.topology.topology.OFFImproper.html">offpele.topology.topology.OFFImproper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="offpele.topology.ZMatrix.html">offpele.topology.ZMatrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="offpele.topology.rotamer.Rotamer.html">offpele.topology.rotamer.Rotamer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="offpele.topology.rotamer.RotamerLibrary.html">offpele.topology.rotamer.RotamerLibrary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="offpele.topology.rotamer.MolecularGraph.html">offpele.topology.rotamer.MolecularGraph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../template.html">Template handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../solvent.html">Solvent models</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Open Force Field for PELE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../topology.html">Topology representations</a> &raquo;</li>
+        
+      <li>offpele.topology.molecule.DummyAtom</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/api/autogenerated/offpele.topology.molecule.DummyAtom.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="offpele-topology-molecule-dummyatom">
+<h1>offpele.topology.molecule.DummyAtom<a class="headerlink" href="#offpele-topology-molecule-dummyatom" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="offpele.topology.molecule.DummyAtom">
+<em class="property">class </em><code class="sig-prename descclassname">offpele.topology.molecule.</code><code class="sig-name descname">DummyAtom</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">PDB_name</span><span class="o">=</span><span class="default_value">'DUMM'</span></em>, <em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#DummyAtom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.molecule.DummyAtom" title="Permalink to this definition">¶</a></dt>
+<dd><p>It represents a dummy atom.</p>
+<blockquote>
+<div><dl class="py method">
+<dt id="offpele.topology.molecule.DummyAtom.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">PDB_name</span><span class="o">=</span><span class="default_value">'DUMM'</span></em>, <em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#DummyAtom.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.molecule.DummyAtom.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>It initializes a DummyAtom object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<em>int</em>) – The index of the atom</p></li>
+<li><p><strong>PDB_name</strong> (<em>str</em>) – The PDB name of the atom</p></li>
+<li><p><strong>parent</strong> (<em>offpele.topology.Atom</em>) – The parent of the atom</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="offpele.topology.molecule.DummyAtom.set_as_branch">
+<code class="sig-name descname">set_as_branch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#offpele.topology.molecule.DummyAtom.set_as_branch" title="Permalink to this definition">¶</a></dt>
+<dd><p>It sets the atom as branch</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="offpele.topology.molecule.DummyAtom.set_as_core">
+<code class="sig-name descname">set_as_core</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#offpele.topology.molecule.DummyAtom.set_as_core" title="Permalink to this definition">¶</a></dt>
+<dd><p>It sets the atom as core</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="offpele.topology.molecule.DummyAtom.set_coords">
+<code class="sig-name descname">set_coords</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">coords</span></em><span class="sig-paren">)</span><a class="headerlink" href="#offpele.topology.molecule.DummyAtom.set_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>It sets the coordinates of the atom.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>coords</strong> (<em>list</em>) – The coordinates array to set to this Atom object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="offpele.topology.molecule.DummyAtom.set_index">
+<code class="sig-name descname">set_index</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#offpele.topology.molecule.DummyAtom.set_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>It sets the index of the atom.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – The index of this Atom object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="offpele.topology.molecule.DummyAtom.set_parent">
+<code class="sig-name descname">set_parent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span></em><span class="sig-paren">)</span><a class="headerlink" href="#offpele.topology.molecule.DummyAtom.set_parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>It sets the parent of the atom.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>parent</strong> (<em>offpele.topology.Atom</em>) – The parent of the atom</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div></blockquote>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">OPLS_type</span></code></p></td>
+<td><p>Atom’s OPLS type.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">PDB_name</span></code></p></td>
+<td><p>Atom’s PDB name.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">SASA_radius</span></code></p></td>
+<td><p>Atom’s SASA radius.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">born_radius</span></code></p></td>
+<td><p>Atom’s born radius.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">charge</span></code></p></td>
+<td><p>Atom’s charge.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">core</span></code></p></td>
+<td><p>Atom’s core position.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">epsilon</span></code></p></td>
+<td><p>Atom’s epsilon.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></p></td>
+<td><p>Atom’s index.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nonpolar_alpha</span></code></p></td>
+<td><p>Atom’s nonpolar alpha.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nonpolar_gamma</span></code></p></td>
+<td><p>Atom’s nonpolar gamma.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">parent</span></code></p></td>
+<td><p>Atom’s parent.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sigma</span></code></p></td>
+<td><p>Atom’s sigma.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">unknown</span></code></p></td>
+<td><p>Atom’s unknown int.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">x</span></code></p></td>
+<td><p>Atom’s x coordinate.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">y</span></code></p></td>
+<td><p>Atom’s y coordinate.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">z</span></code></p></td>
+<td><p>Atom’s z coordinate.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="offpele.topology.topology.OFFDihedral.html" class="btn btn-neutral float-right" title="offpele.topology.topology.OFFDihedral" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="offpele.topology.Improper.html" class="btn btn-neutral float-left" title="offpele.topology.Improper" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Barcelona Supercomputing Center
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

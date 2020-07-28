@@ -1,0 +1,1251 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>offpele.topology.molecule &mdash; Open Force Field for PELE  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> Open Force Field for PELE
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.1.gdd22f98
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../topology.html">Topology representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../template.html">Template handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../solvent.html">Solvent models</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Open Force Field for PELE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>offpele.topology.molecule</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for offpele.topology.molecule</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module handles all classes and functions related with molecular</span>
+<span class="sd">representations.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span> <span class="nn">.topology</span> <span class="kn">import</span> <span class="n">Bond</span><span class="p">,</span> <span class="n">Angle</span><span class="p">,</span> <span class="n">OFFProper</span><span class="p">,</span> <span class="n">OFFImproper</span>
+<span class="kn">from</span> <span class="nn">offpele.utils.toolkits</span> <span class="kn">import</span> <span class="p">(</span><span class="n">AmberToolkitWrapper</span><span class="p">,</span>
+                                    <span class="n">RDKitToolkitWrapper</span><span class="p">,</span>
+                                    <span class="n">OpenForceFieldToolkitWrapper</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.rotamer</span> <span class="kn">import</span> <span class="n">MolecularGraph</span>
+<span class="kn">from</span> <span class="nn">.charges</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Am1bccCalculator</span><span class="p">,</span> <span class="n">GasteigerCalculator</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Atom"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Atom.html#offpele.template.impact.Atom">[docs]</a><span class="k">class</span> <span class="nc">Atom</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents the properties of an atom.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Atom.__init__"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Atom.html#offpele.template.impact.Atom.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">core</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">OPLS_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">PDB_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">unknown</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">epsilon</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">charge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">born_radius</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">SASA_radius</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">nonpolar_gamma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nonpolar_alpha</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initializes an Atom object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the atom</span>
+<span class="sd">        core : bool</span>
+<span class="sd">            Whether atom is in the core or in a branch</span>
+<span class="sd">        OPLS_type : str</span>
+<span class="sd">            The OPLS type of the atom</span>
+<span class="sd">        PDB_name : str</span>
+<span class="sd">            The PDB name of the atom</span>
+<span class="sd">        unknown : int</span>
+<span class="sd">            The unknown value of the atom</span>
+<span class="sd">        x : float</span>
+<span class="sd">            The x coordinate of the atom</span>
+<span class="sd">        y : float</span>
+<span class="sd">            The y coordinate of the atom</span>
+<span class="sd">        z : float</span>
+<span class="sd">            The z coordinate of the atom</span>
+<span class="sd">        sigma : simtk.unit.Quantity</span>
+<span class="sd">            The sigma parameter of the atom</span>
+<span class="sd">        epsilon : simtk.unit.Quantity</span>
+<span class="sd">            The epsilon parameter of the atom</span>
+<span class="sd">        charge : simtk.unit.Quantity</span>
+<span class="sd">            The partial charge parameter of the atom</span>
+<span class="sd">        born_radius : simtk.unit.Quantity</span>
+<span class="sd">            The SGB born parameter radius of the atom</span>
+<span class="sd">        SASA_radius : simtk.unit.Quantity</span>
+<span class="sd">            The SASA radius parameter of the atom</span>
+<span class="sd">        nonpolar_gamma : simtk.unit.Quantity</span>
+<span class="sd">            The nonpolar gamma parameter of the atom</span>
+<span class="sd">        nonpolar_alpha : simtk.unit.Quantity</span>
+<span class="sd">            The nonpolar alpha parameter of the atom</span>
+<span class="sd">        parent : offpele.topology.Atom</span>
+<span class="sd">            The parent of the atom</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_core</span> <span class="o">=</span> <span class="n">core</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_OPLS_type</span> <span class="o">=</span> <span class="n">OPLS_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_PDB_name</span> <span class="o">=</span> <span class="n">PDB_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_unknown</span> <span class="o">=</span> <span class="n">unknown</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_z</span> <span class="o">=</span> <span class="n">z</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sigma</span> <span class="o">=</span> <span class="n">sigma</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_epsilon</span> <span class="o">=</span> <span class="n">epsilon</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_charge</span> <span class="o">=</span> <span class="n">charge</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_born_radius</span> <span class="o">=</span> <span class="n">born_radius</span>  <span class="c1"># Rad. Non Polar SGB</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_SASA_radius</span> <span class="o">=</span> <span class="n">SASA_radius</span>  <span class="c1"># Rad. Non Polar Type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nonpolar_gamma</span> <span class="o">=</span> <span class="n">nonpolar_gamma</span>  <span class="c1"># SGB Non Polar gamma</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nonpolar_alpha</span> <span class="o">=</span> <span class="n">nonpolar_alpha</span>  <span class="c1"># SGB Non Polar type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="n">parent</span></div>
+
+<div class="viewcode-block" id="Atom.set_index"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Atom.html#offpele.template.impact.Atom.set_index">[docs]</a>    <span class="k">def</span> <span class="nf">set_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the index of the atom.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span></div>
+
+<div class="viewcode-block" id="Atom.set_as_core"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Atom.html#offpele.template.impact.Atom.set_as_core">[docs]</a>    <span class="k">def</span> <span class="nf">set_as_core</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;It sets the atom as core&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_core</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Atom.set_as_branch"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Atom.html#offpele.template.impact.Atom.set_as_branch">[docs]</a>    <span class="k">def</span> <span class="nf">set_as_branch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;It sets the atom as branch&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_core</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Atom.set_parent"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Atom.html#offpele.template.impact.Atom.set_parent">[docs]</a>    <span class="k">def</span> <span class="nf">set_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the parent of the atom.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        parent : offpele.topology.Atom</span>
+<span class="sd">            The parent of the atom</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="n">parent</span></div>
+
+<div class="viewcode-block" id="Atom.set_coords"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Atom.html#offpele.template.impact.Atom.set_coords">[docs]</a>    <span class="k">def</span> <span class="nf">set_coords</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the coordinates of the atom.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        coords : list</span>
+<span class="sd">            The coordinates array to set to this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;3D array is expected&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_z</span> <span class="o">=</span> <span class="n">coords</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">core</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s core position.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        core : bool</span>
+<span class="sd">            Whether this Atom object is in the core or in a branch</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_core</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">OPLS_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s OPLS type.</span>
+
+<span class="sd">        .. todo ::</span>
+
+<span class="sd">           * Consider removing any reference to OPLS, if possible</span>
+<span class="sd">             Otherwise, use SMIRks to find the best match</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        OPLS_type : str</span>
+<span class="sd">            The OLPS type of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_OPLS_type</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">PDB_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s PDB name.</span>
+
+<span class="sd">        .. todo ::</span>
+
+<span class="sd">           * Consider removing any reference to OPLS, if possible</span>
+<span class="sd">             Otherwise, use SMIRks to find the best match</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        PDB_name : str</span>
+<span class="sd">            The PDB name of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PDB_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">unknown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s unknown int.</span>
+
+<span class="sd">        .. todo ::</span>
+
+<span class="sd">           * Review the actual purpose of this attribute in PELE</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        unknown : int</span>
+<span class="sd">            The unknown int of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unknown</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s x coordinate.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        x : float</span>
+<span class="sd">            The x coordinate of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_x</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">y</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s y coordinate.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        y : float</span>
+<span class="sd">            The y coordinate of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">z</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s z coordinate.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        z : float</span>
+<span class="sd">            The z coordinate of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_z</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sigma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s sigma.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        sigma : simtk.unit.Quantity</span>
+<span class="sd">            The sigma parameter of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sigma</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">epsilon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s epsilon.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        epsilon : simtk.unit.Quantity</span>
+<span class="sd">            The epsilon parameter of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_epsilon</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">charge</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s charge.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        charge : simtk.unit.Quantity</span>
+<span class="sd">            The charge parameter of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_charge</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">born_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s born radius.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        born_radius : simtk.unit.Quantity</span>
+<span class="sd">            The SGB Born radius parameter of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_born_radius</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">SASA_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s SASA radius.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SASA_radius : simtk.unit.Quantity</span>
+<span class="sd">            The SASA radius parameter of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_SASA_radius</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">nonpolar_gamma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s nonpolar gamma.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        nonpolar_gamma : simtk.unit.Quantity</span>
+<span class="sd">            The nonpolar gamma parameter of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nonpolar_gamma</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">nonpolar_alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s nonpolar alpha.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        nonpolar_alpha : simtk.unit.Quantity</span>
+<span class="sd">            The nonpolar alpha parameter of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nonpolar_alpha</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">parent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s parent.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        parent : simtk.unit.Quantity</span>
+<span class="sd">            The nonpolar gamma parameter of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span></div>
+
+
+<div class="viewcode-block" id="DummyAtom"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.molecule.DummyAtom.html#offpele.template.impact.DummyAtom">[docs]</a><span class="k">class</span> <span class="nc">DummyAtom</span><span class="p">(</span><span class="n">Atom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents a dummy atom.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DummyAtom.__init__"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.molecule.DummyAtom.html#offpele.template.impact.DummyAtom.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">PDB_name</span><span class="o">=</span><span class="s1">&#39;DUMM&#39;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initializes a DummyAtom object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the atom</span>
+<span class="sd">        PDB_name : str</span>
+<span class="sd">            The PDB name of the atom</span>
+<span class="sd">        parent : offpele.topology.Atom</span>
+<span class="sd">            The parent of the atom</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">PDB_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Molecule"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Molecule.html#offpele.template.impact.Molecule">[docs]</a><span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represent wraps up all the tools to parameterize a molecule with</span>
+<span class="sd">    the OpenForceField toolkit for PELE.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Molecule.__init__"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Molecule.html#offpele.template.impact.Molecule.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initializes a Molecule object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : str</span>
+<span class="sd">            The path to a PDB with the molecule structure</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">        Load a molecule from a PDB file and parameterize it</span>
+
+<span class="sd">        &gt;&gt;&gt; from offpele.topology import Molecule</span>
+
+<span class="sd">        &gt;&gt;&gt; molecule = Molecule(&#39;molecule.pdb&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; molecule.parameterize(&#39;openff_unconstrained-1.1.1.offxml&#39;)</span>
+
+<span class="sd">        Generate the rotamer library of a molecule</span>
+
+<span class="sd">        &gt;&gt;&gt; from offpele.topology import Molecule</span>
+
+<span class="sd">        &gt;&gt;&gt; molecule = Molecule(&#39;molecule.pdb&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; molecule.parameterize(&#39;openff_unconstrained-1.1.1.offxml&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; molecule.build_rotamer_library(resolution=30)</span>
+<span class="sd">        &gt;&gt;&gt; molecule.rotamer_library.to_file(&#39;MOL.rot.assign&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+            <span class="n">extension</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span>
+            <span class="n">extension</span> <span class="o">=</span> <span class="n">extension</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">extension</span> <span class="o">==</span> <span class="s1">&#39;pdb&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_from_pdb</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not a valid extension&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">extension</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initialize</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;It initializes an empty molecule.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_forcefield</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atoms</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bonds</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_angles</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_propers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_OFF_propers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_impropers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_OFF_impropers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rdkit_molecule</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_off_molecule</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rotamer_library</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_initialize_from_pdb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initializes a molecule with the molecule structure read from</span>
+<span class="sd">        a PDB file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : str</span>
+<span class="sd">            The path to a PDB with the molecule structure</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; - Loading molecule from RDKit&#39;</span><span class="p">)</span>
+
+        <span class="n">rdkit_toolkit</span> <span class="o">=</span> <span class="n">RDKitToolkitWrapper</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rdkit_molecule</span> <span class="o">=</span> <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">from_pdb</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="c1"># RDKit must generate stereochemistry specifically from 3D coords</span>
+        <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">assign_stereochemistry_from_3D</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># Set molecule name according to PDB&#39;s residue name</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">get_residue_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">openforcefield_toolkit</span> <span class="o">=</span> <span class="n">OpenForceFieldToolkitWrapper</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_off_molecule</span> <span class="o">=</span> <span class="n">openforcefield_toolkit</span><span class="o">.</span><span class="n">from_rdkit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Molecule.set_name"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Molecule.html#offpele.template.impact.Molecule.set_name">[docs]</a>    <span class="k">def</span> <span class="nf">set_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the name of the molecule.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            The name to set to the molecule</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">off_molecule</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">off_molecule</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span></div>
+
+<div class="viewcode-block" id="Molecule.parameterize"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Molecule.html#offpele.template.impact.Molecule.parameterize">[docs]</a>    <span class="k">def</span> <span class="nf">parameterize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">forcefield</span><span class="p">,</span> <span class="n">charges_method</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It parameterizes the molecule with a certain forcefield.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        forcefield : str or openforcefield.typing.engines.smirnoff.ForceField</span>
+<span class="sd">                     object</span>
+<span class="sd">            The forcefield from which the parameters will be obtained</span>
+<span class="sd">        charges_method : str</span>
+<span class="sd">            The name of the charges method to employ</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">off_molecule</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rdkit_molecule</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;OpenForceField molecule was not initialized &#39;</span>
+                            <span class="o">+</span> <span class="s1">&#39;correctly&#39;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; - Loading forcefield&#39;</span><span class="p">)</span>
+        <span class="n">openforcefield_toolkit</span> <span class="o">=</span> <span class="n">OpenForceFieldToolkitWrapper</span><span class="p">()</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="n">openforcefield_toolkit</span><span class="o">.</span><span class="n">get_parameters_from_forcefield</span><span class="p">(</span>
+            <span class="n">forcefield</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span>
+        <span class="c1"># TODO Is there a way to retrieve the name of the OFF&#39;s ForceField object?</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">forcefield</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_forcefield</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">forcefield</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span>
+
+        <span class="n">charges_calculator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_charges_calculator</span><span class="p">(</span><span class="n">charges_method</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; - Computing partial charges with &#39;</span>
+              <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">charges_calculator</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_assign_charges</span><span class="p">(</span><span class="n">charges_calculator</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_atoms</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_bonds</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_angles</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_propers</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_impropers</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Molecule.build_rotamer_library"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Molecule.html#offpele.template.impact.Molecule.build_rotamer_library">[docs]</a>    <span class="k">def</span> <span class="nf">build_rotamer_library</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resolution</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It builds the rotamer library of a parameterized molecule.</span>
+
+<span class="sd">        .. todo ::</span>
+
+<span class="sd">            * Consider moving this to the rotamer module.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        resolution : float</span>
+<span class="sd">            The resolution to discretize the rotamer&#39;s conformational space</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_parameterized</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; - Generating rotamer library&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span> <span class="o">=</span> <span class="n">MolecularGraph</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">set_core</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">set_parents</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rotamer_library</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">build_rotamer_library</span><span class="p">(</span><span class="n">resolution</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Molecule.plot_rotamer_graph"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Molecule.html#offpele.template.impact.Molecule.plot_rotamer_graph">[docs]</a>    <span class="k">def</span> <span class="nf">plot_rotamer_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;It plots the rotamer graph in screen.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_parameterized</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">Chem</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;RDKit Python API not found&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Find rotatable bond ids as in Lipinski module in RDKit</span>
+        <span class="c1"># https://github.com/rdkit/rdkit/blob/1bf6ef3d65f5c7b06b56862b3fb9116a3839b229/rdkit/Chem/Lipinski.py#L47</span>
+        <span class="n">rot_bonds_atom_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rdkit_molecule</span><span class="o">.</span><span class="n">GetSubstructMatches</span><span class="p">(</span>
+            <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmarts</span><span class="p">(</span><span class="s1">&#39;[!$(*#*)&amp;!D1]-&amp;!@[!$(*#*)&amp;!D1]&#39;</span><span class="p">))</span>
+
+        <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_rotamer_graph</span><span class="p">(</span><span class="n">rot_bonds_atom_ids</span><span class="p">)</span>
+
+        <span class="n">rot_edges</span> <span class="o">=</span> <span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                     <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">nrot_edges</span> <span class="o">=</span> <span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                      <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+
+        <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">circular_layout</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_nodes</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">node_size</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">edgelist</span><span class="o">=</span><span class="n">rot_edges</span><span class="p">,</span>
+                               <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_edges</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">edgelist</span><span class="o">=</span><span class="n">nrot_edges</span><span class="p">,</span>
+                               <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">edge_color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span>
+                               <span class="n">style</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
+        <span class="n">nx</span><span class="o">.</span><span class="n">draw_networkx_labels</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">font_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                                <span class="n">font_family</span><span class="o">=</span><span class="s1">&#39;sans-serif&#39;</span><span class="p">)</span>
+
+        <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_assert_parameterized</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It checks that the molecule has been parameterized, raises an</span>
+<span class="sd">        AssertionError otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">off_molecule</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">except</span> <span class="ne">AssertionError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Molecule not parameterized&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_charges_calculator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">charges_method</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It returns the charges method that matches with the name that is</span>
+<span class="sd">        supplied.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        charges_method : str</span>
+<span class="sd">            The name of the charges method to employ.</span>
+<span class="sd">            One of [&#39;gasteiger&#39;, &#39;am1bcc&#39;]. If None, &#39;am1bcc&#39; will be used</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        charge_calculator : An offpele.topology.charges.PartialChargesCalculator</span>
+<span class="sd">            object</span>
+<span class="sd">            The charge calculation method that will be employed to calculate</span>
+<span class="sd">            partial charges</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        Exception if the requested charge method is unknown</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">charges_method</span> <span class="o">==</span> <span class="s1">&#39;am1bcc&#39;</span> <span class="ow">or</span> <span class="n">charges_method</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Am1bccCalculator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">charges_method</span> <span class="o">==</span> <span class="s1">&#39;gasteiger&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">GasteigerCalculator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Charges method </span><span class="se">\&#39;</span><span class="si">{}</span><span class="se">\&#39;</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">charges_method</span><span class="p">)</span>
+                            <span class="o">+</span> <span class="s1">&#39;is unknown&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_assign_charges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;It computes the partial charges using the charge calculation</span>
+<span class="sd">        method that is supplied and assings them to the molecule..</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        method : An offpele.topology.charges.PartialChargesCalculator</span>
+<span class="sd">            object</span>
+<span class="sd">            The charge calculation method that will be employed to calculate</span>
+<span class="sd">            partial charges</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">charges</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="n">get_partial_charges</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">off_molecule</span><span class="o">.</span><span class="n">partial_charges</span> <span class="o">=</span> <span class="n">charges</span>
+
+    <span class="k">def</span> <span class="nf">_build_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;It builds the atoms of the molecule.&quot;&quot;&quot;</span>
+        <span class="c1"># PELE needs underscores instead of whitespaces</span>
+        <span class="n">pdb_atom_names</span> <span class="o">=</span> <span class="p">{(</span><span class="n">i</span><span class="p">,</span> <span class="p">):</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,)</span>
+                          <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_pdb_atom_names</span><span class="p">())}</span>
+
+        <span class="c1"># TODO should we assign an OPLS type? How can we do this with OFF?</span>
+        <span class="n">OPLS_types</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="kc">None</span>
+                      <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_vdW_parameters</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+
+        <span class="c1"># TODO Which is the purpose of unknown value? Is it important?</span>
+        <span class="n">unknowns</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="kc">None</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_vdW_parameters</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+
+        <span class="c1"># TODO Create z-matrix from 3D coordinates</span>
+
+        <span class="n">coords</span> <span class="o">=</span> <span class="n">RDKitToolkitWrapper</span><span class="p">()</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="n">sigmas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_vdW_sigmas</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">sigma</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">sigma</span> <span class="ow">in</span> <span class="n">sigmas</span><span class="o">.</span><span class="n">values</span><span class="p">()]):</span>
+            <span class="n">sigmas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_vdW_sigmas_from_rmin_halves</span><span class="p">()</span>
+
+        <span class="n">epsilons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_vdW_epsilons</span><span class="p">()</span>
+
+        <span class="c1"># TODO Find a way to assign implicit solvent parameters to atoms with OFF</span>
+        <span class="n">born_radii</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="kc">None</span>
+                      <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_vdW_parameters</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+
+        <span class="c1"># TODO Doublecheck later this relation</span>
+        <span class="n">SASA_radii</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">j</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">sigmas</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="c1"># TODO Find a way to assign implicit solvent parameters to atoms with OFF</span>
+        <span class="n">nonpolar_gammas</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_vdW_parameters</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+        <span class="n">nonpolar_alphas</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_vdW_parameters</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
+
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_vdW_parameters</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Index should be a tupple of length 1&#39;</span>
+            <span class="n">atom</span> <span class="o">=</span> <span class="n">Atom</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                        <span class="n">PDB_name</span><span class="o">=</span><span class="n">pdb_atom_names</span><span class="p">[</span><span class="n">index</span><span class="p">],</span>
+                        <span class="n">OPLS_type</span><span class="o">=</span><span class="n">OPLS_types</span><span class="p">[</span><span class="n">index</span><span class="p">],</span>
+                        <span class="n">unknown</span><span class="o">=</span><span class="n">unknowns</span><span class="p">[</span><span class="n">index</span><span class="p">],</span>
+                        <span class="n">x</span><span class="o">=</span><span class="n">coords</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="n">y</span><span class="o">=</span><span class="n">coords</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="n">z</span><span class="o">=</span><span class="n">coords</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span>
+                        <span class="n">sigma</span><span class="o">=</span><span class="n">sigmas</span><span class="p">[</span><span class="n">index</span><span class="p">],</span>
+                        <span class="n">epsilon</span><span class="o">=</span><span class="n">epsilons</span><span class="p">[</span><span class="n">index</span><span class="p">],</span>
+                        <span class="n">charge</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">off_molecule</span><span class="o">.</span><span class="n">partial_charges</span><span class="p">[</span><span class="n">index</span><span class="p">],</span>
+                        <span class="n">born_radius</span><span class="o">=</span><span class="n">born_radii</span><span class="p">[</span><span class="n">index</span><span class="p">],</span>
+                        <span class="n">SASA_radius</span><span class="o">=</span><span class="n">SASA_radii</span><span class="p">[</span><span class="n">index</span><span class="p">],</span>
+                        <span class="n">nonpolar_gamma</span><span class="o">=</span><span class="n">nonpolar_gammas</span><span class="p">[</span><span class="n">index</span><span class="p">],</span>
+                        <span class="n">nonpolar_alpha</span><span class="o">=</span><span class="n">nonpolar_alphas</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_atom</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_atom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atom</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It adds an atom to the molecule&#39;s list of atoms.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        atom : an offpele.topology.Atom</span>
+<span class="sd">            The Atom to add</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_build_bonds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;It builds the bonds of the molecule.&quot;&quot;&quot;</span>
+        <span class="n">lengths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_bond_lengths</span><span class="p">()</span>
+
+        <span class="n">ks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_bond_ks</span><span class="p">()</span>
+
+        <span class="n">bond_indexes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_bond_parameters</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">atom_indexes</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bond_indexes</span><span class="p">):</span>
+            <span class="p">(</span><span class="n">atom1_idx</span><span class="p">,</span> <span class="n">atom2_idx</span><span class="p">)</span> <span class="o">=</span> <span class="n">atom_indexes</span>
+            <span class="n">bond</span> <span class="o">=</span> <span class="n">Bond</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">atom1_idx</span><span class="o">=</span><span class="n">atom1_idx</span><span class="p">,</span> <span class="n">atom2_idx</span><span class="o">=</span><span class="n">atom2_idx</span><span class="p">,</span>
+                        <span class="n">spring_constant</span><span class="o">=</span><span class="n">ks</span><span class="p">[</span><span class="n">atom_indexes</span><span class="p">],</span>
+                        <span class="n">eq_dist</span><span class="o">=</span><span class="n">lengths</span><span class="p">[</span><span class="n">atom_indexes</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_bond</span><span class="p">(</span><span class="n">bond</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_bond</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bond</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It adds a bond to the molecule&#39;s list of bonds.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        bond : an offpele.topology.Bond</span>
+<span class="sd">            The Bond to add</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bonds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bond</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_build_angles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;It builds the angles of the molecule.&quot;&quot;&quot;</span>
+        <span class="n">angles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_angle_angles</span><span class="p">()</span>
+
+        <span class="n">ks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_angle_ks</span><span class="p">()</span>
+
+        <span class="n">angle_indexes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_angle_parameters</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">atom_indexes</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">angle_indexes</span><span class="p">):</span>
+            <span class="n">atom1_idx</span><span class="p">,</span> <span class="n">atom2_idx</span><span class="p">,</span> <span class="n">atom3_idx</span> <span class="o">=</span> <span class="n">atom_indexes</span>
+            <span class="n">angle</span> <span class="o">=</span> <span class="n">Angle</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">atom1_idx</span><span class="o">=</span><span class="n">atom1_idx</span><span class="p">,</span>
+                          <span class="n">atom2_idx</span><span class="o">=</span><span class="n">atom2_idx</span><span class="p">,</span> <span class="n">atom3_idx</span><span class="o">=</span><span class="n">atom3_idx</span><span class="p">,</span>
+                          <span class="n">spring_constant</span><span class="o">=</span><span class="n">ks</span><span class="p">[</span><span class="n">atom_indexes</span><span class="p">],</span>
+                          <span class="n">eq_angle</span><span class="o">=</span><span class="n">angles</span><span class="p">[</span><span class="n">atom_indexes</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_angle</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It adds an angle to the molecule&#39;s list of angles.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        angle : an offpele.topology.Angle</span>
+<span class="sd">            The Angle to add</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_angles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_build_propers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;It builds the propers of the molecule.&quot;&quot;&quot;</span>
+        <span class="n">periodicities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_dihedral_periodicities</span><span class="p">()</span>
+        <span class="n">phases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_dihedral_phases</span><span class="p">()</span>
+        <span class="n">ks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_dihedral_ks</span><span class="p">()</span>
+        <span class="n">idivfs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_dihedral_idivfs</span><span class="p">()</span>
+
+        <span class="c1"># idivf is a optional parameter in OpenForceField</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idivfs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">period_by_index</span> <span class="ow">in</span> <span class="n">periodicities</span><span class="p">:</span>
+                <span class="n">idivfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">period_by_index</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span>
+                                       <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">period_by_index</span><span class="o">.</span><span class="n">keys</span><span class="p">()))))</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">periodicities</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">phases</span><span class="p">)</span> <span class="ow">and</span> \
+            <span class="nb">len</span><span class="p">(</span><span class="n">periodicities</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">ks</span><span class="p">)</span> <span class="ow">and</span> \
+            <span class="nb">len</span><span class="p">(</span><span class="n">periodicities</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">idivfs</span><span class="p">),</span> <span class="s1">&#39;Unconsistent set of &#39;</span> \
+            <span class="s1">&#39;OpenForceField</span><span class="se">\&#39;</span><span class="s1">s torsional parameters. They all should have &#39;</span> \
+            <span class="s1">&#39;equal lengths&#39;</span>
+
+        <span class="k">for</span> <span class="n">period_by_index</span><span class="p">,</span> <span class="n">phase_by_index</span><span class="p">,</span> <span class="n">k_by_index</span><span class="p">,</span> <span class="n">idivf_by_index</span> <span class="ow">in</span> \
+                <span class="nb">zip</span><span class="p">(</span><span class="n">periodicities</span><span class="p">,</span> <span class="n">phases</span><span class="p">,</span> <span class="n">ks</span><span class="p">,</span> <span class="n">idivfs</span><span class="p">):</span>
+
+            <span class="k">assert</span> <span class="n">period_by_index</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">==</span> <span class="n">phase_by_index</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> \
+                <span class="n">period_by_index</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">==</span> <span class="n">k_by_index</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> \
+                <span class="n">period_by_index</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">==</span> <span class="n">idivf_by_index</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="s1">&#39;Unconsistent &#39;</span> \
+                <span class="s1">&#39;torsional parameter indexes. Keys should match.&#39;</span>
+
+            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">period_by_index</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">atom1_idx</span><span class="p">,</span> <span class="n">atom2_idx</span><span class="p">,</span> <span class="n">atom3_idx</span><span class="p">,</span> <span class="n">atom4_idx</span> <span class="o">=</span> <span class="n">index</span>
+
+                <span class="n">period</span> <span class="o">=</span> <span class="n">period_by_index</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+                <span class="n">phase</span> <span class="o">=</span> <span class="n">phase_by_index</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+                <span class="n">k</span> <span class="o">=</span> <span class="n">k_by_index</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+                <span class="n">idivf</span> <span class="o">=</span> <span class="n">idivf_by_index</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">period</span> <span class="ow">and</span> <span class="n">phase</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">and</span> <span class="n">idivf</span><span class="p">:</span>
+                    <span class="n">off_proper</span> <span class="o">=</span> <span class="n">OFFProper</span><span class="p">(</span><span class="n">atom1_idx</span><span class="o">=</span><span class="n">atom1_idx</span><span class="p">,</span>
+                                           <span class="n">atom2_idx</span><span class="o">=</span><span class="n">atom2_idx</span><span class="p">,</span>
+                                           <span class="n">atom3_idx</span><span class="o">=</span><span class="n">atom3_idx</span><span class="p">,</span>
+                                           <span class="n">atom4_idx</span><span class="o">=</span><span class="n">atom4_idx</span><span class="p">,</span>
+                                           <span class="n">periodicity</span><span class="o">=</span><span class="n">period</span><span class="p">,</span>
+                                           <span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span>
+                                           <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
+                                           <span class="n">idivf</span><span class="o">=</span><span class="n">idivf</span><span class="p">)</span>
+
+                    <span class="n">PELE_proper</span> <span class="o">=</span> <span class="n">off_proper</span><span class="o">.</span><span class="n">to_PELE</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_add_proper</span><span class="p">(</span><span class="n">PELE_proper</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_add_OFF_proper</span><span class="p">(</span><span class="n">off_proper</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_proper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proper</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It adds a proper dihedral to the molecule&#39;s list of propers.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        proper : an offpele.topology.Proper</span>
+<span class="sd">            The Proper to add</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_propers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">proper</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_OFF_proper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proper</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It adds a proper dihedral to the molecule&#39;s list of OFF propers.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        proper : an offpele.topology.OFFProper</span>
+<span class="sd">            The OFFProper to add</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_OFF_propers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">proper</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_build_impropers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;It builds the impropers of the molecule.&quot;&quot;&quot;</span>
+        <span class="n">periodicities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_improper_periodicities</span><span class="p">()</span>
+        <span class="n">phases</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_improper_phases</span><span class="p">()</span>
+        <span class="n">ks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_improper_ks</span><span class="p">()</span>
+        <span class="n">idivfs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">get_improper_idivfs</span><span class="p">()</span>
+
+        <span class="c1"># idivf is a optional parameter in OpenForceField</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idivfs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">period_by_index</span> <span class="ow">in</span> <span class="n">periodicities</span><span class="p">:</span>
+                <span class="n">idivfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">period_by_index</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span>
+                                       <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">period_by_index</span><span class="o">.</span><span class="n">keys</span><span class="p">()))))</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">periodicities</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">phases</span><span class="p">)</span> <span class="ow">and</span> \
+            <span class="nb">len</span><span class="p">(</span><span class="n">periodicities</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">ks</span><span class="p">)</span> <span class="ow">and</span> \
+            <span class="nb">len</span><span class="p">(</span><span class="n">periodicities</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">idivfs</span><span class="p">),</span> <span class="s1">&#39;Unconsistent set of &#39;</span> \
+            <span class="s1">&#39;OpenForceField</span><span class="se">\&#39;</span><span class="s1">s improper parameters. They all should have &#39;</span> \
+            <span class="s1">&#39;equal lengths&#39;</span>
+
+        <span class="k">for</span> <span class="n">period_by_index</span><span class="p">,</span> <span class="n">phase_by_index</span><span class="p">,</span> <span class="n">k_by_index</span><span class="p">,</span> <span class="n">idivf_by_index</span> <span class="ow">in</span> \
+                <span class="nb">zip</span><span class="p">(</span><span class="n">periodicities</span><span class="p">,</span> <span class="n">phases</span><span class="p">,</span> <span class="n">ks</span><span class="p">,</span> <span class="n">idivfs</span><span class="p">):</span>
+
+            <span class="k">assert</span> <span class="n">period_by_index</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">==</span> <span class="n">phase_by_index</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> \
+                <span class="n">period_by_index</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">==</span> <span class="n">k_by_index</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> \
+                <span class="n">period_by_index</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">==</span> <span class="n">idivf_by_index</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="s1">&#39;Unconsistent &#39;</span> \
+                <span class="s1">&#39;torsional parameter indexes. Keys should match.&#39;</span>
+
+            <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">period_by_index</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">atom1_idx</span><span class="p">,</span> <span class="n">atom2_idx</span><span class="p">,</span> <span class="n">atom3_idx</span><span class="p">,</span> <span class="n">atom4_idx</span> <span class="o">=</span> <span class="n">index</span>
+
+                <span class="n">period</span> <span class="o">=</span> <span class="n">period_by_index</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+                <span class="n">phase</span> <span class="o">=</span> <span class="n">phase_by_index</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+                <span class="n">k</span> <span class="o">=</span> <span class="n">k_by_index</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+                <span class="n">idivf</span> <span class="o">=</span> <span class="n">idivf_by_index</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">period</span> <span class="ow">and</span> <span class="n">phase</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">and</span> <span class="n">idivf</span><span class="p">:</span>
+                    <span class="n">off_improper</span> <span class="o">=</span> <span class="n">OFFImproper</span><span class="p">(</span><span class="n">atom1_idx</span><span class="o">=</span><span class="n">atom1_idx</span><span class="p">,</span>
+                                               <span class="n">atom2_idx</span><span class="o">=</span><span class="n">atom2_idx</span><span class="p">,</span>
+                                               <span class="n">atom3_idx</span><span class="o">=</span><span class="n">atom3_idx</span><span class="p">,</span>
+                                               <span class="n">atom4_idx</span><span class="o">=</span><span class="n">atom4_idx</span><span class="p">,</span>
+                                               <span class="n">periodicity</span><span class="o">=</span><span class="n">period</span><span class="p">,</span>
+                                               <span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span>
+                                               <span class="n">k</span><span class="o">=</span><span class="n">k</span><span class="p">,</span>
+                                               <span class="n">idivf</span><span class="o">=</span><span class="n">idivf</span><span class="p">)</span>
+
+                    <span class="n">PELE_improper</span> <span class="o">=</span> <span class="n">off_improper</span><span class="o">.</span><span class="n">to_PELE</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_add_improper</span><span class="p">(</span><span class="n">PELE_improper</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_add_OFF_improper</span><span class="p">(</span><span class="n">off_improper</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_improper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">improper</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It adds an improper dihedral to the molecule&#39;s list of impropers.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        improper : an offpele.topology.Improper</span>
+<span class="sd">            The Improper to add</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_impropers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">improper</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_add_OFF_improper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">improper</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It adds an improper dihedral to the molecule&#39;s list of OFF impropers.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        improper : an offpele.topology.OFFImproper</span>
+<span class="sd">            The OFFImproper to add</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_OFF_impropers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">improper</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Molecule.get_pdb_atom_names"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Molecule.html#offpele.template.impact.Molecule.get_pdb_atom_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_pdb_atom_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It returns the PDB atom names of all the atoms in the molecule.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pdb_atom_names : str</span>
+<span class="sd">            The PDB atom names of all the atoms in this Molecule object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_assert_parameterized</span><span class="p">()</span>
+
+        <span class="n">pdb_atom_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rdkit_molecule</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">():</span>
+            <span class="n">pdb_info</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">GetPDBResidueInfo</span><span class="p">()</span>
+            <span class="n">pdb_atom_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pdb_info</span><span class="o">.</span><span class="n">GetName</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">pdb_atom_names</span></div>
+
+<div class="viewcode-block" id="Molecule.to_impact"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Molecule.html#offpele.template.impact.Molecule.to_impact">[docs]</a>    <span class="k">def</span> <span class="nf">to_impact</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. todo ::</span>
+
+<span class="sd">            * We still need to implement this</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">off_molecule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The OpenForceField&#39;s molecule instance linked to the molecule.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        off_molecule : an openforcefield.topology.Molecule</span>
+<span class="sd">            The OpenForceField&#39;s molecule linked to this Molecule object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_off_molecule</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rdkit_molecule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The RDKit&#39;s molecule instance linked to the molecule.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        rdkit_molecule : an rdkit.Chem.rdchem.Mol object</span>
+<span class="sd">            The RDKit&#39;s molecule linked to this Molecule object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rdkit_molecule</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rotamer_library</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The rotamer library of the molecule.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        rotamer_library : an offpele.topology.rotamer.RotamerLibrary object</span>
+<span class="sd">            The rotamer library of this Molecule object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rotamer_library</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Molecule&#39;s name.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            The name of this Molecule object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">forcefield</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The forcefield employed to parameterize the molecule.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        forcefield : an openforcefield.typing.engines.smirnoff.ForceField</span>
+<span class="sd">                     object</span>
+<span class="sd">            The forcefield employed to parameterize this Molecule object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forcefield</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The list of atoms of the molecule.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        atoms : list[offpele.topology.molecule.Atom]</span>
+<span class="sd">            The list of atoms of this Molecule object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atoms</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">bonds</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The list of bonds of the molecule.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bonds : list[offpele.topology.Bond]</span>
+<span class="sd">            The list of bonds of this Molecule object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bonds</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">angles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The list of angles of the molecule.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        angles : list[offpele.topology.Angle]</span>
+<span class="sd">            The list of angles of this Molecule object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_angles</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">propers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The list of propers of the molecule.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        propers : list[offpele.topology.Proper]</span>
+<span class="sd">            The list of propers of this Molecule object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_propers</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">impropers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The list of impropers of the molecule.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        impropers : list[offpele.topology.Improper]</span>
+<span class="sd">            The list of impropers of this Molecule object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_impropers</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">graph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The topological graph of the molecule.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        graph : an offpele.topology.rotamer.MolecularGraph object</span>
+<span class="sd">            The topological graph of this Molecule object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Barcelona Supercomputing Center
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

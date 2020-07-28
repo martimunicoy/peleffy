@@ -1,0 +1,61 @@
+offpele.topology.rotamer.MolecularGraph
+=======================================
+
+.. currentmodule:: offpele.topology.rotamer
+
+.. autoclass:: MolecularGraph
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: add_edge
+      .. automethod:: add_edges_from
+      .. automethod:: add_node
+      .. automethod:: add_nodes_from
+      .. automethod:: add_weighted_edges_from
+      .. automethod:: adjacency
+      .. automethod:: build_rotamer_library
+      .. automethod:: clear
+      .. automethod:: copy
+      .. automethod:: edge_subgraph
+      .. automethod:: get_edge_data
+      .. automethod:: has_edge
+      .. automethod:: has_node
+      .. automethod:: is_directed
+      .. automethod:: is_multigraph
+      .. automethod:: nbunch_iter
+      .. automethod:: neighbors
+      .. automethod:: number_of_edges
+      .. automethod:: number_of_nodes
+      .. automethod:: order
+      .. automethod:: remove_edge
+      .. automethod:: remove_edges_from
+      .. automethod:: remove_node
+      .. automethod:: remove_nodes_from
+      .. automethod:: set_core
+      .. automethod:: set_parents
+      .. automethod:: size
+      .. automethod:: subgraph
+      .. automethod:: to_directed
+      .. automethod:: to_directed_class
+      .. automethod:: to_undirected
+      .. automethod:: to_undirected_class
+      .. automethod:: update
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~MolecularGraph.adj
+      ~MolecularGraph.degree
+      ~MolecularGraph.edges
+      ~MolecularGraph.molecule
+      ~MolecularGraph.name
+      ~MolecularGraph.nodes
+   
+   

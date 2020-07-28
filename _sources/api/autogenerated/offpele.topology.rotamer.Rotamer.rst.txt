@@ -1,0 +1,25 @@
+offpele.topology.rotamer.Rotamer
+================================
+
+.. currentmodule:: offpele.topology.rotamer
+
+.. autoclass:: Rotamer
+
+   
+   
+   
+      .. automethod:: __init__
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Rotamer.atom1
+      ~Rotamer.atom2
+      ~Rotamer.resolution
+   
+   
