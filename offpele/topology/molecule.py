@@ -10,6 +10,7 @@ from offpele.utils.toolkits import (AmberToolkitWrapper,
                                     RDKitToolkitWrapper,
                                     OpenForceFieldToolkitWrapper)
 from .rotamer import MolecularGraph
+from .charges import (Am1bccCalculator, GasteigerCalculator)
 
 
 class Atom(object):
@@ -456,7 +457,7 @@ class Molecule(object):
             if self.off_molecule:
                 self.off_molecule.name = name
 
-    def parameterize(self, forcefield, charges_calculator=Am1bccCalculator()):
+    def parameterize(self, forcefield, charges_method=None):
         """
         It parameterizes the molecule with a certain forcefield.
 
@@ -465,8 +466,8 @@ class Molecule(object):
         forcefield : str or openforcefield.typing.engines.smirnoff.ForceField
                      object
             The forcefield from which the parameters will be obtained
-        charges_calculator : An offpele.topology.charges.PartialChargesCalculator
-            object
+        charges_method : str
+            The name of the charges method to employ
         """
 
         if not self.off_molecule or not self.rdkit_molecule:
@@ -483,9 +484,11 @@ class Molecule(object):
         if isinstance(forcefield, str):
             self._forcefield = Path(forcefield).stem
 
+        charges_calculator = self._get_charges_calculator(charges_method)
+
         print(' - Computing partial charges with '
               + '{}'.format(charges_calculator.name))
-        self._calculate_charges(charges_calculator)
+        self._assign_charges(charges_calculator)
 
         self._build_atoms()
 
@@ -570,11 +573,52 @@ class Molecule(object):
         except AssertionError:
             raise Exception('Molecule not parameterized')
 
-    def _calculate_charges(self, method):
-        """It computes the partial charges using the am1bcc method."""
-        amber_toolkit = AmberToolkitWrapper()
+    def _get_charges_calculator(self, charges_method):
+        """
+        It returns the charges method that matches with the name that is
+        supplied.
 
-        charges = amber_toolkit.compute_partial_charges_am1bcc(self)
+        Parameters
+        ----------
+        charges_method : str
+            The name of the charges method to employ.
+            One of ['gasteiger', 'am1bcc']. If None, 'am1bcc' will be used
+
+        Returns
+        -------
+        charge_calculator : An offpele.topology.charges.PartialChargesCalculator
+            object
+            The charge calculation method that will be employed to calculate
+            partial charges
+
+        Raises
+        ------
+        Exception if the requested charge method is unknown
+        """
+
+        if charges_method == 'am1bcc' or charges_method is None:
+            return Am1bccCalculator(self)
+
+        elif charges_method == 'gasteiger':
+            return GasteigerCalculator(self)
+
+        else:
+            raise Exception('Charges method \'{}\' '.format(charges_method)
+                            + 'is unknown')
+
+    def _assign_charges(self, method):
+        """It computes the partial charges using the charge calculation
+        method that is supplied and assings them to the molecule..
+
+        Parameters
+        ----------
+        method : An offpele.topology.charges.PartialChargesCalculator
+            object
+            The charge calculation method that will be employed to calculate
+            partial charges
+        """
+
+        charges = method.get_partial_charges()
 
         self.off_molecule.partial_charges = charges
 
