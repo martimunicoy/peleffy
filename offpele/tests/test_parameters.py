@@ -29,7 +29,7 @@ class TestDihedrals(object):
         for ligand_path in SET_OF_LIGAND_PATHS:
             ligand_path = get_data_file_path(ligand_path)
             molecule = Molecule(ligand_path)
-            molecule.parameterize(FORCEFIELD_NAME)
+            molecule.parameterize(FORCEFIELD_NAME, charges_method='gasteiger')
 
             x = unit.Quantity(np.arange(0, np.pi, 0.1), unit=unit.radians)
 
