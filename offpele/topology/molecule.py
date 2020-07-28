@@ -6,8 +6,7 @@ representations.
 from pathlib import Path
 
 from .topology import Bond, Angle, OFFProper, OFFImproper
-from offpele.utils.toolkits import (AmberToolkitWrapper,
-                                    RDKitToolkitWrapper,
+from offpele.utils.toolkits import (RDKitToolkitWrapper,
                                     OpenForceFieldToolkitWrapper)
 from .rotamer import MolecularGraph
 from .charges import (Am1bccCalculator, GasteigerCalculator)
