@@ -27,7 +27,7 @@ class ChargeCalculationError(Exception):
     pass
 
 
-class ChargeMethodUnavailableError(MessageException):
+class ChargeMethodUnavailableError(Exception):
     """A toolkit does not support the requested partial_charge_method combination"""
     pass
 
@@ -281,7 +281,7 @@ class AmberToolkitWrapper(ToolkitWrapper):
         molecule : an offpele.topology.Molecule
             The offpele's Molecule object
         method : str
-            The name of the method to use.  One of ['gasteiger', 'am1bcc'].
+            The name of the method to use. One of ['gasteiger', 'am1bcc'].
             If None, 'am1bcc' will be used
 
         Returns
