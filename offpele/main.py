@@ -167,7 +167,7 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
         output = os.getcwd()
 
     molecule = Molecule(pdb_file)
-    molecule.parameterize(forcefield)
+    molecule.parameterize(forcefield, charges_method=charges_method)
 
     rotlib_out, impact_out, solvent_out = handle_output_paths(molecule, output, as_datalocal)
 
