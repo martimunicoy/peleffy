@@ -240,7 +240,7 @@ class OBC2(_SolventWrapper):
     Implementation of the OBC2 solvent.
     """
 
-    _ff_file = get_data_file_path('forcefields/GBSA_OBC1-1.0.offxml')
+    _ff_file = get_data_file_path('forcefields/GBSA_OBC2-1.0.offxml')
     _name = 'OBC2'
 
     def __init__(self, molecule):
