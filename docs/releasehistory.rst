@@ -7,8 +7,21 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``minor`` increments add features but do not break API compatibility
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
+0.3.0 - Current development
+-------------------------
 
-0.1.0
+This is still a preliminary version of the Open Force Field to PELE package. It includes some new features and improvements in documentation and unit testing.
+
+New features
+""""""""""""
+- `PR #15 <https://github.com/martimunicoy/offpele/pull/15>`_: Adds a new method (Antechamber's gasteiger) to calculate partial charges.
+
+Tests added
+"""""""""""
+- `PR #15 <https://github.com/martimunicoy/offpele/pull/15>`_: Adds tests ensuring that the run_offpele call from main and the partial charge calculators work as expected.
+
+
+0.2.0
 -----
 
 This is a preliminary version of the Open Force Field to PELE package.
