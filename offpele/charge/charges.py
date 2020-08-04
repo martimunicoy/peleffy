@@ -7,7 +7,7 @@ calculators.
 from offpele.utils.toolkits import AmberToolkitWrapper
 
 
-class PartialChargesCalculator(object):
+class _PartialChargesCalculator(object):
     """
     Base class for partial charges calculators.
     """
@@ -57,7 +57,7 @@ class PartialChargesCalculator(object):
                                                            method=self.name)
 
 
-class Am1bccCalculator(PartialChargesCalculator):
+class Am1bccCalculator(_PartialChargesCalculator):
     """
     Implementation of the AM1-BCC partial charges calculator (using RDKit).
     """
@@ -65,7 +65,7 @@ class Am1bccCalculator(PartialChargesCalculator):
     _name = 'am1bcc'
 
 
-class GasteigerCalculator(PartialChargesCalculator):
+class GasteigerCalculator(_PartialChargesCalculator):
     """
     Implementation of the gasteiger partial charges calculator (using
     RDKit).

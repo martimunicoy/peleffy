@@ -6,10 +6,10 @@ representations.
 from pathlib import Path
 
 from .topology import Bond, Angle, OFFProper, OFFImproper
+from .rotamer import MolecularGraph
 from offpele.utils.toolkits import (RDKitToolkitWrapper,
                                     OpenForceFieldToolkitWrapper)
-from .rotamer import MolecularGraph
-from .charges import (Am1bccCalculator, GasteigerCalculator)
+from offpele.charge import (Am1bccCalculator, GasteigerCalculator)
 
 
 class Atom(object):
