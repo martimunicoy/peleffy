@@ -749,10 +749,14 @@ class Molecule(object):
         idivfs = self.parameters.get_dihedral_idivfs()
 
         # idivf is a optional parameter in OpenForceField
-        if len(idivfs) == 0:
-            for period_by_index in periodicities:
-                idivfs.append(dict(zip(period_by_index.keys(),
-                                       [1, ] * len(period_by_index.keys()))))
+        if idivfs is not None:
+            if len(idivfs) == 0:
+                for period_by_index in periodicities:
+                    idivfs.append(dict(zip(
+                        period_by_index.keys(),
+                        [1, ] * len(period_by_index.keys()))))
+        else:
+            return
 
         assert len(periodicities) == len(phases) and \
             len(periodicities) == len(ks) and \
@@ -820,16 +824,20 @@ class Molecule(object):
         idivfs = self.parameters.get_improper_idivfs()
 
         # idivf is a optional parameter in OpenForceField
-        if len(idivfs) == 0:
-            for period_by_index in periodicities:
-                idivfs.append(dict(zip(period_by_index.keys(),
-                                       [1, ] * len(period_by_index.keys()))))
+        if idivfs is not None:
+            if len(idivfs) == 0:
+                for period_by_index in periodicities:
+                    idivfs.append(dict(zip(
+                        period_by_index.keys(),
+                        [1, ] * len(period_by_index.keys()))))
+        else:
+            return
 
         assert len(periodicities) == len(phases) and \
             len(periodicities) == len(ks) and \
             len(periodicities) == len(idivfs), 'Unconsistent set of ' \
-            'OpenForceField\'s improper parameters. They all should have ' \
-            'equal lengths'
+            'OpenForceField\'s improper parameters. They all should ' \
+            'have equal lengths'
 
         for period_by_index, phase_by_index, k_by_index, idivf_by_index in \
                 zip(periodicities, phases, ks, idivfs):
