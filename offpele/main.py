@@ -22,6 +22,7 @@ DEFAULT_CHARGES_METHOD = 'am1bcc'
 IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OFF/Parsley/HeteroAtoms/'
 ROTAMER_LIBRARY_PATH = 'DataLocal/LigandRotamerLibs/'
 SOLVENT_TEMPLATE_PATH = 'DataLocal/OBC/'
+DEFAULT_TERMINAL_ROT_TO_IGNORE = 1
 
 
 def parse_args():
@@ -56,6 +57,10 @@ def parse_args():
     parser.add_argument('-c', '--charges_method', metavar="NAME",
                         type=str, help="The name of the method to use to "
                         + "compute charges", default=DEFAULT_CHARGES_METHOD)
+    parser.add_argument('-t', '--terminal_rotamers_to_ignore', metavar="INT",
+                        type=str, help="The number of terminal rotamers " +
+                        " to ignore when building the rotamer library",
+                        default=DEFAULT_TERMINAL_ROT_TO_IGNORE)
 
     parser.set_defaults(as_datalocal=False)
     parser.set_defaults(with_solvent=False)
@@ -118,6 +123,7 @@ def handle_output_paths(molecule, output, as_datalocal):
 def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
                 resolution=DEFAULT_RESOLUTION,
                 charges_method=DEFAULT_CHARGES_METHOD,
+                terminal_rotamers_to_ignore=DEFAULT_TERMINAL_ROT_TO_IGNORE,
                 output=None, with_solvent=False, as_datalocal=False):
     """
     It runs offpele.
@@ -129,10 +135,13 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     forcefield : str
         The name of an OpenForceField's forcefield
     resolution : float
-        The resolution in degrees for the rotamer library
+        The resolution in degrees for the rotamer library. Default is 30
     charges_method : str
         The name of the method to use to compute partial charges. Default
         is 'am1bcc'
+    terminal_rotamers_to_ignore : int
+        The number of terminal rotamers to ignore when building the
+        rotamer library. Default is 1
     output : str
         Path where output files will be saved
     with_solvent : bool
@@ -150,6 +159,8 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     print(' - Force field: {}'.format(forcefield))
     print(' - Rotamer library resolution: {}'.format(resolution))
     print(' - Charges method: {}'.format(charges_method))
+    print(' - Terminal rotamers to ignore: {}'.format(
+        terminal_rotamers_to_ignore))
     print(' - Output path: {}'.format(output))
     print(' - Write solvent parameters: {}'.format(with_solvent))
     print(' - DataLocal-like output: {}'.format(as_datalocal))
@@ -171,7 +182,9 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
 
     rotlib_out, impact_out, solvent_out = handle_output_paths(molecule, output, as_datalocal)
 
-    molecule.build_rotamer_library(resolution=resolution)
+    molecule.build_rotamer_library(
+        resolution=resolution,
+        n_rot_bonds_to_ignore=terminal_rotamers_to_ignore)
     molecule.rotamer_library.to_file(rotlib_out)
     impact = Impact(molecule)
     impact.write(impact_out)
@@ -199,8 +212,9 @@ def main():
     """
     args = parse_args()
     run_offpele(args.pdb_file, args.forcefield, args.resolution,
-                args.charges_method, args.output, args.with_solvent,
-                args.as_datalocal, )
+                args.charges_method, args.terminal_rotamers_to_ignore,
+                args.output, args.with_solvent,
+                args.as_datalocal)
 
 
 if __name__ == '__main__':
