@@ -143,7 +143,7 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
         not
     """
     print('-' * 60)
-    print('Open Force Field parameterizer for PELE v'
+    print('Open Force Field parameterizer for PELE '
           '{}'.format(offpele.__version__))
     print('-' * 60)
     print(' - PDB to parameterize: {}'.format(pdb_file))

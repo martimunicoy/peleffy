@@ -748,15 +748,16 @@ class Molecule(object):
         ks = self.parameters.get_dihedral_ks()
         idivfs = self.parameters.get_dihedral_idivfs()
 
-        # idivf is a optional parameter in OpenForceField
-        if idivfs is not None:
-            if len(idivfs) == 0:
-                for period_by_index in periodicities:
-                    idivfs.append(dict(zip(
-                        period_by_index.keys(),
-                        [1, ] * len(period_by_index.keys()))))
-        else:
+        # TODO in which situation these dicts are supposed to be None?
+        if periodicities is None or phases is None or ks is None:
             return
+
+        # idivf is a optional parameter in OpenForceField
+        if len(idivfs) == 0:
+            for period_by_index in periodicities:
+                idivfs.append(dict(zip(
+                    period_by_index.keys(),
+                    [1, ] * len(period_by_index.keys()))))
 
         assert len(periodicities) == len(phases) and \
             len(periodicities) == len(ks) and \
@@ -823,15 +824,16 @@ class Molecule(object):
         ks = self.parameters.get_improper_ks()
         idivfs = self.parameters.get_improper_idivfs()
 
-        # idivf is a optional parameter in OpenForceField
-        if idivfs is not None:
-            if len(idivfs) == 0:
-                for period_by_index in periodicities:
-                    idivfs.append(dict(zip(
-                        period_by_index.keys(),
-                        [1, ] * len(period_by_index.keys()))))
-        else:
+        # TODO in which situation these dicts are supposed to be None?
+        if periodicities is None or phases is None or ks is None:
             return
+
+        # idivf is a optional parameter in OpenForceField
+        if len(idivfs) == 0:
+            for period_by_index in periodicities:
+                idivfs.append(dict(zip(
+                    period_by_index.keys(),
+                    [1, ] * len(period_by_index.keys()))))
 
         assert len(periodicities) == len(phases) and \
             len(periodicities) == len(ks) and \
