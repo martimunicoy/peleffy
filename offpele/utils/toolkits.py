@@ -27,6 +27,11 @@ class ChargeCalculationError(Exception):
     pass
 
 
+class ChargeMethodUnavailableError(Exception):
+    """A toolkit does not support the requested partial_charge_method combination"""
+    pass
+
+
 class ToolkitWrapper(object):
     """
     Toolkit wrapper base class.
@@ -267,21 +272,42 @@ class AmberToolkitWrapper(ToolkitWrapper):
             return False
         return True
 
-    def compute_partial_charges_am1bcc(self, molecule):
+    def compute_partial_charges(self, molecule, method='am1bcc'):
         """
-        It computes the partial charges using antechamber and the am1bcc
-        method.
+        It computes the partial charges using antechamber.
 
         Parameters
         ----------
         molecule : an offpele.topology.Molecule
             The offpele's Molecule object
+        method : str
+            The name of the method to use. One of ['gasteiger', 'am1bcc'].
+            If None, 'am1bcc' will be used
 
         Returns
         -------
         charges : simtk.unit.Quantity
             The array of partial charges
+
+        Raises
+        ------
+        ChargeMethodUnavailableError if the requested charge method can not
+            be handled by this toolkit
+        ChargeCalculationError if the charge method is supported by this
+            toolkit, but fails
         """
+
+        SUPPORTED_CHARGE_METHODS = {'am1bcc': {'antechamber_keyword': 'bcc'},
+                                    'gasteiger': {'antechamber_keyword': 'gas'}
+                                    }
+
+        if method not in SUPPORTED_CHARGE_METHODS:
+            raise ChargeMethodUnavailableError(
+                'partial_charge_method '
+                + '{} is not available from '.format(method)
+                + 'AmberToolsToolkitWrapper. Available charge methods are '
+                + list(SUPPORTED_CHARGE_METHODS.keys()))
+
         off_molecule = molecule.off_molecule
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -295,7 +321,9 @@ class AmberToolkitWrapper(ToolkitWrapper):
                 subprocess.check_output([
                     "antechamber", "-i", "molecule.sdf", "-fi", "sdf",
                     "-o", "charged.ac", "-fo", "ac", "-pf", "yes", "-dr", "n",
-                    "-c", "bcc", "-nc", str(net_charge)])
+                    "-c",
+                    SUPPORTED_CHARGE_METHODS[method]['antechamber_keyword'],
+                    "-nc", str(net_charge)])
                 # Write out just charges
                 subprocess.check_output([
                     "antechamber", "-dr", "n", "-i", "charged.ac", "-fi", "ac",
