@@ -499,7 +499,7 @@ class Molecule(object):
 
         self._build_impropers()
 
-    def build_rotamer_library(self, resolution):
+    def build_rotamer_library(self, resolution=30, n_rot_bonds_to_ignore=1):
         """
         It builds the rotamer library of a parameterized molecule.
 
@@ -510,7 +510,11 @@ class Molecule(object):
         Parameters
         ----------
         resolution : float
-            The resolution to discretize the rotamer's conformational space
+            The resolution in degrees to discretize the rotamer's
+            conformational space. Default is 30
+        n_rot_bonds_to_ignore : int
+            The number of terminal rotatable bonds to ignore when
+            building the rotamer library. Default is 1
         """
         self._assert_parameterized()
 
@@ -522,7 +526,8 @@ class Molecule(object):
 
         self.graph.set_parents()
 
-        self._rotamer_library = self.graph.build_rotamer_library(resolution)
+        self._rotamer_library = self.graph.build_rotamer_library(
+            resolution, n_rot_bonds_to_ignore)
 
     def plot_rotamer_graph(self):
         """It plots the rotamer graph in screen."""

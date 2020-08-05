@@ -432,14 +432,48 @@ class MolecularGraph(nx.Graph):
 
         return sorted_rot_bonds_per_group
 
-    def build_rotamer_library(self, resolution):
+    def _ignore_terminal_rotatable_bonds(self, sorted_rot_bonds_per_group,
+                                         n_rot_bonds_to_ignore):
+        """
+        It ignores a certain number of terminal rotatable bonds of each
+        group.
+
+        Parameters
+        ----------
+        sorted_rot_bonds_per_group : list[list]
+            The rotatable bonds per group, sorted in increasing order by
+            their distance with respect to the corresponding core atom
+        n_rot_bonds_to_ignore : int
+            The number of terminal rotatable bonds to ignore in each group
+
+        Returns
+        -------
+        filtered_rot_bonds_per_group : list[list]
+            The filtered rotatable bonds per group that are obtained
+        """
+        if n_rot_bonds_to_ignore == 0:
+            return sorted_rot_bonds_per_group
+
+        filtered_rot_bonds_per_group = list()
+
+        for rot_bonds in sorted_rot_bonds_per_group:
+            filtered_rot_bonds_per_group.append(
+                rot_bonds[:-n_rot_bonds_to_ignore])
+
+        return filtered_rot_bonds_per_group
+
+    def build_rotamer_library(self, resolution=30, n_rot_bonds_to_ignore=1):
         """
         It builds the RotamerLibrary object.
 
         Parameters
         ----------
         resolution : float
-            The resolution to discretize the rotamer's conformational space
+            The resolution in degrees to discretize the rotamer's
+            conformational space. Default is 30
+        n_rot_bonds_to_ignore : int
+            The number of terminal rotatable bonds to ignore when
+            building the rotamer library. Default is 1
 
         Returns
         -------
@@ -471,13 +505,16 @@ class MolecularGraph(nx.Graph):
         sorted_rot_bonds_per_group = self._get_sorted_bonds_per_group(
             core_atom_per_group, rot_bonds_per_group, distances)
 
+        filtered_rot_bonds_per_group = self._ignore_terminal_rotatable_bonds(
+            sorted_rot_bonds_per_group, n_rot_bonds_to_ignore)
+
         rotamer_library = RotamerLibrary(self.molecule.name)
 
         # PELE needs underscores instead of whitespaces
         pdb_atom_names = [name.replace(' ', '_',)
                           for name in self.molecule.get_pdb_atom_names()]
 
-        for group_id, rot_bonds in enumerate(sorted_rot_bonds_per_group):
+        for group_id, rot_bonds in enumerate(filtered_rot_bonds_per_group):
             for (atom1_index, atom2_index) in rot_bonds:
                 atom1_name = pdb_atom_names[atom1_index]
                 atom2_name = pdb_atom_names[atom2_index]
