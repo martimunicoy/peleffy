@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.gbb9fc09
+                0+untagged.1.g275f2e8
               </div>
             
           
@@ -438,11 +438,16 @@ the graph.</p>
 
 <dl class="py method">
 <dt id="offpele.topology.rotamer.MolecularGraph.build_rotamer_library">
-<code class="sig-name descname">build_rotamer_library</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">resolution</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/rotamer.html#MolecularGraph.build_rotamer_library"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.rotamer.MolecularGraph.build_rotamer_library" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">build_rotamer_library</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">n_rot_bonds_to_ignore</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/rotamer.html#MolecularGraph.build_rotamer_library"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.rotamer.MolecularGraph.build_rotamer_library" title="Permalink to this definition">¶</a></dt>
 <dd><p>It builds the RotamerLibrary object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>resolution</strong> (<em>float</em>) – The resolution to discretize the rotamer’s conformational space</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>resolution</strong> (<em>float</em>) – The resolution in degrees to discretize the rotamer’s
+conformational space. Default is 30</p></li>
+<li><p><strong>n_rot_bonds_to_ignore</strong> (<em>int</em>) – The number of terminal rotatable bonds to ignore when
+building the rotamer library. Default is 1</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>rotamer_library</strong> – The RotamerLibrary for the supplied Molecule object.</p>
