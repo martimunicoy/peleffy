@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0+untagged.1.g275f2e8
+                0+untagged.1.g1563ce3
               </div>
             
           
@@ -166,25 +166,39 @@
 </ul>
 <div class="section" id="current-development">
 <h2>0.3.0 - Current development<a class="headerlink" href="#current-development" title="Permalink to this headline">¶</a></h2>
-<p>This is still a preliminary version of the Open Force Field to PELE package. It includes some new features and improvements in documentation and unit testing.</p>
+<p>This is still a preliminary version of the Open Force Field to PELE package.</p>
+</div>
+<div class="section" id="id1">
+<h2>0.2.1<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>This is a micro release that includes new features and parameters to configurate the behaviour of the program.
+It is designed to be employed to run the first benchmarks of the implementation in PELE.
+It also includes many stability improvements and an extended test coverage.</p>
 <div class="section" id="new-features">
 <h3>New features<a class="headerlink" href="#new-features" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/15">PR #15</a>: Adds a new method (Antechamber’s gasteiger) to calculate partial charges.</p></li>
+<li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/19">PR #19</a>: Adds a new option to ignore terminal rotatable bonds of each rotamer’s branch.</p></li>
+</ul>
+</div>
+<div class="section" id="bugfixes">
+<h3>Bugfixes<a class="headerlink" href="#bugfixes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/18">PR #18</a>: Fixes some problems with proper and improper constructors.</p></li>
 </ul>
 </div>
 <div class="section" id="tests-added">
 <h3>Tests added<a class="headerlink" href="#tests-added" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/15">PR #15</a>: Adds tests ensuring that the run_offpele call from main and the partial charge calculators work as expected.</p></li>
+<li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/19">PR #19</a>: Adds tests to validate the construction of the <cite>RotamerLibrary</cite> class and the filtering of terminal rotatable bonds.</p></li>
 </ul>
 </div>
 </div>
-<div class="section" id="id2">
-<h2>0.2.0<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id4">
+<h2>0.2.0<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <p>This is a preliminary version of the Open Force Field to PELE package.</p>
-<div class="section" id="id3">
-<h3>New features<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id5">
+<h3>New features<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>A first implementation of the package that allows to:</p>
 <ul class="simple">
 <li><p>Build a rotamer library for a small molecule using RDKit’s API</p></li>
