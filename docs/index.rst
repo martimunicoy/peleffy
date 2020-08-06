@@ -13,6 +13,7 @@ User guide
   :maxdepth: 1
 
   installation
+  releasehistory
 
 
 API documentation
@@ -24,3 +25,4 @@ API documentation
   topology
   template
   solvent
+  charge

@@ -18,9 +18,11 @@ from offpele.utils import check_if_path_exists, create_path
 
 DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-1.2.0.offxml'
 DEFAULT_RESOLUTION = int(30)
+DEFAULT_CHARGES_METHOD = 'am1bcc'
 IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OFF/Parsley/HeteroAtoms/'
 ROTAMER_LIBRARY_PATH = 'DataLocal/LigandRotamerLibs/'
 SOLVENT_TEMPLATE_PATH = 'DataLocal/OBC/'
+DEFAULT_TERMINAL_ROT_TO_IGNORE = 1
 
 
 def parse_args():
@@ -52,6 +54,13 @@ def parse_args():
     parser.add_argument('--as_DataLocal', dest='as_datalocal',
                         help="Output will be saved following PELE's DataLocal "
                         + "hierarchy", action='store_true')
+    parser.add_argument('-c', '--charges_method', metavar="NAME",
+                        type=str, help="The name of the method to use to "
+                        + "compute charges", default=DEFAULT_CHARGES_METHOD)
+    parser.add_argument('-t', '--terminal_rotamers_to_ignore', metavar="INT",
+                        type=str, help="The number of terminal rotamers " +
+                        " to ignore when building the rotamer library",
+                        default=DEFAULT_TERMINAL_ROT_TO_IGNORE)
 
     parser.set_defaults(as_datalocal=False)
     parser.set_defaults(with_solvent=False)
@@ -112,8 +121,10 @@ def handle_output_paths(molecule, output, as_datalocal):
 
 
 def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
-                resolution=DEFAULT_RESOLUTION, output=None,
-                with_solvent=False, as_datalocal=False,):
+                resolution=DEFAULT_RESOLUTION,
+                charges_method=DEFAULT_CHARGES_METHOD,
+                terminal_rotamers_to_ignore=DEFAULT_TERMINAL_ROT_TO_IGNORE,
+                output=None, with_solvent=False, as_datalocal=False):
     """
     It runs offpele.
 
@@ -124,7 +135,13 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     forcefield : str
         The name of an OpenForceField's forcefield
     resolution : float
-        The resolution in degrees for the rotamer library
+        The resolution in degrees for the rotamer library. Default is 30
+    charges_method : str
+        The name of the method to use to compute partial charges. Default
+        is 'am1bcc'
+    terminal_rotamers_to_ignore : int
+        The number of terminal rotamers to ignore when building the
+        rotamer library. Default is 1
     output : str
         Path where output files will be saved
     with_solvent : bool
@@ -135,12 +152,15 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
         not
     """
     print('-' * 60)
-    print('Open Force Field parameterizer for PELE v'
+    print('Open Force Field parameterizer for PELE '
           '{}'.format(offpele.__version__))
     print('-' * 60)
     print(' - PDB to parameterize: {}'.format(pdb_file))
     print(' - Force field: {}'.format(forcefield))
     print(' - Rotamer library resolution: {}'.format(resolution))
+    print(' - Charges method: {}'.format(charges_method))
+    print(' - Terminal rotamers to ignore: {}'.format(
+        terminal_rotamers_to_ignore))
     print(' - Output path: {}'.format(output))
     print(' - Write solvent parameters: {}'.format(with_solvent))
     print(' - DataLocal-like output: {}'.format(as_datalocal))
@@ -158,11 +178,13 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
         output = os.getcwd()
 
     molecule = Molecule(pdb_file)
-    molecule.parameterize(forcefield)
+    molecule.parameterize(forcefield, charges_method=charges_method)
 
     rotlib_out, impact_out, solvent_out = handle_output_paths(molecule, output, as_datalocal)
 
-    molecule.build_rotamer_library(resolution=resolution)
+    molecule.build_rotamer_library(
+        resolution=resolution,
+        n_rot_bonds_to_ignore=terminal_rotamers_to_ignore)
     molecule.rotamer_library.to_file(rotlib_out)
     impact = Impact(molecule)
     impact.write(impact_out)
@@ -177,7 +199,7 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
 
 def main():
     """
-    It reads the command-line arguments and calls offpele.
+    It reads the command-line arguments and runs offpele.
 
     Examples
     --------
@@ -185,12 +207,14 @@ def main():
     From the command-line:
 
     >>> python main.py molecule.pdb -f openff_unconstrained-1.1.1.offxml -r 30
-        -o output_path/ --with_solvent --as_DataLocal
+        -o output_path/ --with_solvent --as_DataLocal -c gasteiger
 
     """
     args = parse_args()
-    run_offpele(args.pdb_file, args.forcefield, args.resolution, args.output,
-                args.with_solvent, args.as_datalocal)
+    run_offpele(args.pdb_file, args.forcefield, args.resolution,
+                args.charges_method, args.terminal_rotamers_to_ignore,
+                args.output, args.with_solvent,
+                args.as_datalocal)
 
 
 if __name__ == '__main__':

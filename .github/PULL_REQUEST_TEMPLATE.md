@@ -1,0 +1,4 @@
+- [ ] Tag issue being addressed
+- [ ] Add [tests](https://github.com/martimunicoy/offpele/tree/master/offpele/tests)
+- [ ] Update docstrings/[documentation](https://github.com/martimunicoy/offpele/tree/master/docs), if applicable
+- [ ] Update [changelog](https://github.com/martimunicoy/offpele/blob/master/docs/releasehistory.rst)

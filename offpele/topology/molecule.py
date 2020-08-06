@@ -6,10 +6,10 @@ representations.
 from pathlib import Path
 
 from .topology import Bond, Angle, OFFProper, OFFImproper
-from offpele.utils.toolkits import (AmberToolkitWrapper,
-                                    RDKitToolkitWrapper,
-                                    OpenForceFieldToolkitWrapper)
 from .rotamer import MolecularGraph
+from offpele.utils.toolkits import (RDKitToolkitWrapper,
+                                    OpenForceFieldToolkitWrapper)
+from offpele.charge import (Am1bccCalculator, GasteigerCalculator)
 
 
 class Atom(object):
@@ -456,7 +456,7 @@ class Molecule(object):
             if self.off_molecule:
                 self.off_molecule.name = name
 
-    def parameterize(self, forcefield):
+    def parameterize(self, forcefield, charges_method=None):
         """
         It parameterizes the molecule with a certain forcefield.
 
@@ -465,7 +465,10 @@ class Molecule(object):
         forcefield : str or openforcefield.typing.engines.smirnoff.ForceField
                      object
             The forcefield from which the parameters will be obtained
+        charges_method : str
+            The name of the charges method to employ
         """
+
         if not self.off_molecule or not self.rdkit_molecule:
             raise Exception('OpenForceField molecule was not initialized '
                             + 'correctly')
@@ -480,8 +483,11 @@ class Molecule(object):
         if isinstance(forcefield, str):
             self._forcefield = Path(forcefield).stem
 
-        print(' - Computing partial charges with am1bcc')
-        self._calculate_am1bcc_charges()
+        charges_calculator = self._get_charges_calculator(charges_method)
+
+        print(' - Computing partial charges with '
+              + '{}'.format(charges_calculator.name))
+        self._assign_charges(charges_calculator)
 
         self._build_atoms()
 
@@ -493,7 +499,7 @@ class Molecule(object):
 
         self._build_impropers()
 
-    def build_rotamer_library(self, resolution):
+    def build_rotamer_library(self, resolution=30, n_rot_bonds_to_ignore=1):
         """
         It builds the rotamer library of a parameterized molecule.
 
@@ -504,7 +510,11 @@ class Molecule(object):
         Parameters
         ----------
         resolution : float
-            The resolution to discretize the rotamer's conformational space
+            The resolution in degrees to discretize the rotamer's
+            conformational space. Default is 30
+        n_rot_bonds_to_ignore : int
+            The number of terminal rotatable bonds to ignore when
+            building the rotamer library. Default is 1
         """
         self._assert_parameterized()
 
@@ -516,7 +526,8 @@ class Molecule(object):
 
         self.graph.set_parents()
 
-        self._rotamer_library = self.graph.build_rotamer_library(resolution)
+        self._rotamer_library = self.graph.build_rotamer_library(
+            resolution, n_rot_bonds_to_ignore)
 
     def plot_rotamer_graph(self):
         """It plots the rotamer graph in screen."""
@@ -566,11 +577,52 @@ class Molecule(object):
         except AssertionError:
             raise Exception('Molecule not parameterized')
 
-    def _calculate_am1bcc_charges(self):
-        """It computes the partial charges using the am1bcc method."""
-        amber_toolkit = AmberToolkitWrapper()
+    def _get_charges_calculator(self, charges_method):
+        """
+        It returns the charges method that matches with the name that is
+        supplied.
 
-        charges = amber_toolkit.compute_partial_charges_am1bcc(self)
+        Parameters
+        ----------
+        charges_method : str
+            The name of the charges method to employ.
+            One of ['gasteiger', 'am1bcc']. If None, 'am1bcc' will be used
+
+        Returns
+        -------
+        charge_calculator : An offpele.topology.charges.PartialChargesCalculator
+            object
+            The charge calculation method that will be employed to calculate
+            partial charges
+
+        Raises
+        ------
+        Exception if the requested charge method is unknown
+        """
+
+        if charges_method == 'am1bcc' or charges_method is None:
+            return Am1bccCalculator(self)
+
+        elif charges_method == 'gasteiger':
+            return GasteigerCalculator(self)
+
+        else:
+            raise Exception('Charges method \'{}\' '.format(charges_method)
+                            + 'is unknown')
+
+    def _assign_charges(self, method):
+        """It computes the partial charges using the charge calculation
+        method that is supplied and assings them to the molecule..
+
+        Parameters
+        ----------
+        method : An offpele.topology.charges.PartialChargesCalculator
+            object
+            The charge calculation method that will be employed to calculate
+            partial charges
+        """
+
+        charges = method.get_partial_charges()
 
         self.off_molecule.partial_charges = charges
 
@@ -701,11 +753,16 @@ class Molecule(object):
         ks = self.parameters.get_dihedral_ks()
         idivfs = self.parameters.get_dihedral_idivfs()
 
+        # TODO in which situation these dicts are supposed to be None?
+        if periodicities is None or phases is None or ks is None:
+            return
+
         # idivf is a optional parameter in OpenForceField
         if len(idivfs) == 0:
             for period_by_index in periodicities:
-                idivfs.append(dict(zip(period_by_index.keys(),
-                                       [1, ] * len(period_by_index.keys()))))
+                idivfs.append(dict(zip(
+                    period_by_index.keys(),
+                    [1, ] * len(period_by_index.keys()))))
 
         assert len(periodicities) == len(phases) and \
             len(periodicities) == len(ks) and \
@@ -772,17 +829,22 @@ class Molecule(object):
         ks = self.parameters.get_improper_ks()
         idivfs = self.parameters.get_improper_idivfs()
 
+        # TODO in which situation these dicts are supposed to be None?
+        if periodicities is None or phases is None or ks is None:
+            return
+
         # idivf is a optional parameter in OpenForceField
         if len(idivfs) == 0:
             for period_by_index in periodicities:
-                idivfs.append(dict(zip(period_by_index.keys(),
-                                       [1, ] * len(period_by_index.keys()))))
+                idivfs.append(dict(zip(
+                    period_by_index.keys(),
+                    [1, ] * len(period_by_index.keys()))))
 
         assert len(periodicities) == len(phases) and \
             len(periodicities) == len(ks) and \
             len(periodicities) == len(idivfs), 'Unconsistent set of ' \
-            'OpenForceField\'s improper parameters. They all should have ' \
-            'equal lengths'
+            'OpenForceField\'s improper parameters. They all should ' \
+            'have equal lengths'
 
         for period_by_index, phase_by_index, k_by_index, idivf_by_index in \
                 zip(periodicities, phases, ks, idivfs):
