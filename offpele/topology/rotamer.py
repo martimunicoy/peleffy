@@ -514,6 +514,8 @@ class MolecularGraph(nx.Graph):
         pdb_atom_names = [name.replace(' ', '_',)
                           for name in self.molecule.get_pdb_atom_names()]
 
+        # TODO extend core by including one rotatable bond from the largest
+        # branch to increase the performance of the algorithm.
         for group_id, rot_bonds in enumerate(filtered_rot_bonds_per_group):
             for (atom1_index, atom2_index) in rot_bonds:
                 atom1_name = pdb_atom_names[atom1_index]
