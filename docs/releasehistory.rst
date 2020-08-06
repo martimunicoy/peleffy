@@ -24,6 +24,7 @@ New features
 """"""""""""
 - `PR #15 <https://github.com/martimunicoy/offpele/pull/15>`_: Adds a new method (Antechamber's gasteiger) to calculate partial charges.
 - `PR #19 <https://github.com/martimunicoy/offpele/pull/19>`_: Adds a new option to ignore terminal rotatable bonds of each rotamer's branch.
+- `PR #17 <https://github.com/martimunicoy/offpele/pull/17>`_: Adds and updates the documentation. However, it is still not completed.
 
 Bugfixes
 """"""""
