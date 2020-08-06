@@ -1,0 +1,25 @@
+offpele.charge.Am1bccCalculator
+===============================
+
+.. currentmodule:: offpele.charge
+
+.. autoclass:: Am1bccCalculator
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: get_partial_charges
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Am1bccCalculator.molecule
+      ~Am1bccCalculator.name
+   
+   

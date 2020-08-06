@@ -36,7 +36,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Topology representations" href="topology.html" />
+    <link rel="next" title="Release History" href="releasehistory.html" />
     <link rel="prev" title="Open Force Field for PELE" href="index.html" /> 
 </head>
 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.g1563ce3
+                0+untagged.1.g9058727
               </div>
             
           
@@ -88,14 +88,17 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#installing-via-pypi">Installing via PyPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-via-conda">Installing via <cite>conda</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-via-pypi">Installing via <cite>PyPI</cite></a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="releasehistory.html">Release History</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="topology.html">Topology representations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="template.html">Template handlers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="solvent.html">Solvent models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="charge.html">Charge methods</a></li>
 </ul>
 
             
@@ -163,12 +166,65 @@
             
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installing-via-conda">
+<h2>Installing via <cite>conda</cite><a class="headerlink" href="#installing-via-conda" title="Permalink to this headline">¶</a></h2>
+<p>The more straightforward way to install <cite>offpele</cite> along with the required
+dependencies is through the <a class="reference external" href="http://www.continuum.io/blog/conda">conda</a>
+package manager.</p>
+<p>First, you need to install the
+<a class="reference external" href="http://conda.pydata.org/miniconda.html">miniconda</a> distribution, which is
+the minimal installation of the Anaconda Python package.</p>
+<p>To install the Python 3 version on <code class="docutils literal notranslate"><span class="pre">linux</span></code> (on <code class="docutils literal notranslate"><span class="pre">bash</span></code> systems):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+$ bash ./Miniconda3-latest-Linux-x86_64.sh -b -p <span class="nv">$HOME</span>/miniconda3
+</pre></div>
+</div>
+<p>It can also be installed on <code class="docutils literal notranslate"><span class="pre">osx</span></code> with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O
+$ bash ./Miniconda3-latest-MacOSX-x86_64.sh -b -p <span class="nv">$HOME</span>/miniconda3
+</pre></div>
+</div>
+<p>Once installed, the bases environment of <cite>conda</cite> can be loaded with
+the following commands:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">source</span> ~/miniconda3/etc/profile.d/conda.sh
+$ conda activate base
+</pre></div>
+</div>
+<p>You can also create a custom conda environment to handle offpele:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda create --name offpele_env
+</pre></div>
+</div>
+<p>which can be activated and deactivated with the two commands from below:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda activate offpele_env
+$ conda deactivate
+</pre></div>
+</div>
+<p>To install de dependencies of offpele, the following <cite>conda</cite> channels need
+to be added and updated:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda config --add channels omnia --add channels conda-forge --add channels martimunicoy
+$ conda update --all
+</pre></div>
+</div>
+<p>Finally, you can install the latest stable build of <cite>offpele</cite></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda install offpele
+</pre></div>
+</div>
+</div>
 <div class="section" id="installing-via-pypi">
-<h2>Installing via PyPI<a class="headerlink" href="#installing-via-pypi" title="Permalink to this headline">¶</a></h2>
-<p>It can be easily install through PyPI with the following command:</p>
+<h2>Installing via <cite>PyPI</cite><a class="headerlink" href="#installing-via-pypi" title="Permalink to this headline">¶</a></h2>
+<p><cite>offpele</cite> can also be installed through <a class="reference external" href="https://pypi.org">PyPI</a>
+with the following command:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install offpele
 </pre></div>
 </div>
+<p>However, with <cite>PyPI</cite> some of the required dependencies of <cite>offpele</cite> are not
+installed and have to be installed manually such as:</p>
+<ul class="simple">
+<li><p>Open Force Field Toolkit</p></li>
+<li><p>RDKit</p></li>
+<li><p>AmberTools</p></li>
+</ul>
+<p>For this reason, the installation through <cite>conda</cite> is recommended.</p>
 </div>
 </div>
 
@@ -180,7 +236,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="topology.html" class="btn btn-neutral float-right" title="Topology representations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="releasehistory.html" class="btn btn-neutral float-right" title="Release History" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="index.html" class="btn btn-neutral float-left" title="Open Force Field for PELE" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
