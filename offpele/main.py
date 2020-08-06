@@ -95,7 +95,7 @@ def handle_output_paths(molecule, output, as_datalocal):
 
     rotlib_name = name.upper() + '.rot.assign'
     impact_name = name.lower() + 'z'
-    solvent_name = name.lower() + '_solv.json'
+    solvent_name = 'ligandParams.txt'
 
     if as_datalocal:
         rotlib_path = rotlib_path.joinpath(ROTAMER_LIBRARY_PATH)
@@ -112,8 +112,8 @@ def handle_output_paths(molecule, output, as_datalocal):
 
 
 def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
-                  resolution=DEFAULT_RESOLUTION, output=None,
-                  with_solvent=False, as_datalocal=False,):
+                resolution=DEFAULT_RESOLUTION, output=None,
+                with_solvent=False, as_datalocal=False,):
     """
     It runs offpele.
 
@@ -190,7 +190,7 @@ def main():
     """
     args = parse_args()
     run_offpele(args.pdb_file, args.forcefield, args.resolution, args.output,
-                  args.with_solvent, args.as_datalocal)
+                args.with_solvent, args.as_datalocal)
 
 
 if __name__ == '__main__':
