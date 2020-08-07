@@ -253,7 +253,9 @@ class MolecularGraph(nx.Graph):
         # In case of more than one group, core will be the largest
         core_nodes = sorted(centered_node_groups, key=len, reverse=True)[0]
 
-        # Core can hold a maximum of one rotatable bond
+        # To do: think on what to do with the code below
+        """
+        # Core can hold a maximum of one rotatable bond <- Not true!
         # Get all core's neighbors
         neighbor_candidates = set()
         for node in core_nodes:
@@ -289,6 +291,7 @@ class MolecularGraph(nx.Graph):
 
             for neighbor in deepest_neighbors:
                 core_nodes.add(neighbor)
+        """
 
         self._core_nodes = core_nodes
 
@@ -576,7 +579,8 @@ class MolecularGraph(nx.Graph):
                 rotamer = Rotamer(atom1_index, atom2_index, resolution)
                 branch_rotamers.append(rotamer)
 
-            rotamers.append(branch_rotamers)
+            if len(branch_rotamers) > 0:
+                rotamers.append(branch_rotamers)
 
         return rotamers
 
