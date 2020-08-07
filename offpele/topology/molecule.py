@@ -356,7 +356,8 @@ class Molecule(object):
     the OpenForceField toolkit for PELE.
     """
 
-    def __init__(self, path=None):
+    def __init__(self, path=None, rotamer_resolution=30,
+                 include_terminal_rotamers=False):
         """
         It initializes a Molecule object.
 
@@ -364,6 +365,12 @@ class Molecule(object):
         ----------
         path : str
             The path to a PDB with the molecule structure
+        rotamer_resolution : float
+            The resolution in degrees to discretize the rotamer's
+            conformational space. Default is 30
+        include_terminal_rotamers : bool
+            Whether to include terminal rotamers when generating the
+            rotamers library  or not
 
         Examples
         --------
@@ -375,16 +382,10 @@ class Molecule(object):
         >>> molecule = Molecule('molecule.pdb')
         >>> molecule.parameterize('openff_unconstrained-1.1.1.offxml')
 
-        Generate the rotamer library of a molecule
-
-        >>> from offpele.topology import Molecule
-
-        >>> molecule = Molecule('molecule.pdb')
-        >>> molecule.parameterize('openff_unconstrained-1.1.1.offxml')
-        >>> molecule.build_rotamer_library(resolution=30)
-        >>> molecule.rotamer_library.to_file('MOL.rot.assign')
-
         """
+        self._rotamer_resolution = rotamer_resolution
+        self._include_terminal_rotamers = include_terminal_rotamers
+
         if isinstance(path, str):
             from pathlib import Path
             extension = Path(path).suffix
@@ -394,8 +395,11 @@ class Molecule(object):
             else:
                 raise ValueError(
                     '{} is not a valid extension'.format(extension))
+
         else:
             self._initialize()
+
+        self._build_rotamers()
 
     def _initialize(self):
         """It initializes an empty molecule."""
@@ -410,8 +414,9 @@ class Molecule(object):
         self._OFF_impropers = list()
         self._rdkit_molecule = None
         self._off_molecule = None
-        self._rotamer_library = None
+        self._rotamers = None
         self._graph = None
+        self._parameterized = False
 
     def _initialize_from_pdb(self, path):
         """
@@ -439,6 +444,14 @@ class Molecule(object):
         openforcefield_toolkit = OpenForceFieldToolkitWrapper()
 
         self._off_molecule = openforcefield_toolkit.from_rdkit(self)
+
+    def _build_rotamers(self):
+        """It builds the rotamers of the molecule."""
+        if self.off_molecule and self.rdkit_molecule:
+            print(' - Generating rotamer library')
+
+            self._graph = MolecularGraph(self)
+            self._rotamers = self._graph.get_rotamers()
 
     def set_name(self, name):
         """
@@ -499,40 +512,15 @@ class Molecule(object):
 
         self._build_impropers()
 
-    def build_rotamer_library(self, resolution=30, n_rot_bonds_to_ignore=1):
-        """
-        It builds the rotamer library of a parameterized molecule.
-
-        .. todo ::
-
-            * Consider moving this to the rotamer module.
-
-        Parameters
-        ----------
-        resolution : float
-            The resolution in degrees to discretize the rotamer's
-            conformational space. Default is 30
-        n_rot_bonds_to_ignore : int
-            The number of terminal rotatable bonds to ignore when
-            building the rotamer library. Default is 1
-        """
-        self._assert_parameterized()
-
-        print(' - Generating rotamer library')
-
-        self._graph = MolecularGraph(self)
+        self._parameterized = True
 
         self.graph.set_core()
 
         self.graph.set_parents()
 
-        self._rotamer_library = self.graph.build_rotamer_library(
-            resolution, n_rot_bonds_to_ignore)
-
+    # To do: consider removing this function
     def plot_rotamer_graph(self):
         """It plots the rotamer graph in screen."""
-        self._assert_parameterized()
-
         try:
             from rdkit import Chem
         except ImportError:
@@ -567,13 +555,13 @@ class Molecule(object):
         plt.axis('off')
         plt.show()
 
-    def _assert_parameterized(self):
+    def assert_parameterized(self):
         """
         It checks that the molecule has been parameterized, raises an
         AssertionError otherwise.
         """
         try:
-            assert self.off_molecule is not None
+            assert self.parameterized
         except AssertionError:
             raise Exception('Molecule not parameterized')
 
@@ -907,8 +895,6 @@ class Molecule(object):
         pdb_atom_names : str
             The PDB atom names of all the atoms in this Molecule object
         """
-        self._assert_parameterized()
-
         pdb_atom_names = list()
 
         for atom in self.rdkit_molecule.GetAtoms():
@@ -924,6 +910,33 @@ class Molecule(object):
             * We still need to implement this
         """
         pass
+
+    @property
+    def rotamer_resolution(self):
+        """
+        The resolution to be used when generating the rotamers library.
+
+        Returns
+        -------
+        rotamer_resolution : float
+            The resolution in degrees to discretize the rotamer's
+            conformational space
+        """
+        return self._rotamer_resolution
+
+    @property
+    def include_terminal_rotamers(self):
+        """
+        The behavior when handling terminal rotamers when generating the
+        rotamers library.
+
+        Returns
+        -------
+        include_terminal_rotamers : bool
+            Whether to include terminal rotamers when generating the
+            rotamers library  or not
+        """
+        return self._include_terminal_rotamers
 
     @property
     def off_molecule(self):
@@ -950,16 +963,16 @@ class Molecule(object):
         return self._rdkit_molecule
 
     @property
-    def rotamer_library(self):
+    def rotamers(self):
         """
-        The rotamer library of the molecule.
+        The list of rotamers of the molecule.
 
         Returns
         -------
-        rotamer_library : an offpele.topology.rotamer.RotamerLibrary object
-            The rotamer library of this Molecule object
+        rotamers : list[list]
+            The list of rotamers grouped by the branch they belong to
         """
-        return self._rotamer_library
+        return self._rotamers
 
     @property
     def name(self):
@@ -1057,3 +1070,16 @@ class Molecule(object):
             The topological graph of this Molecule object.
         """
         return self._graph
+
+    @property
+    def parameterized(self):
+        """
+        Whether the molecule has been parameterized with the Open Force Field
+        toolkit or not.
+
+        Returns
+        -------
+        parameterized : bool
+            The parameterization status
+        """
+        return self._parameterized
