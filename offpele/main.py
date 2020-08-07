@@ -178,15 +178,15 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     if not output:
         output = os.getcwd()
 
-    molecule = Molecule(pdb_file)
-    molecule.parameterize(forcefield, charges_method=charges_method)
+    molecule = Molecule(pdb_file, rotamer_resolution=resolution,
+                        include_terminal_rotamers=include_terminal_rotamers)
 
     rotlib_out, impact_out, solvent_out = handle_output_paths(molecule, output, as_datalocal)
 
-    molecule.build_rotamer_library(
-        resolution=resolution,
-        include_terminal_rotamers=include_terminal_rotamers)
-    molecule.rotamer_library.to_file(rotlib_out)
+    rotamer_library = offpele.topology.RotamerLibrary(molecule)
+    rotamer_library.to_file(rotlib_out)
+
+    molecule.parameterize(forcefield, charges_method=charges_method)
     impact = Impact(molecule)
     impact.write(impact_out)
 
