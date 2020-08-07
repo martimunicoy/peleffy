@@ -58,7 +58,7 @@ def parse_args():
                         type=str, help="The name of the method to use to "
                         + "compute charges", default=DEFAULT_CHARGES_METHOD)
     parser.add_argument('-t', '--terminal_rotamers_to_ignore', metavar="INT",
-                        type=str, help="The number of terminal rotamers " +
+                        type=int, help="The number of terminal rotamers " +
                         " to ignore when building the rotamer library",
                         default=DEFAULT_TERMINAL_ROT_TO_IGNORE)
 
