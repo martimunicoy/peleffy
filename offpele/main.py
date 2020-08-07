@@ -65,7 +65,7 @@ def parse_args():
 
     parser.set_defaults(as_datalocal=False)
     parser.set_defaults(with_solvent=False)
-    parser.set_default(include_terminal_rotamers=False)
+    parser.set_defaults(include_terminal_rotamers=False)
 
     args = parser.parse_args()
 
