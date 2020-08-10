@@ -208,12 +208,26 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         from rdkit import Chem
 
         rdkit_molecule = molecule.rdkit_molecule
-        # Fins rotatable bond ids as in Lipinski module in RDKit
-        # https://github.com/rdkit/rdkit/blob/1bf6ef3d65f5c7b06b56862b3fb9116a3839b229/rdkit/Chem/Lipinski.py#L47
-        rot_bonds_atom_ids = rdkit_molecule.GetSubstructMatches(
-            Chem.MolFromSmarts('[!$(*#*)&!D1]-&!@[!$(*#*)&!D1]'))
 
-        return rot_bonds_atom_ids
+        rot_bonds_atom_ids = set()
+
+        rot_bonds_atom_ids = set([
+            frozenset(atom_pair) for atom_pair in
+            rdkit_molecule.GetSubstructMatches(
+                Chem.MolFromSmarts('[!$([NH]!@C(=O))&!D1&!$(*#*)]-&!@[!$([NH]!@C(=O))&!D1&!$(*#*)]'))])
+
+        # Remove bonds to terminal -CH3
+        if self.molecule.include_terminal_rotamers:
+            terminal_bonds = set([
+                frozenset(atom_pair) for atom_pair in
+                rdkit_molecule.GetSubstructMatches(
+                    Chem.MolFromSmarts('[C]-[C;H3]'))
+            ])
+            rot_bonds_atom_ids = rot_bonds_atom_ids.difference(terminal_bonds)
+
+        # To do check amides
+
+        return list(rot_bonds_atom_ids)
 
     def get_coordinates(self, molecule):
         """
