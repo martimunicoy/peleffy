@@ -209,8 +209,6 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         rdkit_molecule = molecule.rdkit_molecule
 
-        rot_bonds_atom_ids = set()
-
         rot_bonds_atom_ids = set([
             frozenset(atom_pair) for atom_pair in
             rdkit_molecule.GetSubstructMatches(

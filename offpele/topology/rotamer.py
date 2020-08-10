@@ -173,8 +173,8 @@ class MolecularGraph(nx.Graph):
         for bond in rdkit_molecule.GetBonds():
             atom1 = bond.GetBeginAtomIdx()
             atom2 = bond.GetEndAtomIdx()
-            if ((atom1, atom2) in rot_bonds_atom_ids
-                    or (atom2, atom2) in rot_bonds_atom_ids):
+
+            if (frozenset[(atom1, atom2)] in rot_bonds_atom_ids):
                 rotatable = True
             else:
                 rotatable = False
