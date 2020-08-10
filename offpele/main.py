@@ -160,7 +160,7 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     print(' - Force field: {}'.format(forcefield))
     print(' - Rotamer library resolution: {}'.format(resolution))
     print(' - Charges method: {}'.format(charges_method))
-    print(' - Exclude terminal rotamers to ignore: {}'.format(
+    print(' - Exclude terminal rotamers: {}'.format(
         not include_terminal_rotamers))
     print(' - Output path: {}'.format(output))
     print(' - Write solvent parameters: {}'.format(with_solvent))
