@@ -217,7 +217,7 @@ class RDKitToolkitWrapper(ToolkitWrapper):
                 Chem.MolFromSmarts('[!$([NH]!@C(=O))&!D1&!$(*#*)]-&!@[!$([NH]!@C(=O))&!D1&!$(*#*)]'))])
 
         # Remove bonds to terminal -CH3
-        if self.molecule.include_terminal_rotamers:
+        if molecule.include_terminal_rotamers:
             terminal_bonds = set([
                 frozenset(atom_pair) for atom_pair in
                 rdkit_molecule.GetSubstructMatches(
