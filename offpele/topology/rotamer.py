@@ -564,10 +564,12 @@ class MolecularGraph(nx.Graph):
         sorted_rot_bonds_per_group = self._get_sorted_bonds_per_group(
             core_atom_per_group, rot_bonds_per_group, distances)
 
+        """
         if not include_terminal_rotamers:
             sorted_rot_bonds_per_group = \
                 self._ignore_terminal_rotatable_bonds(
                     sorted_rot_bonds_per_group, distances)
+        """
 
         rotamers = list()
 

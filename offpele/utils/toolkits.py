@@ -214,6 +214,13 @@ class RDKitToolkitWrapper(ToolkitWrapper):
             rdkit_molecule.GetSubstructMatches(
                 Chem.MolFromSmarts('[!$([NH]!@C(=O))&!D1&!$(*#*)]-&!@[!$([NH]!@C(=O))&!D1&!$(*#*)]'))])
 
+        # Include missing rotatable bonds for amide groups
+        for atom_pair in [frozenset(atom_pair) for atom_pair in
+                          rdkit_molecule.GetSubstructMatches(
+                          Chem.MolFromSmarts('[$(N!@C(=O))]-&!@[!$(C(=O))&!D1&!$(*#*)]'))]:
+            rot_bonds_atom_ids.add(atom_pair)
+
+        # To do, find the right SMARTS pattern below
         # Remove bonds to terminal -CH3
         if molecule.include_terminal_rotamers:
             terminal_bonds = set([
@@ -222,8 +229,6 @@ class RDKitToolkitWrapper(ToolkitWrapper):
                     Chem.MolFromSmarts('[C]-[C;H3]'))
             ])
             rot_bonds_atom_ids = rot_bonds_atom_ids.difference(terminal_bonds)
-
-        # To do check amides
 
         return list(rot_bonds_atom_ids)
 
