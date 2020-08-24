@@ -15,12 +15,12 @@ offpele.topology.rotamer.MolecularGraph
       .. automethod:: add_nodes_from
       .. automethod:: add_weighted_edges_from
       .. automethod:: adjacency
-      .. automethod:: build_rotamer_library
       .. automethod:: clear
       .. automethod:: clear_edges
       .. automethod:: copy
       .. automethod:: edge_subgraph
       .. automethod:: get_edge_data
+      .. automethod:: get_rotamers
       .. automethod:: has_edge
       .. automethod:: has_node
       .. automethod:: is_directed
@@ -53,6 +53,7 @@ offpele.topology.rotamer.MolecularGraph
    .. autosummary::
    
       ~MolecularGraph.adj
+      ~MolecularGraph.core_nodes
       ~MolecularGraph.degree
       ~MolecularGraph.edges
       ~MolecularGraph.molecule

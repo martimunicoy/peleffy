@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.g4432eec
+                0+untagged.1.g46a94a4
               </div>
             
           
@@ -186,19 +186,19 @@
 <h1>offpele.topology.rotamer.Rotamer<a class="headerlink" href="#offpele-topology-rotamer-rotamer" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="offpele.topology.rotamer.Rotamer">
-<em class="property">class </em><code class="sig-prename descclassname">offpele.topology.rotamer.</code><code class="sig-name descname">Rotamer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">atom1</span></em>, <em class="sig-param"><span class="n">atom2</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">30</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/rotamer.html#Rotamer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.rotamer.Rotamer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">offpele.topology.rotamer.</code><code class="sig-name descname">Rotamer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index1</span></em>, <em class="sig-param"><span class="n">index2</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">30</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/rotamer.html#Rotamer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.rotamer.Rotamer" title="Permalink to this definition">¶</a></dt>
 <dd><p>It represents the conformational space of a rotatable bond, discretized
 with a certain resolution.</p>
 <blockquote>
 <div><dl class="py method">
 <dt id="offpele.topology.rotamer.Rotamer.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">atom1</span></em>, <em class="sig-param"><span class="n">atom2</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">30</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/rotamer.html#Rotamer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.rotamer.Rotamer.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index1</span></em>, <em class="sig-param"><span class="n">index2</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">30</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/rotamer.html#Rotamer.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.rotamer.Rotamer.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>It initiates an Rotamer object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>atom1</strong> (<em>str</em>) – The name of the first atom involved in the rotamer</p></li>
-<li><p><strong>atom2</strong> (<em>str</em>) – The name of the second atom involved in the rotamer</p></li>
+<li><p><strong>atom1</strong> (<em>int</em>) – The index of the first atom involved in the rotamer</p></li>
+<li><p><strong>atom2</strong> (<em>int</em>) – The index of the second atom involved in the rotamer</p></li>
 <li><p><strong>resolution</strong> (<em>float</em>) – The resolution to discretize the rotamer’s conformational space</p></li>
 </ul>
 </dd>
@@ -213,11 +213,11 @@ with a certain resolution.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">atom1</span></code></p></td>
-<td><p>Rotamer’s atom1 name.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">index1</span></code></p></td>
+<td><p>Rotamer’s atom1 index.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">atom2</span></code></p></td>
-<td><p>Rotamer’s atom2 name.</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">index2</span></code></p></td>
+<td><p>Rotamer’s atom2 index.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolution</span></code></p></td>
 <td><p>Rotamer’s resolution.</p></td>

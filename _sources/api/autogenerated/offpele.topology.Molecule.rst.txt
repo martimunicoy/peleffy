@@ -9,12 +9,13 @@ offpele.topology.Molecule
    
    
       .. automethod:: __init__
-      .. automethod:: build_rotamer_library
+      .. automethod:: assert_parameterized
       .. automethod:: get_pdb_atom_names
       .. automethod:: parameterize
       .. automethod:: plot_rotamer_graph
       .. automethod:: set_name
-      .. automethod:: to_impact
+      .. automethod:: to_impact_file
+      .. automethod:: to_pdb_file
    
    
 
@@ -27,13 +28,16 @@ offpele.topology.Molecule
       ~Molecule.angles
       ~Molecule.atoms
       ~Molecule.bonds
+      ~Molecule.exclude_terminal_rotamers
       ~Molecule.forcefield
       ~Molecule.graph
       ~Molecule.impropers
       ~Molecule.name
       ~Molecule.off_molecule
+      ~Molecule.parameterized
       ~Molecule.propers
       ~Molecule.rdkit_molecule
-      ~Molecule.rotamer_library
+      ~Molecule.rotamer_resolution
+      ~Molecule.rotamers
    
    

@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.g4432eec
+                0+untagged.1.g46a94a4
               </div>
             
           
@@ -186,30 +186,16 @@
 <h1>offpele.topology.rotamer.RotamerLibrary<a class="headerlink" href="#offpele-topology-rotamer-rotamerlibrary" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="offpele.topology.rotamer.RotamerLibrary">
-<em class="property">class </em><code class="sig-prename descclassname">offpele.topology.rotamer.</code><code class="sig-name descname">RotamerLibrary</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">residue_name</span><span class="o">=</span><span class="default_value">'LIG'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/rotamer.html#RotamerLibrary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.rotamer.RotamerLibrary" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">offpele.topology.rotamer.</code><code class="sig-name descname">RotamerLibrary</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">molecule</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/rotamer.html#RotamerLibrary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.rotamer.RotamerLibrary" title="Permalink to this definition">¶</a></dt>
 <dd><p>It represents a set of rotamers found in the same molecule.</p>
 <blockquote>
 <div><dl class="py method">
 <dt id="offpele.topology.rotamer.RotamerLibrary.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">residue_name</span><span class="o">=</span><span class="default_value">'LIG'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/rotamer.html#RotamerLibrary.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.rotamer.RotamerLibrary.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">molecule</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/rotamer.html#RotamerLibrary.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.rotamer.RotamerLibrary.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>It initiates a RotamerLibrary object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>residue_name</strong> (<em>str</em>) – The name of the residue this RotamerLibrary belongs to</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="offpele.topology.rotamer.RotamerLibrary.add_rotamer">
-<code class="sig-name descname">add_rotamer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rotamer</span></em>, <em class="sig-param"><span class="n">group_id</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/rotamer.html#RotamerLibrary.add_rotamer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.rotamer.RotamerLibrary.add_rotamer" title="Permalink to this definition">¶</a></dt>
-<dd><p>It adds a rotamer to this RotamerLibrary.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>rotamer</strong> (<em>a Rotamer</em>) – The Rotamer object to add to this RotamerLibrary</p></li>
-<li><p><strong>group_id</strong> (<em>int</em>) – The index of the group where the rotamer belongs to</p></li>
-</ul>
+<dd class="field-odd"><p><strong>molecule</strong> (<em>An offpele.topology.Molecule</em>) – The Molecule object whose rotamer library will be generated</p>
 </dd>
 </dl>
 </dd></dl>
@@ -233,11 +219,8 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">residue_name</span></code></p></td>
-<td><p>The name of the RotamerLibrary’s residue.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotamers</span></code></p></td>
-<td><p>RotamerLibrary’s rotamers.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">molecule</span></code></p></td>
+<td><p>The offpele’s Molecule.</p></td>
 </tr>
 </tbody>
 </table>

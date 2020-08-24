@@ -9,7 +9,6 @@ offpele.topology.rotamer.RotamerLibrary
    
    
       .. automethod:: __init__
-      .. automethod:: add_rotamer
       .. automethod:: to_file
    
    
@@ -20,7 +19,6 @@ offpele.topology.rotamer.RotamerLibrary
 
    .. autosummary::
    
-      ~RotamerLibrary.residue_name
-      ~RotamerLibrary.rotamers
+      ~RotamerLibrary.molecule
    
    

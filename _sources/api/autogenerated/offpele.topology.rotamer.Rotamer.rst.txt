@@ -18,8 +18,8 @@ offpele.topology.rotamer.Rotamer
 
    .. autosummary::
    
-      ~Rotamer.atom1
-      ~Rotamer.atom2
+      ~Rotamer.index1
+      ~Rotamer.index2
       ~Rotamer.resolution
    
    

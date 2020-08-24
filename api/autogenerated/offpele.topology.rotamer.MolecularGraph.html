@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.g4432eec
+                0+untagged.1.g46a94a4
               </div>
             
           
@@ -439,28 +439,6 @@ the graph.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="offpele.topology.rotamer.MolecularGraph.build_rotamer_library">
-<code class="sig-name descname">build_rotamer_library</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">n_rot_bonds_to_ignore</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/rotamer.html#MolecularGraph.build_rotamer_library"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.rotamer.MolecularGraph.build_rotamer_library" title="Permalink to this definition">¶</a></dt>
-<dd><p>It builds the RotamerLibrary object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>resolution</strong> (<em>float</em>) – The resolution in degrees to discretize the rotamer’s
-conformational space. Default is 30</p></li>
-<li><p><strong>n_rot_bonds_to_ignore</strong> (<em>int</em>) – The number of terminal rotatable bonds to ignore when
-building the rotamer library. Default is 1</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>rotamer_library</strong> – The RotamerLibrary for the supplied Molecule object.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>a RotamerLibrary object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt id="offpele.topology.rotamer.MolecularGraph.clear">
 <code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#offpele.topology.rotamer.MolecularGraph.clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove all nodes and edges from the graph.</p>
@@ -649,6 +627,20 @@ But it is safe to assign attributes <cite>G[u][v][‘foo’]</cite></p>
 <span class="go">0</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="offpele.topology.rotamer.MolecularGraph.get_rotamers">
+<code class="sig-name descname">get_rotamers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/rotamer.html#MolecularGraph.get_rotamers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.rotamer.MolecularGraph.get_rotamers" title="Permalink to this definition">¶</a></dt>
+<dd><p>It builds the RotamerLibrary object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>rotamers</strong> – The list of rotamers grouped by the branch they belong to</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list[list]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1019,12 +1011,16 @@ ignored.</p>
 <code class="sig-name descname">set_core</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/rotamer.html#MolecularGraph.set_core"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.rotamer.MolecularGraph.set_core" title="Permalink to this definition">¶</a></dt>
 <dd><p>It sets the core of the molecule to minimize the amount of consecutive
 rotamers as much as possible.</p>
+<p>Please, note that the molecule needs to be already parameterized with
+the Open Force Field toolkit before calling this function.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="offpele.topology.rotamer.MolecularGraph.set_parents">
 <code class="sig-name descname">set_parents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/rotamer.html#MolecularGraph.set_parents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.rotamer.MolecularGraph.set_parents" title="Permalink to this definition">¶</a></dt>
 <dd><p>It sets the parent of each atom according to the molecular graph.</p>
+<p>Please, note that the molecule needs to be already parameterized with
+the Open Force Field toolkit before calling this function.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1338,19 +1334,22 @@ be slightly different and require tweaks of these examples.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">adj</span></code></p></td>
 <td><p>Graph adjacency object holding the neighbors of each node.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">degree</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">core_nodes</span></code></p></td>
+<td><p>The list of core nodes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">degree</span></code></p></td>
 <td><p>A DegreeView for the Graph as G.degree or G.degree().</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">edges</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">edges</span></code></p></td>
 <td><p>An EdgeView of the Graph as G.edges or G.edges().</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">molecule</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">molecule</span></code></p></td>
 <td><p>The offpele’s Molecule.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></p></td>
 <td><p>String identifier of the graph.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nodes</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nodes</span></code></p></td>
 <td><p>A NodeView of the Graph as G.nodes or G.nodes().</p></td>
 </tr>
 </tbody>
