@@ -541,6 +541,8 @@ class Molecule(object):
               + '{}'.format(charges_calculator.name))
         self._assign_charges(charges_calculator)
 
+        self._clean_lists()
+
         self._build_atoms()
 
         self._build_bonds()
@@ -652,6 +654,16 @@ class Molecule(object):
         charges = method.get_partial_charges()
 
         self.off_molecule.partial_charges = charges
+
+    def _clean_lists(self):
+        """It cleans all the lists before parameterizing."""
+        self._atoms = list()
+        self._bonds = list()
+        self._angles = list()
+        self._propers = list()
+        self._OFF_propers = list()
+        self._impropers = list()
+        self._OFF_impropers = list()
 
     def _build_atoms(self):
         """It builds the atoms of the molecule."""
@@ -934,21 +946,30 @@ class Molecule(object):
         pdb_atom_names : str
             The PDB atom names of all the atoms in this Molecule object
         """
-        pdb_atom_names = list()
+        rdkit_toolkit = RDKitToolkitWrapper()
 
-        for atom in self.rdkit_molecule.GetAtoms():
-            pdb_info = atom.GetPDBResidueInfo()
-            pdb_atom_names.append(pdb_info.GetName())
+        return rdkit_toolkit.get_atom_names(self)
 
-        return pdb_atom_names
-
-    def to_impact(self, path):
+    def to_impact_file(self, path):
         """
         .. todo ::
 
             * We still need to implement this
         """
+        # assert parameterized, then write impact
         pass
+
+    def to_pdb_file(self, path):
+        """
+        It writes the molecule to a PDB file.
+
+        Parameters
+        ----------
+        path : str
+            Path to write to
+        """
+        rdkit_toolkit = RDKitToolkitWrapper()
+        rdkit_toolkit.to_pdb_file(self, path)
 
     @property
     def rotamer_resolution(self):
