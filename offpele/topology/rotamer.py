@@ -165,9 +165,14 @@ class MolecularGraph(nx.Graph):
 
         rdkit_molecule = self.molecule.rdkit_molecule
 
-        for atom in rdkit_molecule.GetAtoms():
-            pdb_info = atom.GetPDBResidueInfo()
-            self.add_node(atom.GetIdx(), pdb_name=pdb_info.GetName(),
+        atom_names = rdkit_toolkit.get_atom_names(self.molecule)
+
+        assert len(atom_names) == len(rdkit_molecule.GetAtoms()), \
+            'The length of atom names must match the length of ' \
+            + 'molecule\'s atoms'
+
+        for atom, name in zip(rdkit_molecule.GetAtoms(), atom_names):
+            self.add_node(atom.GetIdx(), pdb_name=name,
                           nrot_neighbors=list())
 
         for bond in rdkit_molecule.GetBonds():
