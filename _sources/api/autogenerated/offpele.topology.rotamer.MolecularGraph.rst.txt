@@ -17,6 +17,7 @@ offpele.topology.rotamer.MolecularGraph
       .. automethod:: adjacency
       .. automethod:: build_rotamer_library
       .. automethod:: clear
+      .. automethod:: clear_edges
       .. automethod:: copy
       .. automethod:: edge_subgraph
       .. automethod:: get_edge_data
