@@ -105,7 +105,7 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         Parameters
         ----------
         path : str
-            The path to the molecule's PDB file.
+            The path to the molecule's PDB file
 
         Returns
         -------
@@ -115,6 +115,32 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         from rdkit import Chem
 
         return Chem.rdmolfiles.MolFromPDBFile(path, removeHs=False)
+
+    def from_smiles(self, smiles):
+        """
+        It initializes an RDKit's Molecule object from a SMILES tag.
+
+        Parameters
+        ----------
+        smiles : str
+            The SMILES tag to construct the molecule structure with.
+
+        Returns
+        -------
+        molecule : an rdkit.Chem.rdchem.Mol object
+            The RDKit's Molecule object
+        """
+        from rdkit.Chem import AllChem as Chem
+
+        molecule = Chem.MolFromSmiles(smiles)
+
+        # Add hydrogens to molecule
+        molecule = Chem.AddHs(molecule)
+
+        # Generate 3D coordinates
+        Chem.EmbedMolecule(molecule)
+
+        return molecule
 
     def assign_stereochemistry_from_3D(self, molecule):
         """
@@ -149,7 +175,14 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         rdkit_molecule = molecule.rdkit_molecule
 
         first_atom = list(rdkit_molecule.GetAtoms())[0]
-        return first_atom.GetPDBResidueInfo().GetResidueName()
+
+        # Catch a None return
+        try:
+            residue_name = first_atom.GetPDBResidueInfo().GetResidueName()
+        except AttributeError:
+            residue_name = None
+
+        return residue_name
 
     def to_sfd_file(self, molecule, path):
         """

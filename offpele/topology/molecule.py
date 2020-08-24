@@ -356,15 +356,18 @@ class Molecule(object):
     the OpenForceField toolkit for PELE.
     """
 
-    def __init__(self, path=None, rotamer_resolution=30,
+    def __init__(self, path=None, smiles=None, rotamer_resolution=30,
                  exclude_terminal_rotamers=True):
         """
-        It initializes a Molecule object.
+        It initializes a Molecule object through a PDB file or a SMILES
+        tag.
 
         Parameters
         ----------
         path : str
             The path to a PDB with the molecule structure
+        smiles : str
+            The smiles tag
         rotamer_resolution : float
             The resolution in degrees to discretize the rotamer's
             conformational space. Default is 30
@@ -375,11 +378,18 @@ class Molecule(object):
         Examples
         --------
 
-        Load a molecule from a PDB file and parameterize it
+        Load a molecule from a PDB file and parameterize it with OpenFF
 
         >>> from offpele.topology import Molecule
 
         >>> molecule = Molecule('molecule.pdb')
+        >>> molecule.parameterize('openff_unconstrained-1.1.1.offxml')
+
+        Load a molecule using a SMILES tag and parameterize it with OpenFF
+
+        >>> from offpele.topology import Molecule
+
+        >>> molecule = Molecule(smiles='Cc1ccccc1')
         >>> molecule.parameterize('openff_unconstrained-1.1.1.offxml')
 
         """
@@ -395,6 +405,8 @@ class Molecule(object):
             else:
                 raise ValueError(
                     '{} is not a valid extension'.format(extension))
+        elif isinstance(smiles, str):
+            self._initialize_from_smiles(smiles)
 
         else:
             self._initialize()
@@ -436,6 +448,33 @@ class Molecule(object):
 
         # RDKit must generate stereochemistry specifically from 3D coords
         rdkit_toolkit.assign_stereochemistry_from_3D(self)
+
+        # Set molecule name according to PDB's residue name
+        name = rdkit_toolkit.get_residue_name(self)
+        self.set_name(name)
+
+        openforcefield_toolkit = OpenForceFieldToolkitWrapper()
+
+        self._off_molecule = openforcefield_toolkit.from_rdkit(self)
+
+    def _initialize_from_smiles(self, smiles):
+        """
+        It initializes a molecule from a SMILES tag.
+
+        Parameters
+        ----------
+        smiles : str
+            The SMILES tag to construct the molecule structure with
+        """
+        self._initialize()
+        print(' - Constructing molecule from a SMILES tag with RDKit')
+
+        rdkit_toolkit = RDKitToolkitWrapper()
+        self._rdkit_molecule = rdkit_toolkit.from_smiles(smiles)
+
+        # TODO not sure if stereochemistry assignment from 3D is still necessary
+        # RDKit must generate stereochemistry specifically from 3D coords
+        # rdkit_toolkit.assign_stereochemistry_from_3D(self)
 
         # Set molecule name according to PDB's residue name
         name = rdkit_toolkit.get_residue_name(self)
