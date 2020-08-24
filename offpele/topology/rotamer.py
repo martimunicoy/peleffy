@@ -84,7 +84,6 @@ class RotamerLibrary(object):
             The Molecule object whose rotamer library will be generated
         """
         self._molecule = molecule
-        self._rotamers = defaultdict(list)
 
     def to_file(self, path):
         """
@@ -121,19 +120,6 @@ class RotamerLibrary(object):
             The offpele's Molecule object
         """
         return self._molecule
-
-    @property
-    def rotamers(self):
-        """
-        RotamerLibrary's rotamers.
-
-        Returns
-        -------
-        rotamers : dict[int, Rotamer]
-            The rotamers of this RotamerLibrary object, grouped by the
-            group they belong to
-        """
-        return self._rotamers
 
 
 class MolecularGraph(nx.Graph):
