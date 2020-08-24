@@ -7,7 +7,6 @@ import pytest
 
 from offpele.utils import get_data_file_path
 from offpele.topology import Molecule
-from offpele.topology.rotamer import MolecularGraph
 
 
 class TestMolecularGraph(object):
@@ -19,59 +18,51 @@ class TestMolecularGraph(object):
         """
         It tests the rotamer library builder.
         """
-        FORCEFIELD_NAME = 'openff_unconstrained-1.1.1.offxml'
         LIGAND_PATH = 'ligands/OLC.pdb'
 
         ligand_path = get_data_file_path(LIGAND_PATH)
-        molecule = Molecule(ligand_path)
-        molecule.parameterize(FORCEFIELD_NAME, charges_method='gasteiger')
+        molecule = Molecule(ligand_path, exclude_terminal_rotamers=False)
 
-        graph = MolecularGraph(molecule)
+        # rotamer_library = RotamerLibrary(molecule)
 
-        graph.set_core()
-        graph.set_parents()
-
-        rotamer_library = graph.build_rotamer_library(n_rot_bonds_to_ignore=0)
-
-        rotamers_per_branch = rotamer_library.rotamers
+        rotamers_per_branch = molecule.rotamers
 
         assert len(rotamers_per_branch) == 2, "Found an invalid number " + \
             "of branches: {}".format(len(rotamers_per_branch))
 
         atom_list_1 = list()
         atom_list_2 = list()
-        for branch, rotamers in rotamers_per_branch.items():
-            if branch == 0:
-                for rotamer in rotamers:
-                    atom_list_1.append(set([rotamer.atom1, rotamer.atom2]))
-            elif branch == 1:
-                for rotamer in rotamers:
-                    atom_list_2.append(set([rotamer.atom1, rotamer.atom2]))
 
-        EXPECTED_ATOMS_1 = [set(['_C7_', '_C8_']), set(['_C6_', '_C7_']),
-                            set(['_C5_', '_C6_']), set(['_C4_', '_C5_']),
-                            set(['_C3_', '_C4_']), set(['_C3_', '_C2_']),
-                            set(['_C2_', '_C1_'])]
+        rotamers = rotamers_per_branch[0]
+        for rotamer in rotamers:
+            atom_list_1.append(set([rotamer.index1, rotamer.index2]))
 
-        EXPECTED_ATOMS_2 = [set(['_C11', '_C10']), set(['_C11', '_C12']),
-                            set(['_C12', '_C13']), set(['_C13', '_C14']),
-                            set(['_C14', '_C15']), set(['_C15', '_C16']),
-                            set(['_C16', '_C17']), set(['_C17', '_C18'])]
+        rotamers = rotamers_per_branch[1]
+        for rotamer in rotamers:
+            atom_list_2.append(set([rotamer.index1, rotamer.index2]))
+
+        EXPECTED_INDICES_1 = [set([9, 10]), set([8, 9]), set([7, 8]),
+                              set([6, 7]), set([5, 6]), set([2, 5]),
+                              set([0, 2]), set([0, 1])]
+
+        EXPECTED_INDICES_2 = [set([12, 11]), set([12, 13]), set([13, 14]),
+                              set([14, 15]), set([15, 16]), set([16, 17]),
+                              set([17, 18]), set([18, 19])]
 
         where_1 = list()
         for atom_pair in atom_list_1:
-            if atom_pair in EXPECTED_ATOMS_1:
+            if atom_pair in EXPECTED_INDICES_1:
                 where_1.append(1)
-            elif atom_pair in EXPECTED_ATOMS_2:
+            elif atom_pair in EXPECTED_INDICES_2:
                 where_1.append(2)
             else:
                 where_1.append(0)
 
         where_2 = list()
         for atom_pair in atom_list_2:
-            if atom_pair in EXPECTED_ATOMS_1:
+            if atom_pair in EXPECTED_INDICES_1:
                 where_2.append(1)
-            elif atom_pair in EXPECTED_ATOMS_2:
+            elif atom_pair in EXPECTED_INDICES_2:
                 where_2.append(2)
             else:
                 where_2.append(0)
@@ -84,12 +75,12 @@ class TestMolecularGraph(object):
 
         assert (all(i == 1 for i in where_1)
                 and all(i == 2 for i in where_2)
-                and len(where_1) == len(EXPECTED_ATOMS_1)
-                and len(where_2) == len(EXPECTED_ATOMS_2)) or \
+                and len(where_1) == len(EXPECTED_INDICES_1)
+                and len(where_2) == len(EXPECTED_INDICES_2)) or \
                (all(i == 2 for i in where_1)
                 and all(i == 1 for i in where_2)
-                and len(where_1) == len(EXPECTED_ATOMS_2)
-                and len(where_2) == len(EXPECTED_ATOMS_1)), "Unexpected " + \
+                and len(where_1) == len(EXPECTED_INDICES_2)
+                and len(where_2) == len(EXPECTED_INDICES_1)), "Unexpected " + \
             "number of rotamers"
 
     def test_terminal_rotamer_filtering(self):
@@ -97,58 +88,48 @@ class TestMolecularGraph(object):
         It tests the rotamer library builder when the terminal rotatable bonds
         are ignored.
         """
-        FORCEFIELD_NAME = 'openff_unconstrained-1.1.1.offxml'
         LIGAND_PATH = 'ligands/OLC.pdb'
 
         ligand_path = get_data_file_path(LIGAND_PATH)
-        molecule = Molecule(ligand_path)
-        molecule.parameterize(FORCEFIELD_NAME, charges_method='gasteiger')
+        molecule = Molecule(ligand_path, exclude_terminal_rotamers=True)
 
-        graph = MolecularGraph(molecule)
-
-        graph.set_core()
-        graph.set_parents()
-
-        rotamer_library = graph.build_rotamer_library(n_rot_bonds_to_ignore=1)
-
-        rotamers_per_branch = rotamer_library.rotamers
+        rotamers_per_branch = molecule.rotamers
 
         assert len(rotamers_per_branch) == 2, "Found an invalid number " + \
             "of branches: {}".format(len(rotamers_per_branch))
 
         atom_list_1 = list()
         atom_list_2 = list()
-        for branch, rotamers in rotamers_per_branch.items():
-            if branch == 0:
-                for rotamer in rotamers:
-                    atom_list_1.append(set([rotamer.atom1, rotamer.atom2]))
-            elif branch == 1:
-                for rotamer in rotamers:
-                    atom_list_2.append(set([rotamer.atom1, rotamer.atom2]))
+        rotamers = rotamers_per_branch[0]
+        for rotamer in rotamers:
+            atom_list_1.append(set([rotamer.index1, rotamer.index2]))
 
-        EXPECTED_ATOMS_1 = [set(['_C7_', '_C8_']), set(['_C6_', '_C7_']),
-                            set(['_C5_', '_C6_']), set(['_C4_', '_C5_']),
-                            set(['_C3_', '_C4_']), set(['_C3_', '_C2_'])]
+        rotamers = rotamers_per_branch[1]
+        for rotamer in rotamers:
+            atom_list_2.append(set([rotamer.index1, rotamer.index2]))
 
-        EXPECTED_ATOMS_2 = [set(['_C11', '_C10']), set(['_C11', '_C12']),
-                            set(['_C12', '_C13']), set(['_C13', '_C14']),
-                            set(['_C14', '_C15']), set(['_C15', '_C16']),
-                            set(['_C16', '_C17'])]
+        EXPECTED_INDICES_1 = [set([9, 10]), set([8, 9]), set([7, 8]),
+                              set([6, 7]), set([5, 6]), set([2, 5]),
+                              set([0, 2]), set([0, 1])]
+
+        EXPECTED_INDICES_2 = [set([12, 11]), set([12, 13]), set([13, 14]),
+                              set([14, 15]), set([15, 16]), set([16, 17]),
+                              set([17, 18])]
 
         where_1 = list()
         for atom_pair in atom_list_1:
-            if atom_pair in EXPECTED_ATOMS_1:
+            if atom_pair in EXPECTED_INDICES_1:
                 where_1.append(1)
-            elif atom_pair in EXPECTED_ATOMS_2:
+            elif atom_pair in EXPECTED_INDICES_2:
                 where_1.append(2)
             else:
                 where_1.append(0)
 
         where_2 = list()
         for atom_pair in atom_list_2:
-            if atom_pair in EXPECTED_ATOMS_1:
+            if atom_pair in EXPECTED_INDICES_1:
                 where_2.append(1)
-            elif atom_pair in EXPECTED_ATOMS_2:
+            elif atom_pair in EXPECTED_INDICES_2:
                 where_2.append(2)
             else:
                 where_2.append(0)
@@ -161,10 +142,10 @@ class TestMolecularGraph(object):
 
         assert (all(i == 1 for i in where_1)
                 and all(i == 2 for i in where_2)
-                and len(where_1) == len(EXPECTED_ATOMS_1)
-                and len(where_2) == len(EXPECTED_ATOMS_2)) or \
+                and len(where_1) == len(EXPECTED_INDICES_1)
+                and len(where_2) == len(EXPECTED_INDICES_2)) or \
                (all(i == 2 for i in where_1)
                 and all(i == 1 for i in where_2)
-                and len(where_1) == len(EXPECTED_ATOMS_2)
-                and len(where_2) == len(EXPECTED_ATOMS_1)), "Unexpected " + \
+                and len(where_1) == len(EXPECTED_INDICES_2)
+                and len(where_2) == len(EXPECTED_INDICES_1)), "Unexpected " + \
             "number of rotamers"
