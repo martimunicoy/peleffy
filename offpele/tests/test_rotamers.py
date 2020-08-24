@@ -48,10 +48,10 @@ class TestMolecularGraph(object):
                 for rotamer in rotamers:
                     atom_list_2.append(set([rotamer.atom1, rotamer.atom2]))
 
-        EXPECTED_ATOMS_1 = [set(['_C8_', '_C9_']), set(['_C7_', '_C8_']),
-                            set(['_C6_', '_C7_']), set(['_C5_', '_C6_']),
-                            set(['_C4_', '_C5_']), set(['_C3_', '_C4_']),
-                            set(['_C3_', '_C2_']), set(['_C2_', '_C1_'])]
+        EXPECTED_ATOMS_1 = [set(['_C7_', '_C8_']), set(['_C6_', '_C7_']),
+                            set(['_C5_', '_C6_']), set(['_C4_', '_C5_']),
+                            set(['_C3_', '_C4_']), set(['_C3_', '_C2_']),
+                            set(['_C2_', '_C1_'])]
 
         EXPECTED_ATOMS_2 = [set(['_C11', '_C10']), set(['_C11', '_C12']),
                             set(['_C12', '_C13']), set(['_C13', '_C14']),
@@ -81,6 +81,16 @@ class TestMolecularGraph(object):
             (all(i == 2 for i in where_1)
              and all(i == 1 for i in where_2)), "Invalid rotamer library " + \
             "{}, {}".format(where_1, where_2)
+
+        assert (all(i == 1 for i in where_1)
+                and all(i == 2 for i in where_2)
+                and len(where_1) == len(EXPECTED_ATOMS_1)
+                and len(where_2) == len(EXPECTED_ATOMS_2)) or \
+               (all(i == 2 for i in where_1)
+                and all(i == 1 for i in where_2)
+                and len(where_1) == len(EXPECTED_ATOMS_2)
+                and len(where_2) == len(EXPECTED_ATOMS_1)), "Unexpected " + \
+            "number of rotamers"
 
     def test_terminal_rotamer_filtering(self):
         """
@@ -116,10 +126,9 @@ class TestMolecularGraph(object):
                 for rotamer in rotamers:
                     atom_list_2.append(set([rotamer.atom1, rotamer.atom2]))
 
-        EXPECTED_ATOMS_1 = [set(['_C8_', '_C9_']), set(['_C7_', '_C8_']),
-                            set(['_C6_', '_C7_']), set(['_C5_', '_C6_']),
-                            set(['_C4_', '_C5_']), set(['_C3_', '_C4_']),
-                            set(['_C3_', '_C2_'])]
+        EXPECTED_ATOMS_1 = [set(['_C7_', '_C8_']), set(['_C6_', '_C7_']),
+                            set(['_C5_', '_C6_']), set(['_C4_', '_C5_']),
+                            set(['_C3_', '_C4_']), set(['_C3_', '_C2_'])]
 
         EXPECTED_ATOMS_2 = [set(['_C11', '_C10']), set(['_C11', '_C12']),
                             set(['_C12', '_C13']), set(['_C13', '_C14']),
@@ -149,3 +158,13 @@ class TestMolecularGraph(object):
             (all(i == 2 for i in where_1)
              and all(i == 1 for i in where_2)), "Invalid rotamer library " + \
             "{}, {}".format(where_1, where_2)
+
+        assert (all(i == 1 for i in where_1)
+                and all(i == 2 for i in where_2)
+                and len(where_1) == len(EXPECTED_ATOMS_1)
+                and len(where_2) == len(EXPECTED_ATOMS_2)) or \
+               (all(i == 2 for i in where_1)
+                and all(i == 1 for i in where_2)
+                and len(where_1) == len(EXPECTED_ATOMS_2)
+                and len(where_2) == len(EXPECTED_ATOMS_1)), "Unexpected " + \
+            "number of rotamers"

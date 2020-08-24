@@ -254,17 +254,55 @@ class MolecularGraph(nx.Graph):
         _, centered_nodes = sorted(nodes_by_eccentricities.items())[0]
 
         # Construct nrot groups with centered nodes
-        already_visited = set()
+        #already_visited = set()
         centered_node_groups = list()
         for node in centered_nodes:
-            if node in already_visited:
-                continue
+            # if node in already_visited:
+            #    continue
             centered_node_groups.append(get_all_nrot_neighbors(self, node,
                                                                set()))
 
         # In case of more than one group, core will be the largest
         node_group = sorted(centered_node_groups, key=len, reverse=True)[0]
 
+        # Core can hold a maximum of one rotatable bond
+        # Get all core's neighbors
+        neighbor_candidates = set()
+        for node in node_group:
+            neighbors = self.neighbors(node)
+            for neighbor in neighbors:
+                if neighbor not in node_group:
+                    neighbor_candidates.add(neighbor)
+
+        # If any core's neighbor, get the deepest one and include it to
+        # the core
+        if len(neighbor_candidates) > 0:
+            branch_graph = deepcopy(self)
+
+            for node in node_group:
+                branch_graph.remove_node(node)
+
+            branch_groups = list(nx.connected_components(branch_graph))
+
+            rot_bonds_per_group = self._get_rot_bonds_per_group(branch_groups)
+
+            best_group = sorted(rot_bonds_per_group, key=len,
+                                reverse=True)[0]
+
+            for neighbor in neighbor_candidates:
+                if any([neighbor in rot_bond for rot_bond in best_group]):
+                    deepest_neighbor = neighbor
+                    break
+            else:
+                raise Exception('Unconsistent graph')
+
+            deepest_neighbors = get_all_nrot_neighbors(self, deepest_neighbor,
+                                                       set())
+
+            for neighbor in deepest_neighbors:
+                node_group.add(neighbor)
+
+        # Set atoms as core or branch according to the data gathered above
         for atom in self.molecule.atoms:
             if atom.index in node_group:
                 atom.set_as_core()
@@ -514,6 +552,8 @@ class MolecularGraph(nx.Graph):
         pdb_atom_names = [name.replace(' ', '_',)
                           for name in self.molecule.get_pdb_atom_names()]
 
+        # TODO extend core by including one rotatable bond from the largest
+        # branch to increase the performance of the algorithm.
         for group_id, rot_bonds in enumerate(filtered_rot_bonds_per_group):
             for (atom1_index, atom2_index) in rot_bonds:
                 atom1_name = pdb_atom_names[atom1_index]

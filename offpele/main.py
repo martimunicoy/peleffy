@@ -58,7 +58,7 @@ def parse_args():
                         type=str, help="The name of the method to use to "
                         + "compute charges", default=DEFAULT_CHARGES_METHOD)
     parser.add_argument('-t', '--terminal_rotamers_to_ignore', metavar="INT",
-                        type=str, help="The number of terminal rotamers " +
+                        type=int, help="The number of terminal rotamers " +
                         " to ignore when building the rotamer library",
                         default=DEFAULT_TERMINAL_ROT_TO_IGNORE)
 
@@ -104,7 +104,7 @@ def handle_output_paths(molecule, output, as_datalocal):
 
     rotlib_name = name.upper() + '.rot.assign'
     impact_name = name.lower() + 'z'
-    solvent_name = name.lower() + '_solv.json'
+    solvent_name = 'ligandParams.txt'
 
     if as_datalocal:
         rotlib_path = rotlib_path.joinpath(ROTAMER_LIBRARY_PATH)
