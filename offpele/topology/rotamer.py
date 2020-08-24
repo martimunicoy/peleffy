@@ -543,7 +543,6 @@ class MolecularGraph(nx.Graph):
             The list of rotamers grouped by the branch they belong to
         """
         resolution = self.molecule.rotamer_resolution
-        include_terminal_rotamers = self.molecule.include_terminal_rotamers
 
         assert len(self.core_nodes) > 0, 'No core nodes were found'
 

@@ -220,13 +220,13 @@ class RDKitToolkitWrapper(ToolkitWrapper):
                           Chem.MolFromSmarts('[$(N!@C(=O))]-&!@[!$(C(=O))&!D1&!$(*#*)]'))]:
             rot_bonds_atom_ids.add(atom_pair)
 
-        # To do, find the right SMARTS pattern below
         # Remove bonds to terminal -CH3
-        if molecule.include_terminal_rotamers:
+        # To do, it is not working, fix it!
+        if molecule.exclude_terminal_rotamers:
             terminal_bonds = set([
                 frozenset(atom_pair) for atom_pair in
                 rdkit_molecule.GetSubstructMatches(
-                    Chem.MolFromSmarts('[C]-[C;H3]'))
+                    Chem.MolFromSmarts('*-&!@[$([C;H3;X4]),$([N;H2;X3]),$([N;H3;X4]),$([O;H1;X2])]'))
             ])
             rot_bonds_atom_ids = rot_bonds_atom_ids.difference(terminal_bonds)
 

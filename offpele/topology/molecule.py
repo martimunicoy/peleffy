@@ -357,7 +357,7 @@ class Molecule(object):
     """
 
     def __init__(self, path=None, rotamer_resolution=30,
-                 include_terminal_rotamers=False):
+                 exclude_terminal_rotamers=True):
         """
         It initializes a Molecule object.
 
@@ -368,8 +368,8 @@ class Molecule(object):
         rotamer_resolution : float
             The resolution in degrees to discretize the rotamer's
             conformational space. Default is 30
-        include_terminal_rotamers : bool
-            Whether to include terminal rotamers when generating the
+        exclude_terminal_rotamers : bool
+            Whether to exclude terminal rotamers when generating the
             rotamers library  or not
 
         Examples
@@ -384,7 +384,7 @@ class Molecule(object):
 
         """
         self._rotamer_resolution = rotamer_resolution
-        self._include_terminal_rotamers = include_terminal_rotamers
+        self._exclude_terminal_rotamers = exclude_terminal_rotamers
 
         if isinstance(path, str):
             from pathlib import Path
@@ -925,18 +925,18 @@ class Molecule(object):
         return self._rotamer_resolution
 
     @property
-    def include_terminal_rotamers(self):
+    def exclude_terminal_rotamers(self):
         """
         The behavior when handling terminal rotamers when generating the
         rotamers library.
 
         Returns
         -------
-        include_terminal_rotamers : bool
-            Whether to include terminal rotamers when generating the
+        exclude_terminal_rotamers : bool
+            Whether to exclude terminal rotamers when generating the
             rotamers library  or not
         """
-        return self._include_terminal_rotamers
+        return self._exclude_terminal_rotamers
 
     @property
     def off_molecule(self):

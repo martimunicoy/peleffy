@@ -125,7 +125,7 @@ def handle_output_paths(molecule, output, as_datalocal):
 def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
                 resolution=DEFAULT_RESOLUTION,
                 charges_method=DEFAULT_CHARGES_METHOD,
-                include_terminal_rotamers=False,
+                exclude_terminal_rotamers=True,
                 output=None, with_solvent=False, as_datalocal=False):
     """
     It runs offpele.
@@ -141,8 +141,8 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     charges_method : str
         The name of the method to use to compute partial charges. Default
         is 'am1bcc'
-    include_terminal_rotamers : bool
-        Whether to include terminal rotamers or not
+    exclude_terminal_rotamers : bool
+        Whether to exclude terminal rotamers or not
     output : str
         Path where output files will be saved
     with_solvent : bool
@@ -160,8 +160,7 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     print(' - Force field: {}'.format(forcefield))
     print(' - Rotamer library resolution: {}'.format(resolution))
     print(' - Charges method: {}'.format(charges_method))
-    print(' - Exclude terminal rotamers: {}'.format(
-        not include_terminal_rotamers))
+    print(' - Exclude terminal rotamers: {}'.format(exclude_terminal_rotamers))
     print(' - Output path: {}'.format(output))
     print(' - Write solvent parameters: {}'.format(with_solvent))
     print(' - DataLocal-like output: {}'.format(as_datalocal))
@@ -179,7 +178,7 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
         output = os.getcwd()
 
     molecule = Molecule(pdb_file, rotamer_resolution=resolution,
-                        include_terminal_rotamers=include_terminal_rotamers)
+                        exclude_terminal_rotamers=exclude_terminal_rotamers)
 
     rotlib_out, impact_out, solvent_out = handle_output_paths(molecule, output, as_datalocal)
 
@@ -212,8 +211,11 @@ def main():
 
     """
     args = parse_args()
+
+    exclude_terminal_rotamers = not args.include_terminal_rotamers
+
     run_offpele(args.pdb_file, args.forcefield, args.resolution,
-                args.charges_method, args.include_terminal_rotamers,
+                args.charges_method, exclude_terminal_rotamers,
                 args.output, args.with_solvent, args.as_datalocal)
 
 
