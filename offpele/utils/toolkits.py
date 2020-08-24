@@ -184,7 +184,65 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         return residue_name
 
-    def to_sfd_file(self, molecule, path):
+    def get_atom_names(self, molecule):
+        """
+        It returns the ordered list of atom names according to the
+        RDKit molecule object. In case no atom names are available
+        (non-PDB source), it assignes a name to each atom considering
+        the element and an index obtained from the total number of
+        occurrences of each element.
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+
+        Returns
+        -------
+        residue_name : list[str]
+            The list of atom names
+        """
+        rdkit_molecule = molecule.rdkit_molecule
+
+        atom_names = list()
+        occurrences = dict()
+
+        for atom in rdkit_molecule.GetAtoms():
+            pdb_info = atom.GetPDBResidueInfo()
+
+            if pdb_info is not None:
+                atom_names.append(pdb_info.GetName())
+            else:
+                element = atom.GetSymbol()
+                occurrences[element] = occurrences.get(element, 0) + 1
+
+                atom_names.append('{:^4}'.format(str(element)
+                                                 + str(occurrences[element])))
+
+        return atom_names
+
+    def to_pdb_file(self, molecule, path):
+        """
+        It writes the RDKit molecule to a PDB file.
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+        path : str
+            Path to write to
+        """
+        from rdkit import Chem
+
+        assert Path(path).suffix == '.pdb', 'Wrong extension'
+
+        rdkit_molecule = molecule.rdkit_molecule
+        with open(path, 'w') as f:
+            writer = Chem.PDBWriter(f)
+            writer.write(rdkit_molecule)
+            writer.close()
+
+    def to_sdf_file(self, molecule, path):
         """
         It writes the RDKit molecule to an sdf file.
 
@@ -365,7 +423,7 @@ class AmberToolkitWrapper(ToolkitWrapper):
                 net_charge = off_molecule.total_charge / \
                     unit.elementary_charge
 
-                self._rdkit_toolkit_wrapper.to_sfd_file(
+                self._rdkit_toolkit_wrapper.to_sdf_file(
                     molecule, tmpdir + '/molecule.sdf')
 
                 subprocess.check_output([
@@ -397,6 +455,11 @@ class AmberToolkitWrapper(ToolkitWrapper):
                     charges[index] = float(token)
 
         charges = unit.Quantity(charges, unit.elementary_charge)
+
+        assert len(charges) == len(molecule.rdkit_molecule.GetAtoms()), \
+            'Partial charge computation failed as the length of ' \
+            + 'resulting partial charges does not match with the ' \
+            + 'number of atoms in molecule'
 
         return charges
 
