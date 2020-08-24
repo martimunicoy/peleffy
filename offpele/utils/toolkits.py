@@ -105,7 +105,7 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         Parameters
         ----------
         path : str
-            The path to the molecule's PDB file.
+            The path to the molecule's PDB file
 
         Returns
         -------
@@ -115,6 +115,32 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         from rdkit import Chem
 
         return Chem.rdmolfiles.MolFromPDBFile(path, removeHs=False)
+
+    def from_smiles(self, smiles):
+        """
+        It initializes an RDKit's Molecule object from a SMILES tag.
+
+        Parameters
+        ----------
+        smiles : str
+            The SMILES tag to construct the molecule structure with.
+
+        Returns
+        -------
+        molecule : an rdkit.Chem.rdchem.Mol object
+            The RDKit's Molecule object
+        """
+        from rdkit.Chem import AllChem as Chem
+
+        molecule = Chem.MolFromSmiles(smiles)
+
+        # Add hydrogens to molecule
+        molecule = Chem.AddHs(molecule)
+
+        # Generate 3D coordinates
+        Chem.EmbedMolecule(molecule)
+
+        return molecule
 
     def assign_stereochemistry_from_3D(self, molecule):
         """
@@ -149,9 +175,74 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         rdkit_molecule = molecule.rdkit_molecule
 
         first_atom = list(rdkit_molecule.GetAtoms())[0]
-        return first_atom.GetPDBResidueInfo().GetResidueName()
 
-    def to_sfd_file(self, molecule, path):
+        # Catch a None return
+        try:
+            residue_name = first_atom.GetPDBResidueInfo().GetResidueName()
+        except AttributeError:
+            residue_name = None
+
+        return residue_name
+
+    def get_atom_names(self, molecule):
+        """
+        It returns the ordered list of atom names according to the
+        RDKit molecule object. In case no atom names are available
+        (non-PDB source), it assignes a name to each atom considering
+        the element and an index obtained from the total number of
+        occurrences of each element.
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+
+        Returns
+        -------
+        residue_name : list[str]
+            The list of atom names
+        """
+        rdkit_molecule = molecule.rdkit_molecule
+
+        atom_names = list()
+        occurrences = dict()
+
+        for atom in rdkit_molecule.GetAtoms():
+            pdb_info = atom.GetPDBResidueInfo()
+
+            if pdb_info is not None:
+                atom_names.append(pdb_info.GetName())
+            else:
+                element = atom.GetSymbol()
+                occurrences[element] = occurrences.get(element, 0) + 1
+
+                atom_names.append('{:^4}'.format(str(element)
+                                                 + str(occurrences[element])))
+
+        return atom_names
+
+    def to_pdb_file(self, molecule, path):
+        """
+        It writes the RDKit molecule to a PDB file.
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+        path : str
+            Path to write to
+        """
+        from rdkit import Chem
+
+        assert Path(path).suffix == '.pdb', 'Wrong extension'
+
+        rdkit_molecule = molecule.rdkit_molecule
+        with open(path, 'w') as f:
+            writer = Chem.PDBWriter(f)
+            writer.write(rdkit_molecule)
+            writer.close()
+
+    def to_sdf_file(self, molecule, path):
         """
         It writes the RDKit molecule to an sdf file.
 
@@ -208,12 +299,29 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         from rdkit import Chem
 
         rdkit_molecule = molecule.rdkit_molecule
-        # Fins rotatable bond ids as in Lipinski module in RDKit
-        # https://github.com/rdkit/rdkit/blob/1bf6ef3d65f5c7b06b56862b3fb9116a3839b229/rdkit/Chem/Lipinski.py#L47
-        rot_bonds_atom_ids = rdkit_molecule.GetSubstructMatches(
-            Chem.MolFromSmarts('[!$(*#*)&!D1]-&!@[!$(*#*)&!D1]'))
 
-        return rot_bonds_atom_ids
+        rot_bonds_atom_ids = set([
+            frozenset(atom_pair) for atom_pair in
+            rdkit_molecule.GetSubstructMatches(
+                Chem.MolFromSmarts('[!$([NH]!@C(=O))&!D1&!$(*#*)]-&!@[!$([NH]!@C(=O))&!D1&!$(*#*)]'))])
+
+        # Include missing rotatable bonds for amide groups
+        for atom_pair in [frozenset(atom_pair) for atom_pair in
+                          rdkit_molecule.GetSubstructMatches(
+                          Chem.MolFromSmarts('[$(N!@C(=O))]-&!@[!$(C(=O))&!D1&!$(*#*)]'))]:
+            rot_bonds_atom_ids.add(atom_pair)
+
+        # Remove bonds to terminal -CH3
+        # To do, it is not working, fix it!
+        if molecule.exclude_terminal_rotamers:
+            terminal_bonds = set([
+                frozenset(atom_pair) for atom_pair in
+                rdkit_molecule.GetSubstructMatches(
+                    Chem.MolFromSmarts('*-&!@[$([C;H3;X4]),$([N;H2;X3]),$([N;H3;X4]),$([O;H1;X2])]'))
+            ])
+            rot_bonds_atom_ids = rot_bonds_atom_ids.difference(terminal_bonds)
+
+        return list(rot_bonds_atom_ids)
 
     def get_coordinates(self, molecule):
         """
@@ -315,7 +423,7 @@ class AmberToolkitWrapper(ToolkitWrapper):
                 net_charge = off_molecule.total_charge / \
                     unit.elementary_charge
 
-                self._rdkit_toolkit_wrapper.to_sfd_file(
+                self._rdkit_toolkit_wrapper.to_sdf_file(
                     molecule, tmpdir + '/molecule.sdf')
 
                 subprocess.check_output([
@@ -347,6 +455,11 @@ class AmberToolkitWrapper(ToolkitWrapper):
                     charges[index] = float(token)
 
         charges = unit.Quantity(charges, unit.elementary_charge)
+
+        assert len(charges) == len(molecule.rdkit_molecule.GetAtoms()), \
+            'Partial charge computation failed as the length of ' \
+            + 'resulting partial charges does not match with the ' \
+            + 'number of atoms in molecule'
 
         return charges
 
