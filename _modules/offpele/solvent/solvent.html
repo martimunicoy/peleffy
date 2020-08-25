@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0+untagged.1.g5986f67
+                0+untagged.1.g26b3180
               </div>
             
           
@@ -242,9 +242,11 @@
             <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">surface_area_penalty</span><span class="o">.</span><span class="n">value_in_unit</span><span class="p">(</span>
                 <span class="n">unit</span><span class="o">.</span><span class="n">kilocalorie</span> <span class="o">/</span> <span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">angstrom</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">unit</span><span class="o">.</span><span class="n">mole</span><span class="p">)),</span> <span class="mi">8</span><span class="p">)</span>
         <span class="n">data</span><span class="p">[</span><span class="s1">&#39;SolventParameters&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">rdkit_molecule</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">():</span>
-            <span class="n">pdb_info</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">GetPDBResidueInfo</span><span class="p">()</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="n">pdb_info</span><span class="o">.</span><span class="n">GetName</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span>
+
+        <span class="n">atom_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">get_pdb_atom_names</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">atom</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">rdkit_molecule</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">(),</span>
+                              <span class="n">atom_names</span><span class="p">):</span>
             <span class="n">index</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()</span>
             <span class="n">data</span><span class="p">[</span><span class="s1">&#39;SolventParameters&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> \
                 <span class="p">{</span><span class="s1">&#39;radius&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">radii</span><span class="p">[</span><span class="nb">tuple</span><span class="p">((</span><span class="n">index</span><span class="p">,</span> <span class="p">))]</span><span class="o">.</span><span class="n">value_in_unit</span><span class="p">(</span>
