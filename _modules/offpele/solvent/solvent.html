@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0+untagged.1.gb71d131
+                0+untagged.1.gaf8c902
               </div>
             
           
@@ -247,6 +247,7 @@
 
         <span class="k">for</span> <span class="n">atom</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">rdkit_molecule</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">(),</span>
                               <span class="n">atom_names</span><span class="p">):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">)</span>
             <span class="n">index</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()</span>
             <span class="n">data</span><span class="p">[</span><span class="s1">&#39;SolventParameters&#39;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> \
                 <span class="p">{</span><span class="s1">&#39;radius&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">radii</span><span class="p">[</span><span class="nb">tuple</span><span class="p">((</span><span class="n">index</span><span class="p">,</span> <span class="p">))]</span><span class="o">.</span><span class="n">value_in_unit</span><span class="p">(</span>
