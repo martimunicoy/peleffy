@@ -88,6 +88,7 @@ class _SolventWrapper(object):
 
         for atom, name in zip(self.molecule.rdkit_molecule.GetAtoms(),
                               atom_names):
+            name = name.replace(' ', '_')
             index = atom.GetIdx()
             data['SolventParameters'][self.molecule.name][name] = \
                 {'radius': round(self.radii[tuple((index, ))].value_in_unit(
