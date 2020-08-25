@@ -237,10 +237,19 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         assert Path(path).suffix == '.pdb', 'Wrong extension'
 
         rdkit_molecule = molecule.rdkit_molecule
+
+        pdb_block = Chem.rdmolfiles.MolToPDBBlock(rdkit_molecule)
+        names = molecule.get_pdb_atom_names()
+
+        renamed_pdb_block = ''
+        for line, name in zip(pdb_block.split('\n'), names):
+            renamed_pdb_block += line[:12] + name + line[16:] + '\n'
+
+        for line in pdb_block.split('\n')[len(names):]:
+            renamed_pdb_block += line + '\n'
+
         with open(path, 'w') as f:
-            writer = Chem.PDBWriter(f)
-            writer.write(rdkit_molecule)
-            writer.close()
+            f.write(renamed_pdb_block)
 
     def to_sdf_file(self, molecule, path):
         """
