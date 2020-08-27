@@ -129,7 +129,10 @@ class Impact(object):
         """
         file.write('* LIGAND DATABASE FILE')
         if self.molecule.forcefield:
-            file.write(' ({})'.format(self.molecule.forcefield))
+            if self.molecule.OPLS_included:
+                file.write(' ({} + OPLS2005)'.format(self.molecule.forcefield))
+            else:
+                file.write(' ({})'.format(self.molecule.forcefield))
         file.write('\n')
         file.write('* File generated with offpele-{}\n'.format(
             offpele.__version__))
@@ -660,7 +663,7 @@ class WritableAtom(offpele.topology.molecule.Atom, WritableWrapper):
         index : str
             The OLPS type of this Atom object
         """
-        return 'OFFT'  # stands for OpenForceField type
+        return super().OPLS_type  # stands for OpenForceField type
 
     # TODO
     @property
@@ -720,7 +723,7 @@ class WritableAtom(offpele.topology.molecule.Atom, WritableWrapper):
         return super().charge
 
     @property
-    @WritableWrapper.none_to_zero
+    @WritableWrapper.in_angstrom
     def born_radius(self):
         """
         Atom's Born radius.
@@ -730,6 +733,9 @@ class WritableAtom(offpele.topology.molecule.Atom, WritableWrapper):
         born_radius : float
             The Born radius of this Atom object
         """
+        if super().born_radius is None:
+            return unit.Quantity(0, unit.angstroms)
+
         return super().born_radius
 
     @property

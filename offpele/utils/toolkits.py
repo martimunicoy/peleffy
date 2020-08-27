@@ -14,7 +14,7 @@ from pathlib import Path
 import numpy as np
 from simtk import unit
 
-from offpele.utils import temporary_cd
+from offpele.utils import temporary_cd, get_data_file_path
 
 
 class ToolkitUnavailableException(Exception):
@@ -1048,7 +1048,7 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
 
             Returns
             -------
-           GSBA_parameters : dict[tuple, openforcefield.typing.engines.smirnoff.parameters.ParameterHandler]
+            GSBA_parameters : dict[tuple, openforcefield.typing.engines.smirnoff.parameters.ParameterHandler]
                 The parameters grouped by the atom ids they belong to
                 (arranged as tuples)
             """
@@ -1080,3 +1080,296 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
             """
             parameters = self.get_GBSA_parameters()
             return self._build_dict(parameters, 'scale')
+
+
+class SchrodingerToolkitWrapper(ToolkitWrapper):
+    """
+    SchrodingerToolkitWrapper class.
+    """
+
+    _toolkit_name = 'Schrodinger Toolkit'
+
+    def __init__(self):
+        """
+        It initializes a SchrodingerToolkitWrapper object.
+        """
+        super().__init__()
+
+        if not self.is_available():
+            raise ToolkitUnavailableException(
+                'The required toolkit {self.toolkit_name} is not '
+                'available.')
+
+        self._rdkit_toolkit_wrapper = RDKitToolkitWrapper()
+
+    @staticmethod
+    def is_available():
+        """
+        Check whether the OpenForceField toolkit is installed
+
+        Returns
+        -------
+        is_installed : bool
+            True if OpenForceField is installed, False otherwise.
+        """
+        if not(RDKitToolkitWrapper.is_available()):
+            return False
+
+        if SchrodingerToolkitWrapper.path_to_ffld_server() is None:
+            return False
+
+        return True
+
+    @staticmethod
+    def path_to_ffld_server():
+        FFLD_SERVER_PATH = find_executable("ffld_server")
+
+        if FFLD_SERVER_PATH is not None:
+            return FFLD_SERVER_PATH
+
+        else:
+            if "SCHRODINGER" in os.environ:
+                schrodinger_root = os.environ.get('SCHRODINGER')
+                return os.path.join(schrodinger_root,
+                                    'utilities', 'ffld_server')
+
+        return None
+
+    def get_OPLS_parameters(self, molecule):
+        """
+        It calls Schrodinger's ffld_server to parameterize a molecule
+        with OPLS.
+
+        .. todo ::
+
+           * Review PlopRotTemp's atom type fixes. Should we apply them here?
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+
+        Returns
+        -------
+        parameters ?
+        """
+
+        ffld_server_exec = self.path_to_ffld_server()
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+
+                self._rdkit_toolkit_wrapper.to_pdb_file(
+                    molecule, tmpdir + '/molecule.pdb')
+
+                subprocess.check_output([ffld_server_exec,
+                                         "-ipdb", "molecule.pdb",
+                                         "-version", "14",
+                                         "-print_parameters",
+                                         "-out_file", "parameters.txt"])
+
+                OPLS_params = self._parse_parameters('parameters.txt')
+
+        self._add_solvent_parameters(OPLS_params)
+
+        return OPLS_params
+
+    def _parse_parameters(self, path_to_parameters):
+        """
+        It parses the parameters from ffld_server's output file.
+
+        Parameters
+        ----------
+        path_to_parameters : str
+            The path to the ffld_server's output file
+
+        Returns
+        -------
+        params : an OPLSParameters object
+            The set of lists of parameters grouped by parameter type.
+            Thus, the dictionary has the following keys: atom_names,
+            atom_types, charges, sigmas, and epsilons.
+        """
+        params = defaultdict(list)
+
+        with open(path_to_parameters) as f:
+            in_section = False
+            for line in f:
+                if line.startswith('OPLSAA FORCE FIELD TYPE ASSIGNED'):
+                    in_section = True
+
+                    # Skip the next 3 lines
+                    f.readline()
+                    f.readline()
+                    f.readline()
+                elif in_section:
+                    if line.startswith('-'):
+                        break
+
+                    fields = line.split()
+                    assert len(fields) > 7, 'Unexpected number of fields ' \
+                        + 'found at line {}'.format(line)
+
+                    params['atom_names'].append(line[0:4])
+                    params['atom_types'].append(fields[3])
+                    params['charges'].append(
+                        unit.Quantity(float(fields[4]),
+                                      unit.elementary_charge))
+                    params['sigmas'].append(
+                        unit.Quantity(float(fields[5]),
+                                      unit.angstrom))
+                    params['epsilons'].append(
+                        unit.Quantity(float(fields[6]),
+                                      unit.kilocalorie / unit.mole))
+
+        return self.OPLSParameters(params)
+
+    def _add_solvent_parameters(self, OPLS_params):
+        """
+        It add the solvent parameters to the OPLS parameters collection.
+
+        Parameters
+        ----------
+        OPLS_params : an OPLSParameters object
+            The set of lists of parameters grouped by parameter type.
+            Thus, the dictionary has the following keys: atom_names,
+            atom_types, charges, sigmas, and epsilons. The following
+            solvent parameters will be added to the collection:
+        """
+        solvent_data = dict()
+        parameters_path = get_data_file_path('parameters/f14_sgbnp.param')
+
+        with open(parameters_path) as f:
+            for line in f:
+                if line.startswith('#'):
+                    continue
+
+                fields = line.split()
+                assert len(fields) > 7, 'Unexpected line with less than ' \
+                    '8 fields at {}'.format(line)
+
+                atom_type = fields[1]
+
+                solvent_data[atom_type] = {
+                    'SGB_radii': unit.Quantity(float(fields[4]),
+                                               unit.angstrom),
+                    'vdW_radii': unit.Quantity(float(fields[5]),
+                                               unit.angstrom),
+                    'gammas': float(fields[6]),
+                    'alphas': float(fields[7])}
+
+        parameters_to_add = defaultdict(list)
+        tried = list()
+
+        for atom_type in OPLS_params['atom_types']:
+            parameters_found = False
+            while(not parameters_found):
+                if atom_type in solvent_data:
+                    for label, value in solvent_data[atom_type].items():
+                        parameters_to_add[label].append(value)
+                    parameters_found = True
+
+                else:
+                    new_atom_type = self._find_similar_atom_types(atom_type,
+                                                                  tried)
+                    if new_atom_type is None:
+                        atom_type = 'DF'  # Set it to default
+                    else:
+                        tried.append(new_atom_type)
+                        atom_type = new_atom_type
+
+        for label, params in parameters_to_add.items():
+            OPLS_params.add_parameters(label, params)
+
+    def _find_similar_atom_types(self, atom_type, tried):
+        """
+        It tries to find a similar atom type, skipping the ones that have
+        already been tried. It uses the definitions from the
+        similarity.param file.
+
+        Parameters
+        ----------
+        atom_type : str
+            The atom type from which similar atom types will be searched
+        tried : list[str]
+            The list of atom types that have already been tried and
+            will be skipped
+
+        Returns
+        -------
+        new_atom_type : str
+            The most similar atom type that has been found, if any.
+            Otherwise, it returns None
+        """
+
+        new_atom_type = None
+        best_similarity = 0
+        similarity_path = get_data_file_path('parameters/similarity.param')
+
+        with open(similarity_path) as f:
+            for line in f:
+                fields = line.split()
+                assert len(fields) > 2, 'Unexpected number of fields at ' \
+                    + 'line {}'.format(line)
+
+                atom_type1, atom_type2, similarity = fields[0:3]
+                if (atom_type == atom_type1
+                        and float(similarity) > best_similarity
+                        and atom_type2 not in tried):
+                    best_similarity = float(similarity)
+                    new_atom_type = atom_type2
+                elif (atom_type == atom_type2
+                        and float(similarity) > best_similarity
+                        and atom_type1 not in tried):
+                    best_similarity = float(similarity)
+                    new_atom_type = atom_type1
+
+        return new_atom_type
+
+    class OPLSParameters(dict):
+        """
+        OPLSParameters class that inherits from dict.
+        """
+
+        def __init__(self, parameters):
+            """
+            It initializes an OPLSParameters object.
+
+            parameters : dict
+                A dictionary keyed by parameter type
+            """
+            for key, value in parameters.items():
+                self[key] = value
+
+            for params in self.values():
+                assert len(params) == self.size, 'List of parameters must ' \
+                    'be of the same length'
+
+        def add_parameters(self, label, parameters):
+            """
+            It adds a list of parameters of the same type to the collection.
+
+            Parameters
+            ----------
+            label : str
+                The label to describe the parameter type
+            parameters : list
+                The list of parameters to include to the collection. If
+                some parameters are already present, the newcomer list
+                must be of the same size as the ones already present in
+                the collection
+            """
+
+            if self.size:
+                assert len(parameters) == self.size, 'Expected list of ' \
+                    + 'parameters of the same size as the elements that ' \
+                    + 'are already in the collection'
+
+            self[label] = parameters
+
+        @property
+        def size(self):
+            if len(self) > 0:
+                return len(list(self.values())[0])
+            else:
+                return None
