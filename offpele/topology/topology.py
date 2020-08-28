@@ -643,6 +643,10 @@ class OFFDihedral(TopologyElement):
         It converts this Open Force Field Dihedral object into a
         PELE-compatible one.
 
+        .. todo ::
+
+           * Review doublecheck idivf term in OFF's torsion equation
+
         Returns
         -------
         PELE_dihedral : a Dihedral
@@ -658,8 +662,9 @@ class OFFDihedral(TopologyElement):
         assert self.phase.value_in_unit(unit.degree) in (0, 180), \
             'Expected values for phase are 0 or 180, obtained ' \
             '{}'.format(self.phase)
-        assert self.idivf == 1, 'The expected value for idivf is 1, ' \
-            'obtained {}'.format(self.divf)
+        # idivf can take values other than 1
+        # assert self.idivf == 1, 'The expected value for idivf is 1, ' \
+        #     'obtained {}'.format(self.idivf)
 
         if self.phase.value_in_unit(unit.degree) == 180:
             PELE_prefactor = -1

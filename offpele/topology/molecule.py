@@ -925,7 +925,8 @@ class Molecule(object):
                 k = k_by_index[index]
                 idivf = idivf_by_index[index]
 
-                if period and phase and k and idivf:
+                if (period is not None and phase is not None
+                        and k is not None and idivf is not None):
                     off_proper = OFFProper(atom1_idx=atom1_idx,
                                            atom2_idx=atom2_idx,
                                            atom3_idx=atom3_idx,
@@ -1001,7 +1002,8 @@ class Molecule(object):
                 k = k_by_index[index]
                 idivf = idivf_by_index[index]
 
-                if period and phase and k and idivf:
+                if (period is not None and phase is not None
+                        and k is not None and idivf is not None):
                     off_improper = OFFImproper(atom1_idx=atom1_idx,
                                                atom2_idx=atom2_idx,
                                                atom3_idx=atom3_idx,
