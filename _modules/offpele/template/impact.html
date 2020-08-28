@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0+untagged.1.gaf8c902
+                0+untagged.1.g4da5ec4
               </div>
             
           
@@ -288,7 +288,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;* LIGAND DATABASE FILE&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">forcefield</span><span class="p">:</span>
-            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">forcefield</span><span class="p">))</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">OPLS_included</span><span class="p">:</span>
+                <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; (</span><span class="si">{}</span><span class="s1"> + OPLS2005)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">forcefield</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">forcefield</span><span class="p">))</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;* File generated with offpele-</span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">offpele</span><span class="o">.</span><span class="n">__version__</span><span class="p">))</span>
@@ -819,7 +822,7 @@
 <span class="sd">        index : str</span>
 <span class="sd">            The OLPS type of this Atom object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s1">&#39;OFFT&#39;</span>  <span class="c1"># stands for OpenForceField type</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">OPLS_type</span>  <span class="c1"># stands for OpenForceField type</span>
 
     <span class="c1"># TODO</span>
     <span class="nd">@property</span>
@@ -879,7 +882,7 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">charge</span>
 
     <span class="nd">@property</span>
-    <span class="nd">@WritableWrapper</span><span class="o">.</span><span class="n">none_to_zero</span>
+    <span class="nd">@WritableWrapper</span><span class="o">.</span><span class="n">in_angstrom</span>
     <span class="k">def</span> <span class="nf">born_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Atom&#39;s Born radius.</span>
@@ -889,6 +892,9 @@
 <span class="sd">        born_radius : float</span>
 <span class="sd">            The Born radius of this Atom object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">born_radius</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">unit</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">unit</span><span class="o">.</span><span class="n">angstroms</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">born_radius</span>
 
     <span class="nd">@property</span>

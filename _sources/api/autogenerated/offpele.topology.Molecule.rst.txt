@@ -9,6 +9,7 @@ offpele.topology.Molecule
    
    
       .. automethod:: __init__
+      .. automethod:: add_OPLS_nonbonding_params
       .. automethod:: assert_parameterized
       .. automethod:: get_pdb_atom_names
       .. automethod:: parameterize
@@ -25,6 +26,7 @@ offpele.topology.Molecule
 
    .. autosummary::
    
+      ~Molecule.OPLS_included
       ~Molecule.angles
       ~Molecule.atoms
       ~Molecule.bonds

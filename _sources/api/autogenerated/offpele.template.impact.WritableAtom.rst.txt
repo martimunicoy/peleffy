@@ -18,11 +18,19 @@ offpele.template.impact.WritableAtom
       .. automethod:: in_kcalmol
       .. automethod:: none_to_dummy
       .. automethod:: none_to_zero
+      .. automethod:: set_OPLS_type
+      .. automethod:: set_SASA_radius
       .. automethod:: set_as_branch
       .. automethod:: set_as_core
+      .. automethod:: set_born_radius
+      .. automethod:: set_charge
       .. automethod:: set_coords
+      .. automethod:: set_epsilon
       .. automethod:: set_index
+      .. automethod:: set_nonpolar_alpha
+      .. automethod:: set_nonpolar_gamma
       .. automethod:: set_parent
+      .. automethod:: set_sigma
    
    
 

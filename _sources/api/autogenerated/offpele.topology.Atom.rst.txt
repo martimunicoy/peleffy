@@ -9,11 +9,19 @@ offpele.topology.Atom
    
    
       .. automethod:: __init__
+      .. automethod:: set_OPLS_type
+      .. automethod:: set_SASA_radius
       .. automethod:: set_as_branch
       .. automethod:: set_as_core
+      .. automethod:: set_born_radius
+      .. automethod:: set_charge
       .. automethod:: set_coords
+      .. automethod:: set_epsilon
       .. automethod:: set_index
+      .. automethod:: set_nonpolar_alpha
+      .. automethod:: set_nonpolar_gamma
       .. automethod:: set_parent
+      .. automethod:: set_sigma
    
    
 
