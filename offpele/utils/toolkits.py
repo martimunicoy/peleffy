@@ -1151,7 +1151,11 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
 
         Returns
         -------
-        parameters ?
+        OPLS_params : an OPLSParameters object
+            The set of lists of parameters grouped by parameter type.
+            Thus, the dictionary has the following keys: atom_names,
+            atom_types, charges, sigmas, epsilons, SGB_radii, vdW_radii,
+            gammas, and alphas
         """
 
         ffld_server_exec = self.path_to_ffld_server()
@@ -1234,7 +1238,8 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
             The set of lists of parameters grouped by parameter type.
             Thus, the dictionary has the following keys: atom_names,
             atom_types, charges, sigmas, and epsilons. The following
-            solvent parameters will be added to the collection:
+            solvent parameters will be added to the collection: SGB_radii,
+            vdW_radii, gammas, alphas
         """
         solvent_data = dict()
         parameters_path = get_data_file_path('parameters/f14_sgbnp.param')
