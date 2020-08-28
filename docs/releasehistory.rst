@@ -11,15 +11,20 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 0.3.0 - Current development
 -------------------------
 
-This is a minor release that includes a refactoring of the classes and methods that involve the rotamer library builder. It also contains a new method to define a molecule through a SMILES tag. It is still a preliminary version of the Open Force Field to PELE package which is under development.
+This is a minor release that includes a refactoring of the classes and methods that involve the rotamer library builder. Besides, now it is possible to combine parameters from OPLS2005 and OFF. This release also contains a new method to define a molecule through a SMILES tag. It is still a preliminary version of the Open Force Field to PELE package which is under development.
 
 New features
 """"""""""""
 - `PR #28 <https://github.com/martimunicoy/offpele/pull/28>`_: Adds a new method to define a `Molecule` object through a SMILES tag. This molecule can be written as a PDB file later for PELE.
+- `PR #31 <https://github.com/martimunicoy/offpele/pull/31>`_: Adds the possibility to combine nonbonding and solvent parameters from OPLS2005 with bonding parameters from OFF.
 
 Bugfixes
 """"""""
 - `PR #22 <https://github.com/martimunicoy/offpele/pull/22>`_: Fixes many bugs. For example, the default output name of the solvent parameters template is changed to `ligandParams.txt`, which is the name that PELE expects.
+
+Tests added
+"""""""""""
+- `PR #31 <https://github.com/martimunicoy/offpele/pull/31>`_: Adds tests to validate some functions of the new SchrodingerToolkitWrapper.
 
 
 0.2.1
