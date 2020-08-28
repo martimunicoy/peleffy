@@ -8,7 +8,8 @@ from pathlib import Path
 from .topology import Bond, Angle, OFFProper, OFFImproper
 from .rotamer import MolecularGraph
 from offpele.utils.toolkits import (RDKitToolkitWrapper,
-                                    OpenForceFieldToolkitWrapper)
+                                    OpenForceFieldToolkitWrapper,
+                                    SchrodingerToolkitWrapper)
 from offpele.charge import (Am1bccCalculator, GasteigerCalculator)
 
 
@@ -118,6 +119,94 @@ class Atom(object):
         assert len(coords) == 3, '3D array is expected'
 
         self._x, self._y, self._z = coords
+
+    def set_OPLS_type(self, OPLS_type):
+        """
+        It sets the OPLS type of the atom.
+
+        Parameters
+        ----------
+        OPLS_type : str
+            The OPLS type to set to this Atom object
+        """
+        self._OPLS_type = OPLS_type
+
+    def set_sigma(self, sigma):
+        """
+        It sets the sigma of the atom.
+
+        Parameters
+        ----------
+        sigma : float
+            The sigma to set to this Atom object
+        """
+        self._sigma = sigma
+
+    def set_epsilon(self, epsilon):
+        """
+        It sets the epsilon of the atom.
+
+        Parameters
+        ----------
+        epsilon : float
+            The epsilon to set to this Atom object
+        """
+        self._epsilon = epsilon
+
+    def set_charge(self, charge):
+        """
+        It sets the charge of the atom.
+
+        Parameters
+        ----------
+        charge : float
+            The charge to set to this Atom object
+        """
+        self._charge = charge
+
+    def set_born_radius(self, born_radius):
+        """
+        It sets the Born radius of the atom.
+
+        Parameters
+        ----------
+        born_radius : float
+            The Born radius to set to this Atom object
+        """
+        self._born_radius = born_radius
+
+    def set_SASA_radius(self, SASA_radius):
+        """
+        It sets the SASA radius of the atom.
+
+        Parameters
+        ----------
+        SASA_radius : float
+            The SASA radius to set to this Atom object
+        """
+        self._SASA_radius = SASA_radius
+
+    def set_nonpolar_gamma(self, nonpolar_gamma):
+        """
+        It sets the nonpolar gamma of the atom.
+
+        Parameters
+        ----------
+        nonpolar_gamma : float
+            The nonpolar gamma to set to this Atom object
+        """
+        self._nonpolar_gamma = nonpolar_gamma
+
+    def set_nonpolar_alpha(self, nonpolar_alpha):
+        """
+        It sets the nonpolar alpha of the atom.
+
+        Parameters
+        ----------
+        nonpolar_alpha : float
+            The nonpolar alpha to set to this Atom object
+        """
+        self._nonpolar_alpha = nonpolar_alpha
 
     @property
     def index(self):
@@ -429,6 +518,7 @@ class Molecule(object):
         self._rotamers = None
         self._graph = None
         self._parameterized = False
+        self._OPLS_included = False
 
     def _initialize_from_pdb(self, path):
         """
@@ -508,7 +598,8 @@ class Molecule(object):
             if self.off_molecule:
                 self.off_molecule.name = name
 
-    def parameterize(self, forcefield, charges_method=None):
+    def parameterize(self, forcefield, charges_method=None,
+                     use_OPLS_nonbonding_params=False):
         """
         It parameterizes the molecule with a certain forcefield.
 
@@ -519,6 +610,11 @@ class Molecule(object):
             The forcefield from which the parameters will be obtained
         charges_method : str
             The name of the charges method to employ
+        use_OPLS_nonbonding_params : bool
+            Whether to use Open Force Field or OPLS to obtain the
+            nonbonding parameters. Please, note that this option is only
+            available if a Schrodinger installation is found in the
+            current machine. Default is False
         """
 
         if not self.off_molecule or not self.rdkit_molecule:
@@ -558,6 +654,11 @@ class Molecule(object):
         self.graph.set_core()
 
         self.graph.set_parents()
+
+        if use_OPLS_nonbonding_params:
+            self.add_OPLS_nonbonding_params()
+        else:
+            self._OPLS_included = False
 
     # To do: consider removing this function
     def plot_rotamer_graph(self):
@@ -671,8 +772,7 @@ class Molecule(object):
         pdb_atom_names = {(i, ): name.replace(' ', '_',)
                           for i, name in enumerate(self.get_pdb_atom_names())}
 
-        # TODO should we assign an OPLS type? How can we do this with OFF?
-        OPLS_types = {i: None
+        OPLS_types = {i: 'OFFT'
                       for i in self.parameters.get_vdW_parameters().keys()}
 
         # TODO Which is the purpose of unknown value? Is it important?
@@ -937,6 +1037,37 @@ class Molecule(object):
         """
         self._OFF_impropers.append(improper)
 
+    def add_OPLS_nonbonding_params(self):
+        schrodinger_toolkit = SchrodingerToolkitWrapper()
+
+        OPLS_params = schrodinger_toolkit.get_OPLS_parameters(self)
+
+        atom_by_PDB_name = dict()
+
+        for atom in self.atoms:
+            atom_by_PDB_name[atom.PDB_name] = atom
+
+        for atom, atom_type, sigma, epsilon, charge, SGB_radius, \
+            vdW_radius, gamma, alpha in zip(self.atoms,
+                                            OPLS_params['atom_types'],
+                                            OPLS_params['sigmas'],
+                                            OPLS_params['epsilons'],
+                                            OPLS_params['charges'],
+                                            OPLS_params['SGB_radii'],
+                                            OPLS_params['vdW_radii'],
+                                            OPLS_params['gammas'],
+                                            OPLS_params['alphas']):
+            atom.set_OPLS_type(atom_type)
+            atom.set_sigma(sigma)
+            atom.set_epsilon(epsilon)
+            atom.set_charge(charge)
+            atom.set_born_radius(SGB_radius)
+            atom.set_SASA_radius(vdW_radius)
+            atom.set_nonpolar_gamma(gamma)
+            atom.set_nonpolar_alpha(alpha)
+
+        self._OPLS_included = True
+
     def get_pdb_atom_names(self):
         """
         It returns the PDB atom names of all the atoms in the molecule.
@@ -1143,3 +1274,16 @@ class Molecule(object):
             The parameterization status
         """
         return self._parameterized
+
+    @property
+    def OPLS_included(self):
+        """
+        Whether the molecule has been parameterized with OPLS in combination
+        with the Open Force Field toolkit or not.
+
+        Returns
+        -------
+        OPLS_included : bool
+            The OPLS combination status
+        """
+        return self._OPLS_included
