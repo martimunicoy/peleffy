@@ -91,11 +91,7 @@ class Impact(object):
         for proper in self.molecule.propers:
             proper.set_atom1_idx(reindexer[proper.atom1_idx])
             proper.set_atom2_idx(reindexer[proper.atom2_idx])
-            # Handle the only case where an index can be negative
-            if proper.atom3_idx > 0:
-                proper.set_atom3_idx(reindexer[proper.atom3_idx])
-            else:
-                proper.set_atom3_idx(- reindexer[- proper.atom3_idx])
+            proper.set_atom3_idx(reindexer[proper.atom3_idx])
             proper.set_atom4_idx(reindexer[proper.atom4_idx])
         for improper in self.molecule.impropers:
             improper.set_atom1_idx(reindexer[improper.atom1_idx])
@@ -977,6 +973,8 @@ class WritableProper(offpele.topology.Proper, WritableWrapper):
                          prefactor=proper.prefactor,
                          constant=proper.constant)
 
+        self.exclude = proper.exclude
+
     @property
     def atom1_idx(self):
         """
@@ -1011,7 +1009,10 @@ class WritableProper(offpele.topology.Proper, WritableWrapper):
         atom3_idx : int
             The index of the third atom involved in this Proper object
         """
-        return super().atom3_idx + 1
+        if self.exclude:
+            return (super().atom3_idx + 1) * -1
+        else:
+            return super().atom3_idx + 1
 
     @property
     def atom4_idx(self):

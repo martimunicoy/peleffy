@@ -940,7 +940,7 @@ class Molecule(object):
                     self._add_proper(PELE_proper)
                     self._add_OFF_proper(off_proper)
 
-        self._handle_negative_indexes()
+        self._handle_excluded_propers()
 
     def _add_proper(self, proper):
         """
@@ -964,10 +964,10 @@ class Molecule(object):
         """
         self._OFF_propers.append(proper)
 
-    def _handle_negative_indexes(self):
+    def _handle_excluded_propers(self):
         """
-        It sets atom3_idx to negative when the corresponding proper
-        dihedral has to be excluded in PELE's 1-4 list.
+        It looks for those propers that define duplicated 1-4 relations
+        and sets them to be ignored in PELE's 1-4 list.
         """
         for i, proper in enumerate(self.propers):
             atom1_idx = proper.atom1_idx

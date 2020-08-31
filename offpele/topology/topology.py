@@ -581,14 +581,14 @@ class Proper(Dihedral):
     """
 
     _name = 'Proper'
+    exclude = False
 
     def exclude_from_14_list(self):
         """
         It excludes this proper dihedral from PELE's 1-4 list by
         setting the index of the third atom to negative.
         """
-        if self.atom3_idx > 0:
-            self._atom3_idx = - self.atom3_idx
+        self.exclude = True
 
 
 class Improper(Dihedral):
