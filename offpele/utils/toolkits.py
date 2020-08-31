@@ -1254,7 +1254,8 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
                         {'atom1_idx': name_to_index[line[0:4]],
                          'atom2_idx': name_to_index[line[8:12]],
                          'spring_constant': unit.Quantity(
-                            float(fields[2]), unit.kilocalorie / unit.mole),
+                            float(fields[2]), unit.kilocalorie
+                            / (unit.angstrom ** 2 * unit.mole)),
                          'eq_dist': unit.Quantity(float(fields[3]),
                                                   unit.angstrom)
                          })
@@ -1269,7 +1270,8 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
                          'atom2_idx': name_to_index[line[8:12]],
                          'atom3_idx': name_to_index[line[16:20]],
                          'spring_constant': unit.Quantity(
-                            float(fields[3]), unit.kilocalorie / unit.mole),
+                            float(fields[3]), unit.kilocalorie
+                            / (unit.radian ** 2 * unit.mole)),
                          'eq_angle': unit.Quantity(float(fields[4]),
                                                    unit.degrees)
                          })
