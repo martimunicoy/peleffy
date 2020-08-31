@@ -91,7 +91,11 @@ class Impact(object):
         for proper in self.molecule.propers:
             proper.set_atom1_idx(reindexer[proper.atom1_idx])
             proper.set_atom2_idx(reindexer[proper.atom2_idx])
-            proper.set_atom3_idx(reindexer[proper.atom3_idx])
+            # Handle the only case where an index can be negative
+            if proper.atom3_idx > 0:
+                proper.set_atom3_idx(reindexer[proper.atom3_idx])
+            else:
+                proper.set_atom3_idx(- reindexer[- proper.atom3_idx])
             proper.set_atom4_idx(reindexer[proper.atom4_idx])
         for improper in self.molecule.impropers:
             improper.set_atom1_idx(reindexer[improper.atom1_idx])
