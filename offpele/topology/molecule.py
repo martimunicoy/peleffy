@@ -964,7 +964,7 @@ class Molecule(object):
         """
         self._OFF_propers.append(proper)
 
-    def __handle_negative_indexes(self):
+    def _handle_negative_indexes(self):
         """
         It sets atom3_idx to negative when the corresponding proper
         dihedral has to be excluded in PELE's 1-4 list.

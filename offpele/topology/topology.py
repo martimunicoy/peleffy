@@ -588,7 +588,7 @@ class Proper(Dihedral):
         setting the index of the third atom to negative.
         """
         if self.atom3_idx > 0:
-            self.atom3_idx = - self.atom3_idx
+            self._atom3_idx = - self.atom3_idx
 
 
 class Improper(Dihedral):
