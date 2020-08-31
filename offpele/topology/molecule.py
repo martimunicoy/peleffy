@@ -599,7 +599,8 @@ class Molecule(object):
                 self.off_molecule.name = name
 
     def parameterize(self, forcefield, charges_method=None,
-                     use_OPLS_nonbonding_params=False):
+                     use_OPLS_nonbonding_params=False,
+                     use_OPLS_bonds_and_angles=False):
         """
         It parameterizes the molecule with a certain forcefield.
 
@@ -613,6 +614,11 @@ class Molecule(object):
         use_OPLS_nonbonding_params : bool
             Whether to use Open Force Field or OPLS to obtain the
             nonbonding parameters. Please, note that this option is only
+            available if a Schrodinger installation is found in the
+            current machine. Default is False
+        use_OPLS_bonds_and_angles : bool
+            Whether to use OPLS to obtain the bond and angle parameters
+            or not. Please, note that this option is only
             available if a Schrodinger installation is found in the
             current machine. Default is False
         """
@@ -655,10 +661,12 @@ class Molecule(object):
 
         self.graph.set_parents()
 
+        self._OPLS_included = False
+
         if use_OPLS_nonbonding_params:
             self.add_OPLS_nonbonding_params()
-        else:
-            self._OPLS_included = False
+        if use_OPLS_bonds_and_angles:
+            self.add_OPLS_bonds_and_angles()
 
     # To do: consider removing this function
     def plot_rotamer_graph(self):
@@ -1086,14 +1094,12 @@ class Molecule(object):
         self._OFF_impropers.append(improper)
 
     def add_OPLS_nonbonding_params(self):
+        """
+        It adds OPLS' nonbonding parameters to the molecule.
+        """
         schrodinger_toolkit = SchrodingerToolkitWrapper()
 
         OPLS_params = schrodinger_toolkit.get_OPLS_parameters(self)
-
-        atom_by_PDB_name = dict()
-
-        for atom in self.atoms:
-            atom_by_PDB_name[atom.PDB_name] = atom
 
         for atom, atom_type, sigma, epsilon, charge, SGB_radius, \
             vdW_radius, gamma, alpha in zip(self.atoms,
@@ -1113,6 +1119,40 @@ class Molecule(object):
             atom.set_SASA_radius(vdW_radius)
             atom.set_nonpolar_gamma(gamma)
             atom.set_nonpolar_alpha(alpha)
+
+        self._OPLS_included = True
+
+    def add_OPLS_bonds_and_angles(self):
+        """
+        It adds OPLS' bond and angle parameters to the molecule.
+        """
+        schrodinger_toolkit = SchrodingerToolkitWrapper()
+
+        OPLS_params = schrodinger_toolkit.get_OPLS_parameters(self)
+
+        self._bonds = list()
+        for index, bond in enumerate(OPLS_params['bonds']):
+            atom1 = self.atoms[bond['atom1_idx']]
+            atom2 = self.atoms[bond['atom2_idx']]
+            OPLS_bond = Bond(index=index,
+                             atom1_idx=atom1.index,
+                             atom2_idx=atom2.index,
+                             spring_constant=bond['spring_constant'],
+                             eq_dist=bond['eq_dist'])
+            self._add_bond(OPLS_bond)
+
+        self._angles = list()
+        for index, angle in enumerate(OPLS_params['angles']):
+            atom1 = self.atoms[angle['atom1_idx']]
+            atom2 = self.atoms[angle['atom2_idx']]
+            atom3 = self.atoms[angle['atom3_idx']]
+            angle = Angle(index=index,
+                          atom1_idx=atom1.index,
+                          atom2_idx=atom2.index,
+                          atom3_idx=atom3.index,
+                          spring_constant=angle['spring_constant'],
+                          eq_angle=angle['eq_angle'])
+            self._add_angle(angle)
 
         self._OPLS_included = True
 
