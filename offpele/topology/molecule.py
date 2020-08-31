@@ -940,6 +940,8 @@ class Molecule(object):
                     self._add_proper(PELE_proper)
                     self._add_OFF_proper(off_proper)
 
+        self._handle_negative_indexes()
+
     def _add_proper(self, proper):
         """
         It adds a proper dihedral to the molecule's list of propers.
@@ -961,6 +963,50 @@ class Molecule(object):
             The OFFProper to add
         """
         self._OFF_propers.append(proper)
+
+    def __handle_negative_indexes(self):
+        """
+        It sets atom3_idx to negative when the corresponding proper
+        dihedral has to be excluded in PELE's 1-4 list.
+        """
+        for i, proper in enumerate(self.propers):
+            atom1_idx = proper.atom1_idx
+            atom4_idx = proper.atom4_idx
+            for proper_to_compare in self.propers[0:i]:
+                if proper == proper_to_compare:
+                    continue
+
+                if proper_to_compare.atom3_idx < 0:
+                    continue
+
+                atom1_idx_to_compare = proper_to_compare.atom1_idx
+                atom4_idx_to_compare = proper_to_compare.atom4_idx
+                if (atom1_idx == atom1_idx_to_compare
+                        and atom4_idx == atom4_idx_to_compare):
+                    proper.exclude_from_14_list()
+                elif (atom1_idx == atom4_idx_to_compare
+                        and atom4_idx == atom1_idx_to_compare):
+                    proper.exclude_from_14_list()
+
+            for angle_to_compare in self.angles:
+                atom1_idx_to_compare = angle_to_compare.atom1_idx
+                atom4_idx_to_compare = angle_to_compare.atom3_idx
+                if (atom1_idx == atom1_idx_to_compare
+                        and atom4_idx == atom4_idx_to_compare):
+                    proper.exclude_from_14_list()
+                elif (atom1_idx == atom4_idx_to_compare
+                        and atom4_idx == atom1_idx_to_compare):
+                    proper.exclude_from_14_list()
+
+            for bond_to_compare in self.bonds:
+                atom1_idx_to_compare = bond_to_compare.atom1_idx
+                atom4_idx_to_compare = bond_to_compare.atom2_idx
+                if (atom1_idx == atom1_idx_to_compare
+                        and atom4_idx == atom4_idx_to_compare):
+                    proper.exclude_from_14_list()
+                elif (atom1_idx == atom4_idx_to_compare
+                        and atom4_idx == atom1_idx_to_compare):
+                    proper.exclude_from_14_list()
 
     def _build_impropers(self):
         """It builds the impropers of the molecule."""
