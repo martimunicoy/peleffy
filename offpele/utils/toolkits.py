@@ -10,6 +10,7 @@ import os
 import subprocess
 from collections import defaultdict
 from pathlib import Path
+from copy import copy
 
 import numpy as np
 from simtk import unit
@@ -350,6 +351,27 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         conformer = rdkit_molecule.GetConformer()
         return conformer.GetPositions()
+
+    def get_2D_representation(self, molecule):
+        """
+        It returns the 2D representation of the RDKit molecule.
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+
+        Returns
+        -------
+        representation_2D : an RDKit.molecule object
+            It is an RDKit molecule with an embeded 2D representation
+        """
+        from rdkit.Chem import AllChem
+
+        rdkit_molecule = molecule.rdkit_molecule
+        representation_2D = copy(rdkit_molecule)
+        AllChem.Compute2DCoords(representation_2D)
+        return representation_2D
 
 
 class AmberToolkitWrapper(ToolkitWrapper):
