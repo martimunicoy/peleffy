@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0+untagged.1.gcb97eac
+                0+untagged.1.gb58ec6d
               </div>
             
           
@@ -410,8 +410,8 @@
             <span class="c1"># Atom 2 id</span>
             <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:5d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx2</span><span class="p">))</span>
             <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
-            <span class="c1"># Spring constant (PELE works with half of the OFF&#39;s spring)</span>
-            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{: 9.3f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spring</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">))</span>
+            <span class="c1"># Spring constant</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{: 9.3f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spring</span><span class="p">))</span>
             <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
             <span class="c1"># Equilibrium distance</span>
             <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{: 6.3f}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">eq_dist</span><span class="p">))</span>
@@ -442,8 +442,8 @@
             <span class="c1"># Atom 3 id</span>
             <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:5d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx3</span><span class="p">))</span>
             <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
-            <span class="c1"># Spring constant (PELE works with half of the OFF&#39;s spring)</span>
-            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{: 11.5f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spring</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">))</span>
+            <span class="c1"># Spring constant</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{: 11.5f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">spring</span><span class="p">))</span>
             <span class="c1"># Equilibrium angle</span>
             <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{: 11.5f}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">eq_angl</span><span class="p">))</span>
 
@@ -1130,7 +1130,9 @@
                          <span class="n">atom4_idx</span><span class="o">=</span><span class="n">proper</span><span class="o">.</span><span class="n">atom4_idx</span><span class="p">,</span>
                          <span class="n">periodicity</span><span class="o">=</span><span class="n">proper</span><span class="o">.</span><span class="n">periodicity</span><span class="p">,</span>
                          <span class="n">prefactor</span><span class="o">=</span><span class="n">proper</span><span class="o">.</span><span class="n">prefactor</span><span class="p">,</span>
-                         <span class="n">constant</span><span class="o">=</span><span class="n">proper</span><span class="o">.</span><span class="n">constant</span><span class="p">)</span></div>
+                         <span class="n">constant</span><span class="o">=</span><span class="n">proper</span><span class="o">.</span><span class="n">constant</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span> <span class="o">=</span> <span class="n">proper</span><span class="o">.</span><span class="n">exclude</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">atom1_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1166,7 +1168,10 @@
 <span class="sd">        atom3_idx : int</span>
 <span class="sd">            The index of the third atom involved in this Proper object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">atom3_idx</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">atom3_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">atom3_idx</span> <span class="o">+</span> <span class="mi">1</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">atom4_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

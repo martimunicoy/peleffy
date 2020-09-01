@@ -10,6 +10,7 @@ offpele.template.impact.WritableProper
    
       .. automethod:: __init__
       .. automethod:: dummy_to_writable
+      .. automethod:: exclude_from_14_list
       .. automethod:: in_angstrom
       .. automethod:: in_deg
       .. automethod:: in_elementarycharge
@@ -37,6 +38,7 @@ offpele.template.impact.WritableProper
       ~WritableProper.atom3_idx
       ~WritableProper.atom4_idx
       ~WritableProper.constant
+      ~WritableProper.exclude
       ~WritableProper.index
       ~WritableProper.n_writable_attrs
       ~WritableProper.name

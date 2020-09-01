@@ -9,6 +9,7 @@ offpele.topology.Proper
    
    
       .. automethod:: __init__
+      .. automethod:: exclude_from_14_list
       .. automethod:: plot
       .. automethod:: set_atom1_idx
       .. automethod:: set_atom2_idx
@@ -28,6 +29,7 @@ offpele.topology.Proper
       ~Proper.atom3_idx
       ~Proper.atom4_idx
       ~Proper.constant
+      ~Proper.exclude
       ~Proper.index
       ~Proper.n_writable_attrs
       ~Proper.name
