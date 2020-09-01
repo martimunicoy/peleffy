@@ -991,6 +991,14 @@ class Molecule(object):
                 if proper_to_compare.atom3_idx < 0:
                     continue
 
+                # PELE already ignores 1-4 pair when the proper is exactly
+                # the same
+                if (proper.atom1_idx == proper_to_compare.atom1_idx
+                        and proper.atom2_idx == proper_to_compare.atom2_idx
+                        and proper.atom3_idx == proper_to_compare.atom3_idx
+                        and proper.atom4_idx == proper_to_compare.atom4_idx):
+                    continue
+
                 atom1_idx_to_compare = proper_to_compare.atom1_idx
                 atom4_idx_to_compare = proper_to_compare.atom4_idx
                 if (atom1_idx == atom1_idx_to_compare
