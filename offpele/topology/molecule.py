@@ -1394,8 +1394,9 @@ class Molecule(object):
 
         Returns
         -------
-        representation_2D : an RDKit.molecule object
-            It is an RDKit molecule with an embeded 2D representation
+        representation_2D : a IPython display object
+            It is displayable RDKit molecule with an embeded 2D
+            representation
         """
         from IPython.display import display
 
