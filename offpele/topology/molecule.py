@@ -850,8 +850,10 @@ class Molecule(object):
 
         for index, atom_indexes in enumerate(bond_indexes):
             (atom1_idx, atom2_idx) = atom_indexes
+            # PELE works with half of the OFF's spring
+            k = ks[atom_indexes] / 2.0
             bond = Bond(index=index, atom1_idx=atom1_idx, atom2_idx=atom2_idx,
-                        spring_constant=ks[atom_indexes],
+                        spring_constant=k,
                         eq_dist=lengths[atom_indexes])
             self._add_bond(bond)
 
@@ -876,9 +878,11 @@ class Molecule(object):
 
         for index, atom_indexes in enumerate(angle_indexes):
             atom1_idx, atom2_idx, atom3_idx = atom_indexes
+            # PELE works with half of the OFF's spring
+            k = ks[atom_indexes] / 2.0
             angle = Angle(index=index, atom1_idx=atom1_idx,
                           atom2_idx=atom2_idx, atom3_idx=atom3_idx,
-                          spring_constant=ks[atom_indexes],
+                          spring_constant=k,
                           eq_angle=angles[atom_indexes])
             self._add_angle(angle)
 

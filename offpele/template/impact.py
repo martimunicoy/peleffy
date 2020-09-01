@@ -251,8 +251,8 @@ class Impact(object):
             # Atom 2 id
             file.write('{:5d}'.format(idx2))
             file.write(' ')
-            # Spring constant (PELE works with half of the OFF's spring)
-            file.write('{: 9.3f}'.format(spring / 2.0))
+            # Spring constant
+            file.write('{: 9.3f}'.format(spring))
             file.write(' ')
             # Equilibrium distance
             file.write('{: 6.3f}\n'.format(eq_dist))
@@ -283,8 +283,8 @@ class Impact(object):
             # Atom 3 id
             file.write('{:5d}'.format(idx3))
             file.write(' ')
-            # Spring constant (PELE works with half of the OFF's spring)
-            file.write('{: 11.5f}'.format(spring / 2.0))
+            # Spring constant
+            file.write('{: 11.5f}'.format(spring))
             # Equilibrium angle
             file.write('{: 11.5f}\n'.format(eq_angl))
 
