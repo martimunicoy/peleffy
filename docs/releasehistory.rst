@@ -17,6 +17,7 @@ New features
 """"""""""""
 - `PR #28 <https://github.com/martimunicoy/offpele/pull/28>`_: Adds a new method to define a `Molecule` object through a SMILES tag. This molecule can be written as a PDB file later for PELE.
 - `PR #31 <https://github.com/martimunicoy/offpele/pull/31>`_: Adds the possibility to combine nonbonding and solvent parameters from OPLS2005 with bonding parameters from OFF.
+- `PR #36 <https://github.com/martimunicoy/offpele/pull/36>`_: Minor changes to improve the quality of the code.
 
 Bugfixes
 """"""""

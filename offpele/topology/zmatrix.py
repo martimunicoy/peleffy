@@ -45,6 +45,7 @@ class ZMatrix(np.ndarray):
 
         return obj
 
+    @staticmethod
     def _extract_coords(molecule):
         """
         It extracts the coordinates of the molecule's atoms.
@@ -65,6 +66,7 @@ class ZMatrix(np.ndarray):
 
         return coords
 
+    @staticmethod
     def _get_absolute_parent(molecule):
         """
         It returns the absolute parent in the topology of the molecule.
@@ -88,6 +90,7 @@ class ZMatrix(np.ndarray):
 
         return absolute_parent[0]
 
+    @staticmethod
     def _calculate_bond(x1, y1, z1, x2, y2, z2):
         """
         It calculates the bond distance between two sets of coordinates.
@@ -118,6 +121,7 @@ class ZMatrix(np.ndarray):
 
         return np.sqrt(dx * dx + dy * dy + dz * dz)
 
+    @staticmethod
     def _calculate_angle(x1, y1, z1, x2, y2, z2, x3, y3, z3):
         """
         It calculates the angle between three sets of coordinates.
@@ -172,6 +176,7 @@ class ZMatrix(np.ndarray):
 
         return np.arccos(xang) * 180.0 / np.pi
 
+    @staticmethod
     def _calculate_dihedral(x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4):
         """
         It calculates the dihedral between four sets of coordinates.
@@ -246,6 +251,7 @@ class ZMatrix(np.ndarray):
 
         return phi * 180.0 / np.pi
 
+    @staticmethod
     def _build_zmatrix(cls, obj, coords, molecule):
         """
         It buils the zmatrix.
