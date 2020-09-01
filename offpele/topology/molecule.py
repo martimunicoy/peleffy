@@ -1387,3 +1387,17 @@ class Molecule(object):
             The OPLS combination status
         """
         return self._OPLS_included
+
+    def _ipython_display_(self):
+        """
+        It returns a RDKit molecule with an embeded 2D representation.
+
+        Returns
+        -------
+        representation_2D : an RDKit.molecule object
+            It is an RDKit molecule with an embeded 2D representation
+        """
+        from IPython.display import display
+
+        rdkit_toolkit = RDKitToolkitWrapper()
+        return display(rdkit_toolkit.get_2D_representation(self))
