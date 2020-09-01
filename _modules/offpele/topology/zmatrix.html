@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0+untagged.1.gb58ec6d
+                0+untagged.1.gac67f96
               </div>
             
           
@@ -204,6 +204,7 @@
 
         <span class="k">return</span> <span class="n">obj</span>
 
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_extract_coords</span><span class="p">(</span><span class="n">molecule</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        It extracts the coordinates of the molecule&#39;s atoms.</span>
@@ -224,6 +225,7 @@
 
         <span class="k">return</span> <span class="n">coords</span>
 
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_get_absolute_parent</span><span class="p">(</span><span class="n">molecule</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        It returns the absolute parent in the topology of the molecule.</span>
@@ -247,6 +249,7 @@
 
         <span class="k">return</span> <span class="n">absolute_parent</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_calculate_bond</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">z1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">z2</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        It calculates the bond distance between two sets of coordinates.</span>
@@ -277,6 +280,7 @@
 
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dx</span> <span class="o">*</span> <span class="n">dx</span> <span class="o">+</span> <span class="n">dy</span> <span class="o">*</span> <span class="n">dy</span> <span class="o">+</span> <span class="n">dz</span> <span class="o">*</span> <span class="n">dz</span><span class="p">)</span>
 
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_calculate_angle</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">z1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">z2</span><span class="p">,</span> <span class="n">x3</span><span class="p">,</span> <span class="n">y3</span><span class="p">,</span> <span class="n">z3</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        It calculates the angle between three sets of coordinates.</span>
@@ -331,6 +335,7 @@
 
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">xang</span><span class="p">)</span> <span class="o">*</span> <span class="mf">180.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
 
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_calculate_dihedral</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">z1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">z2</span><span class="p">,</span> <span class="n">x3</span><span class="p">,</span> <span class="n">y3</span><span class="p">,</span> <span class="n">z3</span><span class="p">,</span> <span class="n">x4</span><span class="p">,</span> <span class="n">y4</span><span class="p">,</span> <span class="n">z4</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        It calculates the dihedral between four sets of coordinates.</span>
@@ -405,6 +410,7 @@
 
         <span class="k">return</span> <span class="n">phi</span> <span class="o">*</span> <span class="mf">180.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
 
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_build_zmatrix</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">coords</span><span class="p">,</span> <span class="n">molecule</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        It buils the zmatrix.</span>
