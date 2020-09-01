@@ -10,6 +10,7 @@ import os
 import subprocess
 from collections import defaultdict
 from pathlib import Path
+from copy import copy
 
 import numpy as np
 from simtk import unit
@@ -350,6 +351,27 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         conformer = rdkit_molecule.GetConformer()
         return conformer.GetPositions()
+
+    def get_2D_representation(self, molecule):
+        """
+        It returns the 2D representation of the RDKit molecule.
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+
+        Returns
+        -------
+        representation_2D : an RDKit.molecule object
+            It is an RDKit molecule with an embeded 2D representation
+        """
+        from rdkit.Chem import AllChem
+
+        rdkit_molecule = molecule.rdkit_molecule
+        representation_2D = copy(rdkit_molecule)
+        AllChem.Compute2DCoords(representation_2D)
+        return representation_2D
 
 
 class AmberToolkitWrapper(ToolkitWrapper):
@@ -1151,7 +1173,11 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
 
         Returns
         -------
-        parameters ?
+        OPLS_params : an OPLSParameters object
+            The set of lists of parameters grouped by parameter type.
+            Thus, the dictionary has the following keys: atom_names,
+            atom_types, charges, sigmas, epsilons, SGB_radii, vdW_radii,
+            gammas, and alphas
         """
 
         ffld_server_exec = self.path_to_ffld_server()
@@ -1193,22 +1219,41 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
         params = defaultdict(list)
 
         with open(path_to_parameters) as f:
-            in_section = False
+            section = 'out'
+            name_to_index = dict()  # To pair atom names and indexes
             for line in f:
                 if line.startswith('OPLSAA FORCE FIELD TYPE ASSIGNED'):
-                    in_section = True
+                    section = 'atoms'
 
                     # Skip the next 3 lines
                     f.readline()
                     f.readline()
                     f.readline()
-                elif in_section:
+
+                elif line.startswith(' Stretch'):
+                    section = 'bonds'
+
+                elif line.startswith(' Bending'):
+                    section = 'angles'
+
+                elif line.startswith(' proper Torsion'):
+                    section = 'propers'
+
+                elif line.startswith(' improper Torsion'):
+                    section = 'impropers'
+
+                elif line == '\n':
+                    continue
+
+                elif section == 'atoms':
                     if line.startswith('-'):
-                        break
+                        continue
 
                     fields = line.split()
                     assert len(fields) > 7, 'Unexpected number of fields ' \
                         + 'found at line {}'.format(line)
+
+                    name_to_index[line[0:4]] = len(params['atom_names'])
 
                     params['atom_names'].append(line[0:4])
                     params['atom_types'].append(fields[3])
@@ -1222,6 +1267,37 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
                         unit.Quantity(float(fields[6]),
                                       unit.kilocalorie / unit.mole))
 
+                elif section == 'bonds':
+                    fields = line.split()
+                    assert len(fields) > 4, 'Unexpected number of fields ' \
+                        + 'found at line {}'.format(line)
+
+                    params['bonds'].append(
+                        {'atom1_idx': name_to_index[line[0:4]],
+                         'atom2_idx': name_to_index[line[8:12]],
+                         'spring_constant': unit.Quantity(
+                            float(fields[2]), unit.kilocalorie
+                            / (unit.angstrom ** 2 * unit.mole)),
+                         'eq_dist': unit.Quantity(float(fields[3]),
+                                                  unit.angstrom)
+                         })
+
+                elif section == 'angles':
+                    fields = line.split()
+                    assert len(fields) > 5, 'Unexpected number of fields ' \
+                        + 'found at line {}'.format(line)
+
+                    params['angles'].append(
+                        {'atom1_idx': name_to_index[line[0:4]],
+                         'atom2_idx': name_to_index[line[8:12]],
+                         'atom3_idx': name_to_index[line[16:20]],
+                         'spring_constant': unit.Quantity(
+                            float(fields[3]), unit.kilocalorie
+                            / (unit.radian ** 2 * unit.mole)),
+                         'eq_angle': unit.Quantity(float(fields[4]),
+                                                   unit.degrees)
+                         })
+
         return self.OPLSParameters(params)
 
     def _add_solvent_parameters(self, OPLS_params):
@@ -1234,7 +1310,8 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
             The set of lists of parameters grouped by parameter type.
             Thus, the dictionary has the following keys: atom_names,
             atom_types, charges, sigmas, and epsilons. The following
-            solvent parameters will be added to the collection:
+            solvent parameters will be added to the collection: SGB_radii,
+            vdW_radii, gammas, alphas
         """
         solvent_data = dict()
         parameters_path = get_data_file_path('parameters/f14_sgbnp.param')
@@ -1341,10 +1418,6 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
             for key, value in parameters.items():
                 self[key] = value
 
-            for params in self.values():
-                assert len(params) == self.size, 'List of parameters must ' \
-                    'be of the same length'
-
         def add_parameters(self, label, parameters):
             """
             It adds a list of parameters of the same type to the collection.
@@ -1354,22 +1427,6 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
             label : str
                 The label to describe the parameter type
             parameters : list
-                The list of parameters to include to the collection. If
-                some parameters are already present, the newcomer list
-                must be of the same size as the ones already present in
-                the collection
+                The list of parameters to include to the collection
             """
-
-            if self.size:
-                assert len(parameters) == self.size, 'Expected list of ' \
-                    + 'parameters of the same size as the elements that ' \
-                    + 'are already in the collection'
-
             self[label] = parameters
-
-        @property
-        def size(self):
-            if len(self) > 0:
-                return len(list(self.values())[0])
-            else:
-                return None

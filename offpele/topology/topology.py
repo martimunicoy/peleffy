@@ -581,6 +581,14 @@ class Proper(Dihedral):
     """
 
     _name = 'Proper'
+    exclude = False
+
+    def exclude_from_14_list(self):
+        """
+        It excludes this proper dihedral from PELE's 1-4 list by
+        setting the index of the third atom to negative.
+        """
+        self.exclude = True
 
 
 class Improper(Dihedral):
@@ -643,6 +651,10 @@ class OFFDihedral(TopologyElement):
         It converts this Open Force Field Dihedral object into a
         PELE-compatible one.
 
+        .. todo ::
+
+           * Review doublecheck idivf term in OFF's torsion equation
+
         Returns
         -------
         PELE_dihedral : a Dihedral
@@ -658,15 +670,16 @@ class OFFDihedral(TopologyElement):
         assert self.phase.value_in_unit(unit.degree) in (0, 180), \
             'Expected values for phase are 0 or 180, obtained ' \
             '{}'.format(self.phase)
-        assert self.idivf == 1, 'The expected value for idivf is 1, ' \
-            'obtained {}'.format(self.divf)
+        # idivf can take values other than 1 in case of impropers
+        # proper's idivfs must always be 1
+        # assert self.idivf == 1, 'The expected value for idivf is 1, ' \
+        #     'obtained {}'.format(self.idivf)
 
         if self.phase.value_in_unit(unit.degree) == 180:
             PELE_prefactor = -1
         else:
             PELE_prefactor = 1
 
-        # TODO doublecheck idivf term in OFF's torsion equation
         PELE_constant = self.k / self.idivf
 
         PELE_dihedral_kwargs = {'index': self.index,

@@ -599,7 +599,8 @@ class Molecule(object):
                 self.off_molecule.name = name
 
     def parameterize(self, forcefield, charges_method=None,
-                     use_OPLS_nonbonding_params=False):
+                     use_OPLS_nonbonding_params=False,
+                     use_OPLS_bonds_and_angles=False):
         """
         It parameterizes the molecule with a certain forcefield.
 
@@ -613,6 +614,11 @@ class Molecule(object):
         use_OPLS_nonbonding_params : bool
             Whether to use Open Force Field or OPLS to obtain the
             nonbonding parameters. Please, note that this option is only
+            available if a Schrodinger installation is found in the
+            current machine. Default is False
+        use_OPLS_bonds_and_angles : bool
+            Whether to use OPLS to obtain the bond and angle parameters
+            or not. Please, note that this option is only
             available if a Schrodinger installation is found in the
             current machine. Default is False
         """
@@ -655,10 +661,12 @@ class Molecule(object):
 
         self.graph.set_parents()
 
+        self._OPLS_included = False
+
         if use_OPLS_nonbonding_params:
             self.add_OPLS_nonbonding_params()
-        else:
-            self._OPLS_included = False
+        if use_OPLS_bonds_and_angles:
+            self.add_OPLS_bonds_and_angles()
 
     # To do: consider removing this function
     def plot_rotamer_graph(self):
@@ -842,8 +850,10 @@ class Molecule(object):
 
         for index, atom_indexes in enumerate(bond_indexes):
             (atom1_idx, atom2_idx) = atom_indexes
+            # PELE works with half of the OFF's spring
+            k = ks[atom_indexes] / 2.0
             bond = Bond(index=index, atom1_idx=atom1_idx, atom2_idx=atom2_idx,
-                        spring_constant=ks[atom_indexes],
+                        spring_constant=k,
                         eq_dist=lengths[atom_indexes])
             self._add_bond(bond)
 
@@ -868,9 +878,11 @@ class Molecule(object):
 
         for index, atom_indexes in enumerate(angle_indexes):
             atom1_idx, atom2_idx, atom3_idx = atom_indexes
+            # PELE works with half of the OFF's spring
+            k = ks[atom_indexes] / 2.0
             angle = Angle(index=index, atom1_idx=atom1_idx,
                           atom2_idx=atom2_idx, atom3_idx=atom3_idx,
-                          spring_constant=ks[atom_indexes],
+                          spring_constant=k,
                           eq_angle=angles[atom_indexes])
             self._add_angle(angle)
 
@@ -925,7 +937,8 @@ class Molecule(object):
                 k = k_by_index[index]
                 idivf = idivf_by_index[index]
 
-                if period and phase and k and idivf:
+                if (period is not None and phase is not None
+                        and k is not None and idivf is not None):
                     off_proper = OFFProper(atom1_idx=atom1_idx,
                                            atom2_idx=atom2_idx,
                                            atom3_idx=atom3_idx,
@@ -938,6 +951,8 @@ class Molecule(object):
                     PELE_proper = off_proper.to_PELE()
                     self._add_proper(PELE_proper)
                     self._add_OFF_proper(off_proper)
+
+        self._handle_excluded_propers()
 
     def _add_proper(self, proper):
         """
@@ -960,6 +975,58 @@ class Molecule(object):
             The OFFProper to add
         """
         self._OFF_propers.append(proper)
+
+    def _handle_excluded_propers(self):
+        """
+        It looks for those propers that define duplicated 1-4 relations
+        and sets them to be ignored in PELE's 1-4 list.
+        """
+        for i, proper in enumerate(self.propers):
+            atom1_idx = proper.atom1_idx
+            atom4_idx = proper.atom4_idx
+            for proper_to_compare in self.propers[0:i]:
+                if proper == proper_to_compare:
+                    continue
+
+                if proper_to_compare.atom3_idx < 0:
+                    continue
+
+                # PELE already ignores 1-4 pair when the proper is exactly
+                # the same
+                if (proper.atom1_idx == proper_to_compare.atom1_idx
+                        and proper.atom2_idx == proper_to_compare.atom2_idx
+                        and proper.atom3_idx == proper_to_compare.atom3_idx
+                        and proper.atom4_idx == proper_to_compare.atom4_idx):
+                    continue
+
+                atom1_idx_to_compare = proper_to_compare.atom1_idx
+                atom4_idx_to_compare = proper_to_compare.atom4_idx
+                if (atom1_idx == atom1_idx_to_compare
+                        and atom4_idx == atom4_idx_to_compare):
+                    proper.exclude_from_14_list()
+                elif (atom1_idx == atom4_idx_to_compare
+                        and atom4_idx == atom1_idx_to_compare):
+                    proper.exclude_from_14_list()
+
+            for angle_to_compare in self.angles:
+                atom1_idx_to_compare = angle_to_compare.atom1_idx
+                atom4_idx_to_compare = angle_to_compare.atom3_idx
+                if (atom1_idx == atom1_idx_to_compare
+                        and atom4_idx == atom4_idx_to_compare):
+                    proper.exclude_from_14_list()
+                elif (atom1_idx == atom4_idx_to_compare
+                        and atom4_idx == atom1_idx_to_compare):
+                    proper.exclude_from_14_list()
+
+            for bond_to_compare in self.bonds:
+                atom1_idx_to_compare = bond_to_compare.atom1_idx
+                atom4_idx_to_compare = bond_to_compare.atom2_idx
+                if (atom1_idx == atom1_idx_to_compare
+                        and atom4_idx == atom4_idx_to_compare):
+                    proper.exclude_from_14_list()
+                elif (atom1_idx == atom4_idx_to_compare
+                        and atom4_idx == atom1_idx_to_compare):
+                    proper.exclude_from_14_list()
 
     def _build_impropers(self):
         """It builds the impropers of the molecule."""
@@ -1001,7 +1068,8 @@ class Molecule(object):
                 k = k_by_index[index]
                 idivf = idivf_by_index[index]
 
-                if period and phase and k and idivf:
+                if (period is not None and phase is not None
+                        and k is not None and idivf is not None):
                     off_improper = OFFImproper(atom1_idx=atom1_idx,
                                                atom2_idx=atom2_idx,
                                                atom3_idx=atom3_idx,
@@ -1038,14 +1106,12 @@ class Molecule(object):
         self._OFF_impropers.append(improper)
 
     def add_OPLS_nonbonding_params(self):
+        """
+        It adds OPLS' nonbonding parameters to the molecule.
+        """
         schrodinger_toolkit = SchrodingerToolkitWrapper()
 
         OPLS_params = schrodinger_toolkit.get_OPLS_parameters(self)
-
-        atom_by_PDB_name = dict()
-
-        for atom in self.atoms:
-            atom_by_PDB_name[atom.PDB_name] = atom
 
         for atom, atom_type, sigma, epsilon, charge, SGB_radius, \
             vdW_radius, gamma, alpha in zip(self.atoms,
@@ -1065,6 +1131,40 @@ class Molecule(object):
             atom.set_SASA_radius(vdW_radius)
             atom.set_nonpolar_gamma(gamma)
             atom.set_nonpolar_alpha(alpha)
+
+        self._OPLS_included = True
+
+    def add_OPLS_bonds_and_angles(self):
+        """
+        It adds OPLS' bond and angle parameters to the molecule.
+        """
+        schrodinger_toolkit = SchrodingerToolkitWrapper()
+
+        OPLS_params = schrodinger_toolkit.get_OPLS_parameters(self)
+
+        self._bonds = list()
+        for index, bond in enumerate(OPLS_params['bonds']):
+            atom1 = self.atoms[bond['atom1_idx']]
+            atom2 = self.atoms[bond['atom2_idx']]
+            OPLS_bond = Bond(index=index,
+                             atom1_idx=atom1.index,
+                             atom2_idx=atom2.index,
+                             spring_constant=bond['spring_constant'],
+                             eq_dist=bond['eq_dist'])
+            self._add_bond(OPLS_bond)
+
+        self._angles = list()
+        for index, angle in enumerate(OPLS_params['angles']):
+            atom1 = self.atoms[angle['atom1_idx']]
+            atom2 = self.atoms[angle['atom2_idx']]
+            atom3 = self.atoms[angle['atom3_idx']]
+            angle = Angle(index=index,
+                          atom1_idx=atom1.index,
+                          atom2_idx=atom2.index,
+                          atom3_idx=atom3.index,
+                          spring_constant=angle['spring_constant'],
+                          eq_angle=angle['eq_angle'])
+            self._add_angle(angle)
 
         self._OPLS_included = True
 
@@ -1287,3 +1387,18 @@ class Molecule(object):
             The OPLS combination status
         """
         return self._OPLS_included
+
+    def _ipython_display_(self):
+        """
+        It returns a RDKit molecule with an embeded 2D representation.
+
+        Returns
+        -------
+        representation_2D : a IPython display object
+            It is displayable RDKit molecule with an embeded 2D
+            representation
+        """
+        from IPython.display import display
+
+        rdkit_toolkit = RDKitToolkitWrapper()
+        return display(rdkit_toolkit.get_2D_representation(self))

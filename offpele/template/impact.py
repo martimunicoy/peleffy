@@ -251,8 +251,8 @@ class Impact(object):
             # Atom 2 id
             file.write('{:5d}'.format(idx2))
             file.write(' ')
-            # Spring constant (PELE works with half of the OFF's spring)
-            file.write('{: 9.3f}'.format(spring / 2.0))
+            # Spring constant
+            file.write('{: 9.3f}'.format(spring))
             file.write(' ')
             # Equilibrium distance
             file.write('{: 6.3f}\n'.format(eq_dist))
@@ -283,8 +283,8 @@ class Impact(object):
             # Atom 3 id
             file.write('{:5d}'.format(idx3))
             file.write(' ')
-            # Spring constant (PELE works with half of the OFF's spring)
-            file.write('{: 11.5f}'.format(spring / 2.0))
+            # Spring constant
+            file.write('{: 11.5f}'.format(spring))
             # Equilibrium angle
             file.write('{: 11.5f}\n'.format(eq_angl))
 
@@ -973,6 +973,8 @@ class WritableProper(offpele.topology.Proper, WritableWrapper):
                          prefactor=proper.prefactor,
                          constant=proper.constant)
 
+        self.exclude = proper.exclude
+
     @property
     def atom1_idx(self):
         """
@@ -1007,7 +1009,10 @@ class WritableProper(offpele.topology.Proper, WritableWrapper):
         atom3_idx : int
             The index of the third atom involved in this Proper object
         """
-        return super().atom3_idx + 1
+        if self.exclude:
+            return (super().atom3_idx + 1) * -1
+        else:
+            return super().atom3_idx + 1
 
     @property
     def atom4_idx(self):
