@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.gac67f96
+                0+untagged.1.g4857e67
               </div>
             
           
@@ -195,7 +195,8 @@ rotamers library  or not</p></li>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<p>Load a molecule from a PDB file and parameterize it with OpenFF</p>
+<p>Load a molecule from a PDB file and parameterize it with Open
+Force Field</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">offpele.topology</span> <span class="kn">import</span> <span class="n">Molecule</span>
 </pre></div>
 </div>
@@ -203,7 +204,8 @@ rotamers library  or not</p></li>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">molecule</span><span class="o">.</span><span class="n">parameterize</span><span class="p">(</span><span class="s1">&#39;openff_unconstrained-1.1.1.offxml&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Load a molecule using a SMILES tag and parameterize it with OpenFF</p>
+<p>Load a molecule using a SMILES tag and parameterize it with Open
+Force Field</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">offpele.topology</span> <span class="kn">import</span> <span class="n">Molecule</span>
 </pre></div>
 </div>
@@ -222,7 +224,10 @@ rotamers library  or not</p></li>
 <dl class="py method">
 <dt id="offpele.topology.Molecule.add_OPLS_nonbonding_params">
 <code class="sig-name descname">add_OPLS_nonbonding_params</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#Molecule.add_OPLS_nonbonding_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Molecule.add_OPLS_nonbonding_params" title="Permalink to this definition">¶</a></dt>
-<dd><p>It adds OPLS’ nonbonding parameters to the molecule.</p>
+<dd><p>It adds OPLS’ nonbonding parameters to the molecule. Please, note
+that OPLS’ partial charges are not set in this function.
+Instead, they are assigned in the Molecule’s parameterize()
+function when ‘OPLS’ is chosen as the ‘charges_method’.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -230,6 +235,26 @@ rotamers library  or not</p></li>
 <code class="sig-name descname">assert_parameterized</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#Molecule.assert_parameterized"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Molecule.assert_parameterized" title="Permalink to this definition">¶</a></dt>
 <dd><p>It checks that the molecule has been parameterized, raises an
 AssertionError otherwise.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="offpele.topology.Molecule.get_OPLS_parameters">
+<code class="sig-name descname">get_OPLS_parameters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#Molecule.get_OPLS_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Molecule.get_OPLS_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>It returns the OPLS parameters of the molecule. It first looks
+if they have already been calculated and returns them if found.
+Otherwise, it uses the SchrodingerToolkitWrapper to generate
+them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>OPLS_parameters</strong> – The set of lists of parameters grouped by parameter type.
+Thus, the dictionary has the following keys: atom_names,
+atom_types, charges, sigmas, epsilons, SGB_radii, vdW_radii,
+gammas, and alphas</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>a SchrodingerToolkitWrapper.OPLSParameters object</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -255,14 +280,15 @@ AssertionError otherwise.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>forcefield</strong> (<em>str or openforcefield.typing.engines.smirnoff.ForceField</em>) –          object
 The forcefield from which the parameters will be obtained</p></li>
-<li><p><strong>charges_method</strong> (<em>str</em>) – The name of the charges method to employ</p></li>
+<li><p><strong>charges_method</strong> (<em>str</em>) – The name of the charges method to employ. One of
+[‘gasteiger’, ‘am1bcc’, ‘OPLS’]. If None, ‘am1bcc’ will be used</p></li>
 <li><p><strong>use_OPLS_nonbonding_params</strong> (<em>bool</em>) – Whether to use Open Force Field or OPLS to obtain the
 nonbonding parameters. Please, note that this option is only
-available if a Schrodinger installation is found in the
+available if a valid Schrodinger installation is found in the
 current machine. Default is False</p></li>
 <li><p><strong>use_OPLS_bonds_and_angles</strong> (<em>bool</em>) – Whether to use OPLS to obtain the bond and angle parameters
 or not. Please, note that this option is only
-available if a Schrodinger installation is found in the
+available if a valid Schrodinger installation is found in the
 current machine. Default is False</p></li>
 </ul>
 </dd>
@@ -313,46 +339,49 @@ current machine. Default is False</p></li>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">OPLS_included</span></code></p></td>
 <td><p>Whether the molecule has been parameterized with OPLS in combination with the Open Force Field toolkit or not.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">angles</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">OPLS_parameters</span></code></p></td>
+<td><p>The OPLS parameters of the molecule.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">angles</span></code></p></td>
 <td><p>The list of angles of the molecule.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">atoms</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">atoms</span></code></p></td>
 <td><p>The list of atoms of the molecule.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bonds</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bonds</span></code></p></td>
 <td><p>The list of bonds of the molecule.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">exclude_terminal_rotamers</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">exclude_terminal_rotamers</span></code></p></td>
 <td><p>The behavior when handling terminal rotamers when generating the rotamers library.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">forcefield</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">forcefield</span></code></p></td>
 <td><p>The forcefield employed to parameterize the molecule.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph</span></code></p></td>
 <td><p>The topological graph of the molecule.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">impropers</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">impropers</span></code></p></td>
 <td><p>The list of impropers of the molecule.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></p></td>
 <td><p>Molecule’s name.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">off_molecule</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">off_molecule</span></code></p></td>
 <td><p>The OpenForceField’s molecule instance linked to the molecule.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">parameterized</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">parameterized</span></code></p></td>
 <td><p>Whether the molecule has been parameterized with the Open Force Field toolkit or not.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">propers</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">propers</span></code></p></td>
 <td><p>The list of propers of the molecule.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rdkit_molecule</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rdkit_molecule</span></code></p></td>
 <td><p>The RDKit’s molecule instance linked to the molecule.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotamer_resolution</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotamer_resolution</span></code></p></td>
 <td><p>The resolution to be used when generating the rotamers library.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotamers</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotamers</span></code></p></td>
 <td><p>The list of rotamers of the molecule.</p></td>
 </tr>
 </tbody>

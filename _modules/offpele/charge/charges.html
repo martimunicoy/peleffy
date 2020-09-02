@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0+untagged.1.gac67f96
+                0+untagged.1.g4857e67
               </div>
             
           
@@ -162,8 +162,11 @@
 <span class="sd">calculators.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">simtk</span> <span class="kn">import</span> <span class="n">unit</span>
 
-<span class="kn">from</span> <span class="nn">offpele.utils.toolkits</span> <span class="kn">import</span> <span class="n">AmberToolkitWrapper</span>
+<span class="kn">from</span> <span class="nn">offpele.utils.toolkits</span> <span class="kn">import</span> <span class="p">(</span><span class="n">AmberToolkitWrapper</span><span class="p">,</span>
+                                    <span class="n">ToolkitUnavailableException</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">_PartialChargesCalculator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -231,6 +234,43 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;gasteiger&#39;</span></div>
+
+
+<span class="k">class</span> <span class="nc">OPLSChargeCalculator</span><span class="p">(</span><span class="n">_PartialChargesCalculator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implementation of the calculator of OPLS partial charges (using</span>
+<span class="sd">    Schrodinger&#39;s ffld_server)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;OPLS&#39;</span>
+
+    <span class="k">def</span> <span class="nf">get_partial_charges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It returns the partial charges that correspond to the molecule&#39;s</span>
+<span class="sd">        atoms.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        partial_charges : simtk.unit.Quantity</span>
+<span class="sd">            The array of partial charges</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">OPLS_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">get_OPLS_parameters</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">ToolkitUnavailableException</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ToolkitUnavailableException</span><span class="p">(</span>
+                <span class="s1">&#39;OPLSChargeCalculator requires the Schrodinger &#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;Toolkit to obtain partial charges&#39;</span><span class="p">)</span>
+
+        <span class="n">partial_charges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">partial_charge</span> <span class="ow">in</span> <span class="n">OPLS_params</span><span class="p">[</span><span class="s1">&#39;charges&#39;</span><span class="p">]:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">partial_charge</span><span class="o">.</span><span class="n">value_in_unit</span><span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">elementary_charge</span><span class="p">)</span>
+            <span class="n">partial_charges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="n">partial_charges</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">partial_charges</span><span class="p">),</span>
+                                        <span class="n">unit</span><span class="o">.</span><span class="n">elementary_charge</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">partial_charges</span>
 </pre></div>
 
            </div>
