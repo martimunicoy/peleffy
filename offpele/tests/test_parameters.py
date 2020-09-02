@@ -8,6 +8,7 @@ from simtk import unit
 import numpy as np
 
 from offpele.utils import get_data_file_path
+from offpele.utils.toolkits import SchrodingerToolkitWrapper
 from .utils import (SET_OF_LIGAND_PATHS, apply_PELE_dihedral_equation,
                     apply_OFF_dihedral_equation, check_CHO_charges_in_molecule)
 from offpele.topology import Molecule, Bond, Angle, Proper
@@ -507,9 +508,40 @@ class TestCharges(object):
         check_CHO_charges_in_molecule(molecule)
 
     def test_gasteiger_method(self):
-        """It tests the am1bcc method"""
+        """It tests the gasteiger method"""
 
         ligand_path = get_data_file_path(self.LIGAND_PATH)
         molecule = Molecule(ligand_path)
         molecule.parameterize(FORCEFIELD_NAME, charges_method='gasteiger')
         check_CHO_charges_in_molecule(molecule)
+
+    def test_OPLS_method(self):
+        """It tests the OPLS method"""
+
+        ligand_path = get_data_file_path(self.LIGAND_PATH)
+        molecule = Molecule(ligand_path)
+
+        # To avoid the use of Schrodinger Toolkit
+        charges = [-0.22, 0.7, -0.12, -0.8, -0.8, -0.12, -0.12, -0.12,
+                   -0.12, -0.12, -0.115, -0.115, -0.12, -0.12, -0.12,
+                   -0.12, -0.12, -0.12, -0.12, -0.18, 0.06, 0.06, 0.06,
+                   0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06,
+                   0.06, 0.06, 0.115, 0.115, 0.06, 0.06, 0.06, 0.06, 0.06,
+                   0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06,
+                   0.06, 0.06, 0.06]
+
+        molecule._OPLS_parameters = SchrodingerToolkitWrapper.OPLSParameters(
+            {'charges': [unit.Quantity(charge, unit.elementary_charge)
+                         for charge in charges]})
+
+        molecule.parameterize(FORCEFIELD_NAME, charges_method='OPLS')
+
+        assert len(molecule.off_molecule.partial_charges) == len(charges), \
+            'Size of Molecule\'s partial charges is expected to match ' \
+            + 'with size of reference charges list'
+
+        for charge, expected_charge in zip(
+                molecule.off_molecule.partial_charges, charges):
+            assert charge == unit.Quantity(expected_charge,
+                                           unit.elementary_charge), \
+                'Unexpected charge {}'.format(charge)

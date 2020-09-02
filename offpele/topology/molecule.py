@@ -619,12 +619,12 @@ class Molecule(object):
         use_OPLS_nonbonding_params : bool
             Whether to use Open Force Field or OPLS to obtain the
             nonbonding parameters. Please, note that this option is only
-            available if a Schrodinger installation is found in the
+            available if a valid Schrodinger installation is found in the
             current machine. Default is False
         use_OPLS_bonds_and_angles : bool
             Whether to use OPLS to obtain the bond and angle parameters
             or not. Please, note that this option is only
-            available if a Schrodinger installation is found in the
+            available if a valid Schrodinger installation is found in the
             current machine. Default is False
         """
 

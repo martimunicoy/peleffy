@@ -9,6 +9,9 @@ from offpele.main import run_offpele
 from offpele.utils import get_data_file_path, temporary_cd
 
 
+FORCEFIELD_NAME = 'openff_unconstrained-1.2.0.offxml'
+
+
 class TestMain(object):
     """
     It wraps all tests that involve the Molecule class.
@@ -29,7 +32,7 @@ class TestMain(object):
         with tempfile.TemporaryDirectory() as tmpdir:
             with temporary_cd(tmpdir):
                 run_offpele(ligand_path,
-                            forcefield='openff_unconstrained-1.1.1.offxml',
+                            forcefield=FORCEFIELD_NAME,
                             resolution=10,
                             charges_method='gasteiger',
                             output=tmpdir,

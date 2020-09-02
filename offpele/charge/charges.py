@@ -3,6 +3,8 @@ This module handles all classes and functions related with partial charge
 calculators.
 """
 
+import numpy as np
+from simtk import unit
 
 from offpele.utils.toolkits import (AmberToolkitWrapper,
                                     ToolkitUnavailableException)
@@ -90,7 +92,7 @@ class OPLSChargeCalculator(_PartialChargesCalculator):
 
         Returns
         -------
-        charges : simtk.unit.Quantity
+        partial_charges : simtk.unit.Quantity
             The array of partial charges
         """
 
@@ -101,4 +103,12 @@ class OPLSChargeCalculator(_PartialChargesCalculator):
                 'OPLSChargeCalculator requires the Schrodinger '
                 + 'Toolkit to obtain partial charges')
 
-        return OPLS_params['charges']
+        partial_charges = list()
+        for partial_charge in OPLS_params['charges']:
+            value = partial_charge.value_in_unit(unit.elementary_charge)
+            partial_charges.append(value)
+
+        partial_charges = unit.Quantity(np.array(partial_charges),
+                                        unit.elementary_charge)
+
+        return partial_charges
