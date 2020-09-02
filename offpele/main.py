@@ -19,6 +19,7 @@ from offpele.utils import check_if_path_exists, create_path
 DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-1.2.0.offxml'
 DEFAULT_RESOLUTION = int(30)
 DEFAULT_CHARGES_METHOD = 'am1bcc'
+AVAILABLE_CHARGES_METHODS = ['am1bcc', 'gasteiger', 'OPLS']
 IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OFF/Parsley/HeteroAtoms/'
 ROTAMER_LIBRARY_PATH = 'DataLocal/LigandRotamerLibs/'
 SOLVENT_TEMPLATE_PATH = 'DataLocal/OBC/'
@@ -56,7 +57,8 @@ def parse_args():
                         + "hierarchy", action='store_true')
     parser.add_argument('-c', '--charges_method', metavar="NAME",
                         type=str, help="The name of the method to use to "
-                        + "compute charges", default=DEFAULT_CHARGES_METHOD)
+                        + "compute charges", default=DEFAULT_CHARGES_METHOD,
+                        choices=AVAILABLE_CHARGES_METHODS)
     parser.add_argument('--include_terminal_rotamers',
                         dest="include_terminal_rotamers",
                         action='store_true',
@@ -180,7 +182,9 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     molecule = Molecule(pdb_file, rotamer_resolution=resolution,
                         exclude_terminal_rotamers=exclude_terminal_rotamers)
 
-    rotlib_out, impact_out, solvent_out = handle_output_paths(molecule, output, as_datalocal)
+    rotlib_out, impact_out, solvent_out = handle_output_paths(molecule,
+                                                              output,
+                                                              as_datalocal)
 
     rotamer_library = offpele.topology.RotamerLibrary(molecule)
     rotamer_library.to_file(rotlib_out)

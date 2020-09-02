@@ -10,7 +10,8 @@ from .rotamer import MolecularGraph
 from offpele.utils.toolkits import (RDKitToolkitWrapper,
                                     OpenForceFieldToolkitWrapper,
                                     SchrodingerToolkitWrapper)
-from offpele.charge import (Am1bccCalculator, GasteigerCalculator)
+from offpele.charge import (Am1bccCalculator, GasteigerCalculator,
+                            OPLSChargeCalculator)
 
 
 class Atom(object):
@@ -613,7 +614,8 @@ class Molecule(object):
                      object
             The forcefield from which the parameters will be obtained
         charges_method : str
-            The name of the charges method to employ
+            The name of the charges method to employ. One of
+            ['gasteiger', 'am1bcc', 'OPLS']. If None, 'am1bcc' will be used
         use_OPLS_nonbonding_params : bool
             Whether to use Open Force Field or OPLS to obtain the
             nonbonding parameters. Please, note that this option is only
@@ -746,6 +748,9 @@ class Molecule(object):
 
         elif charges_method == 'gasteiger':
             return GasteigerCalculator(self)
+
+        elif charges_method == 'OPLS':
+            return OPLSChargeCalculator(self)
 
         else:
             raise Exception('Charges method \'{}\' '.format(charges_method)

@@ -4,7 +4,8 @@ calculators.
 """
 
 
-from offpele.utils.toolkits import AmberToolkitWrapper
+from offpele.utils.toolkits import (AmberToolkitWrapper,
+                                    ToolkitUnavailableException)
 
 
 class _PartialChargesCalculator(object):
@@ -72,3 +73,32 @@ class GasteigerCalculator(_PartialChargesCalculator):
     """
 
     _name = 'gasteiger'
+
+
+class OPLSChargeCalculator(_PartialChargesCalculator):
+    """
+    Implementation of the calculator of OPLS partial charges (using
+    Schrodinger's ffld_server)
+    """
+
+    _name = 'OPLS'
+
+    def get_partial_charges(self):
+        """
+        It returns the partial charges that correspond to the molecule's
+        atoms.
+
+        Returns
+        -------
+        charges : simtk.unit.Quantity
+            The array of partial charges
+        """
+
+        try:
+            OPLS_params = self.molecule.get_OPLS_parameters()
+        except ToolkitUnavailableException:
+            raise ToolkitUnavailableException(
+                'OPLSChargeCalculator requires the Schrodinger '
+                + 'Toolkit to obtain partial charges')
+
+        return OPLS_params['charges']
