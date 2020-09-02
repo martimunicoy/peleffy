@@ -2,6 +2,15 @@
 This module contains miscellaneous set of handy classes and functions.
 """
 
+
+__all__ = ["get_data_file_path",
+           "temporary_cd",
+           "warning_on_one_line",
+           "check_if_path_exists",
+           "create_path"
+           ]
+
+
 from pkg_resources import resource_filename
 import os
 import contextlib
@@ -83,5 +92,4 @@ def create_path(path):
     path : str
         The path that will be created
     """
-    import os
     os.makedirs(str(path), exist_ok=True)

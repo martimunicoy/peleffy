@@ -19,6 +19,7 @@ from offpele.utils import check_if_path_exists, create_path
 DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-1.2.0.offxml'
 DEFAULT_RESOLUTION = int(30)
 DEFAULT_CHARGES_METHOD = 'am1bcc'
+AVAILABLE_CHARGES_METHODS = ['am1bcc', 'gasteiger', 'OPLS']
 IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OFF/Parsley/HeteroAtoms/'
 ROTAMER_LIBRARY_PATH = 'DataLocal/LigandRotamerLibs/'
 SOLVENT_TEMPLATE_PATH = 'DataLocal/OBC/'
@@ -56,14 +57,28 @@ def parse_args():
                         + "hierarchy", action='store_true')
     parser.add_argument('-c', '--charges_method', metavar="NAME",
                         type=str, help="The name of the method to use to "
-                        + "compute charges", default=DEFAULT_CHARGES_METHOD)
-    parser.add_argument('-t', '--terminal_rotamers_to_ignore', metavar="INT",
-                        type=str, help="The number of terminal rotamers " +
-                        " to ignore when building the rotamer library",
-                        default=DEFAULT_TERMINAL_ROT_TO_IGNORE)
+                        + "compute charges", default=DEFAULT_CHARGES_METHOD,
+                        choices=AVAILABLE_CHARGES_METHODS)
+    parser.add_argument('--include_terminal_rotamers',
+                        dest="include_terminal_rotamers",
+                        action='store_true',
+                        help="Not exclude terminal rotamers "
+                        + "when building the rotamer library")
+    parser.add_argument('--use_OPLS_nonbonding_params',
+                        dest="use_OPLS_nb_params",
+                        action='store_true',
+                        help="Use OPLS to set the nonbonding parameters")
+    parser.add_argument('--use_OPLS_bonds_and_angles',
+                        dest="use_OPLS_bonds_and_angles",
+                        action='store_true',
+                        help="Use OPLS to set the parameters for bonds "
+                        + "and angles")
 
     parser.set_defaults(as_datalocal=False)
     parser.set_defaults(with_solvent=False)
+    parser.set_defaults(include_terminal_rotamers=False)
+    parser.set_defaults(use_OPLS_nb_params=False)
+    parser.set_defaults(use_OPLS_bonds_and_angles=False)
 
     args = parser.parse_args()
 
@@ -104,7 +119,7 @@ def handle_output_paths(molecule, output, as_datalocal):
 
     rotlib_name = name.upper() + '.rot.assign'
     impact_name = name.lower() + 'z'
-    solvent_name = name.lower() + '_solv.json'
+    solvent_name = 'ligandParams.txt'
 
     if as_datalocal:
         rotlib_path = rotlib_path.joinpath(ROTAMER_LIBRARY_PATH)
@@ -123,7 +138,9 @@ def handle_output_paths(molecule, output, as_datalocal):
 def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
                 resolution=DEFAULT_RESOLUTION,
                 charges_method=DEFAULT_CHARGES_METHOD,
-                terminal_rotamers_to_ignore=DEFAULT_TERMINAL_ROT_TO_IGNORE,
+                use_OPLS_nb_params=False,
+                use_OPLS_bonds_and_angles=False,
+                exclude_terminal_rotamers=True,
                 output=None, with_solvent=False, as_datalocal=False):
     """
     It runs offpele.
@@ -139,9 +156,18 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     charges_method : str
         The name of the method to use to compute partial charges. Default
         is 'am1bcc'
-    terminal_rotamers_to_ignore : int
-        The number of terminal rotamers to ignore when building the
-        rotamer library. Default is 1
+    use_OPLS_nb_params : bool
+        Whether to use Open Force Field or OPLS to obtain the
+        nonbonding parameters. Please, note that this option is only
+        available if a valid Schrodinger installation is found in the
+        current machine. Default is False
+    use_OPLS_bonds_and_angles : bool
+        Whether to use OPLS to obtain the bond and angle parameters
+        or not. Please, note that this option is only
+        available if a valid Schrodinger installation is found in the
+        current machine. Default is False
+    exclude_terminal_rotamers : bool
+        Whether to exclude terminal rotamers or not
     output : str
         Path where output files will be saved
     with_solvent : bool
@@ -152,18 +178,21 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
         not
     """
     print('-' * 60)
-    print('Open Force Field parameterizer for PELE '
-          '{}'.format(offpele.__version__))
+    print('Open Force Field parameterizer for PELE', offpele.__version__)
     print('-' * 60)
-    print(' - PDB to parameterize: {}'.format(pdb_file))
-    print(' - Force field: {}'.format(forcefield))
-    print(' - Rotamer library resolution: {}'.format(resolution))
-    print(' - Charges method: {}'.format(charges_method))
-    print(' - Terminal rotamers to ignore: {}'.format(
-        terminal_rotamers_to_ignore))
-    print(' - Output path: {}'.format(output))
-    print(' - Write solvent parameters: {}'.format(with_solvent))
-    print(' - DataLocal-like output: {}'.format(as_datalocal))
+    print(' - General:')
+    print('   - Input PDB:', pdb_file)
+    print('   - Output path:', output)
+    print('   - Write solvent parameters:', with_solvent)
+    print('   - DataLocal-like output:', as_datalocal)
+    print(' - Parameterization:')
+    print('   - Force field:', forcefield)
+    print('   - Rotamer library resolution:', resolution)
+    print('   - Charges method:', charges_method)
+    print('   - Use OPLS nonbonding parameters:', use_OPLS_nb_params)
+    print('   - Use OPLS bonds and angles:', use_OPLS_bonds_and_angles)
+    print(' - Rotamer library:')
+    print('   - Exclude terminal rotamers:', exclude_terminal_rotamers)
     print('-' * 60)
 
     # Supress OpenForceField toolkit warnings
@@ -177,15 +206,19 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     if not output:
         output = os.getcwd()
 
-    molecule = Molecule(pdb_file)
-    molecule.parameterize(forcefield, charges_method=charges_method)
+    molecule = Molecule(pdb_file, rotamer_resolution=resolution,
+                        exclude_terminal_rotamers=exclude_terminal_rotamers)
 
-    rotlib_out, impact_out, solvent_out = handle_output_paths(molecule, output, as_datalocal)
+    rotlib_out, impact_out, solvent_out = handle_output_paths(molecule,
+                                                              output,
+                                                              as_datalocal)
 
-    molecule.build_rotamer_library(
-        resolution=resolution,
-        n_rot_bonds_to_ignore=terminal_rotamers_to_ignore)
-    molecule.rotamer_library.to_file(rotlib_out)
+    rotamer_library = offpele.topology.RotamerLibrary(molecule)
+    rotamer_library.to_file(rotlib_out)
+
+    molecule.parameterize(forcefield, charges_method=charges_method,
+                          use_OPLS_nonbonding_params=use_OPLS_nb_params,
+                          use_OPLS_bonds_and_angles=use_OPLS_bonds_and_angles)
     impact = Impact(molecule)
     impact.write(impact_out)
 
@@ -206,15 +239,18 @@ def main():
 
     From the command-line:
 
-    >>> python main.py molecule.pdb -f openff_unconstrained-1.1.1.offxml -r 30
-        -o output_path/ --with_solvent --as_DataLocal -c gasteiger
+    >>> python main.py molecule.pdb -f openff_unconstrained-1.2.0.offxml
+        -r 30 -o output_path/ --with_solvent --as_DataLocal -c gasteiger
 
     """
     args = parse_args()
+
+    exclude_terminal_rotamers = not args.include_terminal_rotamers
+
     run_offpele(args.pdb_file, args.forcefield, args.resolution,
-                args.charges_method, args.terminal_rotamers_to_ignore,
-                args.output, args.with_solvent,
-                args.as_datalocal)
+                args.charges_method, args.use_OPLS_nb_params,
+                args.use_OPLS_bonds_and_angles, exclude_terminal_rotamers,
+                args.output, args.with_solvent, args.as_datalocal)
 
 
 if __name__ == '__main__':

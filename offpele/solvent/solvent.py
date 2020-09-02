@@ -83,9 +83,12 @@ class _SolventWrapper(object):
             round(self.surface_area_penalty.value_in_unit(
                 unit.kilocalorie / (unit.angstrom**2 * unit.mole)), 8)
         data['SolventParameters'][self.molecule.name] = dict()
-        for atom in self.molecule.rdkit_molecule.GetAtoms():
-            pdb_info = atom.GetPDBResidueInfo()
-            name = pdb_info.GetName().replace(' ', '_')
+
+        atom_names = self.molecule.get_pdb_atom_names()
+
+        for atom, name in zip(self.molecule.rdkit_molecule.GetAtoms(),
+                              atom_names):
+            name = name.replace(' ', '_')
             index = atom.GetIdx()
             data['SolventParameters'][self.molecule.name][name] = \
                 {'radius': round(self.radii[tuple((index, ))].value_in_unit(

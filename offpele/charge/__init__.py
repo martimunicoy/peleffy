@@ -1,1 +1,2 @@
-from .charges import Am1bccCalculator, GasteigerCalculator
+from .charges import (Am1bccCalculator, GasteigerCalculator,
+                      OPLSChargeCalculator)

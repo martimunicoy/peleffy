@@ -11,15 +11,26 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 0.3.0 - Current development
 -------------------------
 
-This is a minor release that includes a refactoring of the classes and methods that involve the rotamer library builder. It also contains a new method to define a molecule through a SMILES tag. It is still a preliminary version of the Open Force Field to PELE package which is under development.
+This is a minor release that includes a refactoring of the classes and methods that involve the rotamer library builder. Besides, now it is possible to combine parameters from OPLS2005 and OFF. This release also contains a new method to define a molecule through a SMILES tag. It is still a preliminary version of the Open Force Field to PELE package which is under development.
 
 New features
 """"""""""""
 - `PR #28 <https://github.com/martimunicoy/offpele/pull/28>`_: Adds a new method to define a `Molecule` object through a SMILES tag. This molecule can be written as a PDB file later for PELE.
+- `PR #31 <https://github.com/martimunicoy/offpele/pull/31>`_: Adds the possibility to combine nonbonding and solvent parameters from OPLS2005 with bonding parameters from OFF.
+- `PR #36 <https://github.com/martimunicoy/offpele/pull/36>`_: Minor changes to improve the quality of the code.
+- `PR #37 <https://github.com/martimunicoy/offpele/issues/37>`_: Adds a new partial charge calculator that uses OPLS2005 to assign partial charges. Includes new flags in the CLI from main.py to combine bonding and nonbonding parameters and partial charges from OPLS2005.
 
 Bugfixes
 """"""""
 - `PR #22 <https://github.com/martimunicoy/offpele/pull/22>`_: Fixes many bugs. For example, the default output name of the solvent parameters template is changed to `ligandParams.txt`, which is the name that PELE expects.
+- `PR #32 <https://github.com/martimunicoy/offpele/pull/32>`_: Minor fixes in ToolkitWrapper classes.
+- `PR #34 <https://github.com/martimunicoy/offpele/pull/34:>`_: Improves the translation of dihedrals coming from the Open Force Fielf Toolkit and corrects the lack of exclusions in PELE 1-4 list that result from Impact's dihedral definitions.
+
+Tests added
+"""""""""""
+- `PR #31 <https://github.com/martimunicoy/offpele/pull/31>`_: Adds tests to validate some functions of the new SchrodingerToolkitWrapper.
+- `PR #34 <https://github.com/martimunicoy/offpele/pull/34>`_: Adds tests to further validate the assignment of parameters from the Open Force Field Toolkit.
+- `PR #37 <https://github.com/martimunicoy/offpele/issues/37>`_: Adds tests to validate the new OPLS charge calculator.
 
 
 0.2.1

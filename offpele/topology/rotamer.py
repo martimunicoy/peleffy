@@ -15,46 +15,46 @@ class Rotamer(object):
     with a certain resolution.
     """
 
-    def __init__(self, atom1, atom2, resolution=30):
+    def __init__(self, index1, index2, resolution=30):
         """
         It initiates an Rotamer object.
 
         Parameters
         ----------
-        atom1 : str
-            The name of the first atom involved in the rotamer
-        atom2 : str
-            The name of the second atom involved in the rotamer
+        atom1 : int
+            The index of the first atom involved in the rotamer
+        atom2 : int
+            The index of the second atom involved in the rotamer
         resolution : float
             The resolution to discretize the rotamer's conformational space
         """
-        self._atom1 = atom1
-        self._atom2 = atom2
+        self._index1 = index1
+        self._index2 = index2
         self._resolution = resolution
 
     @property
-    def atom1(self):
+    def index1(self):
         """
-        Rotamer's atom1 name.
+        Rotamer's atom1 index.
 
         Returns
         -------
-        atom1 : str
-            The name of the first atom involved in this Rotamer object
+        index1 : int
+            The index of the first atom involved in this Rotamer object
         """
-        return self._atom1
+        return self._index1
 
     @property
-    def atom2(self):
+    def index2(self):
         """
-        Rotamer's atom2 name.
+        Rotamer's atom2 index.
 
         Returns
         -------
-        atom2 : str
-            The name of the second atom involved in this Rotamer object
+        index2 : int
+            The index of the second atom involved in this Rotamer object
         """
-        return self._atom2
+        return self._index2
 
     @property
     def resolution(self):
@@ -74,30 +74,16 @@ class RotamerLibrary(object):
     It represents a set of rotamers found in the same molecule.
     """
 
-    def __init__(self, residue_name='LIG'):
+    def __init__(self, molecule):
         """
         It initiates a RotamerLibrary object.
 
         Parameters
         ----------
-        residue_name : str
-            The name of the residue this RotamerLibrary belongs to
+        molecule : An offpele.topology.Molecule
+            The Molecule object whose rotamer library will be generated
         """
-        self._residue_name = residue_name
-        self._rotamers = defaultdict(list)
-
-    def add_rotamer(self, rotamer, group_id):
-        """
-        It adds a rotamer to this RotamerLibrary.
-
-        Parameters
-        ----------
-        rotamer : a Rotamer
-            The Rotamer object to add to this RotamerLibrary
-        group_id : int
-            The index of the group where the rotamer belongs to
-        """
-        self._rotamers[group_id].append(rotamer)
+        self._molecule = molecule
 
     def to_file(self, path):
         """
@@ -108,39 +94,32 @@ class RotamerLibrary(object):
         path : str
             Path to save the RotamerLibrary to
         """
+        # PELE needs underscores instead of whitespaces
+        pdb_atom_names = [name.replace(' ', '_',)
+                          for name in self.molecule.get_pdb_atom_names()]
+
         with open(path, 'w') as file:
-            file.write('rot assign res {} &\n'.format(self.residue_name))
-            for i, group in enumerate(self.rotamers.keys()):
+            file.write('rot assign res {} &\n'.format(self.molecule.name))
+            for i, rotamer_branches in enumerate(self.molecule.rotamers):
                 if i > 0:
                     file.write('     newgrp &\n')
-                for rotamer in self.rotamers[group]:
+                for rotamer in rotamer_branches:
+                    atom_name1 = pdb_atom_names[rotamer.index1]
+                    atom_name2 = pdb_atom_names[rotamer.index2]
                     file.write('   sidelib FREE{} {} {} &\n'.format(
-                        rotamer.resolution, rotamer.atom1, rotamer.atom2))
+                        rotamer.resolution, atom_name1, atom_name2))
 
     @property
-    def residue_name(self):
+    def molecule(self):
         """
-        The name of the RotamerLibrary's residue.
+        The offpele's Molecule.
 
         Returns
         -------
-        residue_name : str
-            The name of the residue of this RotamberLibrary object.
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
         """
-        return self._residue_name
-
-    @property
-    def rotamers(self):
-        """
-        RotamerLibrary's rotamers.
-
-        Returns
-        -------
-        rotamers : dict[int, Rotamer]
-            The rotamers of this RotamerLibrary object, grouped by the
-            group they belong to
-        """
-        return self._rotamers
+        return self._molecule
 
 
 class MolecularGraph(nx.Graph):
@@ -159,33 +138,34 @@ class MolecularGraph(nx.Graph):
         """
         super().__init__(self)
         self._molecule = molecule
-        self._compute_rotamer_graph(molecule)
+        self._compute_rotamer_graph()
+        self._build_core_nodes()
 
-    def _compute_rotamer_graph(self, molecule):
+    def _compute_rotamer_graph(self):
         """
         It initializes the netwrokx.Graph with a Molecule object.
-
-        Parameters
-        ----------
-        molecule : An offpele.topology.Molecule
-            A Molecule object to be written as an Impact file
         """
         rdkit_toolkit = RDKitToolkitWrapper()
         rot_bonds_atom_ids = \
-            rdkit_toolkit.get_atom_ids_with_rotatable_bonds(molecule)
+            rdkit_toolkit.get_atom_ids_with_rotatable_bonds(self.molecule)
 
-        rdkit_molecule = molecule.rdkit_molecule
+        rdkit_molecule = self.molecule.rdkit_molecule
 
-        for atom in rdkit_molecule.GetAtoms():
-            pdb_info = atom.GetPDBResidueInfo()
-            self.add_node(atom.GetIdx(), pdb_name=pdb_info.GetName(),
+        atom_names = rdkit_toolkit.get_atom_names(self.molecule)
+
+        assert len(atom_names) == len(rdkit_molecule.GetAtoms()), \
+            'The length of atom names must match the length of ' \
+            + 'molecule\'s atoms'
+
+        for atom, name in zip(rdkit_molecule.GetAtoms(), atom_names):
+            self.add_node(atom.GetIdx(), pdb_name=name,
                           nrot_neighbors=list())
 
         for bond in rdkit_molecule.GetBonds():
             atom1 = bond.GetBeginAtomIdx()
             atom2 = bond.GetEndAtomIdx()
-            if ((atom1, atom2) in rot_bonds_atom_ids
-                    or (atom2, atom2) in rot_bonds_atom_ids):
+
+            if (frozenset([atom1, atom2]) in rot_bonds_atom_ids):
                 rotatable = True
             else:
                 rotatable = False
@@ -201,10 +181,9 @@ class MolecularGraph(nx.Graph):
             self.nodes[i]['rotatable'] = True
             self.nodes[j]['rotatable'] = True
 
-    def set_core(self):
+    def _build_core_nodes(self):
         """
-        It sets the core of the molecule to minimize the amount of consecutive
-        rotamers as much as possible.
+        It builds the list of core nodes
         """
 
         def get_all_nrot_neighbors(self, atom_id, visited_neighbors):
@@ -254,19 +233,71 @@ class MolecularGraph(nx.Graph):
         _, centered_nodes = sorted(nodes_by_eccentricities.items())[0]
 
         # Construct nrot groups with centered nodes
-        already_visited = set()
+        # already_visited = set()
         centered_node_groups = list()
         for node in centered_nodes:
-            if node in already_visited:
-                continue
+            # if node in already_visited:
+            #    continue
             centered_node_groups.append(get_all_nrot_neighbors(self, node,
                                                                set()))
 
         # In case of more than one group, core will be the largest
-        node_group = sorted(centered_node_groups, key=len, reverse=True)[0]
+        core_nodes = sorted(centered_node_groups, key=len, reverse=True)[0]
+
+        # To do: think on what to do with the code below
+        """
+        # Core can hold a maximum of one rotatable bond <- Not true!
+        # Get all core's neighbors
+        neighbor_candidates = set()
+        for node in core_nodes:
+            neighbors = self.neighbors(node)
+            for neighbor in neighbors:
+                if neighbor not in core_nodes:
+                    neighbor_candidates.add(neighbor)
+
+        # If any core's neighbor, get the deepest one and include it to
+        # the core
+        if len(neighbor_candidates) > 0:
+            branch_graph = deepcopy(self)
+
+            for node in core_nodes:
+                branch_graph.remove_node(node)
+
+            branch_groups = list(nx.connected_components(branch_graph))
+
+            rot_bonds_per_group = self._get_rot_bonds_per_group(branch_groups)
+
+            best_group = sorted(rot_bonds_per_group, key=len,
+                                reverse=True)[0]
+
+            for neighbor in neighbor_candidates:
+                if any([neighbor in rot_bond for rot_bond in best_group]):
+                    deepest_neighbor = neighbor
+                    break
+            else:
+                raise Exception('Unconsistent graph')
+
+            deepest_neighbors = get_all_nrot_neighbors(self, deepest_neighbor,
+                                                       set())
+
+            for neighbor in deepest_neighbors:
+                core_nodes.add(neighbor)
+        """
+
+        self._core_nodes = core_nodes
+
+    def set_core(self):
+        """
+        It sets the core of the molecule to minimize the amount of consecutive
+        rotamers as much as possible.
+
+        Please, note that the molecule needs to be already parameterized with
+        the Open Force Field toolkit before calling this function.
+        """
+        self.molecule.assert_parameterized()
 
         for atom in self.molecule.atoms:
-            if atom.index in node_group:
+            if atom.index in self.core_nodes:
                 atom.set_as_core()
             else:
                 atom.set_as_branch()
@@ -274,6 +305,9 @@ class MolecularGraph(nx.Graph):
     def set_parents(self):
         """
         It sets the parent of each atom according to the molecular graph.
+
+        Please, note that the molecule needs to be already parameterized with
+        the Open Force Field toolkit before calling this function.
         """
 
         def recursive_child_visitor(parent, already_visited=set()):
@@ -309,6 +343,8 @@ class MolecularGraph(nx.Graph):
                                                           already_visited)
 
             return already_visited
+
+        self.molecule.assert_parameterized()
 
         # Start from an atom from the core
         parent = None
@@ -364,7 +400,7 @@ class MolecularGraph(nx.Graph):
 
         return rot_bonds_per_group
 
-    def _get_core_atom_per_group(self, rot_bonds_per_group, core_indexes):
+    def _get_core_atom_per_group(self, rot_bonds_per_group):
         """
         It obtains the core atom for each group.
 
@@ -373,8 +409,6 @@ class MolecularGraph(nx.Graph):
         rot_bonds_per_group : list[tuple[int, int]]
             The atom ids of all the graph's edges that belong to a rotatable
             bond
-        core_indexes : list[int]
-            The atom ids of atoms in the core
 
         Returns
         -------
@@ -384,10 +418,10 @@ class MolecularGraph(nx.Graph):
         core_atom_per_group = list()
         for rot_bonds in rot_bonds_per_group:
             for (a1, a2) in rot_bonds:
-                if a1 in core_indexes:
+                if a1 in self.core_nodes:
                     core_atom_per_group.append(a1)
                     break
-                elif a2 in core_indexes:
+                elif a2 in self.core_nodes:
                     core_atom_per_group.append(a2)
                     break
             else:
@@ -433,7 +467,7 @@ class MolecularGraph(nx.Graph):
         return sorted_rot_bonds_per_group
 
     def _ignore_terminal_rotatable_bonds(self, sorted_rot_bonds_per_group,
-                                         n_rot_bonds_to_ignore):
+                                         distances):
         """
         It ignores a certain number of terminal rotatable bonds of each
         group.
@@ -443,85 +477,104 @@ class MolecularGraph(nx.Graph):
         sorted_rot_bonds_per_group : list[list]
             The rotatable bonds per group, sorted in increasing order by
             their distance with respect to the corresponding core atom
-        n_rot_bonds_to_ignore : int
-            The number of terminal rotatable bonds to ignore in each group
+        distances : dict[int, dict[int, int]]
+            The distance between each pair of nodes (or atoms)
 
         Returns
         -------
         filtered_rot_bonds_per_group : list[list]
             The filtered rotatable bonds per group that are obtained
         """
-        if n_rot_bonds_to_ignore == 0:
-            return sorted_rot_bonds_per_group
-
         filtered_rot_bonds_per_group = list()
 
+        # To determine the outter atom in a rotamer, we only need to
+        # calculate their distance to any core atom
+        core_atom = list(self.core_nodes)[0]
+
         for rot_bonds in sorted_rot_bonds_per_group:
-            filtered_rot_bonds_per_group.append(
-                rot_bonds[:-n_rot_bonds_to_ignore])
+            rotamer_to_evaluate = rot_bonds[-1]
+
+            node1, node2 = rotamer_to_evaluate
+
+            distance1 = distances[core_atom][node1]
+            distance2 = distances[core_atom][node2]
+
+            if distance1 < distance2:
+                inner_node = node1
+                outter_node = node2
+            else:
+                inner_node = node2
+                outter_node = node1
+
+            # The condition for the current rotamer to be ignored is that the
+            # outter node is only attached to terminal nodes (with degree 1)
+            ignore_this_rotamer = True
+            for neighbor in self.neighbors(outter_node):
+                if neighbor is inner_node:
+                    continue
+
+                if self.degree(neighbor) > 1:
+                    ignore_this_rotamer = False
+                    break
+
+            if ignore_this_rotamer:
+                filtered_rot_bonds_per_group.append(rot_bonds[:-1])
+            else:
+                filtered_rot_bonds_per_group.append(rot_bonds)
 
         return filtered_rot_bonds_per_group
 
-    def build_rotamer_library(self, resolution=30, n_rot_bonds_to_ignore=1):
+    def get_rotamers(self):
         """
         It builds the RotamerLibrary object.
 
-        Parameters
-        ----------
-        resolution : float
-            The resolution in degrees to discretize the rotamer's
-            conformational space. Default is 30
-        n_rot_bonds_to_ignore : int
-            The number of terminal rotatable bonds to ignore when
-            building the rotamer library. Default is 1
-
         Returns
         -------
-        rotamer_library : a RotamerLibrary object
-            The RotamerLibrary for the supplied Molecule object.
+        rotamers : list[list]
+            The list of rotamers grouped by the branch they belong to
         """
-        core_atoms = set()
-        for atom in self.molecule.atoms:
-            if atom.core:
-                core_atoms.add(atom)
-        core_indexes = [atom.index for atom in core_atoms]
+        resolution = self.molecule.rotamer_resolution
 
-        assert len(core_atoms) > 0, 'No core atoms were found'
+        assert len(self.core_nodes) > 0, 'No core nodes were found'
 
         branch_graph = deepcopy(self)
 
-        for core_atom in core_atoms:
-            branch_graph.remove_node(core_atom.index)
+        for node in self.core_nodes:
+            branch_graph.remove_node(node)
 
         branch_groups = list(nx.connected_components(branch_graph))
 
         rot_bonds_per_group = self._get_rot_bonds_per_group(branch_groups)
 
         core_atom_per_group = self._get_core_atom_per_group(
-            rot_bonds_per_group, core_indexes)
+            rot_bonds_per_group)
 
         distances = dict(nx.shortest_path_length(self))
 
         sorted_rot_bonds_per_group = self._get_sorted_bonds_per_group(
             core_atom_per_group, rot_bonds_per_group, distances)
 
-        filtered_rot_bonds_per_group = self._ignore_terminal_rotatable_bonds(
-            sorted_rot_bonds_per_group, n_rot_bonds_to_ignore)
+        """
+        if not include_terminal_rotamers:
+            sorted_rot_bonds_per_group = \
+                self._ignore_terminal_rotatable_bonds(
+                    sorted_rot_bonds_per_group, distances)
+        """
 
-        rotamer_library = RotamerLibrary(self.molecule.name)
+        rotamers = list()
 
-        # PELE needs underscores instead of whitespaces
-        pdb_atom_names = [name.replace(' ', '_',)
-                          for name in self.molecule.get_pdb_atom_names()]
-
-        for group_id, rot_bonds in enumerate(filtered_rot_bonds_per_group):
+        # TODO extend core by including one rotatable bond from the largest
+        # branch to increase the performance of the algorithm.
+        for group_id, rot_bonds in enumerate(sorted_rot_bonds_per_group):
+            branch_rotamers = list()
             for (atom1_index, atom2_index) in rot_bonds:
-                atom1_name = pdb_atom_names[atom1_index]
-                atom2_name = pdb_atom_names[atom2_index]
-                rotamer = Rotamer(atom1_name, atom2_name, resolution)
-                rotamer_library.add_rotamer(rotamer, group_id)
+                rotamer = Rotamer(atom1_index, atom2_index, resolution)
+                branch_rotamers.append(rotamer)
 
-        return rotamer_library
+            if len(branch_rotamers) > 0:
+                rotamers.append(branch_rotamers)
+
+        return rotamers
 
     @property
     def molecule(self):
@@ -534,3 +587,15 @@ class MolecularGraph(nx.Graph):
             The offpele's Molecule object
         """
         return self._molecule
+
+    @property
+    def core_nodes(self):
+        """
+        The list of core nodes.
+
+        Returns
+        -------
+        core_nodes : list[int]
+            The nodes in the core
+        """
+        return self._core_nodes

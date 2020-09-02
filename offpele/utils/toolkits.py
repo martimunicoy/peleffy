@@ -10,11 +10,12 @@ import os
 import subprocess
 from collections import defaultdict
 from pathlib import Path
+from copy import copy
 
 import numpy as np
 from simtk import unit
 
-from offpele.utils import temporary_cd
+from offpele.utils import temporary_cd, get_data_file_path
 
 
 class ToolkitUnavailableException(Exception):
@@ -105,7 +106,7 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         Parameters
         ----------
         path : str
-            The path to the molecule's PDB file.
+            The path to the molecule's PDB file
 
         Returns
         -------
@@ -115,6 +116,32 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         from rdkit import Chem
 
         return Chem.rdmolfiles.MolFromPDBFile(path, removeHs=False)
+
+    def from_smiles(self, smiles):
+        """
+        It initializes an RDKit's Molecule object from a SMILES tag.
+
+        Parameters
+        ----------
+        smiles : str
+            The SMILES tag to construct the molecule structure with.
+
+        Returns
+        -------
+        molecule : an rdkit.Chem.rdchem.Mol object
+            The RDKit's Molecule object
+        """
+        from rdkit.Chem import AllChem as Chem
+
+        molecule = Chem.MolFromSmiles(smiles)
+
+        # Add hydrogens to molecule
+        molecule = Chem.AddHs(molecule)
+
+        # Generate 3D coordinates
+        Chem.EmbedMolecule(molecule)
+
+        return molecule
 
     def assign_stereochemistry_from_3D(self, molecule):
         """
@@ -149,9 +176,83 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         rdkit_molecule = molecule.rdkit_molecule
 
         first_atom = list(rdkit_molecule.GetAtoms())[0]
-        return first_atom.GetPDBResidueInfo().GetResidueName()
 
-    def to_sfd_file(self, molecule, path):
+        # Catch a None return
+        try:
+            residue_name = first_atom.GetPDBResidueInfo().GetResidueName()
+        except AttributeError:
+            residue_name = None
+
+        return residue_name
+
+    def get_atom_names(self, molecule):
+        """
+        It returns the ordered list of atom names according to the
+        RDKit molecule object. In case no atom names are available
+        (non-PDB source), it assignes a name to each atom considering
+        the element and an index obtained from the total number of
+        occurrences of each element.
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+
+        Returns
+        -------
+        residue_name : list[str]
+            The list of atom names
+        """
+        rdkit_molecule = molecule.rdkit_molecule
+
+        atom_names = list()
+        occurrences = dict()
+
+        for atom in rdkit_molecule.GetAtoms():
+            pdb_info = atom.GetPDBResidueInfo()
+
+            if pdb_info is not None:
+                atom_names.append(pdb_info.GetName())
+            else:
+                element = atom.GetSymbol()
+                occurrences[element] = occurrences.get(element, 0) + 1
+
+                atom_names.append('{:^4}'.format(str(element)
+                                                 + str(occurrences[element])))
+
+        return atom_names
+
+    def to_pdb_file(self, molecule, path):
+        """
+        It writes the RDKit molecule to a PDB file.
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+        path : str
+            Path to write to
+        """
+        from rdkit import Chem
+
+        assert Path(path).suffix == '.pdb', 'Wrong extension'
+
+        rdkit_molecule = molecule.rdkit_molecule
+
+        pdb_block = Chem.rdmolfiles.MolToPDBBlock(rdkit_molecule)
+        names = molecule.get_pdb_atom_names()
+
+        renamed_pdb_block = ''
+        for line, name in zip(pdb_block.split('\n'), names):
+            renamed_pdb_block += line[:12] + name + line[16:] + '\n'
+
+        for line in pdb_block.split('\n')[len(names):]:
+            renamed_pdb_block += line + '\n'
+
+        with open(path, 'w') as f:
+            f.write(renamed_pdb_block)
+
+    def to_sdf_file(self, molecule, path):
         """
         It writes the RDKit molecule to an sdf file.
 
@@ -208,12 +309,29 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         from rdkit import Chem
 
         rdkit_molecule = molecule.rdkit_molecule
-        # Fins rotatable bond ids as in Lipinski module in RDKit
-        # https://github.com/rdkit/rdkit/blob/1bf6ef3d65f5c7b06b56862b3fb9116a3839b229/rdkit/Chem/Lipinski.py#L47
-        rot_bonds_atom_ids = rdkit_molecule.GetSubstructMatches(
-            Chem.MolFromSmarts('[!$(*#*)&!D1]-&!@[!$(*#*)&!D1]'))
 
-        return rot_bonds_atom_ids
+        rot_bonds_atom_ids = set([
+            frozenset(atom_pair) for atom_pair in
+            rdkit_molecule.GetSubstructMatches(
+                Chem.MolFromSmarts('[!$([NH]!@C(=O))&!D1&!$(*#*)]-&!@[!$([NH]!@C(=O))&!D1&!$(*#*)]'))])
+
+        # Include missing rotatable bonds for amide groups
+        for atom_pair in [frozenset(atom_pair) for atom_pair in
+                          rdkit_molecule.GetSubstructMatches(
+                          Chem.MolFromSmarts('[$(N!@C(=O))]-&!@[!$(C(=O))&!D1&!$(*#*)]'))]:
+            rot_bonds_atom_ids.add(atom_pair)
+
+        # Remove bonds to terminal -CH3
+        # To do, it is not working, fix it!
+        if molecule.exclude_terminal_rotamers:
+            terminal_bonds = set([
+                frozenset(atom_pair) for atom_pair in
+                rdkit_molecule.GetSubstructMatches(
+                    Chem.MolFromSmarts('*-&!@[$([C;H3;X4]),$([N;H2;X3]),$([N;H3;X4]),$([O;H1;X2])]'))
+            ])
+            rot_bonds_atom_ids = rot_bonds_atom_ids.difference(terminal_bonds)
+
+        return list(rot_bonds_atom_ids)
 
     def get_coordinates(self, molecule):
         """
@@ -234,6 +352,27 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         conformer = rdkit_molecule.GetConformer()
         return conformer.GetPositions()
 
+    def get_2D_representation(self, molecule):
+        """
+        It returns the 2D representation of the RDKit molecule.
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+
+        Returns
+        -------
+        representation_2D : an RDKit.molecule object
+            It is an RDKit molecule with an embeded 2D representation
+        """
+        from rdkit.Chem import AllChem
+
+        rdkit_molecule = molecule.rdkit_molecule
+        representation_2D = copy(rdkit_molecule)
+        AllChem.Compute2DCoords(representation_2D)
+        return representation_2D
+
 
 class AmberToolkitWrapper(ToolkitWrapper):
     """
@@ -250,8 +389,8 @@ class AmberToolkitWrapper(ToolkitWrapper):
 
         if not self.is_available():
             raise ToolkitUnavailableException(
-                'The required toolkit {self.toolkit_name} is not '
-                'available.')
+                'The required toolkit {} is not '.format(self.toolkit_name)
+                + 'available.')
 
         self._rdkit_toolkit_wrapper = RDKitToolkitWrapper()
 
@@ -315,7 +454,7 @@ class AmberToolkitWrapper(ToolkitWrapper):
                 net_charge = off_molecule.total_charge / \
                     unit.elementary_charge
 
-                self._rdkit_toolkit_wrapper.to_sfd_file(
+                self._rdkit_toolkit_wrapper.to_sdf_file(
                     molecule, tmpdir + '/molecule.sdf')
 
                 subprocess.check_output([
@@ -348,6 +487,11 @@ class AmberToolkitWrapper(ToolkitWrapper):
 
         charges = unit.Quantity(charges, unit.elementary_charge)
 
+        assert len(charges) == len(molecule.rdkit_molecule.GetAtoms()), \
+            'Partial charge computation failed as the length of ' \
+            + 'resulting partial charges does not match with the ' \
+            + 'number of atoms in molecule'
+
         return charges
 
 
@@ -366,8 +510,8 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
 
         if not self.is_available():
             raise ToolkitUnavailableException(
-                'The required toolkit {self.toolkit_name} is not '
-                'available.')
+                'The required toolkit {} is not '.format(self.toolkit_name)
+                + 'available.')
 
     @staticmethod
     def is_available():
@@ -926,7 +1070,7 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
 
             Returns
             -------
-           GSBA_parameters : dict[tuple, openforcefield.typing.engines.smirnoff.parameters.ParameterHandler]
+            GSBA_parameters : dict[tuple, openforcefield.typing.engines.smirnoff.parameters.ParameterHandler]
                 The parameters grouped by the atom ids they belong to
                 (arranged as tuples)
             """
@@ -958,3 +1102,331 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
             """
             parameters = self.get_GBSA_parameters()
             return self._build_dict(parameters, 'scale')
+
+
+class SchrodingerToolkitWrapper(ToolkitWrapper):
+    """
+    SchrodingerToolkitWrapper class.
+    """
+
+    _toolkit_name = 'Schrodinger Toolkit'
+
+    def __init__(self):
+        """
+        It initializes a SchrodingerToolkitWrapper object.
+        """
+        super().__init__()
+
+        if not self.is_available():
+            raise ToolkitUnavailableException(
+                'The required toolkit {} is not '.format(self.toolkit_name)
+                + 'available.')
+
+        self._rdkit_toolkit_wrapper = RDKitToolkitWrapper()
+
+    @staticmethod
+    def is_available():
+        """
+        Check whether the OpenForceField toolkit is installed
+
+        Returns
+        -------
+        is_installed : bool
+            True if OpenForceField is installed, False otherwise.
+        """
+        if not(RDKitToolkitWrapper.is_available()):
+            return False
+
+        if SchrodingerToolkitWrapper.path_to_ffld_server() is None:
+            return False
+
+        return True
+
+    @staticmethod
+    def path_to_ffld_server():
+        FFLD_SERVER_PATH = find_executable("ffld_server")
+
+        if FFLD_SERVER_PATH is not None:
+            return FFLD_SERVER_PATH
+
+        else:
+            if "SCHRODINGER" in os.environ:
+                schrodinger_root = os.environ.get('SCHRODINGER')
+                return os.path.join(schrodinger_root,
+                                    'utilities', 'ffld_server')
+
+        return None
+
+    def get_OPLS_parameters(self, molecule):
+        """
+        It calls Schrodinger's ffld_server to parameterize a molecule
+        with OPLS.
+
+        .. todo ::
+
+           * Review PlopRotTemp's atom type fixes. Should we apply them here?
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+
+        Returns
+        -------
+        OPLS_params : an OPLSParameters object
+            The set of lists of parameters grouped by parameter type.
+            Thus, the dictionary has the following keys: atom_names,
+            atom_types, charges, sigmas, epsilons, SGB_radii, vdW_radii,
+            gammas, and alphas
+        """
+
+        ffld_server_exec = self.path_to_ffld_server()
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+
+                self._rdkit_toolkit_wrapper.to_pdb_file(
+                    molecule, tmpdir + '/molecule.pdb')
+
+                subprocess.check_output([ffld_server_exec,
+                                         "-ipdb", "molecule.pdb",
+                                         "-version", "14",
+                                         "-print_parameters",
+                                         "-out_file", "parameters.txt"])
+
+                OPLS_params = self._parse_parameters('parameters.txt')
+
+        self._add_solvent_parameters(OPLS_params)
+
+        return OPLS_params
+
+    def _parse_parameters(self, path_to_parameters):
+        """
+        It parses the parameters from ffld_server's output file.
+
+        Parameters
+        ----------
+        path_to_parameters : str
+            The path to the ffld_server's output file
+
+        Returns
+        -------
+        params : an OPLSParameters object
+            The set of lists of parameters grouped by parameter type.
+            Thus, the dictionary has the following keys: atom_names,
+            atom_types, charges, sigmas, and epsilons.
+        """
+        params = defaultdict(list)
+
+        with open(path_to_parameters) as f:
+            section = 'out'
+            name_to_index = dict()  # To pair atom names and indexes
+            for line in f:
+                if line.startswith('OPLSAA FORCE FIELD TYPE ASSIGNED'):
+                    section = 'atoms'
+
+                    # Skip the next 3 lines
+                    f.readline()
+                    f.readline()
+                    f.readline()
+
+                elif line.startswith(' Stretch'):
+                    section = 'bonds'
+
+                elif line.startswith(' Bending'):
+                    section = 'angles'
+
+                elif line.startswith(' proper Torsion'):
+                    section = 'propers'
+
+                elif line.startswith(' improper Torsion'):
+                    section = 'impropers'
+
+                elif line == '\n':
+                    continue
+
+                elif section == 'atoms':
+                    if line.startswith('-'):
+                        continue
+
+                    fields = line.split()
+                    assert len(fields) > 7, 'Unexpected number of fields ' \
+                        + 'found at line {}'.format(line)
+
+                    name_to_index[line[0:4]] = len(params['atom_names'])
+
+                    params['atom_names'].append(line[0:4])
+                    params['atom_types'].append(fields[3])
+                    params['charges'].append(
+                        unit.Quantity(float(fields[4]),
+                                      unit.elementary_charge))
+                    params['sigmas'].append(
+                        unit.Quantity(float(fields[5]),
+                                      unit.angstrom))
+                    params['epsilons'].append(
+                        unit.Quantity(float(fields[6]),
+                                      unit.kilocalorie / unit.mole))
+
+                elif section == 'bonds':
+                    fields = line.split()
+                    assert len(fields) > 4, 'Unexpected number of fields ' \
+                        + 'found at line {}'.format(line)
+
+                    params['bonds'].append(
+                        {'atom1_idx': name_to_index[line[0:4]],
+                         'atom2_idx': name_to_index[line[8:12]],
+                         'spring_constant': unit.Quantity(
+                            float(fields[2]), unit.kilocalorie
+                            / (unit.angstrom ** 2 * unit.mole)),
+                         'eq_dist': unit.Quantity(float(fields[3]),
+                                                  unit.angstrom)
+                         })
+
+                elif section == 'angles':
+                    fields = line.split()
+                    assert len(fields) > 5, 'Unexpected number of fields ' \
+                        + 'found at line {}'.format(line)
+
+                    params['angles'].append(
+                        {'atom1_idx': name_to_index[line[0:4]],
+                         'atom2_idx': name_to_index[line[8:12]],
+                         'atom3_idx': name_to_index[line[16:20]],
+                         'spring_constant': unit.Quantity(
+                            float(fields[3]), unit.kilocalorie
+                            / (unit.radian ** 2 * unit.mole)),
+                         'eq_angle': unit.Quantity(float(fields[4]),
+                                                   unit.degrees)
+                         })
+
+        return self.OPLSParameters(params)
+
+    def _add_solvent_parameters(self, OPLS_params):
+        """
+        It add the solvent parameters to the OPLS parameters collection.
+
+        Parameters
+        ----------
+        OPLS_params : an OPLSParameters object
+            The set of lists of parameters grouped by parameter type.
+            Thus, the dictionary has the following keys: atom_names,
+            atom_types, charges, sigmas, and epsilons. The following
+            solvent parameters will be added to the collection: SGB_radii,
+            vdW_radii, gammas, alphas
+        """
+        solvent_data = dict()
+        parameters_path = get_data_file_path('parameters/f14_sgbnp.param')
+
+        with open(parameters_path) as f:
+            for line in f:
+                if line.startswith('#'):
+                    continue
+
+                fields = line.split()
+                assert len(fields) > 7, 'Unexpected line with less than ' \
+                    '8 fields at {}'.format(line)
+
+                atom_type = fields[1]
+
+                solvent_data[atom_type] = {
+                    'SGB_radii': unit.Quantity(float(fields[4]),
+                                               unit.angstrom),
+                    'vdW_radii': unit.Quantity(float(fields[5]),
+                                               unit.angstrom),
+                    'gammas': float(fields[6]),
+                    'alphas': float(fields[7])}
+
+        parameters_to_add = defaultdict(list)
+        tried = list()
+
+        for atom_type in OPLS_params['atom_types']:
+            parameters_found = False
+            while(not parameters_found):
+                if atom_type in solvent_data:
+                    for label, value in solvent_data[atom_type].items():
+                        parameters_to_add[label].append(value)
+                    parameters_found = True
+
+                else:
+                    new_atom_type = self._find_similar_atom_types(atom_type,
+                                                                  tried)
+                    if new_atom_type is None:
+                        atom_type = 'DF'  # Set it to default
+                    else:
+                        tried.append(new_atom_type)
+                        atom_type = new_atom_type
+
+        for label, params in parameters_to_add.items():
+            OPLS_params.add_parameters(label, params)
+
+    def _find_similar_atom_types(self, atom_type, tried):
+        """
+        It tries to find a similar atom type, skipping the ones that have
+        already been tried. It uses the definitions from the
+        similarity.param file.
+
+        Parameters
+        ----------
+        atom_type : str
+            The atom type from which similar atom types will be searched
+        tried : list[str]
+            The list of atom types that have already been tried and
+            will be skipped
+
+        Returns
+        -------
+        new_atom_type : str
+            The most similar atom type that has been found, if any.
+            Otherwise, it returns None
+        """
+
+        new_atom_type = None
+        best_similarity = 0
+        similarity_path = get_data_file_path('parameters/similarity.param')
+
+        with open(similarity_path) as f:
+            for line in f:
+                fields = line.split()
+                assert len(fields) > 2, 'Unexpected number of fields at ' \
+                    + 'line {}'.format(line)
+
+                atom_type1, atom_type2, similarity = fields[0:3]
+                if (atom_type == atom_type1
+                        and float(similarity) > best_similarity
+                        and atom_type2 not in tried):
+                    best_similarity = float(similarity)
+                    new_atom_type = atom_type2
+                elif (atom_type == atom_type2
+                        and float(similarity) > best_similarity
+                        and atom_type1 not in tried):
+                    best_similarity = float(similarity)
+                    new_atom_type = atom_type1
+
+        return new_atom_type
+
+    class OPLSParameters(dict):
+        """
+        OPLSParameters class that inherits from dict.
+        """
+
+        def __init__(self, parameters):
+            """
+            It initializes an OPLSParameters object.
+
+            parameters : dict
+                A dictionary keyed by parameter type
+            """
+            for key, value in parameters.items():
+                self[key] = value
+
+        def add_parameters(self, label, parameters):
+            """
+            It adds a list of parameters of the same type to the collection.
+
+            Parameters
+            ----------
+            label : str
+                The label to describe the parameter type
+            parameters : list
+                The list of parameters to include to the collection
+            """
+            self[label] = parameters

@@ -8,8 +8,10 @@ from pathlib import Path
 from .topology import Bond, Angle, OFFProper, OFFImproper
 from .rotamer import MolecularGraph
 from offpele.utils.toolkits import (RDKitToolkitWrapper,
-                                    OpenForceFieldToolkitWrapper)
-from offpele.charge import (Am1bccCalculator, GasteigerCalculator)
+                                    OpenForceFieldToolkitWrapper,
+                                    SchrodingerToolkitWrapper)
+from offpele.charge import (Am1bccCalculator, GasteigerCalculator,
+                            OPLSChargeCalculator)
 
 
 class Atom(object):
@@ -118,6 +120,94 @@ class Atom(object):
         assert len(coords) == 3, '3D array is expected'
 
         self._x, self._y, self._z = coords
+
+    def set_OPLS_type(self, OPLS_type):
+        """
+        It sets the OPLS type of the atom.
+
+        Parameters
+        ----------
+        OPLS_type : str
+            The OPLS type to set to this Atom object
+        """
+        self._OPLS_type = OPLS_type
+
+    def set_sigma(self, sigma):
+        """
+        It sets the sigma of the atom.
+
+        Parameters
+        ----------
+        sigma : float
+            The sigma to set to this Atom object
+        """
+        self._sigma = sigma
+
+    def set_epsilon(self, epsilon):
+        """
+        It sets the epsilon of the atom.
+
+        Parameters
+        ----------
+        epsilon : float
+            The epsilon to set to this Atom object
+        """
+        self._epsilon = epsilon
+
+    def set_charge(self, charge):
+        """
+        It sets the charge of the atom.
+
+        Parameters
+        ----------
+        charge : float
+            The charge to set to this Atom object
+        """
+        self._charge = charge
+
+    def set_born_radius(self, born_radius):
+        """
+        It sets the Born radius of the atom.
+
+        Parameters
+        ----------
+        born_radius : float
+            The Born radius to set to this Atom object
+        """
+        self._born_radius = born_radius
+
+    def set_SASA_radius(self, SASA_radius):
+        """
+        It sets the SASA radius of the atom.
+
+        Parameters
+        ----------
+        SASA_radius : float
+            The SASA radius to set to this Atom object
+        """
+        self._SASA_radius = SASA_radius
+
+    def set_nonpolar_gamma(self, nonpolar_gamma):
+        """
+        It sets the nonpolar gamma of the atom.
+
+        Parameters
+        ----------
+        nonpolar_gamma : float
+            The nonpolar gamma to set to this Atom object
+        """
+        self._nonpolar_gamma = nonpolar_gamma
+
+    def set_nonpolar_alpha(self, nonpolar_alpha):
+        """
+        It sets the nonpolar alpha of the atom.
+
+        Parameters
+        ----------
+        nonpolar_alpha : float
+            The nonpolar alpha to set to this Atom object
+        """
+        self._nonpolar_alpha = nonpolar_alpha
 
     @property
     def index(self):
@@ -356,35 +446,48 @@ class Molecule(object):
     the OpenForceField toolkit for PELE.
     """
 
-    def __init__(self, path=None):
+    def __init__(self, path=None, smiles=None, rotamer_resolution=30,
+                 exclude_terminal_rotamers=True):
         """
-        It initializes a Molecule object.
+        It initializes a Molecule object through a PDB file or a SMILES
+        tag.
 
         Parameters
         ----------
         path : str
             The path to a PDB with the molecule structure
+        smiles : str
+            The smiles tag
+        rotamer_resolution : float
+            The resolution in degrees to discretize the rotamer's
+            conformational space. Default is 30
+        exclude_terminal_rotamers : bool
+            Whether to exclude terminal rotamers when generating the
+            rotamers library  or not
 
         Examples
         --------
 
-        Load a molecule from a PDB file and parameterize it
+        Load a molecule from a PDB file and parameterize it with Open
+        Force Field
 
         >>> from offpele.topology import Molecule
 
         >>> molecule = Molecule('molecule.pdb')
         >>> molecule.parameterize('openff_unconstrained-1.1.1.offxml')
 
-        Generate the rotamer library of a molecule
+        Load a molecule using a SMILES tag and parameterize it with Open
+        Force Field
 
         >>> from offpele.topology import Molecule
 
-        >>> molecule = Molecule('molecule.pdb')
+        >>> molecule = Molecule(smiles='Cc1ccccc1')
         >>> molecule.parameterize('openff_unconstrained-1.1.1.offxml')
-        >>> molecule.build_rotamer_library(resolution=30)
-        >>> molecule.rotamer_library.to_file('MOL.rot.assign')
 
         """
+        self._rotamer_resolution = rotamer_resolution
+        self._exclude_terminal_rotamers = exclude_terminal_rotamers
+
         if isinstance(path, str):
             from pathlib import Path
             extension = Path(path).suffix
@@ -394,8 +497,13 @@ class Molecule(object):
             else:
                 raise ValueError(
                     '{} is not a valid extension'.format(extension))
+        elif isinstance(smiles, str):
+            self._initialize_from_smiles(smiles)
+
         else:
             self._initialize()
+
+        self._build_rotamers()
 
     def _initialize(self):
         """It initializes an empty molecule."""
@@ -410,8 +518,11 @@ class Molecule(object):
         self._OFF_impropers = list()
         self._rdkit_molecule = None
         self._off_molecule = None
-        self._rotamer_library = None
+        self._rotamers = None
         self._graph = None
+        self._parameterized = False
+        self._OPLS_included = False
+        self._OPLS_parameters = None
 
     def _initialize_from_pdb(self, path):
         """
@@ -440,6 +551,41 @@ class Molecule(object):
 
         self._off_molecule = openforcefield_toolkit.from_rdkit(self)
 
+    def _initialize_from_smiles(self, smiles):
+        """
+        It initializes a molecule from a SMILES tag.
+
+        Parameters
+        ----------
+        smiles : str
+            The SMILES tag to construct the molecule structure with
+        """
+        self._initialize()
+        print(' - Constructing molecule from a SMILES tag with RDKit')
+
+        rdkit_toolkit = RDKitToolkitWrapper()
+        self._rdkit_molecule = rdkit_toolkit.from_smiles(smiles)
+
+        # TODO not sure if stereochemistry assignment from 3D is still necessary
+        # RDKit must generate stereochemistry specifically from 3D coords
+        # rdkit_toolkit.assign_stereochemistry_from_3D(self)
+
+        # Set molecule name according to PDB's residue name
+        name = rdkit_toolkit.get_residue_name(self)
+        self.set_name(name)
+
+        openforcefield_toolkit = OpenForceFieldToolkitWrapper()
+
+        self._off_molecule = openforcefield_toolkit.from_rdkit(self)
+
+    def _build_rotamers(self):
+        """It builds the rotamers of the molecule."""
+        if self.off_molecule and self.rdkit_molecule:
+            print(' - Generating rotamer library')
+
+            self._graph = MolecularGraph(self)
+            self._rotamers = self._graph.get_rotamers()
+
     def set_name(self, name):
         """
         It sets the name of the molecule.
@@ -456,7 +602,9 @@ class Molecule(object):
             if self.off_molecule:
                 self.off_molecule.name = name
 
-    def parameterize(self, forcefield, charges_method=None):
+    def parameterize(self, forcefield, charges_method=None,
+                     use_OPLS_nonbonding_params=False,
+                     use_OPLS_bonds_and_angles=False):
         """
         It parameterizes the molecule with a certain forcefield.
 
@@ -466,7 +614,18 @@ class Molecule(object):
                      object
             The forcefield from which the parameters will be obtained
         charges_method : str
-            The name of the charges method to employ
+            The name of the charges method to employ. One of
+            ['gasteiger', 'am1bcc', 'OPLS']. If None, 'am1bcc' will be used
+        use_OPLS_nonbonding_params : bool
+            Whether to use Open Force Field or OPLS to obtain the
+            nonbonding parameters. Please, note that this option is only
+            available if a valid Schrodinger installation is found in the
+            current machine. Default is False
+        use_OPLS_bonds_and_angles : bool
+            Whether to use OPLS to obtain the bond and angle parameters
+            or not. Please, note that this option is only
+            available if a valid Schrodinger installation is found in the
+            current machine. Default is False
         """
 
         if not self.off_molecule or not self.rdkit_molecule:
@@ -489,6 +648,8 @@ class Molecule(object):
               + '{}'.format(charges_calculator.name))
         self._assign_charges(charges_calculator)
 
+        self._clean_lists()
+
         self._build_atoms()
 
         self._build_bonds()
@@ -499,40 +660,22 @@ class Molecule(object):
 
         self._build_impropers()
 
-    def build_rotamer_library(self, resolution=30, n_rot_bonds_to_ignore=1):
-        """
-        It builds the rotamer library of a parameterized molecule.
-
-        .. todo ::
-
-            * Consider moving this to the rotamer module.
-
-        Parameters
-        ----------
-        resolution : float
-            The resolution in degrees to discretize the rotamer's
-            conformational space. Default is 30
-        n_rot_bonds_to_ignore : int
-            The number of terminal rotatable bonds to ignore when
-            building the rotamer library. Default is 1
-        """
-        self._assert_parameterized()
-
-        print(' - Generating rotamer library')
-
-        self._graph = MolecularGraph(self)
+        self._parameterized = True
 
         self.graph.set_core()
 
         self.graph.set_parents()
 
-        self._rotamer_library = self.graph.build_rotamer_library(
-            resolution, n_rot_bonds_to_ignore)
+        self._OPLS_included = False
 
+        if use_OPLS_nonbonding_params:
+            self.add_OPLS_nonbonding_params()
+        if use_OPLS_bonds_and_angles:
+            self.add_OPLS_bonds_and_angles()
+
+    # To do: consider removing this function
     def plot_rotamer_graph(self):
         """It plots the rotamer graph in screen."""
-        self._assert_parameterized()
-
         try:
             from rdkit import Chem
         except ImportError:
@@ -567,13 +710,13 @@ class Molecule(object):
         plt.axis('off')
         plt.show()
 
-    def _assert_parameterized(self):
+    def assert_parameterized(self):
         """
         It checks that the molecule has been parameterized, raises an
         AssertionError otherwise.
         """
         try:
-            assert self.off_molecule is not None
+            assert self.parameterized
         except AssertionError:
             raise Exception('Molecule not parameterized')
 
@@ -606,6 +749,9 @@ class Molecule(object):
         elif charges_method == 'gasteiger':
             return GasteigerCalculator(self)
 
+        elif charges_method == 'OPLS':
+            return OPLSChargeCalculator(self)
+
         else:
             raise Exception('Charges method \'{}\' '.format(charges_method)
                             + 'is unknown')
@@ -626,14 +772,23 @@ class Molecule(object):
 
         self.off_molecule.partial_charges = charges
 
+    def _clean_lists(self):
+        """It cleans all the lists before parameterizing."""
+        self._atoms = list()
+        self._bonds = list()
+        self._angles = list()
+        self._propers = list()
+        self._OFF_propers = list()
+        self._impropers = list()
+        self._OFF_impropers = list()
+
     def _build_atoms(self):
         """It builds the atoms of the molecule."""
         # PELE needs underscores instead of whitespaces
         pdb_atom_names = {(i, ): name.replace(' ', '_',)
                           for i, name in enumerate(self.get_pdb_atom_names())}
 
-        # TODO should we assign an OPLS type? How can we do this with OFF?
-        OPLS_types = {i: None
+        OPLS_types = {i: 'OFFT'
                       for i in self.parameters.get_vdW_parameters().keys()}
 
         # TODO Which is the purpose of unknown value? Is it important?
@@ -703,8 +858,10 @@ class Molecule(object):
 
         for index, atom_indexes in enumerate(bond_indexes):
             (atom1_idx, atom2_idx) = atom_indexes
+            # PELE works with half of the OFF's spring
+            k = ks[atom_indexes] / 2.0
             bond = Bond(index=index, atom1_idx=atom1_idx, atom2_idx=atom2_idx,
-                        spring_constant=ks[atom_indexes],
+                        spring_constant=k,
                         eq_dist=lengths[atom_indexes])
             self._add_bond(bond)
 
@@ -729,9 +886,11 @@ class Molecule(object):
 
         for index, atom_indexes in enumerate(angle_indexes):
             atom1_idx, atom2_idx, atom3_idx = atom_indexes
+            # PELE works with half of the OFF's spring
+            k = ks[atom_indexes] / 2.0
             angle = Angle(index=index, atom1_idx=atom1_idx,
                           atom2_idx=atom2_idx, atom3_idx=atom3_idx,
-                          spring_constant=ks[atom_indexes],
+                          spring_constant=k,
                           eq_angle=angles[atom_indexes])
             self._add_angle(angle)
 
@@ -786,7 +945,8 @@ class Molecule(object):
                 k = k_by_index[index]
                 idivf = idivf_by_index[index]
 
-                if period and phase and k and idivf:
+                if (period is not None and phase is not None
+                        and k is not None and idivf is not None):
                     off_proper = OFFProper(atom1_idx=atom1_idx,
                                            atom2_idx=atom2_idx,
                                            atom3_idx=atom3_idx,
@@ -799,6 +959,8 @@ class Molecule(object):
                     PELE_proper = off_proper.to_PELE()
                     self._add_proper(PELE_proper)
                     self._add_OFF_proper(off_proper)
+
+        self._handle_excluded_propers()
 
     def _add_proper(self, proper):
         """
@@ -821,6 +983,58 @@ class Molecule(object):
             The OFFProper to add
         """
         self._OFF_propers.append(proper)
+
+    def _handle_excluded_propers(self):
+        """
+        It looks for those propers that define duplicated 1-4 relations
+        and sets them to be ignored in PELE's 1-4 list.
+        """
+        for i, proper in enumerate(self.propers):
+            atom1_idx = proper.atom1_idx
+            atom4_idx = proper.atom4_idx
+            for proper_to_compare in self.propers[0:i]:
+                if proper == proper_to_compare:
+                    continue
+
+                if proper_to_compare.atom3_idx < 0:
+                    continue
+
+                # PELE already ignores 1-4 pair when the proper is exactly
+                # the same
+                if (proper.atom1_idx == proper_to_compare.atom1_idx
+                        and proper.atom2_idx == proper_to_compare.atom2_idx
+                        and proper.atom3_idx == proper_to_compare.atom3_idx
+                        and proper.atom4_idx == proper_to_compare.atom4_idx):
+                    continue
+
+                atom1_idx_to_compare = proper_to_compare.atom1_idx
+                atom4_idx_to_compare = proper_to_compare.atom4_idx
+                if (atom1_idx == atom1_idx_to_compare
+                        and atom4_idx == atom4_idx_to_compare):
+                    proper.exclude_from_14_list()
+                elif (atom1_idx == atom4_idx_to_compare
+                        and atom4_idx == atom1_idx_to_compare):
+                    proper.exclude_from_14_list()
+
+            for angle_to_compare in self.angles:
+                atom1_idx_to_compare = angle_to_compare.atom1_idx
+                atom4_idx_to_compare = angle_to_compare.atom3_idx
+                if (atom1_idx == atom1_idx_to_compare
+                        and atom4_idx == atom4_idx_to_compare):
+                    proper.exclude_from_14_list()
+                elif (atom1_idx == atom4_idx_to_compare
+                        and atom4_idx == atom1_idx_to_compare):
+                    proper.exclude_from_14_list()
+
+            for bond_to_compare in self.bonds:
+                atom1_idx_to_compare = bond_to_compare.atom1_idx
+                atom4_idx_to_compare = bond_to_compare.atom2_idx
+                if (atom1_idx == atom1_idx_to_compare
+                        and atom4_idx == atom4_idx_to_compare):
+                    proper.exclude_from_14_list()
+                elif (atom1_idx == atom4_idx_to_compare
+                        and atom4_idx == atom1_idx_to_compare):
+                    proper.exclude_from_14_list()
 
     def _build_impropers(self):
         """It builds the impropers of the molecule."""
@@ -862,7 +1076,8 @@ class Molecule(object):
                 k = k_by_index[index]
                 idivf = idivf_by_index[index]
 
-                if period and phase and k and idivf:
+                if (period is not None and phase is not None
+                        and k is not None and idivf is not None):
                     off_improper = OFFImproper(atom1_idx=atom1_idx,
                                                atom2_idx=atom2_idx,
                                                atom3_idx=atom3_idx,
@@ -898,6 +1113,72 @@ class Molecule(object):
         """
         self._OFF_impropers.append(improper)
 
+    def add_OPLS_nonbonding_params(self):
+        """
+        It adds OPLS' nonbonding parameters to the molecule. Please, note
+        that OPLS' partial charges are not set in this function.
+        Instead, they are assigned in the Molecule's parameterize()
+        function when 'OPLS' is chosen as the 'charges_method'.
+        """
+
+        self.assert_parameterized()
+
+        OPLS_params = self.get_OPLS_parameters()
+
+        for atom, atom_type, sigma, epsilon, SGB_radius, \
+            vdW_radius, gamma, alpha in zip(self.atoms,
+                                            OPLS_params['atom_types'],
+                                            OPLS_params['sigmas'],
+                                            OPLS_params['epsilons'],
+                                            OPLS_params['SGB_radii'],
+                                            OPLS_params['vdW_radii'],
+                                            OPLS_params['gammas'],
+                                            OPLS_params['alphas']):
+            atom.set_OPLS_type(atom_type)
+            atom.set_sigma(sigma)
+            atom.set_epsilon(epsilon)
+            atom.set_born_radius(SGB_radius)
+            atom.set_SASA_radius(vdW_radius)
+            atom.set_nonpolar_gamma(gamma)
+            atom.set_nonpolar_alpha(alpha)
+
+        self._OPLS_included = True
+
+    def add_OPLS_bonds_and_angles(self):
+        """
+        It adds OPLS' bond and angle parameters to the molecule.
+        """
+
+        self.assert_parameterized()
+
+        OPLS_params = self.get_OPLS_parameters()
+
+        self._bonds = list()
+        for index, bond in enumerate(OPLS_params['bonds']):
+            atom1 = self.atoms[bond['atom1_idx']]
+            atom2 = self.atoms[bond['atom2_idx']]
+            OPLS_bond = Bond(index=index,
+                             atom1_idx=atom1.index,
+                             atom2_idx=atom2.index,
+                             spring_constant=bond['spring_constant'],
+                             eq_dist=bond['eq_dist'])
+            self._add_bond(OPLS_bond)
+
+        self._angles = list()
+        for index, angle in enumerate(OPLS_params['angles']):
+            atom1 = self.atoms[angle['atom1_idx']]
+            atom2 = self.atoms[angle['atom2_idx']]
+            atom3 = self.atoms[angle['atom3_idx']]
+            angle = Angle(index=index,
+                          atom1_idx=atom1.index,
+                          atom2_idx=atom2.index,
+                          atom3_idx=atom3.index,
+                          spring_constant=angle['spring_constant'],
+                          eq_angle=angle['eq_angle'])
+            self._add_angle(angle)
+
+        self._OPLS_included = True
+
     def get_pdb_atom_names(self):
         """
         It returns the PDB atom names of all the atoms in the molecule.
@@ -907,23 +1188,81 @@ class Molecule(object):
         pdb_atom_names : str
             The PDB atom names of all the atoms in this Molecule object
         """
-        self._assert_parameterized()
+        rdkit_toolkit = RDKitToolkitWrapper()
 
-        pdb_atom_names = list()
+        return rdkit_toolkit.get_atom_names(self)
 
-        for atom in self.rdkit_molecule.GetAtoms():
-            pdb_info = atom.GetPDBResidueInfo()
-            pdb_atom_names.append(pdb_info.GetName())
-
-        return pdb_atom_names
-
-    def to_impact(self, path):
+    def to_impact_file(self, path):
         """
         .. todo ::
 
             * We still need to implement this
         """
+        # assert parameterized, then write impact
         pass
+
+    def to_pdb_file(self, path):
+        """
+        It writes the molecule to a PDB file.
+
+        Parameters
+        ----------
+        path : str
+            Path to write to
+        """
+        rdkit_toolkit = RDKitToolkitWrapper()
+        rdkit_toolkit.to_pdb_file(self, path)
+
+    def get_OPLS_parameters(self):
+        """
+        It returns the OPLS parameters of the molecule. It first looks
+        if they have already been calculated and returns them if found.
+        Otherwise, it uses the SchrodingerToolkitWrapper to generate
+        them.
+
+        Returns
+        -------
+        OPLS_parameters : a SchrodingerToolkitWrapper.OPLSParameters object
+            The set of lists of parameters grouped by parameter type.
+            Thus, the dictionary has the following keys: atom_names,
+            atom_types, charges, sigmas, epsilons, SGB_radii, vdW_radii,
+            gammas, and alphas
+        """
+
+        if self._OPLS_parameters is None:
+            schrodinger_toolkit = SchrodingerToolkitWrapper()
+
+            self._OPLS_parameters = \
+                schrodinger_toolkit.get_OPLS_parameters(self)
+
+        return self._OPLS_parameters
+
+    @property
+    def rotamer_resolution(self):
+        """
+        The resolution to be used when generating the rotamers library.
+
+        Returns
+        -------
+        rotamer_resolution : float
+            The resolution in degrees to discretize the rotamer's
+            conformational space
+        """
+        return self._rotamer_resolution
+
+    @property
+    def exclude_terminal_rotamers(self):
+        """
+        The behavior when handling terminal rotamers when generating the
+        rotamers library.
+
+        Returns
+        -------
+        exclude_terminal_rotamers : bool
+            Whether to exclude terminal rotamers when generating the
+            rotamers library  or not
+        """
+        return self._exclude_terminal_rotamers
 
     @property
     def off_molecule(self):
@@ -950,16 +1289,16 @@ class Molecule(object):
         return self._rdkit_molecule
 
     @property
-    def rotamer_library(self):
+    def rotamers(self):
         """
-        The rotamer library of the molecule.
+        The list of rotamers of the molecule.
 
         Returns
         -------
-        rotamer_library : an offpele.topology.rotamer.RotamerLibrary object
-            The rotamer library of this Molecule object
+        rotamers : list[list]
+            The list of rotamers grouped by the branch they belong to
         """
-        return self._rotamer_library
+        return self._rotamers
 
     @property
     def name(self):
@@ -1057,3 +1396,59 @@ class Molecule(object):
             The topological graph of this Molecule object.
         """
         return self._graph
+
+    @property
+    def parameterized(self):
+        """
+        Whether the molecule has been parameterized with the Open Force Field
+        toolkit or not.
+
+        Returns
+        -------
+        parameterized : bool
+            The parameterization status
+        """
+        return self._parameterized
+
+    @property
+    def OPLS_included(self):
+        """
+        Whether the molecule has been parameterized with OPLS in combination
+        with the Open Force Field toolkit or not.
+
+        Returns
+        -------
+        OPLS_included : bool
+            The OPLS combination status
+        """
+        return self._OPLS_included
+
+    @property
+    def OPLS_parameters(self):
+        """
+        The OPLS parameters of the molecule.
+
+        Returns
+        -------
+        OPLS_parameters : a SchrodingerToolkitWrapper.OPLSParameters object
+            The set of lists of parameters grouped by parameter type.
+            Thus, the dictionary has the following keys: atom_names,
+            atom_types, charges, sigmas, epsilons, SGB_radii, vdW_radii,
+            gammas, and alphas
+        """
+        return self.get_OPLS_parameters()
+
+    def _ipython_display_(self):
+        """
+        It returns a RDKit molecule with an embeded 2D representation.
+
+        Returns
+        -------
+        representation_2D : a IPython display object
+            It is displayable RDKit molecule with an embeded 2D
+            representation
+        """
+        from IPython.display import display
+
+        rdkit_toolkit = RDKitToolkitWrapper()
+        return display(rdkit_toolkit.get_2D_representation(self))
