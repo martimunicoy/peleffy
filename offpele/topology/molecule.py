@@ -10,7 +10,8 @@ from .rotamer import MolecularGraph
 from offpele.utils.toolkits import (RDKitToolkitWrapper,
                                     OpenForceFieldToolkitWrapper,
                                     SchrodingerToolkitWrapper)
-from offpele.charge import (Am1bccCalculator, GasteigerCalculator)
+from offpele.charge import (Am1bccCalculator, GasteigerCalculator,
+                            OPLSChargeCalculator)
 
 
 class Atom(object):
@@ -467,14 +468,16 @@ class Molecule(object):
         Examples
         --------
 
-        Load a molecule from a PDB file and parameterize it with OpenFF
+        Load a molecule from a PDB file and parameterize it with Open
+        Force Field
 
         >>> from offpele.topology import Molecule
 
         >>> molecule = Molecule('molecule.pdb')
         >>> molecule.parameterize('openff_unconstrained-1.1.1.offxml')
 
-        Load a molecule using a SMILES tag and parameterize it with OpenFF
+        Load a molecule using a SMILES tag and parameterize it with Open
+        Force Field
 
         >>> from offpele.topology import Molecule
 
@@ -519,6 +522,7 @@ class Molecule(object):
         self._graph = None
         self._parameterized = False
         self._OPLS_included = False
+        self._OPLS_parameters = None
 
     def _initialize_from_pdb(self, path):
         """
@@ -610,16 +614,17 @@ class Molecule(object):
                      object
             The forcefield from which the parameters will be obtained
         charges_method : str
-            The name of the charges method to employ
+            The name of the charges method to employ. One of
+            ['gasteiger', 'am1bcc', 'OPLS']. If None, 'am1bcc' will be used
         use_OPLS_nonbonding_params : bool
             Whether to use Open Force Field or OPLS to obtain the
             nonbonding parameters. Please, note that this option is only
-            available if a Schrodinger installation is found in the
+            available if a valid Schrodinger installation is found in the
             current machine. Default is False
         use_OPLS_bonds_and_angles : bool
             Whether to use OPLS to obtain the bond and angle parameters
             or not. Please, note that this option is only
-            available if a Schrodinger installation is found in the
+            available if a valid Schrodinger installation is found in the
             current machine. Default is False
         """
 
@@ -743,6 +748,9 @@ class Molecule(object):
 
         elif charges_method == 'gasteiger':
             return GasteigerCalculator(self)
+
+        elif charges_method == 'OPLS':
+            return OPLSChargeCalculator(self)
 
         else:
             raise Exception('Charges method \'{}\' '.format(charges_method)
@@ -1107,18 +1115,21 @@ class Molecule(object):
 
     def add_OPLS_nonbonding_params(self):
         """
-        It adds OPLS' nonbonding parameters to the molecule.
+        It adds OPLS' nonbonding parameters to the molecule. Please, note
+        that OPLS' partial charges are not set in this function.
+        Instead, they are assigned in the Molecule's parameterize()
+        function when 'OPLS' is chosen as the 'charges_method'.
         """
-        schrodinger_toolkit = SchrodingerToolkitWrapper()
 
-        OPLS_params = schrodinger_toolkit.get_OPLS_parameters(self)
+        self.assert_parameterized()
 
-        for atom, atom_type, sigma, epsilon, charge, SGB_radius, \
+        OPLS_params = self.get_OPLS_parameters()
+
+        for atom, atom_type, sigma, epsilon, SGB_radius, \
             vdW_radius, gamma, alpha in zip(self.atoms,
                                             OPLS_params['atom_types'],
                                             OPLS_params['sigmas'],
                                             OPLS_params['epsilons'],
-                                            OPLS_params['charges'],
                                             OPLS_params['SGB_radii'],
                                             OPLS_params['vdW_radii'],
                                             OPLS_params['gammas'],
@@ -1126,7 +1137,6 @@ class Molecule(object):
             atom.set_OPLS_type(atom_type)
             atom.set_sigma(sigma)
             atom.set_epsilon(epsilon)
-            atom.set_charge(charge)
             atom.set_born_radius(SGB_radius)
             atom.set_SASA_radius(vdW_radius)
             atom.set_nonpolar_gamma(gamma)
@@ -1138,9 +1148,10 @@ class Molecule(object):
         """
         It adds OPLS' bond and angle parameters to the molecule.
         """
-        schrodinger_toolkit = SchrodingerToolkitWrapper()
 
-        OPLS_params = schrodinger_toolkit.get_OPLS_parameters(self)
+        self.assert_parameterized()
+
+        OPLS_params = self.get_OPLS_parameters()
 
         self._bonds = list()
         for index, bond in enumerate(OPLS_params['bonds']):
@@ -1201,6 +1212,30 @@ class Molecule(object):
         """
         rdkit_toolkit = RDKitToolkitWrapper()
         rdkit_toolkit.to_pdb_file(self, path)
+
+    def get_OPLS_parameters(self):
+        """
+        It returns the OPLS parameters of the molecule. It first looks
+        if they have already been calculated and returns them if found.
+        Otherwise, it uses the SchrodingerToolkitWrapper to generate
+        them.
+
+        Returns
+        -------
+        OPLS_parameters : a SchrodingerToolkitWrapper.OPLSParameters object
+            The set of lists of parameters grouped by parameter type.
+            Thus, the dictionary has the following keys: atom_names,
+            atom_types, charges, sigmas, epsilons, SGB_radii, vdW_radii,
+            gammas, and alphas
+        """
+
+        if self._OPLS_parameters is None:
+            schrodinger_toolkit = SchrodingerToolkitWrapper()
+
+            self._OPLS_parameters = \
+                schrodinger_toolkit.get_OPLS_parameters(self)
+
+        return self._OPLS_parameters
 
     @property
     def rotamer_resolution(self):
@@ -1387,6 +1422,21 @@ class Molecule(object):
             The OPLS combination status
         """
         return self._OPLS_included
+
+    @property
+    def OPLS_parameters(self):
+        """
+        The OPLS parameters of the molecule.
+
+        Returns
+        -------
+        OPLS_parameters : a SchrodingerToolkitWrapper.OPLSParameters object
+            The set of lists of parameters grouped by parameter type.
+            Thus, the dictionary has the following keys: atom_names,
+            atom_types, charges, sigmas, epsilons, SGB_radii, vdW_radii,
+            gammas, and alphas
+        """
+        return self.get_OPLS_parameters()
 
     def _ipython_display_(self):
         """

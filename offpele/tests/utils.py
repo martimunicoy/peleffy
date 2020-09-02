@@ -60,7 +60,7 @@ def check_CHO_charges_in_molecule(molecule):
         charge = atom.charge.value_in_unit(unit.elementary_charge)
 
         if 'C' in name:
-            assert charge < 1.0 and charge > -0.2, \
+            assert charge < 1.0 and charge > -0.23, \
                 'Presumably not a reasonable charge for a C: ' \
                 + '{}'.format(charge)
         elif 'H' in name:
