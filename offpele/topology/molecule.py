@@ -1115,19 +1115,21 @@ class Molecule(object):
 
     def add_OPLS_nonbonding_params(self):
         """
-        It adds OPLS' nonbonding parameters to the molecule.
+        It adds OPLS' nonbonding parameters to the molecule. Please, note
+        that OPLS' partial charges are not set in this function.
+        Instead, they are assigned in the Molecule's parameterize()
+        function when 'OPLS' is chosen as the 'charges_method'.
         """
 
         self.assert_parameterized()
 
         OPLS_params = self.get_OPLS_parameters()
 
-        for atom, atom_type, sigma, epsilon, charge, SGB_radius, \
+        for atom, atom_type, sigma, epsilon, SGB_radius, \
             vdW_radius, gamma, alpha in zip(self.atoms,
                                             OPLS_params['atom_types'],
                                             OPLS_params['sigmas'],
                                             OPLS_params['epsilons'],
-                                            OPLS_params['charges'],
                                             OPLS_params['SGB_radii'],
                                             OPLS_params['vdW_radii'],
                                             OPLS_params['gammas'],
@@ -1135,7 +1137,6 @@ class Molecule(object):
             atom.set_OPLS_type(atom_type)
             atom.set_sigma(sigma)
             atom.set_epsilon(epsilon)
-            atom.set_charge(charge)
             atom.set_born_radius(SGB_radius)
             atom.set_SASA_radius(vdW_radius)
             atom.set_nonpolar_gamma(gamma)
