@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.g2947c21
+                0+untagged.1.g6662058
               </div>
             
           
@@ -89,7 +89,7 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Release History</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#current-development">0.3.0 - Current development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#rotamers-opls2005-smiles-and-stability-improvements">0.3.0 - Rotamers, OPLS2005, SMILES and stability improvements</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#new-features">New features</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#bugfixes">Bugfixes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#tests-added">Tests added</a></li>
@@ -188,8 +188,8 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">minor</span></code> increments add features but do not break API compatibility</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">micro</span></code> increments represent bugfix releases or improvements in documentation</p></li>
 </ul>
-<div class="section" id="current-development">
-<h2>0.3.0 - Current development<a class="headerlink" href="#current-development" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="rotamers-opls2005-smiles-and-stability-improvements">
+<h2>0.3.0 - Rotamers, OPLS2005, SMILES and stability improvements<a class="headerlink" href="#rotamers-opls2005-smiles-and-stability-improvements" title="Permalink to this headline">¶</a></h2>
 <p>This is a minor release that includes a refactoring of the classes and methods that involve the rotamer library builder. Besides, now it is possible to combine parameters from OPLS2005 and OFF. This release also contains a new method to define a molecule through a SMILES tag. It is still a preliminary version of the Open Force Field to PELE package which is under development.</p>
 <div class="section" id="new-features">
 <h3>New features<a class="headerlink" href="#new-features" title="Permalink to this headline">¶</a></h3>
@@ -207,7 +207,7 @@
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/22">PR #22</a>: Fixes many bugs. For example, the default output name of the solvent parameters template is changed to <cite>ligandParams.txt</cite>, which is the name that PELE expects.</p></li>
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/32">PR #32</a>: Minor fixes in ToolkitWrapper classes.</p></li>
-<li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/34:">PR #34</a>: Improves the translation of dihedrals coming from the Open Force Fielf Toolkit and corrects the lack of exclusions in PELE 1-4 list that result from Impact’s dihedral definitions.</p></li>
+<li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/34">PR #34</a>: Improves the translation of dihedrals coming from the Open Force Fielf Toolkit and corrects the lack of exclusions in PELE 1-4 list that result from Impact’s dihedral definitions.</p></li>
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/46">PR #46</a>: Prevents molecule to be untagged when loading it from a SMILES tag.</p></li>
 </ul>
 </div>
