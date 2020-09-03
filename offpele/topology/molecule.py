@@ -447,7 +447,7 @@ class Molecule(object):
     """
 
     def __init__(self, path=None, smiles=None, rotamer_resolution=30,
-                 exclude_terminal_rotamers=True):
+                 exclude_terminal_rotamers=True, name='', tag='UNK'):
         """
         It initializes a Molecule object through a PDB file or a SMILES
         tag.
@@ -464,6 +464,10 @@ class Molecule(object):
         exclude_terminal_rotamers : bool
             Whether to exclude terminal rotamers when generating the
             rotamers library  or not
+        name : str
+            The molecule name
+        tag : str
+            The molecule tag. It must be a 3-character string
 
         Examples
         --------
@@ -485,6 +489,8 @@ class Molecule(object):
         >>> molecule.parameterize('openff_unconstrained-1.2.0.offxml')
 
         """
+        self._name = name
+        self._tag = tag
         self._rotamer_resolution = rotamer_resolution
         self._exclude_terminal_rotamers = exclude_terminal_rotamers
 
@@ -507,7 +513,6 @@ class Molecule(object):
 
     def _initialize(self):
         """It initializes an empty molecule."""
-        self._name = ''
         self._forcefield = None
         self._atoms = list()
         self._bonds = list()
@@ -543,9 +548,16 @@ class Molecule(object):
         # RDKit must generate stereochemistry specifically from 3D coords
         rdkit_toolkit.assign_stereochemistry_from_3D(self)
 
-        # Set molecule name according to PDB's residue name
-        name = rdkit_toolkit.get_residue_name(self)
-        self.set_name(name)
+        # Set molecule name according to PDB name
+        if self.name == '':
+            from pathlib import Path
+            name = Path(path).stem
+            self.set_name(name)
+
+        # Set molecule tag according to PDB's residue name
+        if self.tag == 'UNK':
+            tag = rdkit_toolkit.get_residue_name(self)
+            self.set_tag(tag)
 
         openforcefield_toolkit = OpenForceFieldToolkitWrapper()
 
@@ -570,9 +582,9 @@ class Molecule(object):
         # RDKit must generate stereochemistry specifically from 3D coords
         # rdkit_toolkit.assign_stereochemistry_from_3D(self)
 
-        # Set molecule name according to PDB's residue name
-        name = rdkit_toolkit.get_residue_name(self)
-        self.set_name(name)
+        # Set molecule name according to the SMILES tag
+        if self.name == '':
+            self.set_name(smiles)
 
         openforcefield_toolkit = OpenForceFieldToolkitWrapper()
 
@@ -595,12 +607,27 @@ class Molecule(object):
         name : str
             The name to set to the molecule
         """
-        if isinstance(name, str) and len(name) > 2:
-            name = name[0:3].upper()
-            self._name = name
+        assert isinstance(name, str), 'Invalid type for a name, it must be ' \
+            + 'a string'
 
-            if self.off_molecule:
-                self.off_molecule.name = name
+        self._name = name
+
+    def set_tag(self, tag):
+        """
+        It sets the tag of the molecule. It must be a 3-character string.
+
+        Parameters
+        ----------
+        tag : str
+            The tag to set to the molecule. It must be a 3-character string
+        """
+        # Some previous checks
+        assert len(tag) == 3, 'Invalid tag length, it must be a ' \
+            + '3-character string'
+        assert isinstance(tag, str), 'Invalid type for a tag, it must be ' \
+            + 'a string'
+
+        self._tag = tag.upper()
 
     def parameterize(self, forcefield, charges_method=None,
                      use_OPLS_nonbonding_params=False,
@@ -1311,6 +1338,18 @@ class Molecule(object):
             The name of this Molecule object
         """
         return self._name
+
+    @property
+    def tag(self):
+        """
+        Molecule's tag.
+
+        Returns
+        -------
+        tag : str
+            The tag of this Molecule object
+        """
+        return self._tag
 
     @property
     def forcefield(self):
