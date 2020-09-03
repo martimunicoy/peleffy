@@ -700,43 +700,6 @@ class Molecule(object):
         if use_OPLS_bonds_and_angles:
             self.add_OPLS_bonds_and_angles()
 
-    # To do: consider removing this function
-    def plot_rotamer_graph(self):
-        """It plots the rotamer graph in screen."""
-        try:
-            from rdkit import Chem
-        except ImportError:
-            raise Exception('RDKit Python API not found')
-
-        # Find rotatable bond ids as in Lipinski module in RDKit
-        # https://github.com/rdkit/rdkit/blob/1bf6ef3d65f5c7b06b56862b3fb9116a3839b229/rdkit/Chem/Lipinski.py#L47
-        rot_bonds_atom_ids = self._rdkit_molecule.GetSubstructMatches(
-            Chem.MolFromSmarts('[!$(*#*)&!D1]-&!@[!$(*#*)&!D1]'))
-
-        graph = self._compute_rotamer_graph(rot_bonds_atom_ids)
-
-        rot_edges = [(u, v) for (u, v, d) in graph.edges(data=True)
-                     if d['weight'] == 1]
-        nrot_edges = [(u, v) for (u, v, d) in graph.edges(data=True)
-                      if d['weight'] == 0]
-
-        import networkx as nx
-
-        pos = nx.circular_layout(graph)
-
-        nx.draw_networkx_nodes(graph, pos, node_size=400)
-        nx.draw_networkx_edges(graph, pos, edgelist=rot_edges,
-                               width=4)
-        nx.draw_networkx_edges(graph, pos, edgelist=nrot_edges,
-                               width=4, alpha=0.5, edge_color='b',
-                               style='dashed')
-        nx.draw_networkx_labels(graph, pos, font_size=10,
-                                font_family='sans-serif')
-
-        import matplotlib.pyplot as plt
-        plt.axis('off')
-        plt.show()
-
     def assert_parameterized(self):
         """
         It checks that the molecule has been parameterized, raises an
