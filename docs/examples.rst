@@ -1,1 +1,1 @@
-.. mdinclude:: ../offpele/examples/README.md
+.. mdinclude:: ../examples/README.md
