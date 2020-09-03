@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.g23ef372
+                0+untagged.1.g3a94344
               </div>
             
           
@@ -266,7 +266,7 @@ arguments. To obtain the full list of flags you can type:</p>
 contains ligand to parameterize.</p>
 <ul>
 <li><p>Flag: <code class="docutils literal notranslate"><span class="pre">PDB</span> <span class="pre">FILE</span></code></p></li>
-<li><p>Type: string</p></li>
+<li><p>Type: <code class="docutils literal notranslate"><span class="pre">string</span></code></p></li>
 <li><p>Example: the code below will run <cite>offpele</cite> to parameterize the ligand at <cite>path/to/my_ligand.pdb</cite></p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m offpele.main path/to/my_ligand.pdb
 </pre></div>
@@ -279,7 +279,7 @@ contains ligand to parameterize.</p>
 <p>It defines the Open Force Field force field to employ to parameterize the ligand.</p>
 <ul>
 <li><p>Flag: <code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">NAME</span></code>, <code class="docutils literal notranslate"><span class="pre">--forcefield</span> <span class="pre">NAME</span></code></p></li>
-<li><p>Type: string</p></li>
+<li><p>Type: <code class="docutils literal notranslate"><span class="pre">string</span></code></p></li>
 <li><p>Default: <code class="docutils literal notranslate"><span class="pre">openff_unconstrained-1.2.0.offxml</span></code></p></li>
 <li><p>Example: the code below will run offpele using the forcefield named as ‘openff_unconstrained-1.0.0.offxml’</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m offpele.main path/to/my_ligand.pdb -f openff_unconstrained-1.0.0.offxml
@@ -293,7 +293,7 @@ contains ligand to parameterize.</p>
 <p>It defines the resolution, in degrees, to use in the rotamer library.</p>
 <ul>
 <li><p>Flag: <code class="docutils literal notranslate"><span class="pre">-r</span> <span class="pre">INT</span></code>, <code class="docutils literal notranslate"><span class="pre">--resolution</span> <span class="pre">INT</span></code></p></li>
-<li><p>Type: int</p></li>
+<li><p>Type: <code class="docutils literal notranslate"><span class="pre">int</span></code></p></li>
 <li><p>Default: <code class="docutils literal notranslate"><span class="pre">30</span></code></p></li>
 <li><p>Example: the code below will run offpele using a resolution of 60 for the rotamer library</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m offpele.main path/to/my_ligand.pdb -r <span class="m">60</span>
@@ -307,7 +307,7 @@ contains ligand to parameterize.</p>
 <p>It defines the output path where the resulting files will be saved.</p>
 <ul>
 <li><p>Flag: <code class="docutils literal notranslate"><span class="pre">-o</span> <span class="pre">PATH</span></code>, <code class="docutils literal notranslate"><span class="pre">--output</span> <span class="pre">PATH</span></code></p></li>
-<li><p>Type: string</p></li>
+<li><p>Type: <code class="docutils literal notranslate"><span class="pre">string</span></code></p></li>
 <li><p>Default: <code class="docutils literal notranslate"><span class="pre">.</span></code>, the current working directory</p></li>
 <li><p>Example: the code below will save the results into my_custom_folder/</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m offpele.main path/to/my_ligand.pdb -o my_custom_folder
@@ -321,7 +321,7 @@ contains ligand to parameterize.</p>
 <p>It also generates the OBC solvent parameters and saves them into the output location.</p>
 <ul>
 <li><p>Flag: <code class="docutils literal notranslate"><span class="pre">--with_solvent</span></code></p></li>
-<li><p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>, not include</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>, do not include</p></li>
 <li><p>Example: the code below will generate and save the OBC solvent parameters</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m offpele.main path/to/my_ligand.pdb --with_solvent
 </pre></div>
@@ -334,7 +334,7 @@ contains ligand to parameterize.</p>
 <p>It saves the output files following the DataLocal hierarchy expected by PELE.</p>
 <ul>
 <li><p>Flag: <code class="docutils literal notranslate"><span class="pre">--as_DataLocal</span></code></p></li>
-<li><p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>, not save output files as DataLocal</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>, do not save output files as DataLocal</p></li>
 <li><p>Example: the code below will generate and save output files following the DataLocal hierarcy of PELE</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m offpele.main path/to/my_ligand.pdb --as_DataLocal
 </pre></div>
@@ -347,7 +347,7 @@ contains ligand to parameterize.</p>
 <p>It sets the method to compute the partial charges.</p>
 <ul>
 <li><p>Flag: <code class="docutils literal notranslate"><span class="pre">-c</span> <span class="pre">NAME</span></code>, <code class="docutils literal notranslate"><span class="pre">--charges_method</span> <span class="pre">NAME</span></code></p></li>
-<li><p>Type: string</p></li>
+<li><p>Type: <code class="docutils literal notranslate"><span class="pre">string</span></code></p></li>
 <li><p>Choices: one of [<code class="docutils literal notranslate"><span class="pre">gasteiger</span></code>, <code class="docutils literal notranslate"><span class="pre">am1bcc</span></code>, <code class="docutils literal notranslate"><span class="pre">OPLS</span></code>]</p></li>
 <li><p>Default: <code class="docutils literal notranslate"><span class="pre">am1bcc</span></code></p></li>
 <li><p>Example: the code below will calculate partial charges using ‘gasteiger’ method</p>
