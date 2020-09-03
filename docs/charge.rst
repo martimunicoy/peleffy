@@ -18,3 +18,4 @@ Primary objects
 
     Am1bccCalculator
     GasteigerCalculator
+    OPLSChargeCalculator

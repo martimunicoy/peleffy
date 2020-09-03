@@ -187,11 +187,11 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     print('   - DataLocal-like output:', as_datalocal)
     print(' - Parameterization:')
     print('   - Force field:', forcefield)
-    print('   - Rotamer library resolution:', resolution)
     print('   - Charges method:', charges_method)
     print('   - Use OPLS nonbonding parameters:', use_OPLS_nb_params)
     print('   - Use OPLS bonds and angles:', use_OPLS_bonds_and_angles)
     print(' - Rotamer library:')
+    print('   - Resolution:', resolution)
     print('   - Exclude terminal rotamers:', exclude_terminal_rotamers)
     print('-' * 60)
 

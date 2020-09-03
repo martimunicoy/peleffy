@@ -482,7 +482,7 @@ class Molecule(object):
         >>> from offpele.topology import Molecule
 
         >>> molecule = Molecule(smiles='Cc1ccccc1')
-        >>> molecule.parameterize('openff_unconstrained-1.1.1.offxml')
+        >>> molecule.parameterize('openff_unconstrained-1.2.0.offxml')
 
         """
         self._rotamer_resolution = rotamer_resolution
