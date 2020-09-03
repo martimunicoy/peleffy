@@ -81,3 +81,41 @@ installed and have to be installed manually such as:
 - AmberTools
 
 For this reason, the installation through `conda` is recommended.
+
+
+External dependencies
+=====================
+
+Some of the functionalities of `offpele` require external dependencies.
+They are normally included with the standard `conda` installation, as
+explained above. However, the Schrodinger toolkit must be installed
+manually. It is only required when combining `Open Force Field` parameters
+with `OPLS2005` (as it uses the Schrodinger's `ffld_server`). Nevertheless,
+in case that Schrodinger dependencies are missing, `offpele` can still be
+employed to generate pure `Open Force Field` parameters.
+
+The easiest way to get a valid Schrodinger installation is downloading
+`Free Maestro <https://www.schrodinger.com/freemaestro>`_. It can be
+installed in both platforms that are supported by `offpele`: Linux and
+MacOS. Once installed, `offpele` will need an environment variable to be
+set in order to known the Schrodinger's installation path. So, please,
+check that the following environment variable is set before running
+`offpele` if you plant to work with `OPLS2005` parameters:
+
+.. code-block:: bash
+
+   $ export SCHRODINGER=/path/to/Schrodinger/installation/
+
+For example, in MacOS, a typical installation path is
+`/opt/schrodinger/suites2020-2/`. Therefore:
+
+.. code-block:: bash
+
+   $ export SCHRODINGER=/opt/schrodinger/suites2020-2/
+
+This variable must be set every time `offpele` is employed to work with
+`OPLS2005` parameters in a new console session. To avoid future concerns about
+this issue, you can set the environment variable automatically every time you
+initiate a bash session in your console. You can do so by modifying your
+`.bashrc`, `.bash_profile` or `.zshrc` (in case of a `zsh` shell) by adding the
+line above.

@@ -1117,6 +1117,15 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
         """
         super().__init__()
 
+        if "SCHRODINGER" not in os.environ:
+            import logging
+            logging.warning("Schrodinger Toolkit requires the environment "
+                            + "variable SCHRODINGER to be previously set, "
+                            + "pointing to the Schrodinger's installation "
+                            + "path. For more information, please, refer to "
+                            + "https://martimunicoy.github.io/offpele/installation.html#external-dependencies",
+                            )
+
         if not self.is_available():
             raise ToolkitUnavailableException(
                 'The required toolkit {} is not '.format(self.toolkit_name)
