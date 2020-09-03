@@ -15,7 +15,6 @@ offpele.topology.Molecule
       .. automethod:: get_OPLS_parameters
       .. automethod:: get_pdb_atom_names
       .. automethod:: parameterize
-      .. automethod:: plot_rotamer_graph
       .. automethod:: set_name
       .. automethod:: set_tag
       .. automethod:: to_impact_file
