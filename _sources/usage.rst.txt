@@ -104,7 +104,7 @@ PDB file
 It is a mandatory positional argument that points to the PDB file which
 contains ligand to parameterize.
 
-- Flag: `PDB FILE`
+- Flag: ``PDB FILE``
 - Type: string
 - Example: the code below will run `offpele` to parameterize the ligand at `path/to/my_ligand.pdb`
 
@@ -116,9 +116,9 @@ Force field
 -----------
 It defines the Open Force Field force field to employ to parameterize the ligand.
 
-- Flag: `-f NAME`, `--forcefield NAME`
+- Flag: ``-f NAME``, ``--forcefield NAME``
 - Type: string
-- Default: `openff_unconstrained-1.2.0.offxml`
+- Default: ``openff_unconstrained-1.2.0.offxml``
 - Example: the code below will run offpele using the forcefield named as 'openff_unconstrained-1.0.0.offxml'
 
   .. code-block:: bash
@@ -129,9 +129,9 @@ Rotamer library resolution
 --------------------------
 It defines the resolution, in degrees, to use in the rotamer library.
 
-- Flag: `-r INT`, `--resolution INT`
+- Flag: ``-r INT``, ``--resolution INT``
 - Type: int
-- Default: `30`
+- Default: ``30``
 - Example: the code below will run offpele using a resolution of 60 for the rotamer library
 
   .. code-block:: bash
@@ -142,9 +142,9 @@ Output path
 -----------
 It defines the output path where the resulting files will be saved.
 
-- Flag: `-o PATH`, `--output PATH`
+- Flag: ``-o PATH``, ``--output PATH``
 - Type: string
-- Default: `.`, the current working directory
+- Default: ``.``, the current working directory
 - Example: the code below will save the results into my_custom_folder/
 
   .. code-block:: bash
@@ -155,8 +155,8 @@ Include solvent parameters
 --------------------------
 It also generates the OBC solvent parameters and saves them into the output location.
 
-- Flag: `--with_solvent`
-- Default: `False`, not include
+- Flag: ``--with_solvent``
+- Default: ``False``, not include
 - Example: the code below will generate and save the OBC solvent parameters
 
   .. code-block:: bash
@@ -167,8 +167,8 @@ Save output as DataLocal
 ------------------------
 It saves the output files following the DataLocal hierarchy expected by PELE.
 
-- Flag: `--as_DataLocal`
-- Default: `False`, not save output files as DataLocal
+- Flag: ``--as_DataLocal``
+- Default: ``False``, not save output files as DataLocal
 - Example: the code below will generate and save output files following the DataLocal hierarcy of PELE
 
   .. code-block:: bash
@@ -179,10 +179,10 @@ Charges method
 --------------
 It sets the method to compute the partial charges.
 
-- Flag: `-c NAME`, `--charges_method NAME`
+- Flag: ``-c NAME``, ``--charges_method NAME``
 - Type: string
-- Choices: one of ['gasteiger', 'am1bcc', 'OPLS']
-- Default: `am1bcc`
+- Choices: one of [``gasteiger``, ``am1bcc``, ``OPLS``]
+- Default: ``am1bcc``
 - Example: the code below will calculate partial charges using 'gasteiger' method
 
   .. code-block:: bash
@@ -193,8 +193,8 @@ Include terminal rotamers
 -------------------------
 It always includes terminal rotamers, even if they belong to a terminal methyl group whose rotation is trivial in PELE.
 
-- Flag: `--include_terminal_rotamers`
-- Default: `False`, exclude terminal rotamers
+- Flag: ``--include_terminal_rotamers``
+- Default: ``False``, exclude terminal rotamers
 - Example: the code below will generate a rotamer library including all terminal rotamers
 
   .. code-block:: bash
@@ -208,8 +208,8 @@ Parameterize non-bonding terms with OPLS2005
 
 It uses `OPLS2005` to parameterize the non-bonding terms of the ligand. It also assigns the atom types according to this force field.
 
-- Flag: `--use_OPLS_nonbonding_param`
-- Default: `False`, exclude terminal rotamers
+- Flag: ``--use_OPLS_nonbonding_param``
+- Default: ``False``, exclude terminal rotamers
 - Example: the code below will parameterize the non-bonding terms with OPLS2005
 
   .. code-block:: bash
@@ -223,8 +223,8 @@ Parameterize bonding and angular terms with OPLS2005
 
 It uses `OPLS2005` to parameterize the bonds and angle terms of the ligand.
 
-- Flag: `--use_OPLS_bonds_and_angles`
-- Default: `False`, exclude terminal rotamers
+- Flag: ``--use_OPLS_bonds_and_angles``
+- Default: ``False``, exclude terminal rotamers
 - Example: the code below will parameterize the non-bonding, bonding and angular terms with OPLS2005
 
   .. code-block:: bash
