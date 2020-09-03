@@ -148,7 +148,7 @@ class Impact(object):
             File to write to
         """
         # template name
-        file.write('{:5}'.format(self.molecule.name))
+        file.write('{:5}'.format(self.molecule.tag))
         # number of non bonding parameters
         file.write('{:6d}'.format(len(self.molecule.atoms)))
         # number of bond parameters
