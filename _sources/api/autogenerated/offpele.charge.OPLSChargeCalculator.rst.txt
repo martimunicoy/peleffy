@@ -1,0 +1,25 @@
+offpele.charge.OPLSChargeCalculator
+===================================
+
+.. currentmodule:: offpele.charge
+
+.. autoclass:: OPLSChargeCalculator
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: get_partial_charges
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~OPLSChargeCalculator.molecule
+      ~OPLSChargeCalculator.name
+   
+   

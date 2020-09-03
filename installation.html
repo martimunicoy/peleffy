@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.g9bd254d
+                0+untagged.1.g78ddd69
               </div>
             
           
@@ -90,9 +90,12 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installing-via-conda">Installing via <cite>conda</cite></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installing-via-pypi">Installing via <cite>PyPI</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#external-dependencies">External dependencies</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="releasehistory.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Generate PELE parameter files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="topology.html">Topology representations</a></li>
@@ -225,6 +228,37 @@ installed and have to be installed manually such as:</p>
 <li><p>AmberTools</p></li>
 </ul>
 <p>For this reason, the installation through <cite>conda</cite> is recommended.</p>
+</div>
+<div class="section" id="external-dependencies">
+<h2>External dependencies<a class="headerlink" href="#external-dependencies" title="Permalink to this headline">¶</a></h2>
+<p>Some of the functionalities of <cite>offpele</cite> require external dependencies.
+They are normally included with the standard <cite>conda</cite> installation, as
+explained above. However, the Schrodinger toolkit must be installed
+manually. It is only required when combining <cite>Open Force Field</cite> parameters
+with <cite>OPLS2005</cite> (as it uses the Schrodinger’s <cite>ffld_server</cite>). Nevertheless,
+in case that Schrodinger dependencies are missing, <cite>offpele</cite> can still be
+employed to generate pure <cite>Open Force Field</cite> parameters.</p>
+<p>The easiest way to get a valid Schrodinger installation is downloading
+<a class="reference external" href="https://www.schrodinger.com/freemaestro">Free Maestro</a>. It can be
+installed in both platforms that are supported by <cite>offpele</cite>: Linux and
+MacOS. Once installed, <cite>offpele</cite> will need an environment variable to be
+set in order to known the Schrodinger’s installation path. So, please,
+check that the following environment variable is set before running
+<cite>offpele</cite> if you plant to work with <cite>OPLS2005</cite> parameters:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">SCHRODINGER</span><span class="o">=</span>/path/to/Schrodinger/installation/
+</pre></div>
+</div>
+<p>For example, in MacOS, a typical installation path is
+<cite>/opt/schrodinger/suites2020-2/</cite>. Therefore:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">SCHRODINGER</span><span class="o">=</span>/opt/schrodinger/suites2020-2/
+</pre></div>
+</div>
+<p>This variable must be set every time <cite>offpele</cite> is employed to work with
+<cite>OPLS2005</cite> parameters in a new console session. To avoid future concerns about
+this issue, you can set the environment variable automatically every time you
+initiate a bash session in your console. You can do so by modifying your
+<cite>.bashrc</cite>, <cite>.bash_profile</cite> or <cite>.zshrc</cite> (in case of a <cite>zsh</cite> shell) by adding the
+line above.</p>
 </div>
 </div>
 

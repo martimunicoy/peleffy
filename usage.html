@@ -1,0 +1,470 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Generate PELE parameter files &mdash; Open Force Field for PELE  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="prev" title="Release History" href="releasehistory.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Open Force Field for PELE
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.1.g78ddd69
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="releasehistory.html">Release History</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Generate PELE parameter files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#basic-usage">Basic usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#command-line-arguments">Command-line arguments</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pdb-file">PDB file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#force-field">Force field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rotamer-library-resolution">Rotamer library resolution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#output-path">Output path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#include-solvent-parameters">Include solvent parameters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#save-output-as-datalocal">Save output as DataLocal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#charges-method">Charges method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#include-terminal-rotamers">Include terminal rotamers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#parameterize-non-bonding-terms-with-opls2005">Parameterize non-bonding terms with OPLS2005</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#parameterize-bonding-and-angular-terms-with-opls2005">Parameterize bonding and angular terms with OPLS2005</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="topology.html">Topology representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="template.html">Template handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="solvent.html">Solvent models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="charge.html">Charge methods</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Open Force Field for PELE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Generate PELE parameter files</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/usage.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="generate-pele-parameter-files">
+<h1>Generate PELE parameter files<a class="headerlink" href="#generate-pele-parameter-files" title="Permalink to this headline">¶</a></h1>
+<p>The main purpose of <cite>offpele</cite> is to build the parameter files for PELE. Basically, PELE requires two files for each non-standard residue found in the system:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://eapm-bsc.github.io/PELE-repo/fileFormats.html#impact-template-file-format">IMPACT template</a>: a file containing the atom types and parameters of the ligand. Its job is to link each atom with the corresponding parameters using PDB atom names. Thus, PDB atom names in the input PDB file must match with the expected PDB atom names in the Impact file. This file intrinsically contains the information about the topology and connectivity of each residue.</p></li>
+<li><p><a class="reference external" href="https://eapm-bsc.github.io/PELE-repo/fileFormats.html#ligand-rotamer-library-file">Rotamer library</a>: a file containing the branches that can rotate with respect to a central atomic core. Each branch consists in a set of consecutive rotatable bonds.</p></li>
+</ul>
+<p>Besides, a third file with the <cite>Solvent parameters</cite> might be required when employing the OBC implicit solvent.</p>
+<a class="reference internal image-reference" href="_images/PELE_templates_scheme.png"><img alt="Scheme with all the files that PELE requires to run a simulation" src="_images/PELE_templates_scheme.png" style="width: 400px;" /></a>
+<p>The <a class="reference external" href="https://github.com/openforcefield/openforcefield">Open Force Field Toolkit</a> is employed to assign the parameters to each atom according to its chemical environment. Besides, the PDB atom names are stored using <a class="reference external" href="https://www.rdkit.org">RDKit</a>. With this dual molecular representation, <cite>offpele</cite> can run the parameterization workflow of Open Force Field while tracking the PDB atom names with RDKit.</p>
+<a class="reference internal image-reference" href="_images/dual_representation.png"><img alt="Scheme with the dual molecular representation employed in offpele" src="_images/dual_representation.png" style="width: 400px;" /></a>
+<div class="section" id="basic-usage">
+<h2>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
+<p>The more straightforward way to install <cite>offpele</cite> along with the required dependencies is through the command-line interface built in <a class="reference external" href="https://github.com/martimunicoy/offpele/blob/master/offpele/main.py">main.py</a> module. Therefore, the parameter files for a particular ligand can be obtained with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m offpele.main my_ligand.pdb
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">------------------------------------------------------------</span>
+<span class="n">Open</span> <span class="n">Force</span> <span class="n">Field</span> <span class="n">parameterizer</span> <span class="k">for</span> <span class="n">PELE</span> <span class="n">v0</span><span class="o">.</span><span class="mf">3.0</span>
+<span class="o">------------------------------------------------------------</span>
+ <span class="o">-</span> <span class="n">General</span><span class="p">:</span>
+   <span class="o">-</span> <span class="n">Input</span> <span class="n">PDB</span><span class="p">:</span> <span class="n">my_ligand</span><span class="o">.</span><span class="n">pdb</span>
+   <span class="o">-</span> <span class="n">Output</span> <span class="n">path</span><span class="p">:</span> <span class="kc">None</span>
+   <span class="o">-</span> <span class="n">Write</span> <span class="n">solvent</span> <span class="n">parameters</span><span class="p">:</span> <span class="kc">False</span>
+   <span class="o">-</span> <span class="n">DataLocal</span><span class="o">-</span><span class="n">like</span> <span class="n">output</span><span class="p">:</span> <span class="kc">False</span>
+ <span class="o">-</span> <span class="n">Parameterization</span><span class="p">:</span>
+   <span class="o">-</span> <span class="n">Force</span> <span class="n">field</span><span class="p">:</span> <span class="n">openff_unconstrained</span><span class="o">-</span><span class="mf">1.2</span><span class="o">.</span><span class="mf">0.</span><span class="n">offxml</span>
+   <span class="o">-</span> <span class="n">Charges</span> <span class="n">method</span><span class="p">:</span> <span class="n">am1bcc</span>
+   <span class="o">-</span> <span class="n">Use</span> <span class="n">OPLS</span> <span class="n">nonbonding</span> <span class="n">parameters</span><span class="p">:</span> <span class="kc">False</span>
+   <span class="o">-</span> <span class="n">Use</span> <span class="n">OPLS</span> <span class="n">bonds</span> <span class="ow">and</span> <span class="n">angles</span><span class="p">:</span> <span class="kc">False</span>
+ <span class="o">-</span> <span class="n">Rotamer</span> <span class="n">library</span><span class="p">:</span>
+   <span class="o">-</span> <span class="n">Resolution</span><span class="p">:</span> <span class="mi">30</span>
+   <span class="o">-</span> <span class="n">Exclude</span> <span class="n">terminal</span> <span class="n">rotamers</span><span class="p">:</span> <span class="kc">True</span>
+<span class="o">------------------------------------------------------------</span>
+ <span class="o">-</span> <span class="n">Loading</span> <span class="n">molecule</span> <span class="kn">from</span> <span class="nn">RDKit</span>
+ <span class="o">-</span> <span class="n">Generating</span> <span class="n">rotamer</span> <span class="n">library</span>
+ <span class="o">-</span> <span class="n">Loading</span> <span class="n">forcefield</span>
+ <span class="o">-</span> <span class="n">Computing</span> <span class="n">partial</span> <span class="n">charges</span> <span class="k">with</span> <span class="n">am1bcc</span>
+ <span class="o">-</span> <span class="n">All</span> <span class="n">files</span> <span class="n">were</span> <span class="n">generated</span> <span class="n">successfully</span>
+<span class="o">------------------------------------------------------------</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="command-line-arguments">
+<h2>Command-line arguments<a class="headerlink" href="#command-line-arguments" title="Permalink to this headline">¶</a></h2>
+<p>Almost all the important settings can be tuned up through command-line
+arguments. To obtain the full list of flags you can type:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m offpele.main --help
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">main</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">f</span> <span class="n">NAME</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">r</span> <span class="n">INT</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">o</span> <span class="n">PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">with_solvent</span><span class="p">]</span>
+               <span class="p">[</span><span class="o">--</span><span class="n">as_DataLocal</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">c</span> <span class="n">NAME</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">include_terminal_rotamers</span><span class="p">]</span>
+               <span class="p">[</span><span class="o">--</span><span class="n">use_OPLS_nonbonding_params</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">use_OPLS_bonds_and_angles</span><span class="p">]</span>
+               <span class="n">PDB</span> <span class="n">FILE</span>
+
+<span class="n">positional</span> <span class="n">arguments</span><span class="p">:</span>
+  <span class="n">PDB</span> <span class="n">FILE</span>              <span class="n">Path</span> <span class="n">PDB</span> <span class="n">file</span> <span class="n">to</span> <span class="n">parameterize</span>
+
+<span class="n">optional</span> <span class="n">arguments</span><span class="p">:</span>
+  <span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="o">--</span><span class="n">help</span>            <span class="n">show</span> <span class="n">this</span> <span class="n">help</span> <span class="n">message</span> <span class="ow">and</span> <span class="n">exit</span>
+  <span class="o">-</span><span class="n">f</span> <span class="n">NAME</span><span class="p">,</span> <span class="o">--</span><span class="n">forcefield</span> <span class="n">NAME</span>
+                        <span class="n">OpenForceField</span>\<span class="s1">&#39;s forcefield name. Default is</span>
+                        <span class="n">openff_unconstrained</span><span class="o">-</span><span class="mf">1.2</span><span class="o">.</span><span class="mf">0.</span><span class="n">offxml</span>
+  <span class="o">-</span><span class="n">r</span> <span class="n">INT</span><span class="p">,</span> <span class="o">--</span><span class="n">resolution</span> <span class="n">INT</span>
+                        <span class="n">Rotamer</span> <span class="n">library</span> <span class="n">resolution</span> <span class="ow">in</span> <span class="n">degrees</span><span class="o">.</span> <span class="n">Default</span> <span class="ow">is</span> <span class="mi">30</span>
+  <span class="o">-</span><span class="n">o</span> <span class="n">PATH</span><span class="p">,</span> <span class="o">--</span><span class="n">output</span> <span class="n">PATH</span>
+                        <span class="n">Output</span> <span class="n">path</span><span class="o">.</span> <span class="n">Default</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">current</span> <span class="n">working</span> <span class="n">directory</span>
+  <span class="o">--</span><span class="n">with_solvent</span>        <span class="n">Generate</span> <span class="n">solvent</span> <span class="n">parameters</span> <span class="k">for</span> <span class="n">OBC</span>
+  <span class="o">--</span><span class="n">as_DataLocal</span>        <span class="n">Output</span> <span class="n">will</span> <span class="n">be</span> <span class="n">saved</span> <span class="n">following</span> <span class="n">PELE</span><span class="s1">&#39;s DataLocal</span>
+                        <span class="n">hierarchy</span>
+  <span class="o">-</span><span class="n">c</span> <span class="n">NAME</span><span class="p">,</span> <span class="o">--</span><span class="n">charges_method</span> <span class="n">NAME</span>
+                        <span class="n">The</span> <span class="n">name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">method</span> <span class="n">to</span> <span class="n">use</span> <span class="n">to</span> <span class="n">compute</span> <span class="n">charges</span>
+  <span class="o">--</span><span class="n">include_terminal_rotamers</span>
+                        <span class="n">Not</span> <span class="n">exclude</span> <span class="n">terminal</span> <span class="n">rotamers</span> <span class="n">when</span> <span class="n">building</span> <span class="n">the</span>
+                        <span class="n">rotamer</span> <span class="n">library</span>
+  <span class="o">--</span><span class="n">use_OPLS_nonbonding_params</span>
+                        <span class="n">Use</span> <span class="n">OPLS</span> <span class="n">to</span> <span class="nb">set</span> <span class="n">the</span> <span class="n">nonbonding</span> <span class="n">parameters</span>
+  <span class="o">--</span><span class="n">use_OPLS_bonds_and_angles</span>
+                        <span class="n">Use</span> <span class="n">OPLS</span> <span class="n">to</span> <span class="nb">set</span> <span class="n">the</span> <span class="n">parameters</span> <span class="k">for</span> <span class="n">bonds</span> <span class="ow">and</span> <span class="n">angles</span>
+</pre></div>
+</div>
+<p>Find below the complete list of command-line arguments in full detail.</p>
+<div class="section" id="pdb-file">
+<h3>PDB file<a class="headerlink" href="#pdb-file" title="Permalink to this headline">¶</a></h3>
+<p>It is a mandatory positional argument that points to the PDB file which
+contains ligand to parameterize.</p>
+<ul>
+<li><p>Flag: PDB FILE</p></li>
+<li><p>Type: string</p></li>
+<li><p>Example: the code below will run <cite>offpele</cite> to parameterize the ligand at <cite>path/to/my_ligand.pdb</cite></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m offpele.main path/to/my_ligand.pdb
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="force-field">
+<h3>Force field<a class="headerlink" href="#force-field" title="Permalink to this headline">¶</a></h3>
+<p>It defines the Open Force Field force field to employ to parameterize the ligand.</p>
+<ul>
+<li><p>Flag: -f NAME, –forcefield NAME</p></li>
+<li><p>Type: string</p></li>
+<li><p>Default: ‘openff_unconstrained-1.2.0.offxml’</p></li>
+<li><p>Example: the code below will run offpele using the forcefield named as ‘openff_unconstrained-1.0.0.offxml’</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m offpele.main path/to/my_ligand.pdb -f openff_unconstrained-1.0.0.offxml
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="rotamer-library-resolution">
+<h3>Rotamer library resolution<a class="headerlink" href="#rotamer-library-resolution" title="Permalink to this headline">¶</a></h3>
+<p>It defines the resolution, in degrees, to use in the rotamer library.</p>
+<ul>
+<li><p>Flag: -r INT, –resolution INT</p></li>
+<li><p>Type: int</p></li>
+<li><p>Default: 30</p></li>
+<li><p>Example: the code below will run offpele using a resolution of 60 for the rotamer library</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m offpele.main path/to/my_ligand.pdb -r <span class="m">60</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="output-path">
+<h3>Output path<a class="headerlink" href="#output-path" title="Permalink to this headline">¶</a></h3>
+<p>It defines the output path where the resulting files will be saved.</p>
+<ul>
+<li><p>Flag: -o PATH, –output PATH</p></li>
+<li><p>Type: string</p></li>
+<li><p>Default: ‘.’, the current working directory</p></li>
+<li><p>Example: the code below will save the results into my_custom_folder/</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m offpele.main path/to/my_ligand.pdb -o my_custom_folder
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="include-solvent-parameters">
+<h3>Include solvent parameters<a class="headerlink" href="#include-solvent-parameters" title="Permalink to this headline">¶</a></h3>
+<p>It also generates the OBC solvent parameters and saves them into the output location.</p>
+<ul>
+<li><p>Flag: –with_solvent</p></li>
+<li><p>Default: False, not include</p></li>
+<li><p>Example: the code below will generate and save the OBC solvent parameters</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m offpele.main path/to/my_ligand.pdb --with_solvent
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="save-output-as-datalocal">
+<h3>Save output as DataLocal<a class="headerlink" href="#save-output-as-datalocal" title="Permalink to this headline">¶</a></h3>
+<p>It saves the output files following the DataLocal hierarchy expected by PELE.</p>
+<ul>
+<li><p>Flag: –as_DataLocal</p></li>
+<li><p>Default: False, not save output files as DataLocal</p></li>
+<li><p>Example: the code below will generate and save output files following the DataLocal hierarcy of PELE</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m offpele.main path/to/my_ligand.pdb --as_DataLocal
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="charges-method">
+<h3>Charges method<a class="headerlink" href="#charges-method" title="Permalink to this headline">¶</a></h3>
+<p>It sets the method to compute the partial charges.</p>
+<ul>
+<li><p>Flag: -c NAME, –charges_method NAME</p></li>
+<li><p>Type: string</p></li>
+<li><p>Choices: one of [‘gasteiger’, ‘am1bcc’, ‘OPLS’]</p></li>
+<li><p>Default: ‘am1bcc’</p></li>
+<li><p>Example: the code below will calculate partial charges using ‘gasteiger’ method</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m offpele.main path/to/my_ligand.pdb -c gasteiger
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="include-terminal-rotamers">
+<h3>Include terminal rotamers<a class="headerlink" href="#include-terminal-rotamers" title="Permalink to this headline">¶</a></h3>
+<p>It always includes terminal rotamers, even if they belong to a terminal methyl group whose rotation is trivial in PELE.</p>
+<ul>
+<li><p>Flag: –include_terminal_rotamers</p></li>
+<li><p>Default: False, exclude terminal rotamers</p></li>
+<li><p>Example: the code below will generate a rotamer library including all terminal rotamers</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m offpele.main path/to/my_ligand.pdb --include_terminal_rotamers
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="parameterize-non-bonding-terms-with-opls2005">
+<h3>Parameterize non-bonding terms with OPLS2005<a class="headerlink" href="#parameterize-non-bonding-terms-with-opls2005" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This option requires a valid Schrodinger installation with the ffld_server. An environment variable called <cite>SCHRODINGER</cite> must be set, pointing to the Schrodinger’s installation path.</p>
+</div>
+</div></blockquote>
+<p>It uses <cite>OPLS2005</cite> to parameterize the non-bonding terms of the ligand. It also assigns the atom types according to this force field.</p>
+<ul>
+<li><p>Flag: –use_OPLS_nonbonding_param</p></li>
+<li><p>Default: False, exclude terminal rotamers</p></li>
+<li><p>Example: the code below will parameterize the non-bonding terms with OPLS2005</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m offpele.main path/to/my_ligand.pdb --use_OPLS_nonbonding_param
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="parameterize-bonding-and-angular-terms-with-opls2005">
+<h3>Parameterize bonding and angular terms with OPLS2005<a class="headerlink" href="#parameterize-bonding-and-angular-terms-with-opls2005" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This option requires a valid Schrodinger installation with the ffld_server. An environment variable called <cite>SCHRODINGER</cite> must be set, pointing to the Schrodinger’s installation path.</p>
+</div>
+</div></blockquote>
+<p>It uses <cite>OPLS2005</cite> to parameterize the bonds and angle terms of the ligand.</p>
+<ul>
+<li><p>Flag: –use_OPLS_bonds_and_angles</p></li>
+<li><p>Default: False, exclude terminal rotamers</p></li>
+<li><p>Example: the code below will parameterize the non-bonding, bonding and angular terms with OPLS2005</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m offpele.main path/to/my_ligand.pdb --use_OPLS_nonbonding_param --use_OPLS_bonds_and_angles
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="releasehistory.html" class="btn btn-neutral float-left" title="Release History" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Barcelona Supercomputing Center
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

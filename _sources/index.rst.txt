@@ -14,6 +14,8 @@ User guide
 
   installation
   releasehistory
+  usage
+  examples
 
 
 API documentation
