@@ -17,6 +17,7 @@ offpele.topology.Molecule
       .. automethod:: parameterize
       .. automethod:: plot_rotamer_graph
       .. automethod:: set_name
+      .. automethod:: set_tag
       .. automethod:: to_impact_file
       .. automethod:: to_pdb_file
    
@@ -44,5 +45,6 @@ offpele.topology.Molecule
       ~Molecule.rdkit_molecule
       ~Molecule.rotamer_resolution
       ~Molecule.rotamers
+      ~Molecule.tag
    
    

@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.ga8408a6
+                0+untagged.1.g7e1c6f6
               </div>
             
           
@@ -175,13 +175,13 @@
 <h1>offpele.topology.Molecule<a class="headerlink" href="#offpele-topology-molecule" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="offpele.topology.Molecule">
-<em class="property">class </em><code class="sig-prename descclassname">offpele.topology.</code><code class="sig-name descname">Molecule</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">smiles</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rotamer_resolution</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">exclude_terminal_rotamers</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#Molecule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Molecule" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">offpele.topology.</code><code class="sig-name descname">Molecule</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">smiles</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rotamer_resolution</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">exclude_terminal_rotamers</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">tag</span><span class="o">=</span><span class="default_value">'UNK'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#Molecule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Molecule" title="Permalink to this definition">¶</a></dt>
 <dd><p>It represent wraps up all the tools to parameterize a molecule with
 the OpenForceField toolkit for PELE.</p>
 <blockquote>
 <div><dl class="py method">
 <dt id="offpele.topology.Molecule.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">smiles</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rotamer_resolution</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">exclude_terminal_rotamers</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#Molecule.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Molecule.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">smiles</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rotamer_resolution</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">exclude_terminal_rotamers</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">tag</span><span class="o">=</span><span class="default_value">'UNK'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#Molecule.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Molecule.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>It initializes a Molecule object through a PDB file or a SMILES
 tag.</p>
 <dl class="field-list simple">
@@ -193,6 +193,8 @@ tag.</p>
 conformational space. Default is 30</p></li>
 <li><p><strong>exclude_terminal_rotamers</strong> (<em>bool</em>) – Whether to exclude terminal rotamers when generating the
 rotamers library  or not</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – The molecule name</p></li>
+<li><p><strong>tag</strong> (<em>str</em>) – The molecule tag. It must be a 3-character string</p></li>
 </ul>
 </dd>
 </dl>
@@ -315,6 +317,17 @@ current machine. Default is False</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt id="offpele.topology.Molecule.set_tag">
+<code class="sig-name descname">set_tag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tag</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#Molecule.set_tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Molecule.set_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>It sets the tag of the molecule. It must be a 3-character string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tag</strong> (<em>str</em>) – The tag to set to the molecule. It must be a 3-character string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="offpele.topology.Molecule.to_impact_file">
 <code class="sig-name descname">to_impact_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#Molecule.to_impact_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Molecule.to_impact_file" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -385,6 +398,9 @@ current machine. Default is False</p></li>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotamers</span></code></p></td>
 <td><p>The list of rotamers of the molecule.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tag</span></code></p></td>
+<td><p>Molecule’s tag.</p></td>
 </tr>
 </tbody>
 </table>
