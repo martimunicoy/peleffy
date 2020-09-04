@@ -8,6 +8,16 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
+0.3.1 - Current development
+---------------------------
+
+This is a micro release that includes general bug fixes and stability improvements. It is still a preliminary version of the Open Force Field to PELE package which is under development.
+
+Bugfixes
+""""""""
+- `PR #48 <https://github.com/martimunicoy/offpele/pull/48>`_: Fixes CLI's default output paths.
+
+
 0.3.0 - Rotamers, OPLS2005, SMILES and stability improvements
 -------------------------------------------------------------
 
