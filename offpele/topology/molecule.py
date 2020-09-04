@@ -1452,5 +1452,8 @@ class Molecule(object):
         """
         from IPython.display import display
 
+        # Get 2D molecular representation
         rdkit_toolkit = RDKitToolkitWrapper()
-        return display(rdkit_toolkit.get_2D_representation(self))
+        representation = rdkit_toolkit.get_2D_representation(self)
+
+        return display(representation)

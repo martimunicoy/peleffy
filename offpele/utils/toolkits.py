@@ -10,7 +10,7 @@ import os
 import subprocess
 from collections import defaultdict
 from pathlib import Path
-from copy import copy
+from copy import deepcopy
 
 import numpy as np
 from simtk import unit
@@ -308,7 +308,7 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         """
         from rdkit import Chem
 
-        rdkit_molecule = molecule.rdkit_molecule
+        rdkit_molecule = deepcopy(molecule.rdkit_molecule)
 
         rot_bonds_atom_ids = set([
             frozenset(atom_pair) for atom_pair in
@@ -369,7 +369,8 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         from rdkit.Chem import AllChem
 
         rdkit_molecule = molecule.rdkit_molecule
-        representation_2D = copy(rdkit_molecule)
+        representation_2D = deepcopy(rdkit_molecule)
+
         AllChem.Compute2DCoords(representation_2D)
         return representation_2D
 
