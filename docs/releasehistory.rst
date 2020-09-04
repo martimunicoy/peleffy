@@ -17,6 +17,10 @@ Bugfixes
 """"""""
 - `PR #48 <https://github.com/martimunicoy/offpele/pull/48>`_: Fixes CLI's default output paths.
 
+Tests added
+"""""""""""
+- `PR #48 <https://github.com/martimunicoy/offpele/pull/48>`_: Adds tests to validate the assignment of the default output paths.
+
 
 0.3.0 - Rotamers, OPLS2005, SMILES and stability improvements
 -------------------------------------------------------------
