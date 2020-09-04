@@ -8,8 +8,18 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
-0.3.0 - Current development
--------------------------
+0.3.1 - Current development
+---------------------------
+
+This is a micro release that includes general bug fixes and stability improvements. It is still a preliminary version of the Open Force Field to PELE package which is under development.
+
+Bugfixes
+""""""""
+- `PR #48 <https://github.com/martimunicoy/offpele/pull/48>`_: Fixes CLI's default output paths.
+
+
+0.3.0 - Rotamers, OPLS2005, SMILES and stability improvements
+-------------------------------------------------------------
 
 This is a minor release that includes a refactoring of the classes and methods that involve the rotamer library builder. Besides, now it is possible to combine parameters from OPLS2005 and OFF. This release also contains a new method to define a molecule through a SMILES tag. It is still a preliminary version of the Open Force Field to PELE package which is under development.
 
@@ -26,7 +36,7 @@ Bugfixes
 """"""""
 - `PR #22 <https://github.com/martimunicoy/offpele/pull/22>`_: Fixes many bugs. For example, the default output name of the solvent parameters template is changed to `ligandParams.txt`, which is the name that PELE expects.
 - `PR #32 <https://github.com/martimunicoy/offpele/pull/32>`_: Minor fixes in ToolkitWrapper classes.
-- `PR #34 <https://github.com/martimunicoy/offpele/pull/34:>`_: Improves the translation of dihedrals coming from the Open Force Fielf Toolkit and corrects the lack of exclusions in PELE 1-4 list that result from Impact's dihedral definitions.
+- `PR #34 <https://github.com/martimunicoy/offpele/pull/34>`_: Improves the translation of dihedrals coming from the Open Force Fielf Toolkit and corrects the lack of exclusions in PELE 1-4 list that result from Impact's dihedral definitions.
 - `PR #46 <https://github.com/martimunicoy/offpele/pull/46>`_: Prevents molecule to be untagged when loading it from a SMILES tag.
 
 Tests added

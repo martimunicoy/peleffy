@@ -109,7 +109,7 @@ def handle_output_paths(molecule, output, as_datalocal):
         The output path for the solvent template
     """
     from pathlib import Path
-    name = molecule.name
+    tag = molecule.tag
     output_path = Path(output)
     check_if_path_exists(output_path)
 
@@ -117,8 +117,8 @@ def handle_output_paths(molecule, output, as_datalocal):
     impact_path = output_path
     solvent_path = output_path
 
-    rotlib_name = name.upper() + '.rot.assign'
-    impact_name = name.lower() + 'z'
+    rotlib_name = tag.upper() + '.rot.assign'
+    impact_name = tag.lower() + 'z'
     solvent_name = 'ligandParams.txt'
 
     if as_datalocal:
