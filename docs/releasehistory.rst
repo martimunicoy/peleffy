@@ -16,11 +16,12 @@ This is a micro release that includes general bug fixes and stability improvemen
 Bugfixes
 """"""""
 - `PR #48 <https://github.com/martimunicoy/offpele/pull/48>`_: Fixes CLI's default output paths.
+- `PR #52 <https://github.com/martimunicoy/offpele/pull/52>`_: Molecule connectivity can be assigned from an RDKit molecular template when loading it from a PDB file without connectivity.
 
 Tests added
 """""""""""
 - `PR #48 <https://github.com/martimunicoy/offpele/pull/48>`_: Adds tests to validate the assignment of the default output paths.
-
+- `PR #52 <https://github.com/martimunicoy/offpele/pull/52>`_: Adds tests to validate the initialization using a connectivity template.
 
 0.3.0 - Rotamers, OPLS2005, SMILES and stability improvements
 -------------------------------------------------------------
