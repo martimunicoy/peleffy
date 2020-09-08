@@ -33,6 +33,7 @@ offpele.topology.Molecule
       ~Molecule.angles
       ~Molecule.atoms
       ~Molecule.bonds
+      ~Molecule.connectivity_template
       ~Molecule.exclude_terminal_rotamers
       ~Molecule.forcefield
       ~Molecule.graph
