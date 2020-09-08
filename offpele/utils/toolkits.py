@@ -143,6 +143,29 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         return molecule
 
+    def assign_connectivity_from_template(self, molecule):
+        """
+        It assigns the connectivity to an RDKit molecule according to the
+        connectivity from an RDKit connectivity template.
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+        """
+        from rdkit.Chem import AllChem
+
+        if molecule.connectivity_template is None:
+            raise ValueError('A connectivity template must be previously '
+                             + 'assigned to the molecule')
+
+        rdkit_molecule = molecule.rdkit_molecule
+
+        rdkit_molecule = AllChem.AssignBondOrdersFromTemplate(
+            molecule.connectivity_template, rdkit_molecule)
+
+        molecule._rdkit_molecule = rdkit_molecule
+
     def assign_stereochemistry_from_3D(self, molecule):
         """
         It assigns the stereochemistry to an RDKit molecule according to the
