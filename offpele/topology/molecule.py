@@ -618,7 +618,7 @@ class Molecule(object):
 
         # Set molecule name according to the SMILES tag
         if self.name == '':
-            print('   - Setting molecule name to \'{}\''.format(name))
+            print('   - Setting molecule name to \'{}\''.format(smiles))
             self.set_name(smiles)
 
         print('   - Representing molecule with the Open Force Field Toolkit')
