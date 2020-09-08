@@ -122,7 +122,8 @@ class TestMolecule(object):
         assert molecule.connectivity_template is None, \
             'Unexpected connectivity template'
 
-        # Initialize a Molecule from a PDB without connectivity
+        # Initialize a Molecule from a PDB without connectivity and
+        # without a connectivity template
         ligand_path = get_data_file_path(
             'ligands/BNZ_without_connectivity.pdb')
         molecule = Molecule(ligand_path)
@@ -138,7 +139,8 @@ class TestMolecule(object):
             assert bond_id in expected_bond_ids, 'Unexpected bond id ' \
                 + '{}'.format(bond_id)
 
-        # Initialize a Molecule from a PDB without connectivity
+        # Initialize a Molecule from a PDB without connectivity but with
+        # a connectivity template
         template_path = get_data_file_path(
             'ligands/BNZ.pdb')
         template = Molecule(template_path)
@@ -151,6 +153,27 @@ class TestMolecule(object):
                              (4, 3, True), (5, 4, True), (5, 0, True),
                              (6, 0, False), (7, 1, False), (8, 2, False),
                              (9, 3, False), (10, 4, False), (11, 5, False)]
+
+        for bond in molecule.rdkit_molecule.GetBonds():
+            bond_id = (bond.GetBeginAtomIdx(), bond.GetEndAtomIdx(),
+                       bond.GetIsAromatic())
+            assert bond_id in expected_bond_ids, 'Unexpected bond id ' \
+                + '{}'.format(bond_id)
+
+        # Initialize a Molecule from a PDB with connectivity and with
+        # a connectivity template
+        template_path = get_data_file_path(
+            'ligands/BNZ.pdb')
+        template = Molecule(template_path)
+        ligand_path = get_data_file_path(
+            'ligands/BNZ.pdb')
+        molecule = Molecule(ligand_path,
+                            connectivity_template=template.rdkit_molecule)
+
+        expected_bond_ids = [(0, 1, True), (1, 2, True), (2, 3, True),
+                             (3, 4, True), (4, 5, True), (0, 5, True),
+                             (0, 6, False), (1, 7, False), (2, 8, False),
+                             (3, 9, False), (4, 10, False), (5, 11, False)]
 
         for bond in molecule.rdkit_molecule.GetBonds():
             bond_id = (bond.GetBeginAtomIdx(), bond.GetEndAtomIdx(),
