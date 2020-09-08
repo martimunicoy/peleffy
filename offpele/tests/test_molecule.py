@@ -111,3 +111,65 @@ class TestMolecule(object):
         # a custom tag
         molecule = Molecule(smiles='c1ccccc1', tag='BNZ')
         assert molecule.tag == 'BNZ', 'Unexpected atom tag'
+
+    def test_PDB_connectivity_template(self):
+        """
+        It tests the initialization of an offpele's Molecule representation
+        from a PDB file without connectivity and a connectivity template.
+        """
+        # Initialize an empty Molecule object
+        molecule = Molecule()
+        assert molecule.connectivity_template is None, \
+            'Unexpected connectivity template'
+
+        # Initialize a Molecule from a PDB without connectivity
+        ligand_path = get_data_file_path(
+            'ligands/BNZ_without_connectivity.pdb')
+        molecule = Molecule(ligand_path)
+
+        expected_bond_ids = [(1, 0, False),
+                             (2, 1, False),
+                             (3, 2, False),
+                             (4, 3, False),
+                             (5, 4, False),
+                             (5, 0, False),
+                             (6, 0, False),
+                             (7, 1, False),
+                             (8, 2, False),
+                             (9, 3, False),
+                             (10, 4, False),
+                             (11, 5, False)]
+
+        for bond in molecule.rdkit_molecule.GetBonds():
+            bond_id = (bond.GetBeginAtomIdx(), bond.GetEndAtomIdx(),
+                       bond.GetIsAromatic())
+            assert bond_id in expected_bond_ids, 'Unexpected bond id ' \
+                + '{}'.format(bond_id)
+
+        # Initialize a Molecule from a PDB without connectivity
+        template_path = get_data_file_path(
+            'ligands/BNZ.pdb')
+        template = Molecule(template_path)
+        ligand_path = get_data_file_path(
+            'ligands/BNZ_without_connectivity.pdb')
+        molecule = Molecule(ligand_path,
+                            connectivity_template=template.rdkit_molecule)
+
+        expected_bond_ids = [(1, 0, True),
+                             (2, 1, True),
+                             (3, 2, True),
+                             (4, 3, True),
+                             (5, 4, True),
+                             (5, 0, True),
+                             (6, 0, False),
+                             (7, 1, False),
+                             (8, 2, False),
+                             (9, 3, False),
+                             (10, 4, False),
+                             (11, 5, False)]
+
+        for bond in molecule.rdkit_molecule.GetBonds():
+            bond_id = (bond.GetBeginAtomIdx(), bond.GetEndAtomIdx(),
+                       bond.GetIsAromatic())
+            assert bond_id in expected_bond_ids, 'Unexpected bond id ' \
+                + '{}'.format(bond_id)
