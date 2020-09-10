@@ -13,7 +13,7 @@ import os
 import argparse as ap
 
 import offpele
-from offpele.utils import check_if_path_exists, create_path
+from offpele.utils import check_if_path_exists, create_path, Logger
 
 
 DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-1.2.0.offxml'
@@ -177,27 +177,24 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
         Whether to save output files following PELE's DataLocal hierarchy or
         not
     """
-    print('-' * 60)
-    print('Open Force Field parameterizer for PELE', offpele.__version__)
-    print('-' * 60)
-    print(' - General:')
-    print('   - Input PDB:', pdb_file)
-    print('   - Output path:', output)
-    print('   - Write solvent parameters:', with_solvent)
-    print('   - DataLocal-like output:', as_datalocal)
-    print(' - Parameterization:')
-    print('   - Force field:', forcefield)
-    print('   - Charges method:', charges_method)
-    print('   - Use OPLS nonbonding parameters:', use_OPLS_nb_params)
-    print('   - Use OPLS bonds and angles:', use_OPLS_bonds_and_angles)
-    print(' - Rotamer library:')
-    print('   - Resolution:', resolution)
-    print('   - Exclude terminal rotamers:', exclude_terminal_rotamers)
-    print('-' * 60)
-
-    # Supress OpenForceField toolkit warnings
-    import logging
-    logging.getLogger().setLevel(logging.ERROR)
+    log = Logger()
+    log.info('-' * 60)
+    log.info('Open Force Field parameterizer for PELE', offpele.__version__)
+    log.info('-' * 60)
+    log.info(' - General:')
+    log.info('   - Input PDB:', pdb_file)
+    log.info('   - Output path:', output)
+    log.info('   - Write solvent parameters:', with_solvent)
+    log.info('   - DataLocal-like output:', as_datalocal)
+    log.info(' - Parameterization:')
+    log.info('   - Force field:', forcefield)
+    log.info('   - Charges method:', charges_method)
+    log.info('   - Use OPLS nonbonding parameters:', use_OPLS_nb_params)
+    log.info('   - Use OPLS bonds and angles:', use_OPLS_bonds_and_angles)
+    log.info(' - Rotamer library:')
+    log.info('   - Resolution:', resolution)
+    log.info('   - Exclude terminal rotamers:', exclude_terminal_rotamers)
+    log.info('-' * 60)
 
     from offpele.topology import Molecule
     from offpele.template import Impact
@@ -246,6 +243,14 @@ def main():
     args = parse_args()
 
     exclude_terminal_rotamers = not args.include_terminal_rotamers
+
+    # Supress OpenForceField toolkit warnings
+    import logging
+    logging.getLogger().setLevel(logging.ERROR)
+
+    # Set offpele logger to INFO level
+    logger = Logger()
+    logger.set_level('INFO')
 
     run_offpele(args.pdb_file, args.forcefield, args.resolution,
                 args.charges_method, args.use_OPLS_nb_params,
