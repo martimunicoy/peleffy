@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0+untagged.1.g8f68fbc
+                0+untagged.1.g9c9d3fd
               </div>
             
           
@@ -168,6 +168,7 @@
 
 <span class="kn">from</span> <span class="nn">offpele.utils</span> <span class="kn">import</span> <span class="n">get_data_file_path</span><span class="p">,</span> <span class="n">warning_on_one_line</span>
 <span class="kn">from</span> <span class="nn">offpele.utils.toolkits</span> <span class="kn">import</span> <span class="n">OpenForceFieldToolkitWrapper</span>
+<span class="kn">from</span> <span class="nn">offpele.utils</span> <span class="kn">import</span> <span class="n">Logger</span>
 
 
 <span class="k">class</span> <span class="nc">_SolventWrapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -203,7 +204,8 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes a SolventWrapper object using an offpele&#39;s Molecule.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; - Loading solvent parameters&#39;</span><span class="p">)</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39; - Loading solvent parameters&#39;</span><span class="p">)</span>
 
         <span class="n">off_toolkit</span> <span class="o">=</span> <span class="n">OpenForceFieldToolkitWrapper</span><span class="p">()</span>
 
