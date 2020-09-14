@@ -7,6 +7,7 @@ from simtk import unit
 
 from offpele.utils import get_data_file_path, warning_on_one_line
 from offpele.utils.toolkits import OpenForceFieldToolkitWrapper
+from offpele.utils import Logger
 
 
 class _SolventWrapper(object):
@@ -42,7 +43,8 @@ class _SolventWrapper(object):
         """
         Initializes a SolventWrapper object using an offpele's Molecule.
         """
-        print(' - Loading solvent parameters')
+        logger = Logger()
+        logger.info(' - Loading solvent parameters')
 
         off_toolkit = OpenForceFieldToolkitWrapper()
 

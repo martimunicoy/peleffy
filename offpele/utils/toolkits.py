@@ -10,7 +10,7 @@ import os
 import subprocess
 from collections import defaultdict
 from pathlib import Path
-from copy import copy
+from copy import deepcopy
 
 import numpy as np
 from simtk import unit
@@ -142,6 +142,29 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         Chem.EmbedMolecule(molecule)
 
         return molecule
+
+    def assign_connectivity_from_template(self, molecule):
+        """
+        It assigns the connectivity to an RDKit molecule according to the
+        connectivity from an RDKit connectivity template.
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+        """
+        from rdkit.Chem import AllChem
+
+        if molecule.connectivity_template is None:
+            raise ValueError('A connectivity template must be previously '
+                             + 'assigned to the molecule')
+
+        rdkit_molecule = molecule.rdkit_molecule
+
+        rdkit_molecule = AllChem.AssignBondOrdersFromTemplate(
+            molecule.connectivity_template, rdkit_molecule)
+
+        molecule._rdkit_molecule = rdkit_molecule
 
     def assign_stereochemistry_from_3D(self, molecule):
         """
@@ -308,7 +331,7 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         """
         from rdkit import Chem
 
-        rdkit_molecule = molecule.rdkit_molecule
+        rdkit_molecule = deepcopy(molecule.rdkit_molecule)
 
         rot_bonds_atom_ids = set([
             frozenset(atom_pair) for atom_pair in
@@ -369,7 +392,8 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         from rdkit.Chem import AllChem
 
         rdkit_molecule = molecule.rdkit_molecule
-        representation_2D = copy(rdkit_molecule)
+        representation_2D = deepcopy(rdkit_molecule)
+
         AllChem.Compute2DCoords(representation_2D)
         return representation_2D
 

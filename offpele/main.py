@@ -13,7 +13,7 @@ import os
 import argparse as ap
 
 import offpele
-from offpele.utils import check_if_path_exists, create_path
+from offpele.utils import check_if_path_exists, create_path, Logger
 
 
 DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-1.2.0.offxml'
@@ -73,12 +73,22 @@ def parse_args():
                         action='store_true',
                         help="Use OPLS to set the parameters for bonds "
                         + "and angles")
+    parser.add_argument('-s', '--silent',
+                        dest="silent",
+                        action='store_true',
+                        help="Activate silent mode")
+    parser.add_argument('-d', '--debug',
+                        dest="debug",
+                        action='store_true',
+                        help="Activate debug mode")
 
     parser.set_defaults(as_datalocal=False)
     parser.set_defaults(with_solvent=False)
     parser.set_defaults(include_terminal_rotamers=False)
     parser.set_defaults(use_OPLS_nb_params=False)
     parser.set_defaults(use_OPLS_bonds_and_angles=False)
+    parser.set_defaults(silent=False)
+    parser.set_defaults(debug=False)
 
     args = parser.parse_args()
 
@@ -177,27 +187,24 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
         Whether to save output files following PELE's DataLocal hierarchy or
         not
     """
-    print('-' * 60)
-    print('Open Force Field parameterizer for PELE', offpele.__version__)
-    print('-' * 60)
-    print(' - General:')
-    print('   - Input PDB:', pdb_file)
-    print('   - Output path:', output)
-    print('   - Write solvent parameters:', with_solvent)
-    print('   - DataLocal-like output:', as_datalocal)
-    print(' - Parameterization:')
-    print('   - Force field:', forcefield)
-    print('   - Charges method:', charges_method)
-    print('   - Use OPLS nonbonding parameters:', use_OPLS_nb_params)
-    print('   - Use OPLS bonds and angles:', use_OPLS_bonds_and_angles)
-    print(' - Rotamer library:')
-    print('   - Resolution:', resolution)
-    print('   - Exclude terminal rotamers:', exclude_terminal_rotamers)
-    print('-' * 60)
-
-    # Supress OpenForceField toolkit warnings
-    import logging
-    logging.getLogger().setLevel(logging.ERROR)
+    log = Logger()
+    log.info('-' * 60)
+    log.info('Open Force Field parameterizer for PELE', offpele.__version__)
+    log.info('-' * 60)
+    log.info(' - General:')
+    log.info('   - Input PDB:', pdb_file)
+    log.info('   - Output path:', output)
+    log.info('   - Write solvent parameters:', with_solvent)
+    log.info('   - DataLocal-like output:', as_datalocal)
+    log.info(' - Parameterization:')
+    log.info('   - Force field:', forcefield)
+    log.info('   - Charges method:', charges_method)
+    log.info('   - Use OPLS nonbonding parameters:', use_OPLS_nb_params)
+    log.info('   - Use OPLS bonds and angles:', use_OPLS_bonds_and_angles)
+    log.info(' - Rotamer library:')
+    log.info('   - Resolution:', resolution)
+    log.info('   - Exclude terminal rotamers:', exclude_terminal_rotamers)
+    log.info('-' * 60)
 
     from offpele.topology import Molecule
     from offpele.template import Impact
@@ -226,8 +233,8 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
         solvent = OBC2(molecule)
         solvent.to_json_file(solvent_out)
 
-    print(' - All files were generated successfully')
-    print('-' * 60)
+    log.info(' - All files were generated successfully')
+    log.info('-' * 60)
 
 
 def main():
@@ -246,6 +253,19 @@ def main():
     args = parse_args()
 
     exclude_terminal_rotamers = not args.include_terminal_rotamers
+
+    # Supress OpenForceField toolkit warnings
+    import logging
+    logging.getLogger().setLevel(logging.ERROR)
+
+    # Set offpele logger to the corresponding level
+    logger = Logger()
+    if args.silent:
+        logger.set_level('CRITICAL')
+    elif args.debug:
+        logger.set_level('DEBUG')
+    else:
+        logger.set_level('INFO')
 
     run_offpele(args.pdb_file, args.forcefield, args.resolution,
                 args.charges_method, args.use_OPLS_nb_params,
