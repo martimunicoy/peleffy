@@ -73,12 +73,22 @@ def parse_args():
                         action='store_true',
                         help="Use OPLS to set the parameters for bonds "
                         + "and angles")
+    parser.add_argument('-s', '--silent',
+                        dest="silent",
+                        action='store_true',
+                        help="Activate silent mode")
+    parser.add_argument('-d', '--debug',
+                        dest="silent",
+                        action='store_true',
+                        help="Activate debug mode")
 
     parser.set_defaults(as_datalocal=False)
     parser.set_defaults(with_solvent=False)
     parser.set_defaults(include_terminal_rotamers=False)
     parser.set_defaults(use_OPLS_nb_params=False)
     parser.set_defaults(use_OPLS_bonds_and_angles=False)
+    parser.set_defaults(silent=False)
+    parser.set_defaults(debug=False)
 
     args = parser.parse_args()
 
@@ -248,9 +258,14 @@ def main():
     import logging
     logging.getLogger().setLevel(logging.ERROR)
 
-    # Set offpele logger to INFO level
+    # Set offpele logger to the corresponding level
     logger = Logger()
-    logger.set_level('INFO')
+    if args.silent:
+        logger.set_level('CRITICAL')
+    elif args.debug:
+        logger.set_level('DEBUG')
+    else:
+        logger.set_level('INFO')
 
     run_offpele(args.pdb_file, args.forcefield, args.resolution,
                 args.charges_method, args.use_OPLS_nb_params,
