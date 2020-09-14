@@ -78,7 +78,7 @@ def parse_args():
                         action='store_true',
                         help="Activate silent mode")
     parser.add_argument('-d', '--debug',
-                        dest="silent",
+                        dest="debug",
                         action='store_true',
                         help="Activate debug mode")
 
@@ -233,8 +233,8 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
         solvent = OBC2(molecule)
         solvent.to_json_file(solvent_out)
 
-    print(' - All files were generated successfully')
-    print('-' * 60)
+    log.info(' - All files were generated successfully')
+    log.info('-' * 60)
 
 
 def main():
