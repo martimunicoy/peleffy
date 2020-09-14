@@ -12,6 +12,7 @@ from offpele.utils.toolkits import (RDKitToolkitWrapper,
                                     SchrodingerToolkitWrapper)
 from offpele.charge import (Am1bccCalculator, GasteigerCalculator,
                             OPLSChargeCalculator)
+from offpele.utils import Logger
 
 
 class Atom(object):
@@ -562,37 +563,39 @@ class Molecule(object):
         path : str
             The path to a PDB with the molecule structure
         """
-        print(' - Initializing molecule from PDB')
+        logger = Logger()
+        logger.info(' - Initializing molecule from PDB')
         self._initialize()
 
-        print('   - Loading molecule from RDKit')
+        logger.info('   - Loading molecule from RDKit')
         rdkit_toolkit = RDKitToolkitWrapper()
         self._rdkit_molecule = rdkit_toolkit.from_pdb(path)
 
         # Use RDKit template, if any, to assign the connectivity to
         # the current Molecule object
         if self.connectivity_template is not None:
-            print('   - Assigning connectivity from template')
+            logger.info('   - Assigning connectivity from template')
             rdkit_toolkit.assign_connectivity_from_template(self)
 
         # RDKit must generate stereochemistry specifically from 3D coords
-        print('   - Assigning stereochemistry from 3D coordinates')
+        logger.info('   - Assigning stereochemistry from 3D coordinates')
         rdkit_toolkit.assign_stereochemistry_from_3D(self)
 
         # Set molecule name according to PDB name
         if self.name == '':
             from pathlib import Path
             name = Path(path).stem
-            print('   - Setting molecule name to \'{}\''.format(name))
+            logger.info('   - Setting molecule name to \'{}\''.format(name))
             self.set_name(name)
 
         # Set molecule tag according to PDB's residue name
         if self.tag == 'UNK':
             tag = rdkit_toolkit.get_residue_name(self)
-            print('   - Setting molecule tag to \'{}\''.format(tag))
+            logger.info('   - Setting molecule tag to \'{}\''.format(tag))
             self.set_tag(tag)
 
-        print('   - Representing molecule with the Open Force Field Toolkit')
+        logger.info('   - Representing molecule with the Open Force Field '
+                    + 'Toolkit')
         openforcefield_toolkit = OpenForceFieldToolkitWrapper()
         self._off_molecule = openforcefield_toolkit.from_rdkit(self)
 
@@ -605,10 +608,11 @@ class Molecule(object):
         smiles : str
             The SMILES tag to construct the molecule structure with
         """
-        print(' - Initializing molecule from a SMILES tag')
+        logger = Logger()
+        logger.info(' - Initializing molecule from a SMILES tag')
         self._initialize()
 
-        print('   - Loading molecule from RDKit')
+        logger.info('   - Loading molecule from RDKit')
         rdkit_toolkit = RDKitToolkitWrapper()
         self._rdkit_molecule = rdkit_toolkit.from_smiles(smiles)
 
@@ -618,17 +622,19 @@ class Molecule(object):
 
         # Set molecule name according to the SMILES tag
         if self.name == '':
-            print('   - Setting molecule name to \'{}\''.format(smiles))
+            logger.info('   - Setting molecule name to \'{}\''.format(smiles))
             self.set_name(smiles)
 
-        print('   - Representing molecule with the Open Force Field Toolkit')
+        logger.info('   - Representing molecule with the Open Force Field '
+                    + 'Toolkit')
         openforcefield_toolkit = OpenForceFieldToolkitWrapper()
         self._off_molecule = openforcefield_toolkit.from_rdkit(self)
 
     def _build_rotamers(self):
         """It builds the rotamers of the molecule."""
+        logger = Logger()
         if self.off_molecule and self.rdkit_molecule:
-            print(' - Generating rotamer library')
+            logger.info(' - Generating rotamer library')
 
             self._graph = MolecularGraph(self)
             self._rotamers = self._graph.get_rotamers()
@@ -694,7 +700,8 @@ class Molecule(object):
             raise Exception('OpenForceField molecule was not initialized '
                             + 'correctly')
 
-        print(' - Loading forcefield')
+        logger = Logger()
+        logger.info(' - Loading forcefield')
         openforcefield_toolkit = OpenForceFieldToolkitWrapper()
         parameters = openforcefield_toolkit.get_parameters_from_forcefield(
             forcefield, self)
@@ -706,8 +713,8 @@ class Molecule(object):
 
         charges_calculator = self._get_charges_calculator(charges_method)
 
-        print(' - Computing partial charges with '
-              + '{}'.format(charges_calculator.name))
+        logger.info(' - Computing partial charges with '
+                    + '{}'.format(charges_calculator.name))
         self._assign_charges(charges_calculator)
 
         self._clean_lists()
