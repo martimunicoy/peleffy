@@ -13,7 +13,7 @@ import os
 import argparse as ap
 
 import offpele
-from offpele.utils import check_if_path_exists, create_path, Logger
+from offpele.utils import Logger, OutputPathHandler
 
 
 DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-1.2.0.offxml'
@@ -95,56 +95,6 @@ def parse_args():
     return args
 
 
-def handle_output_paths(molecule, output, as_datalocal):
-    """
-    It handles the output paths where offpele's output files will be saved.
-
-    Parameters
-    ----------
-    molecule : offpele.topology.Molecule
-        A Molecule object
-    output : str
-        The output path supplied by the user
-    as_datalocal : bool
-        Whether to save output files following PELE's DataLocal hierarchy or
-        not
-
-    Returns
-    -------
-    rotlib_path : pathlib.Path
-        The output path for the rotamer library
-    impact_path : pathlib.Path
-        The output path for the Impact template
-    solvent_path : pathlib.Path
-        The output path for the solvent template
-    """
-    from pathlib import Path
-    tag = molecule.tag
-    output_path = Path(output)
-    check_if_path_exists(output_path)
-
-    rotlib_path = output_path
-    impact_path = output_path
-    solvent_path = output_path
-
-    rotlib_name = tag.upper() + '.rot.assign'
-    impact_name = tag.lower() + 'z'
-    solvent_name = 'ligandParams.txt'
-
-    if as_datalocal:
-        rotlib_path = rotlib_path.joinpath(ROTAMER_LIBRARY_PATH)
-        impact_path = impact_path.joinpath(IMPACT_TEMPLATE_PATH)
-        solvent_path = solvent_path.joinpath(SOLVENT_TEMPLATE_PATH)
-
-        create_path(rotlib_path)
-        create_path(impact_path)
-        create_path(solvent_path)
-
-    return rotlib_path.joinpath(rotlib_name), \
-        impact_path.joinpath(impact_name), \
-        solvent_path.joinpath(solvent_name)
-
-
 def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
                 resolution=DEFAULT_RESOLUTION,
                 charges_method=DEFAULT_CHARGES_METHOD,
@@ -216,22 +166,21 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     molecule = Molecule(pdb_file, rotamer_resolution=resolution,
                         exclude_terminal_rotamers=exclude_terminal_rotamers)
 
-    rotlib_out, impact_out, solvent_out = handle_output_paths(molecule,
-                                                              output,
-                                                              as_datalocal)
+    output_handler = OutputPathHandler(molecule, output_path=output,
+                                       as_DataLocal=True)
 
     rotamer_library = offpele.topology.RotamerLibrary(molecule)
-    rotamer_library.to_file(rotlib_out)
+    rotamer_library.to_file(output_handler.get_rotamer_library_path())
 
     molecule.parameterize(forcefield, charges_method=charges_method,
                           use_OPLS_nonbonding_params=use_OPLS_nb_params,
                           use_OPLS_bonds_and_angles=use_OPLS_bonds_and_angles)
     impact = Impact(molecule)
-    impact.write(impact_out)
+    impact.write(output_handler.get_impact_template_path())
 
     if with_solvent:
         solvent = OBC2(molecule)
-        solvent.to_json_file(solvent_out)
+        solvent.to_json_file(output_handler.get_solvent_template_path())
 
     log.info(' - All files were generated successfully')
     log.info('-' * 60)

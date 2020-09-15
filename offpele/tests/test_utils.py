@@ -7,8 +7,11 @@ of offpele.
 import pytest
 
 import io
-from contextlib import redirect_stdout
+import os
+import tempfile
+
 from offpele.utils import Logger
+from offpele.topology import Molecule
 
 
 class TestLogger(object):
@@ -149,3 +152,162 @@ class TestLogger(object):
 
             assert output == 'Critical message\n', \
                 'Unexpected logger message at standard output'
+
+
+class TestOutputPathHandler(object):
+    """
+    It contains all the tests to validate the OuputPathHandler class.
+    """
+
+    def test_non_datalocal_paths(self):
+        """
+        It tests the non-datalocal paths assignment.
+        """
+        from offpele.utils import OutputPathHandler
+
+        # Load benzene molecule
+        molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ')
+        molecule.parameterize('openff_unconstrained-1.2.1.offxml',
+                              charges_method='gasteiger')
+
+        # Molecule's tag
+        tag = molecule.tag
+
+        # Initialize output handler without output_path
+        output_handler = OutputPathHandler(molecule, as_DataLocal=False)
+
+        # Validate output paths
+        assert output_handler.get_rotamer_library_path() == \
+            './{}.rot.assign'.format(tag.upper()), \
+            'Unexpected default rotamer library path'
+        assert output_handler.get_impact_template_path() == \
+            './{}z'.format(tag.lower()), \
+            'Unexpected default Impact template path'
+        assert output_handler.get_solvent_template_path() == \
+            './ligandParams.txt', \
+            'Unexpected default solvent parameters path'
+
+        # Initialize output handler with an output_path set
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_handler = OutputPathHandler(
+                molecule, as_DataLocal=False,
+                output_path=os.path.join(tmpdir, 'output'))
+
+            assert output_handler.get_rotamer_library_path() == \
+                os.path.join(tmpdir, 'output',
+                             '{}.rot.assign'.format(tag.upper())), \
+                'Unexpected default rotamer library path'
+            assert output_handler.get_impact_template_path() == \
+                os.path.join(tmpdir, 'output', '{}z'.format(tag.lower())), \
+                'Unexpected default Impact template path'
+            assert output_handler.get_solvent_template_path() == \
+                os.path.join(tmpdir, 'output', 'ligandParams.txt'), \
+                'Unexpected default solvent parameters path'
+
+    def test_datalocal_paths(self):
+        """
+        It tests the datalocal paths assignment.
+        """
+        from offpele.utils import OutputPathHandler
+
+        # Load benzene molecule
+        molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ')
+        molecule.parameterize('openff_unconstrained-1.2.1.offxml',
+                              charges_method='gasteiger')
+
+        # Molecule's tag
+        tag = molecule.tag
+
+        # Initialize output handler without output_path
+        output_handler = OutputPathHandler(molecule, as_DataLocal=True)
+
+        # Validate output paths
+        assert output_handler.get_rotamer_library_path() == \
+            './DataLocal/LigandRotamerLibs/' \
+            + '{}.rot.assign'.format(tag.upper()), \
+            'Unexpected default rotamer library path'
+        assert output_handler.get_impact_template_path() == \
+            './DataLocal/Templates/OFF/Parsley/HeteroAtoms/' \
+            + '{}z'.format(tag.lower()), \
+            'Unexpected default Impact template path'
+        assert output_handler.get_solvent_template_path() == \
+            './DataLocal/OBC/ligandParams.txt', \
+            'Unexpected default solvent parameters path'
+
+        # Initialize output handler with an output_path set
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_handler = OutputPathHandler(
+                molecule, as_DataLocal=True,
+                output_path=os.path.join(tmpdir, 'output'))
+
+            assert output_handler.get_rotamer_library_path() == \
+                os.path.join(tmpdir, 'output', 'DataLocal/LigandRotamerLibs/'
+                             + '{}.rot.assign'.format(tag.upper())), \
+                'Unexpected default rotamer library path'
+            assert output_handler.get_impact_template_path() == \
+                os.path.join(tmpdir, 'output', 'DataLocal/Templates/OFF/Pars'
+                             + 'ley/HeteroAtoms/{}z'.format(tag.lower())), \
+                'Unexpected default Impact template path'
+            assert output_handler.get_solvent_template_path() == \
+                os.path.join(tmpdir, 'output',
+                             'DataLocal/OBC/ligandParams.txt'), \
+                'Unexpected default solvent parameters path'
+
+    def test_folder_creation(self):
+        """
+        It tests the folder creation of the OutputPathHandler class.
+        """
+        from offpele.utils import OutputPathHandler
+
+        # Load benzene molecule
+        molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ')
+        molecule.parameterize('openff_unconstrained-1.2.1.offxml',
+                              charges_method='gasteiger')
+
+        # Initialize output handler with an output_path set
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Initialize output handler without output_path
+            output_handler = OutputPathHandler(
+                molecule, as_DataLocal=True,
+                output_path=os.path.join(tmpdir, 'output'))
+
+            # Test path getter without folder creation
+            path = output_handler.get_rotamer_library_path(
+                create_missing_folders=False)
+            path_dir = os.path.dirname(path)
+            assert os.path.isdir(path_dir) is False, \
+                'This directory should not exist'
+            path = output_handler.get_impact_template_path(
+                create_missing_folders=False)
+            path_dir = os.path.dirname(path)
+            assert os.path.isdir(path_dir) is False, \
+                'This directory should not exist'
+            path = output_handler.get_solvent_template_path(
+                create_missing_folders=False)
+            path_dir = os.path.dirname(path)
+            assert os.path.isdir(path_dir) is False, \
+                'This directory should not exist'
+
+        # Initialize output handler with an output_path set
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Initialize output handler without output_path
+            output_handler = OutputPathHandler(
+                molecule, as_DataLocal=True,
+                output_path=os.path.join(tmpdir, 'output'))
+
+            # Test path getter with folder creation
+            path = output_handler.get_rotamer_library_path(
+                create_missing_folders=True)
+            path_dir = os.path.dirname(path)
+            assert os.path.isdir(path_dir) is True, \
+                'This directory should exist'
+            path = output_handler.get_impact_template_path(
+                create_missing_folders=True)
+            path_dir = os.path.dirname(path)
+            assert os.path.isdir(path_dir) is True, \
+                'This directory should exist'
+            path = output_handler.get_solvent_template_path(
+                create_missing_folders=True)
+            path_dir = os.path.dirname(path)
+            assert os.path.isdir(path_dir) is True, \
+                'This directory should exist'
