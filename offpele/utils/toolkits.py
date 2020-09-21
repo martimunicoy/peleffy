@@ -264,10 +264,12 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         pdb_block = Chem.rdmolfiles.MolToPDBBlock(rdkit_molecule)
         names = molecule.get_pdb_atom_names()
+        tag = molecule.tag
 
         renamed_pdb_block = ''
         for line, name in zip(pdb_block.split('\n'), names):
-            renamed_pdb_block += line[:12] + name + line[16:] + '\n'
+            renamed_pdb_block += line[:12] + name + ' ' + tag + \
+                line[20:] + '\n'
 
         for line in pdb_block.split('\n')[len(names):]:
             renamed_pdb_block += line + '\n'
