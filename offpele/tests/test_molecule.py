@@ -4,10 +4,11 @@ This module contains the tests to check offpele's molecular representations.
 
 import pytest
 
+import tempfile
 from offpele.topology import Molecule
 from offpele.utils.toolkits import (RDKitToolkitWrapper,
                                     OpenForceFieldToolkitWrapper)
-from offpele.utils import get_data_file_path
+from offpele.utils import get_data_file_path, temporary_cd
 from .utils import SET_OF_LIGAND_PATHS
 
 
@@ -180,3 +181,60 @@ class TestMolecule(object):
                        bond.GetIsAromatic())
             assert bond_id in expected_bond_ids, 'Unexpected bond id ' \
                 + '{}'.format(bond_id)
+
+    def test_PDB_residue_name(self):
+        """
+        It tests the PDB residue name and checks for consistency with
+        Molecule tag.
+        """
+
+        def check_residue_name(name):
+            """Check if residue names are valid in the output PDB file"""
+            with open('molecule.pdb') as f:
+                for line in f:
+                    if line.startswith('HETATM'):
+                        assert line[17:20] == name, 'Unexpected residue name'
+
+        ligand_path = get_data_file_path('ligands/BNZ.pdb')
+
+        # Checking tag assignation from PDB
+        molecule = Molecule(ligand_path)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                assert molecule.tag == 'BNZ', 'Unexpected molecule tag'
+                molecule.to_pdb_file('molecule.pdb')
+                check_residue_name('BNZ')
+
+        # Checking set_tag() function
+        molecule = Molecule(ligand_path)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                molecule.set_tag('TAG')
+                assert molecule.tag == 'TAG', 'Unexpected molecule tag'
+                molecule.to_pdb_file('molecule.pdb')
+                check_residue_name('TAG')
+
+        # Checking default tag assignment from SMILES
+        molecule = Molecule(smiles='c1ccccc1')
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                assert molecule.tag == 'UNK', 'Unexpected molecule tag'
+                molecule.to_pdb_file('molecule.pdb')
+                check_residue_name('UNK')
+
+        # Checking custom tag assignment from SMILES
+        molecule = Molecule(smiles='c1ccccc1', tag='BEN')
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                assert molecule.tag == 'BEN', 'Unexpected molecule tag'
+                molecule.to_pdb_file('molecule.pdb')
+                check_residue_name('BEN')
+
+        # Checking second custom tag assignment from SMILES
+        molecule = Molecule(smiles='c1ccccc1')
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                molecule.set_tag('BNZ')
+                assert molecule.tag == 'BNZ', 'Unexpected molecule tag'
+                molecule.to_pdb_file('molecule.pdb')
+                check_residue_name('BNZ')
