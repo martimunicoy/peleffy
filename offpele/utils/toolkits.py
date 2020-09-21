@@ -267,12 +267,14 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         tag = molecule.tag
 
         renamed_pdb_block = ''
-        for line, name in zip(pdb_block.split('\n'), names):
-            renamed_pdb_block += line[:12] + name + ' ' + tag + \
-                line[20:] + '\n'
-
-        for line in pdb_block.split('\n')[len(names):]:
-            renamed_pdb_block += line + '\n'
+        atom_counter = 0
+        for line in pdb_block.split('\n'):
+            if line.startswith('HETATM'):
+                renamed_pdb_block += line[:12] + names[atom_counter] \
+                    + ' ' + tag + line[20:] + '\n'
+                atom_counter += 1
+            else:
+                renamed_pdb_block += line + '\n'
 
         with open(path, 'w') as f:
             f.write(renamed_pdb_block)
