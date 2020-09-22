@@ -181,6 +181,26 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         rdkit_molecule = molecule.rdkit_molecule
         Chem.rdmolops.AssignStereochemistryFrom3D(rdkit_molecule)
 
+    def set_conformer(self, molecule, conformer):
+        """
+        It sets a new conformation to the molecule.
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+        conformer : an RDKit.Chem.rdchem.Conformer object
+            The conformer to set to the molecule
+        """
+
+        rdkit_molecule = molecule.rdkit_molecule
+
+        # Remove previous conformer
+        rdkit_molecule.RemoveAllConformers()
+
+        # Add current conformer
+        rdkit_molecule.AddConformer(conformer, assignId=True)
+
     def get_residue_name(self, molecule):
         """
         It returns the name of the residue according to the RDKit molecule
