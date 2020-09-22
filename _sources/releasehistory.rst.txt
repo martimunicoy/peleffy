@@ -16,6 +16,7 @@ This is a micro release that includes general bug fixes and stability improvemen
 New features
 """"""""""""
 - `PR #55 <https://github.com/martimunicoy/offpele/pull/55>`_: Standard output prints follow the logging hierarchy and can be modified by the user.
+- `PR #59 <https://github.com/martimunicoy/offpele/pull/59>`_: Set alternative conformers to the offpele's molecule representation.
 
 Bugfixes
 """"""""
@@ -29,6 +30,7 @@ Tests added
 - `PR #52 <https://github.com/martimunicoy/offpele/pull/52>`_: Adds tests to validate the initialization using a connectivity template.
 - `PR #55 <https://github.com/martimunicoy/offpele/pull/55>`_: Adds tests for the new Logger class.
 - `PR #58 <https://github.com/martimunicoy/offpele/pull/58>`_: Adds tests to validate consistency between PDB residue name and molecule tag.
+- `PR #59 <https://github.com/martimunicoy/offpele/pull/59>`_: Adds tests for the new conformer setter.
 
 
 0.3.0 - Rotamers, OPLS2005, SMILES and stability improvements
