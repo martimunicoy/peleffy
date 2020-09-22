@@ -709,7 +709,7 @@ class Molecule(object):
         self.parameters = parameters
         # TODO Is there a way to retrieve the name of the OFF's ForceField object?
         if isinstance(forcefield, str):
-            self._forcefield = Path(forcefield).stem
+            self._forcefield = str(Path(forcefield).stem)
 
         charges_calculator = self._get_charges_calculator(charges_method)
 
@@ -1373,13 +1373,12 @@ class Molecule(object):
     @property
     def forcefield(self):
         """
-        The forcefield employed to parameterize the molecule.
+        The name of the forcefield employed to parameterize the molecule.
 
         Returns
         -------
-        forcefield : an openforcefield.typing.engines.smirnoff.ForceField
-                     object
-            The forcefield employed to parameterize this Molecule object
+        forcefield : str
+            The forcefield name
         """
         return self._forcefield
 
