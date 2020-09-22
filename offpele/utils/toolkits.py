@@ -10,7 +10,7 @@ import os
 import subprocess
 from collections import defaultdict
 from pathlib import Path
-from copy import copy
+from copy import deepcopy
 
 import numpy as np
 from simtk import unit
@@ -143,6 +143,29 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         return molecule
 
+    def assign_connectivity_from_template(self, molecule):
+        """
+        It assigns the connectivity to an RDKit molecule according to the
+        connectivity from an RDKit connectivity template.
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+        """
+        from rdkit.Chem import AllChem
+
+        if molecule.connectivity_template is None:
+            raise ValueError('A connectivity template must be previously '
+                             + 'assigned to the molecule')
+
+        rdkit_molecule = molecule.rdkit_molecule
+
+        rdkit_molecule = AllChem.AssignBondOrdersFromTemplate(
+            molecule.connectivity_template, rdkit_molecule)
+
+        molecule._rdkit_molecule = rdkit_molecule
+
     def assign_stereochemistry_from_3D(self, molecule):
         """
         It assigns the stereochemistry to an RDKit molecule according to the
@@ -157,6 +180,26 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         rdkit_molecule = molecule.rdkit_molecule
         Chem.rdmolops.AssignStereochemistryFrom3D(rdkit_molecule)
+
+    def set_conformer(self, molecule, conformer):
+        """
+        It sets a new conformation to the molecule.
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+        conformer : an RDKit.Chem.rdchem.Conformer object
+            The conformer to set to the molecule
+        """
+
+        rdkit_molecule = molecule.rdkit_molecule
+
+        # Remove previous conformer
+        rdkit_molecule.RemoveAllConformers()
+
+        # Add current conformer
+        rdkit_molecule.AddConformer(conformer, assignId=True)
 
     def get_residue_name(self, molecule):
         """
@@ -241,13 +284,17 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         pdb_block = Chem.rdmolfiles.MolToPDBBlock(rdkit_molecule)
         names = molecule.get_pdb_atom_names()
+        tag = molecule.tag
 
         renamed_pdb_block = ''
-        for line, name in zip(pdb_block.split('\n'), names):
-            renamed_pdb_block += line[:12] + name + line[16:] + '\n'
-
-        for line in pdb_block.split('\n')[len(names):]:
-            renamed_pdb_block += line + '\n'
+        atom_counter = 0
+        for line in pdb_block.split('\n'):
+            if line.startswith('HETATM'):
+                renamed_pdb_block += line[:12] + names[atom_counter] \
+                    + ' ' + tag + line[20:] + '\n'
+                atom_counter += 1
+            else:
+                renamed_pdb_block += line + '\n'
 
         with open(path, 'w') as f:
             f.write(renamed_pdb_block)
@@ -308,7 +355,7 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         """
         from rdkit import Chem
 
-        rdkit_molecule = molecule.rdkit_molecule
+        rdkit_molecule = deepcopy(molecule.rdkit_molecule)
 
         rot_bonds_atom_ids = set([
             frozenset(atom_pair) for atom_pair in
@@ -369,7 +416,8 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         from rdkit.Chem import AllChem
 
         rdkit_molecule = molecule.rdkit_molecule
-        representation_2D = copy(rdkit_molecule)
+        representation_2D = deepcopy(rdkit_molecule)
+
         AllChem.Compute2DCoords(representation_2D)
         return representation_2D
 

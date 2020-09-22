@@ -7,6 +7,7 @@ from simtk import unit
 
 from offpele.utils import get_data_file_path, warning_on_one_line
 from offpele.utils.toolkits import OpenForceFieldToolkitWrapper
+from offpele.utils import Logger
 
 
 class _SolventWrapper(object):
@@ -42,7 +43,8 @@ class _SolventWrapper(object):
         """
         Initializes a SolventWrapper object using an offpele's Molecule.
         """
-        print(' - Loading solvent parameters')
+        logger = Logger()
+        logger.info(' - Loading solvent parameters')
 
         off_toolkit = OpenForceFieldToolkitWrapper()
 
@@ -82,7 +84,7 @@ class _SolventWrapper(object):
         data['SolventParameters']['General']['surface_area_penalty'] = \
             round(self.surface_area_penalty.value_in_unit(
                 unit.kilocalorie / (unit.angstrom**2 * unit.mole)), 8)
-        data['SolventParameters'][self.molecule.name] = dict()
+        data['SolventParameters'][self.molecule.tag] = dict()
 
         atom_names = self.molecule.get_pdb_atom_names()
 
@@ -90,7 +92,7 @@ class _SolventWrapper(object):
                               atom_names):
             name = name.replace(' ', '_')
             index = atom.GetIdx()
-            data['SolventParameters'][self.molecule.name][name] = \
+            data['SolventParameters'][self.molecule.tag][name] = \
                 {'radius': round(self.radii[tuple((index, ))].value_in_unit(
                                  unit.angstrom), 5),
                  'scale': round(self.scales[tuple((index, ))], 5)}

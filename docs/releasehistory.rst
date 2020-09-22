@@ -8,6 +8,31 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
+0.3.1 - Current development
+---------------------------
+
+This is a micro release that includes general bug fixes and stability improvements. It is still a preliminary version of the Open Force Field to PELE package which is under development.
+
+New features
+""""""""""""
+- `PR #55 <https://github.com/martimunicoy/offpele/pull/55>`_: Standard output prints follow the logging hierarchy and can be modified by the user.
+- `PR #59 <https://github.com/martimunicoy/offpele/pull/59>`_: Set alternative conformers to the offpele's molecule representation.
+
+Bugfixes
+""""""""
+- `PR #48 <https://github.com/martimunicoy/offpele/pull/48>`_: Fixes CLI's default output paths.
+- `PR #52 <https://github.com/martimunicoy/offpele/pull/52>`_: Molecule connectivity can be assigned from an RDKit molecular template when loading it from a PDB file without connectivity.
+- `PR #58 <https://github.com/martimunicoy/offpele/pull/58>`_: Fixes unconsistencies between PDB residue name and molecule tag.
+
+Tests added
+"""""""""""
+- `PR #48 <https://github.com/martimunicoy/offpele/pull/48>`_: Adds tests to validate the assignment of the default output paths.
+- `PR #52 <https://github.com/martimunicoy/offpele/pull/52>`_: Adds tests to validate the initialization using a connectivity template.
+- `PR #55 <https://github.com/martimunicoy/offpele/pull/55>`_: Adds tests for the new Logger class.
+- `PR #58 <https://github.com/martimunicoy/offpele/pull/58>`_: Adds tests to validate consistency between PDB residue name and molecule tag.
+- `PR #59 <https://github.com/martimunicoy/offpele/pull/59>`_: Adds tests for the new conformer setter.
+
+
 0.3.0 - Rotamers, OPLS2005, SMILES and stability improvements
 -------------------------------------------------------------
 

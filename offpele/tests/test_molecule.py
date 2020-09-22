@@ -4,10 +4,11 @@ This module contains the tests to check offpele's molecular representations.
 
 import pytest
 
+import tempfile
 from offpele.topology import Molecule
 from offpele.utils.toolkits import (RDKitToolkitWrapper,
                                     OpenForceFieldToolkitWrapper)
-from offpele.utils import get_data_file_path
+from offpele.utils import get_data_file_path, temporary_cd
 from .utils import SET_OF_LIGAND_PATHS
 
 
@@ -111,3 +112,129 @@ class TestMolecule(object):
         # a custom tag
         molecule = Molecule(smiles='c1ccccc1', tag='BNZ')
         assert molecule.tag == 'BNZ', 'Unexpected atom tag'
+
+    def test_PDB_connectivity_template(self):
+        """
+        It tests the initialization of an offpele's Molecule representation
+        from a PDB file without connectivity and a connectivity template.
+        """
+        # Initialize an empty Molecule object
+        molecule = Molecule()
+        assert molecule.connectivity_template is None, \
+            'Unexpected connectivity template'
+
+        # Initialize a Molecule from a PDB without connectivity and
+        # without a connectivity template
+        ligand_path = get_data_file_path(
+            'ligands/BNZ_without_connectivity.pdb')
+        molecule = Molecule(ligand_path)
+
+        expected_bond_ids = [(1, 0, False), (2, 1, False), (3, 2, False),
+                             (4, 3, False), (5, 4, False), (5, 0, False),
+                             (6, 0, False), (7, 1, False), (8, 2, False),
+                             (9, 3, False), (10, 4, False), (11, 5, False)]
+
+        for bond in molecule.rdkit_molecule.GetBonds():
+            bond_id = (bond.GetBeginAtomIdx(), bond.GetEndAtomIdx(),
+                       bond.GetIsAromatic())
+            assert bond_id in expected_bond_ids, 'Unexpected bond id ' \
+                + '{}'.format(bond_id)
+
+        # Initialize a Molecule from a PDB without connectivity but with
+        # a connectivity template
+        template_path = get_data_file_path(
+            'ligands/BNZ.pdb')
+        template = Molecule(template_path)
+        ligand_path = get_data_file_path(
+            'ligands/BNZ_without_connectivity.pdb')
+        molecule = Molecule(ligand_path,
+                            connectivity_template=template.rdkit_molecule)
+
+        expected_bond_ids = [(1, 0, True), (2, 1, True), (3, 2, True),
+                             (4, 3, True), (5, 4, True), (5, 0, True),
+                             (6, 0, False), (7, 1, False), (8, 2, False),
+                             (9, 3, False), (10, 4, False), (11, 5, False)]
+
+        for bond in molecule.rdkit_molecule.GetBonds():
+            bond_id = (bond.GetBeginAtomIdx(), bond.GetEndAtomIdx(),
+                       bond.GetIsAromatic())
+            assert bond_id in expected_bond_ids, 'Unexpected bond id ' \
+                + '{}'.format(bond_id)
+
+        # Initialize a Molecule from a PDB with connectivity and with
+        # a connectivity template
+        template_path = get_data_file_path(
+            'ligands/BNZ.pdb')
+        template = Molecule(template_path)
+        ligand_path = get_data_file_path(
+            'ligands/BNZ.pdb')
+        molecule = Molecule(ligand_path,
+                            connectivity_template=template.rdkit_molecule)
+
+        expected_bond_ids = [(0, 1, True), (1, 2, True), (2, 3, True),
+                             (3, 4, True), (4, 5, True), (0, 5, True),
+                             (0, 6, False), (1, 7, False), (2, 8, False),
+                             (3, 9, False), (4, 10, False), (5, 11, False)]
+
+        for bond in molecule.rdkit_molecule.GetBonds():
+            bond_id = (bond.GetBeginAtomIdx(), bond.GetEndAtomIdx(),
+                       bond.GetIsAromatic())
+            assert bond_id in expected_bond_ids, 'Unexpected bond id ' \
+                + '{}'.format(bond_id)
+
+    def test_PDB_residue_name(self):
+        """
+        It tests the PDB residue name and checks for consistency with
+        Molecule tag.
+        """
+
+        def check_residue_name(name):
+            """Check if residue names are valid in the output PDB file"""
+            with open('molecule.pdb') as f:
+                for line in f:
+                    if line.startswith('HETATM'):
+                        assert line[17:20] == name, 'Unexpected residue name'
+
+        ligand_path = get_data_file_path('ligands/BNZ.pdb')
+
+        # Checking tag assignation from PDB
+        molecule = Molecule(ligand_path)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                assert molecule.tag == 'BNZ', 'Unexpected molecule tag'
+                molecule.to_pdb_file('molecule.pdb')
+                check_residue_name('BNZ')
+
+        # Checking set_tag() function
+        molecule = Molecule(ligand_path)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                molecule.set_tag('TAG')
+                assert molecule.tag == 'TAG', 'Unexpected molecule tag'
+                molecule.to_pdb_file('molecule.pdb')
+                check_residue_name('TAG')
+
+        # Checking default tag assignment from SMILES
+        molecule = Molecule(smiles='c1ccccc1')
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                assert molecule.tag == 'UNK', 'Unexpected molecule tag'
+                molecule.to_pdb_file('molecule.pdb')
+                check_residue_name('UNK')
+
+        # Checking custom tag assignment from SMILES
+        molecule = Molecule(smiles='c1ccccc1', tag='BEN')
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                assert molecule.tag == 'BEN', 'Unexpected molecule tag'
+                molecule.to_pdb_file('molecule.pdb')
+                check_residue_name('BEN')
+
+        # Checking second custom tag assignment from SMILES
+        molecule = Molecule(smiles='c1ccccc1')
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                molecule.set_tag('BNZ')
+                assert molecule.tag == 'BNZ', 'Unexpected molecule tag'
+                molecule.to_pdb_file('molecule.pdb')
+                check_residue_name('BNZ')
