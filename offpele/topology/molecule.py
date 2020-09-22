@@ -1269,6 +1269,18 @@ class Molecule(object):
 
         return self._OPLS_parameters
 
+    def set_conformer(self, conformer):
+        """
+        It sets a new conformer to the molecule.
+
+        Parameters
+        ----------
+        conformer : an RDKit.Chem.rdchem.Conformer object
+            The conformer to set to the molecule
+        """
+        rdkit_toolkit = RDKitToolkitWrapper()
+        rdkit_toolkit.set_conformer(self, conformer)
+
     @property
     def rotamer_resolution(self):
         """
