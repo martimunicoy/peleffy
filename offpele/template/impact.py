@@ -325,7 +325,7 @@ class Impact(object):
             # Phase (only if different from 0)
             if phase != 0.0:
                 file.write(' ')
-                file.write('{: 6.1f}\n'.format(phase))
+                file.write('{:5.1f}\n'.format(phase))
             file.write('\n')
 
     def _write_iphi(self, file):
