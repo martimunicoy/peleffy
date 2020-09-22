@@ -288,3 +288,54 @@ class TestSchrodingerToolkitWrapper(object):
             unit.Quantity(1.250, unit.angstrom), 'Unexpected vdW radius'
         assert OPLS_params3['gammas'][0] == 0.005000000, 'Unexpected gamma'
         assert OPLS_params3['alphas'][0] == 0.000000000, 'Unexpected alpha'
+
+
+class TestRDKitToolkitWrapper(object):
+    """
+    It wraps all tests that check the RDKitToolkitWrapper class.
+    """
+
+    def test_conformer_setter(self):
+        """It checks the conformer setter of the RDKit toolkit"""
+
+        from rdkit import Chem
+        from copy import deepcopy
+
+        # Load molecule
+        mol = Molecule(smiles='CCC(=O)[OH]')
+        mol.parameterize('openff_unconstrained-1.2.1.offxml',
+                         charges_method='gasteiger')
+
+        # Choose a dihedral to track
+        dihedral = (0, 1, 2, 3)
+
+        # Get initial dihedral's theta
+        conformer = mol.rdkit_molecule.GetConformer()
+        initial_theta = Chem.rdMolTransforms.GetDihedralDeg(conformer,
+                                                            *dihedral)
+
+        assert abs(initial_theta - -0.002) < 10e-3, \
+            'Unexpected initial theta value'
+
+        # Get a copy of the rdkit's molecule representation
+        rdkit_mol = deepcopy(mol.rdkit_molecule)
+
+        # Modify its conformer
+        conformer = rdkit_mol.GetConformer()
+        Chem.rdMolTransforms.SetDihedralDeg(conformer, *dihedral, 90)
+        new_theta = Chem.rdMolTransforms.GetDihedralDeg(conformer,
+                                                        *dihedral)
+
+        assert abs(new_theta - 89.999) < 10e-3, \
+            'Unexpected new theta value'
+
+        # Set new conformer to offpele molecule
+        mol.set_conformer(conformer)
+
+        # Check new set theta value
+        conformer = mol.rdkit_molecule.GetConformer()
+        new_set_theta = Chem.rdMolTransforms.GetDihedralDeg(conformer,
+                                                            *dihedral)
+
+        assert abs(new_set_theta - 89.999) < 10e-3, \
+            'Unexpected new set theta value'
