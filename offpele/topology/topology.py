@@ -476,7 +476,8 @@ class Dihedral(TopologyElement):
 
         x = unit.Quantity(np.arange(0, np.pi, 0.1), unit=unit.radians)
         pyplot.plot(x, self.constant * (1 + self.prefactor
-                                        * np.cos(self.periodicity * x)),
+                                        * np.cos(self.periodicity * x
+                                                 + self.phase)),
                     'r--')
 
         pyplot.show()
