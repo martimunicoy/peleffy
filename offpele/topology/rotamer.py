@@ -82,6 +82,30 @@ class RotamerLibrary(object):
         ----------
         molecule : An offpele.topology.Molecule
             The Molecule object whose rotamer library will be generated
+
+        Load a molecule and create its rotamer library template
+
+        >>> from offpele.topology import Molecule
+        >>> from offpele.topology import RotamerLibrary
+
+        >>> molecule = Molecule(smiles='CCCC', name='butane', tag='BUT')
+
+        >>> rotamer_library = RotamerLibrary(mol)
+        >>> rotamer_library.to_file('butz')
+
+        Load a molecule and create its rotamer library template with
+        a core constraint
+
+        >>> from offpele.topology import Molecule
+        >>> from offpele.topology import RotamerLibrary
+
+        >>> molecule = Molecule(smiles='CCCC', name='butane', tag='BUT',
+                                exclude_terminal_rotamers=False,
+                                core_constraint=0)
+
+        >>> rotamer_library = RotamerLibrary(mol)
+        >>> rotamer_library.to_file('butz')
+
         """
         self._molecule = molecule
 

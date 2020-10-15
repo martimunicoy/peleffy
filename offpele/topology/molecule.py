@@ -516,6 +516,19 @@ class Molecule(object):
         >>> molecule = Molecule('PDB_without_connectivity.pdb',
                                 template=template)
 
+        Load a molecule and create its rotamer library template with
+        a core constraint
+
+        >>> from offpele.topology import Molecule
+        >>> from offpele.topology import RotamerLibrary
+
+        >>> molecule = Molecule(smiles='CCCC', name='butane', tag='BUT',
+                                exclude_terminal_rotamers=False,
+                                core_constraint=0)
+
+        >>> rotamer_library = RotamerLibrary(mol)
+        >>> rotamer_library.to_file('butz')
+
         """
         self._name = name
         self._tag = tag
