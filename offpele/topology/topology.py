@@ -757,8 +757,8 @@ class OFFProper(OFFDihedral):
         AssertionError
             If any unexpected value is found
         """
-        assert self.periodicity in (1, 2, 3, 4, 6), 'Expected values for ' \
-            'periodicity are 1, 2, 3, 4 or 6, obtained ' \
+        assert self.periodicity in (1, 2, 3, 4, 5, 6), 'Expected values ' \
+            'for periodicity are 1, 2, 3, 4, 5 or 6, obtained ' \
             '{}'.format(self.periodicity)
 
         # proper's idivfs must always be 1 --> Apparently not: COC(O)OC, t84, t86
@@ -794,8 +794,8 @@ class OFFImproper(OFFDihedral):
         AssertionError
             If any unexpected value is found
         """
-        assert self.periodicity in (1, 2, 3, 4, 6), 'Expected values for ' \
-            'periodicity are 1, 2, 3, 4 or 6, obtained ' \
+        assert self.periodicity in (1, 2, 3, 4, 5, 6), 'Expected values ' \
+            'for periodicity are 1, 2, 3, 4, 5 or 6, obtained ' \
             '{}'.format(self.periodicity)
 
         assert self.phase.value_in_unit(unit.degree) in (0, 180), \
