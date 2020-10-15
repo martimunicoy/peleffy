@@ -383,8 +383,6 @@ class Dihedral(TopologyElement):
     """
 
     _name = 'Dihedral'
-    _writable_attrs = ['atom1_idx', 'atom2_idx', 'atom3_idx', 'atom4_idx',
-                       'constant', 'prefactor', 'periodicity', 'phase']
 
     def __init__(self, index=-1, atom1_idx=None, atom2_idx=None,
                  atom3_idx=None, atom4_idx=None, periodicity=None,
@@ -598,6 +596,8 @@ class Proper(Dihedral):
 
     _name = 'Proper'
     exclude = False
+    _writable_attrs = ['atom1_idx', 'atom2_idx', 'atom3_idx', 'atom4_idx',
+                       'constant', 'prefactor', 'periodicity', 'phase']
 
     def exclude_from_14_list(self):
         """
@@ -613,6 +613,8 @@ class Improper(Dihedral):
     """
 
     _name = 'Improper'
+    _writable_attrs = ['atom1_idx', 'atom2_idx', 'atom3_idx', 'atom4_idx',
+                       'constant', 'prefactor', 'periodicity']
 
 
 class OFFDihedral(TopologyElement):
