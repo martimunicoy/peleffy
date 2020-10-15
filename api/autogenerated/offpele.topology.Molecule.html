@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.gfc68116
+                0+untagged.1.gda9c0e6
               </div>
             
           
@@ -175,13 +175,13 @@
 <h1>offpele.topology.Molecule<a class="headerlink" href="#offpele-topology-molecule" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="offpele.topology.Molecule">
-<em class="property">class </em><code class="sig-prename descclassname">offpele.topology.</code><code class="sig-name descname">Molecule</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">smiles</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rotamer_resolution</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">exclude_terminal_rotamers</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">tag</span><span class="o">=</span><span class="default_value">'UNK'</span></em>, <em class="sig-param"><span class="n">connectivity_template</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#Molecule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Molecule" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">offpele.topology.</code><code class="sig-name descname">Molecule</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">smiles</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rotamer_resolution</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">exclude_terminal_rotamers</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">tag</span><span class="o">=</span><span class="default_value">'UNK'</span></em>, <em class="sig-param"><span class="n">connectivity_template</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">core_constraints</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#Molecule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Molecule" title="Permalink to this definition">¶</a></dt>
 <dd><p>It represent wraps up all the tools to parameterize a molecule with
 the OpenForceField toolkit for PELE.</p>
 <blockquote>
 <div><dl class="py method">
 <dt id="offpele.topology.Molecule.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">smiles</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rotamer_resolution</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">exclude_terminal_rotamers</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">tag</span><span class="o">=</span><span class="default_value">'UNK'</span></em>, <em class="sig-param"><span class="n">connectivity_template</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#Molecule.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Molecule.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">smiles</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rotamer_resolution</span><span class="o">=</span><span class="default_value">30</span></em>, <em class="sig-param"><span class="n">exclude_terminal_rotamers</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">tag</span><span class="o">=</span><span class="default_value">'UNK'</span></em>, <em class="sig-param"><span class="n">connectivity_template</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">core_constraints</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#Molecule.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Molecule.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>It initializes a Molecule object through a PDB file or a SMILES
 tag.</p>
 <dl class="field-list simple">
@@ -197,6 +197,10 @@ rotamers library  or not</p></li>
 <li><p><strong>tag</strong> (<em>str</em>) – The molecule tag. It must be a 3-character string</p></li>
 <li><p><strong>connectivity_template</strong> (<em>an rdkit.Chem.rdchem.Mol object</em>) – A molecule represented with RDKit to use when assigning the
 connectivity of this Molecule object</p></li>
+<li><p><strong>core_constraints</strong> (<em>list[int or str]</em>) – It defines the list of atoms to constrain in the core, thus,
+the core will be forced to contain them. Atoms can be specified
+through integers that match the atom index or strings that
+match with the atom PDB name</p></li>
 </ul>
 </dd>
 </dl>
@@ -238,6 +242,21 @@ from qcportal and the Open Force Field Toolkit)</p>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">molecule</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="s1">&#39;PDB_without_connectivity.pdb&#39;</span><span class="p">,</span>
 <span class="go">                        template=template)</span>
+</pre></div>
+</div>
+<p>Load a molecule and create its rotamer library template with
+a core constraint</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">offpele.topology</span> <span class="kn">import</span> <span class="n">Molecule</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">offpele.topology</span> <span class="kn">import</span> <span class="n">RotamerLibrary</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">molecule</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="n">smiles</span><span class="o">=</span><span class="s1">&#39;CCCC&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;butane&#39;</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;BUT&#39;</span><span class="p">,</span>
+<span class="go">                        exclude_terminal_rotamers=False,</span>
+<span class="go">                        core_constraints=[0, ])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rotamer_library</span> <span class="o">=</span> <span class="n">RotamerLibrary</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rotamer_library</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="s1">&#39;butz&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -293,7 +312,7 @@ gammas, and alphas</p>
 <dd class="field-odd"><p><strong>pdb_atom_names</strong> – The PDB atom names of all the atoms in this Molecule object</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p>str</p>
+<dd class="field-even"><p>list[str]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -397,40 +416,43 @@ current machine. Default is False</p></li>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">connectivity_template</span></code></p></td>
 <td><p>The template containing the correct connectivity for this Molecule object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">exclude_terminal_rotamers</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">core_constraints</span></code></p></td>
+<td><p>The list of indices or PDB names of the atoms to constraint to the core when building the rotamers.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">exclude_terminal_rotamers</span></code></p></td>
 <td><p>The behavior when handling terminal rotamers when generating the rotamers library.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">forcefield</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">forcefield</span></code></p></td>
 <td><p>The name of the forcefield employed to parameterize the molecule.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">graph</span></code></p></td>
 <td><p>The topological graph of the molecule.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">impropers</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">impropers</span></code></p></td>
 <td><p>The list of impropers of the molecule.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></p></td>
 <td><p>Molecule’s name.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">off_molecule</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">off_molecule</span></code></p></td>
 <td><p>The OpenForceField’s molecule instance linked to the molecule.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">parameterized</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">parameterized</span></code></p></td>
 <td><p>Whether the molecule has been parameterized with the Open Force Field toolkit or not.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">propers</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">propers</span></code></p></td>
 <td><p>The list of propers of the molecule.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rdkit_molecule</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rdkit_molecule</span></code></p></td>
 <td><p>The RDKit’s molecule instance linked to the molecule.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotamer_resolution</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotamer_resolution</span></code></p></td>
 <td><p>The resolution to be used when generating the rotamers library.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotamers</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotamers</span></code></p></td>
 <td><p>The list of rotamers of the molecule.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tag</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tag</span></code></p></td>
 <td><p>Molecule’s tag.</p></td>
 </tr>
 </tbody>

@@ -41,6 +41,7 @@ offpele.template.impact.WritableImproper
       ~WritableImproper.n_writable_attrs
       ~WritableImproper.name
       ~WritableImproper.periodicity
+      ~WritableImproper.phase
       ~WritableImproper.prefactor
    
    
