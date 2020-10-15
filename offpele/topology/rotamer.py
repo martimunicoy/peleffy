@@ -32,6 +32,13 @@ class Rotamer(object):
         self._index2 = index2
         self._resolution = resolution
 
+    def __eq__(self, other):
+        """Define equality operator"""
+        return (self.index1 == other.index1
+                and self.index2 == other.index2) \
+            or (self.index1 == other.index2
+                and self.index2 == other.index1)
+
     @property
     def index1(self):
         """
@@ -101,7 +108,7 @@ class RotamerLibrary(object):
 
         >>> molecule = Molecule(smiles='CCCC', name='butane', tag='BUT',
                                 exclude_terminal_rotamers=False,
-                                core_constraint=0)
+                                core_constraints=[0, ])
 
         >>> rotamer_library = RotamerLibrary(mol)
         >>> rotamer_library.to_file('butz')
@@ -144,6 +151,76 @@ class RotamerLibrary(object):
             The offpele's Molecule object
         """
         return self._molecule
+
+    def _ipython_display_(self):
+        """
+        It displays a 2D molecular representation with bonds highlighted
+        according to this rotamer library object.
+
+        Returns
+        -------
+        representation_2D : a IPython display object
+            It is displayable RDKit molecule with an embeded 2D
+            representation
+        """
+        COLORS = [(82 / 255, 215 / 255, 255 / 255), (255 / 255, 154 / 255, 71 / 255),
+                  (161 / 255, 255 / 255, 102 / 255), (255 / 255, 173 / 255, 209 / 255),
+                  (154 / 255, 92 / 255, 255 / 255), (66 / 255, 255 / 255, 167 / 255),
+                  (251 / 255, 255 / 255, 17 / 255)]
+
+        from rdkit import Chem
+        from rdkit.Chem.Draw import rdMolDraw2D
+
+        # Get 2D molecular representation
+        rdkit_toolkit = RDKitToolkitWrapper()
+        representation = rdkit_toolkit.get_2D_representation(self.molecule)
+
+        # Get rotamer branches from molecule
+        rotamer_branches = self.molecule.rotamers
+
+        bond_indexes = list()
+        bond_color_dict = dict()
+        for bond in representation.GetBonds():
+            rotamer = Rotamer(bond.GetBeginAtom().GetIdx(),
+                              bond.GetEndAtom().GetIdx())
+
+            for color_index, group in enumerate(rotamer_branches):
+                if rotamer in group:
+                    bond_indexes.append(bond.GetIdx())
+                    try:
+                        bond_color_dict[bond.GetIdx()] = COLORS[color_index]
+                    except IndexError:
+                        bond_color_dict[bond.GetIdx()] = (99 / 255,
+                                                          122 / 255,
+                                                          126 / 255)
+                    break
+
+        atom_indexes = list()
+        radii_dict = dict()
+        atom_color_dict = dict()
+
+        for atom in representation.GetAtoms():
+            atom_index = atom.GetIdx()
+            if atom_index in self.molecule._graph.core_nodes:
+                atom_indexes.append(atom.GetIdx())
+                radii_dict[atom.GetIdx()] = 0.6
+                atom_color_dict[atom.GetIdx()] = (255 / 255, 243 / 255, 133 / 255)
+
+        draw = rdMolDraw2D.MolDraw2DSVG(500, 500)
+        draw.SetLineWidth(4)
+        rdMolDraw2D.PrepareAndDrawMolecule(draw, representation,
+                                           highlightAtoms=atom_indexes,
+                                           highlightAtomRadii=radii_dict,
+                                           highlightAtomColors=atom_color_dict,
+                                           highlightBonds=bond_indexes,
+                                           highlightBondColors=bond_color_dict)
+        draw.FinishDrawing()
+
+        from IPython.display import SVG, display
+
+        image = SVG(draw.GetDrawingText())
+
+        return display(image)
 
 
 class MolecularGraph(nx.Graph):
@@ -630,7 +707,7 @@ class MolecularGraphWithConstrainedCore(MolecularGraph):
     It represents the structure of a Molecule as a networkx.Graph.
     """
 
-    def __init__(self, molecule, atom_constraint):
+    def __init__(self, molecule, atom_constraints):
         """
         It initializes a MolecularGraph object.
 
@@ -638,36 +715,45 @@ class MolecularGraphWithConstrainedCore(MolecularGraph):
         ----------
         molecule : An offpele.topology.Molecule
             A Molecule object to be written as an Impact file
-        atom_constraint : int or str
-            It defines the atom to constrain in the core, thus, the core
-            will be forced to contain it. It can be an integer that
-            specifies the atom index or a string that specifies the atom
-            name
+        atom_constraint : list[int or str]
+            It defines the list of atoms to constrain in the core, thus,
+            the core will be forced to contain them. Atoms can be specified
+            through integers that match the atom index or strings that
+            match with the atom PDB name
 
         Raises
         ------
         ValueError
+            If the supplied array of atom constraints is empty
             If the PDB atom name in atom_constraint does not match with
             any atom in the molecule
         TypeError
             If the atom_constraint is of invalid type
         """
-        if isinstance(atom_constraint, int):
-            self._constraint_index = atom_constraint
-        elif isinstance(atom_constraint, str):
-            atom_names = molecule.get_pdb_atom_names()
-            for index, name in enumerate(atom_names):
-                if name == atom_constraint:
-                    self._constraint_index = index
-                    break
+        if len(atom_constraints) == 0:
+            raise ValueError('Supplied empty array of atom constraints')
+
+        self._constraint_indices = list()
+
+        for atom_constraint in atom_constraints:
+            if isinstance(atom_constraint, int):
+                self._constraint_indices.append(atom_constraint)
+            elif isinstance(atom_constraint, str):
+                atom_names = molecule.get_pdb_atom_names()
+                for index, name in enumerate(atom_names):
+                    if name == atom_constraint:
+                        self._constraint_indices.append(index)
+                        break
+                else:
+                    raise ValueError('Supplied PDB atom name '
+                                     + '\'{}\''.format(atom_constraint)
+                                     + 'is missing in molecule')
             else:
-                raise ValueError('Supplied PDB atom name '
-                                 + '\'{}\''.format(atom_constraint)
-                                 + 'is missing in molecule')
-        else:
-            raise TypeError('Invalid type for the atom_constraint')
+                raise TypeError('Invalid type for the atom_constraint')
 
         super().__init__(molecule)
+
+        self._safety_check()
 
     def _build_core_nodes(self):
         """
@@ -677,8 +763,8 @@ class MolecularGraphWithConstrainedCore(MolecularGraph):
         from networkx.algorithms.shortest_paths.generic import \
             shortest_path_length
 
-        # Force core to contain constrained atom
-        core_nodes = [self.constraint_index, ]
+        # Force core to contain constrained atoms
+        core_nodes = [index for index in self.constraint_indices]
 
         # Calculate graph distances according to weight values
         weighted_distances = dict(shortest_path_length(self, weight="weight"))
@@ -686,33 +772,59 @@ class MolecularGraphWithConstrainedCore(MolecularGraph):
         # Add also all atoms at 0 distance with respect to constrained
         # atom into the core
         for node in self.nodes:
-            d = weighted_distances[self.constraint_index][node]
-            if d == 0 and node not in core_nodes:
-                core_nodes.append(node)
+            for constraint_index in self.constraint_indices:
+                d = weighted_distances[constraint_index][node]
+                if d == 0 and node not in core_nodes:
+                    core_nodes.append(node)
 
         self._core_nodes = core_nodes
 
+    def _safety_check(self):
+        """Perform a safety check on the atom constraints."""
+        if len(self.constraint_indices) < 2:
+            return
+
+        safe_indices = set()
+        for i, cidx1 in enumerate(self.constraint_indices):
+            if cidx1 in safe_indices:
+                continue
+            for cidx2 in self.constraint_indices:
+                if cidx2 in self.neighbors(cidx1):
+                    safe_indices.add(cidx1)
+                    safe_indices.add(cidx2)
+                    break
+            else:
+                raise ValueError('All atoms in atom constraints must be '
+                                 + 'adjacent and atom '
+                                 + self.constraint_names[i].strip()
+                                 + ' is not')
+
     @property
-    def constraint_index(self):
+    def constraint_indices(self):
         """
-        The index of the atom to constraint to the core.
+        The indices of atoms to constraint to the core.
 
         Returns
         -------
-        constraint_index : int
-            The atom index
+        constraint_indices : list[int]
+            List of atom indices
         """
-        return self._constraint_index
+        return self._constraint_indices
 
     @property
-    def constraint_name(self):
+    def constraint_names(self):
         """
-        The name of the atom to constraint to the core.
+        The names of atoms to constraint to the core.
 
         Returns
         -------
-        constraint_index : str
-            The atom name
+        constraint_names : list[str]
+            List of atom names
         """
         atom_names = self.molecule.get_pdb_atom_names()
-        return atom_names[self.constraint_index]
+
+        constraint_names = list()
+        for index in self.constraint_indices:
+            constraint_names.append(atom_names[index])
+
+        return constraint_names

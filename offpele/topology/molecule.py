@@ -449,7 +449,7 @@ class Molecule(object):
 
     def __init__(self, path=None, smiles=None, rotamer_resolution=30,
                  exclude_terminal_rotamers=True, name='', tag='UNK',
-                 connectivity_template=None, core_constraint=None):
+                 connectivity_template=None, core_constraints=[]):
         """
         It initializes a Molecule object through a PDB file or a SMILES
         tag.
@@ -473,11 +473,11 @@ class Molecule(object):
         connectivity_template : an rdkit.Chem.rdchem.Mol object
             A molecule represented with RDKit to use when assigning the
             connectivity of this Molecule object
-        core_constraint : int or str
-            It defines the atom to constrain in the core, thus, the core
-            will be forced to contain it. It can be an integer that
-            specifies the atom index or a string that specifies the atom
-            name. Default is None, which deactivates this option
+        core_constraints : list[int or str]
+            It defines the list of atoms to constrain in the core, thus,
+            the core will be forced to contain them. Atoms can be specified
+            through integers that match the atom index or strings that
+            match with the atom PDB name
 
         Examples
         --------
@@ -524,7 +524,7 @@ class Molecule(object):
 
         >>> molecule = Molecule(smiles='CCCC', name='butane', tag='BUT',
                                 exclude_terminal_rotamers=False,
-                                core_constraint=0)
+                                core_constraints=[0, ])
 
         >>> rotamer_library = RotamerLibrary(mol)
         >>> rotamer_library.to_file('butz')
@@ -535,7 +535,7 @@ class Molecule(object):
         self._rotamer_resolution = rotamer_resolution
         self._exclude_terminal_rotamers = exclude_terminal_rotamers
         self._connectivity_template = connectivity_template
-        self._core_constraint = core_constraint
+        self._core_constraints = core_constraints
 
         if isinstance(path, str):
             from pathlib import Path
@@ -655,11 +655,16 @@ class Molecule(object):
         if self.off_molecule and self.rdkit_molecule:
             logger.info(' - Generating rotamer library')
 
-            if self.core_constraint is not None:
+            if len(self.core_constraints) != 0:
                 self._graph = MolecularGraphWithConstrainedCore(
-                    self, self.core_constraint)
-                logger.info('   - Core forced to contain atom '
-                            + '{}'.format(self._graph.constraint_name.strip()))
+                    self, self.core_constraints)
+                if len(self.core_constraints) == 1:
+                    logger.info('   - Core forced to contain atom: '
+                                + self._graph.constraint_names[0])
+                else:
+                    logger.info('   - Core forced to contain atoms: '
+                                + ', '.join(atom_name.strip() for atom_name
+                                            in self._graph.constraint_names))
             else:
                 self._graph = MolecularGraph(self)
                 logger.info('   - Core set to the center of the molecule')
@@ -1351,17 +1356,17 @@ class Molecule(object):
         return self._connectivity_template
 
     @property
-    def core_constraint(self):
+    def core_constraints(self):
         """
-        The index or the PDB name of the atom to constraint to the core
-        when building the rotamers.
+        The list of indices or PDB names of the atoms to constraint to
+        the core when building the rotamers.
 
         Returns
         -------
-        constraint_index : int or str
-            The index or PDB name of the atom to constrain
+        core_constraints : list[int or str]
+            The list of indices or PDB names of the atoms to constrain
         """
-        return self._core_constraint
+        return self._core_constraints
 
     @property
     def off_molecule(self):
