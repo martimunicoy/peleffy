@@ -369,7 +369,6 @@ class RDKitToolkitWrapper(ToolkitWrapper):
             rot_bonds_atom_ids.add(atom_pair)
 
         # Remove bonds to terminal -CH3
-        # To do, add tests to validate this functionality
         if molecule.exclude_terminal_rotamers:
             terminal_bonds = set([
                 frozenset(atom_pair) for atom_pair in
