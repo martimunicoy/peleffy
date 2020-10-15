@@ -383,12 +383,10 @@ class Dihedral(TopologyElement):
     """
 
     _name = 'Dihedral'
-    _writable_attrs = ['atom1_idx', 'atom2_idx', 'atom3_idx', 'atom4_idx',
-                       'constant', 'prefactor', 'periodicity']
 
     def __init__(self, index=-1, atom1_idx=None, atom2_idx=None,
                  atom3_idx=None, atom4_idx=None, periodicity=None,
-                 prefactor=None, constant=None):
+                 prefactor=None, constant=None, phase=None):
         """
         It initiates an Dihedral object.
 
@@ -410,6 +408,8 @@ class Dihedral(TopologyElement):
             The prefactor of this Dihedral
         constant : simtk.unit.Quantity
             The constant of this Dihedral
+        phase : simtk.unit.Quantity
+            The phase constant of this Dihedral
         """
         self._index = index
         self._atom1_idx = atom1_idx
@@ -419,6 +419,7 @@ class Dihedral(TopologyElement):
         self._periodicity = periodicity
         self._prefactor = prefactor
         self._constant = constant
+        self._phase = phase
 
     def set_atom1_idx(self, index):
         """
@@ -473,7 +474,8 @@ class Dihedral(TopologyElement):
 
         x = unit.Quantity(np.arange(0, np.pi, 0.1), unit=unit.radians)
         pyplot.plot(x, self.constant * (1 + self.prefactor
-                                        * np.cos(self.periodicity * x)),
+                                        * np.cos(self.periodicity * x
+                                                 + self.phase)),
                     'r--')
 
         pyplot.show()
@@ -569,10 +571,22 @@ class Dihedral(TopologyElement):
 
         Returns
         -------
-        constant : int
-            The constant this Dihedral object
+        constant : unit.simtk.Quantity
+            The constant of this Dihedral object
         """
         return self._constant
+
+    @property
+    def phase(self):
+        """
+        Dihedral's phase constant.
+
+        Returns
+        -------
+        phase : unit.simtk.Quantity
+            The phase constant of this Dihedral object
+        """
+        return self._phase
 
 
 class Proper(Dihedral):
@@ -582,6 +596,8 @@ class Proper(Dihedral):
 
     _name = 'Proper'
     exclude = False
+    _writable_attrs = ['atom1_idx', 'atom2_idx', 'atom3_idx', 'atom4_idx',
+                       'constant', 'prefactor', 'periodicity', 'phase']
 
     def exclude_from_14_list(self):
         """
@@ -597,6 +613,8 @@ class Improper(Dihedral):
     """
 
     _name = 'Improper'
+    _writable_attrs = ['atom1_idx', 'atom2_idx', 'atom3_idx', 'atom4_idx',
+                       'constant', 'prefactor', 'periodicity']
 
 
 class OFFDihedral(TopologyElement):
@@ -646,6 +664,17 @@ class OFFDihedral(TopologyElement):
         self.k = k
         self.idivf = idivf
 
+    def _check_up(self):
+        """
+        It performs some parameter check ups.
+
+        Raises
+        ------
+        AssertionError
+            If any unexpected value is found
+        """
+        pass
+
     def to_PELE(self):
         """
         It converts this Open Force Field Dihedral object into a
@@ -653,7 +682,7 @@ class OFFDihedral(TopologyElement):
 
         .. todo ::
 
-           * Review doublecheck idivf term in OFF's torsion equation
+           * Fully cover all OpenFF dihedral parameters
 
         Returns
         -------
@@ -664,19 +693,16 @@ class OFFDihedral(TopologyElement):
                 or self.k is None or self.idivf is None):
             return None
 
-        assert self.periodicity in (1, 2, 3, 4, 6), 'Expected values for ' \
-            'periodicity are 1, 2, 3, 4 or 6, obtained ' \
-            '{}'.format(self.periodicity)
-        assert self.phase.value_in_unit(unit.degree) in (0, 180), \
-            'Expected values for phase are 0 or 180, obtained ' \
-            '{}'.format(self.phase)
-        # idivf can take values other than 1 in case of impropers
-        # proper's idivfs must always be 1
-        # assert self.idivf == 1, 'The expected value for idivf is 1, ' \
-        #     'obtained {}'.format(self.idivf)
+        try:
+            self._check_up()
+        except AssertionError as e:
+            raise ValueError('Invalid value found: {}'.format(e))
+
+        PELE_phase = self.phase
 
         if self.phase.value_in_unit(unit.degree) == 180:
             PELE_prefactor = -1
+            PELE_phase = unit.Quantity(value=0.0, unit=unit.degree)
         else:
             PELE_prefactor = 1
 
@@ -689,7 +715,8 @@ class OFFDihedral(TopologyElement):
                                 'atom4_idx': self.atom4_idx,
                                 'periodicity': self.periodicity,
                                 'prefactor': PELE_prefactor,
-                                'constant': PELE_constant}
+                                'constant': PELE_constant,
+                                'phase': PELE_phase}
 
         return self._to_PELE_class(**PELE_dihedral_kwargs)
 
@@ -716,6 +743,34 @@ class OFFProper(OFFDihedral):
     _name = 'OFFProper'
     _to_PELE_class = Proper
 
+    def _check_up(self):
+        """
+        It performs some parameter check ups.
+
+        .. todo ::
+
+            * Periodicity can also equal 5 and currently it is not supported
+             by PELE
+
+        Raises
+        ------
+        AssertionError
+            If any unexpected value is found
+        """
+        assert self.periodicity in (1, 2, 3, 4, 5, 6), 'Expected values ' \
+            'for periodicity are 1, 2, 3, 4, 5 or 6, obtained ' \
+            '{}'.format(self.periodicity)
+
+        # proper's idivfs must always be 1 --> Apparently not: COC(O)OC, t84, t86
+        # assert self.idivf == 1, 'The expected value for idivf is 1 ' \
+        #     'for propers, obtained {}'.format(self.idivf)
+
+        # The next version of PELE will be compatible with phase values
+        # other than 0 and 180 degrees to fully cover all OpenFF dihedrals
+        # assert self.phase.value_in_unit(unit.degree) in (0, 180), \
+        #     'Expected values for phase are 0 or 180, obtained ' \
+        #     '{}'.format(self.phase)
+
 
 class OFFImproper(OFFDihedral):
     """
@@ -724,3 +779,31 @@ class OFFImproper(OFFDihedral):
 
     _name = 'OFFImproper'
     _to_PELE_class = Improper
+
+    def _check_up(self):
+        """
+        It performs some parameter check ups.
+
+        .. todo ::
+
+            * Periodicity can also equal 5 and currently it is not supported
+             by PELE
+
+        Raises
+        ------
+        AssertionError
+            If any unexpected value is found
+        """
+        assert self.periodicity in (1, 2, 3, 4, 5, 6), 'Expected values ' \
+            'for periodicity are 1, 2, 3, 4, 5 or 6, obtained ' \
+            '{}'.format(self.periodicity)
+
+        assert self.phase.value_in_unit(unit.degree) in (0, 180), \
+            'Expected values for phase are 0 or 180 in impropers, ' \
+            'obtained {}'.format(self.phase)
+
+        # The next version of PELE will be compatible with phase values
+        # other than 0 and 180 degrees to fully cover all OpenFF dihedrals
+        # assert self.phase.value_in_unit(unit.degree) in (0, 180), \
+        #     'Expected values for phase are 0 or 180, obtained ' \
+        #     '{}'.format(self.phase)

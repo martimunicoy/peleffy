@@ -8,20 +8,38 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
-0.3.1 - Current development
----------------------------
+0.4.0 - Full compatibility for OPLS2005 and OpenFF dihedrals and rotamer library improvements - Current development
+-------------------------------------------------------------------------------------------------------------------
+
+This minor release extends the compatibility of offpele to fully handle OPLS2005 parameters and OpenFF dihedrals. Besides, it includes a functionality to generate rotamer libraries with core constraints to allow the user to force an atom to be in the core.
+
+New features
+""""""""""""
+- `PR #62 <https://github.com/martimunicoy/offpele/pull/62>`_: New functionality to generate rotamer libraries forcing an atom to be in the core.
+- `PR #63 <https://github.com/martimunicoy/offpele/pull/63>`_: Enhancements to the core constraints to allow the selection of multiple core atoms.
+- `PR #66 <https://github.com/martimunicoy/offpele/pull/66>`_: Full compatibility with OpenFF dihedrals.
+
+Tests added
+"""""""""""
+- `PR #62 <https://github.com/martimunicoy/offpele/pull/62>`_: Adds tests to validate the new rotamer library with core constraints.
+- `PR #63 <https://github.com/martimunicoy/offpele/pull/63>`_: More tests are added to validate the new rotamer library with core constraints.
+- `PR #66 <https://github.com/martimunicoy/offpele/pull/66>`_: Adds tests to validate the handling of non standard dihedrals.
+
+
+0.3.1 - General stability improvements
+--------------------------------------
 
 This is a micro release that includes general bug fixes and stability improvements. It is still a preliminary version of the Open Force Field to PELE package which is under development.
 
 New features
 """"""""""""
+- `PR #52 <https://github.com/martimunicoy/offpele/pull/52>`_: Molecule connectivity can be assigned from an RDKit molecular template when loading it from a PDB file without connectivity.
 - `PR #55 <https://github.com/martimunicoy/offpele/pull/55>`_: Standard output prints follow the logging hierarchy and can be modified by the user.
 - `PR #59 <https://github.com/martimunicoy/offpele/pull/59>`_: Set alternative conformers to the offpele's molecule representation.
 
 Bugfixes
 """"""""
 - `PR #48 <https://github.com/martimunicoy/offpele/pull/48>`_: Fixes CLI's default output paths.
-- `PR #52 <https://github.com/martimunicoy/offpele/pull/52>`_: Molecule connectivity can be assigned from an RDKit molecular template when loading it from a PDB file without connectivity.
 - `PR #58 <https://github.com/martimunicoy/offpele/pull/58>`_: Fixes unconsistencies between PDB residue name and molecule tag.
 
 Tests added

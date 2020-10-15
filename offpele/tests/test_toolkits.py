@@ -314,6 +314,11 @@ class TestRDKitToolkitWrapper(object):
         initial_theta = Chem.rdMolTransforms.GetDihedralDeg(conformer,
                                                             *dihedral)
 
+        if initial_theta < -179:
+            initial_theta += 180.0
+        elif initial_theta > 179:
+            initial_theta -= 180.0
+
         assert abs(initial_theta - -0.002) < 10e-3, \
             'Unexpected initial theta value'
 
