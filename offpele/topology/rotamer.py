@@ -665,7 +665,7 @@ class MolecularGraphWithConstrainedCore(MolecularGraph):
                                  + '\'{}\''.format(atom_constraint)
                                  + 'is missing in molecule')
         else:
-            TypeError('Invalid type for the atom_constraint')
+            raise TypeError('Invalid type for the atom_constraint')
 
         super().__init__(molecule)
 
