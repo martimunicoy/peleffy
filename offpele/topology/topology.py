@@ -664,7 +664,7 @@ class OFFDihedral(TopologyElement):
         self.k = k
         self.idivf = idivf
 
-    def _check_up():
+    def _check_up(self):
         """
         It performs some parameter check ups.
 
