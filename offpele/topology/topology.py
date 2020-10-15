@@ -761,9 +761,9 @@ class OFFProper(OFFDihedral):
             'periodicity are 1, 2, 3, 4 or 6, obtained ' \
             '{}'.format(self.periodicity)
 
-        # proper's idivfs must always be 1
-        assert self.idivf == 1, 'The expected value for idivf is 1 ' \
-            'for propers, obtained {}'.format(self.idivf)
+        # proper's idivfs must always be 1 --> Apparently not: COC(O)OC, t84, t86
+        # assert self.idivf == 1, 'The expected value for idivf is 1 ' \
+        #     'for propers, obtained {}'.format(self.idivf)
 
         # The next version of PELE will be compatible with phase values
         # other than 0 and 180 degrees to fully cover all OpenFF dihedrals
