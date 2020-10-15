@@ -82,6 +82,30 @@ class RotamerLibrary(object):
         ----------
         molecule : An offpele.topology.Molecule
             The Molecule object whose rotamer library will be generated
+
+        Load a molecule and create its rotamer library template
+
+        >>> from offpele.topology import Molecule
+        >>> from offpele.topology import RotamerLibrary
+
+        >>> molecule = Molecule(smiles='CCCC', name='butane', tag='BUT')
+
+        >>> rotamer_library = RotamerLibrary(mol)
+        >>> rotamer_library.to_file('butz')
+
+        Load a molecule and create its rotamer library template with
+        a core constraint
+
+        >>> from offpele.topology import Molecule
+        >>> from offpele.topology import RotamerLibrary
+
+        >>> molecule = Molecule(smiles='CCCC', name='butane', tag='BUT',
+                                exclude_terminal_rotamers=False,
+                                core_constraint=0)
+
+        >>> rotamer_library = RotamerLibrary(mol)
+        >>> rotamer_library.to_file('butz')
+
         """
         self._molecule = molecule
 
@@ -599,3 +623,96 @@ class MolecularGraph(nx.Graph):
             The nodes in the core
         """
         return self._core_nodes
+
+
+class MolecularGraphWithConstrainedCore(MolecularGraph):
+    """
+    It represents the structure of a Molecule as a networkx.Graph.
+    """
+
+    def __init__(self, molecule, atom_constraint):
+        """
+        It initializes a MolecularGraph object.
+
+        Parameters
+        ----------
+        molecule : An offpele.topology.Molecule
+            A Molecule object to be written as an Impact file
+        atom_constraint : int or str
+            It defines the atom to constrain in the core, thus, the core
+            will be forced to contain it. It can be an integer that
+            specifies the atom index or a string that specifies the atom
+            name
+
+        Raises
+        ------
+        ValueError
+            If the PDB atom name in atom_constraint does not match with
+            any atom in the molecule
+        TypeError
+            If the atom_constraint is of invalid type
+        """
+        if isinstance(atom_constraint, int):
+            self._constraint_index = atom_constraint
+        elif isinstance(atom_constraint, str):
+            atom_names = molecule.get_pdb_atom_names()
+            for index, name in enumerate(atom_names):
+                if name == atom_constraint:
+                    self._constraint_index = index
+                    break
+            else:
+                raise ValueError('Supplied PDB atom name '
+                                 + '\'{}\''.format(atom_constraint)
+                                 + 'is missing in molecule')
+        else:
+            raise TypeError('Invalid type for the atom_constraint')
+
+        super().__init__(molecule)
+
+    def _build_core_nodes(self):
+        """
+        It builds the list of core nodes
+        """
+
+        from networkx.algorithms.shortest_paths.generic import \
+            shortest_path_length
+
+        # Force core to contain constrained atom
+        core_nodes = [self.constraint_index, ]
+
+        # Calculate graph distances according to weight values
+        weighted_distances = dict(shortest_path_length(self, weight="weight"))
+
+        # Add also all atoms at 0 distance with respect to constrained
+        # atom into the core
+        for node in self.nodes:
+            d = weighted_distances[self.constraint_index][node]
+            if d == 0 and node not in core_nodes:
+                core_nodes.append(node)
+
+        self._core_nodes = core_nodes
+
+    @property
+    def constraint_index(self):
+        """
+        The index of the atom to constraint to the core.
+
+        Returns
+        -------
+        constraint_index : int
+            The atom index
+        """
+        return self._constraint_index
+
+    @property
+    def constraint_name(self):
+        """
+        The name of the atom to constraint to the core.
+
+        Returns
+        -------
+        constraint_index : str
+            The atom name
+        """
+        atom_names = self.molecule.get_pdb_atom_names()
+        return atom_names[self.constraint_index]

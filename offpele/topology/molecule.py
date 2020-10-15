@@ -6,7 +6,7 @@ representations.
 from pathlib import Path
 
 from .topology import Bond, Angle, OFFProper, OFFImproper
-from .rotamer import MolecularGraph
+from .rotamer import MolecularGraph, MolecularGraphWithConstrainedCore
 from offpele.utils.toolkits import (RDKitToolkitWrapper,
                                     OpenForceFieldToolkitWrapper,
                                     SchrodingerToolkitWrapper)
@@ -449,7 +449,7 @@ class Molecule(object):
 
     def __init__(self, path=None, smiles=None, rotamer_resolution=30,
                  exclude_terminal_rotamers=True, name='', tag='UNK',
-                 connectivity_template=None):
+                 connectivity_template=None, core_constraint=None):
         """
         It initializes a Molecule object through a PDB file or a SMILES
         tag.
@@ -473,6 +473,11 @@ class Molecule(object):
         connectivity_template : an rdkit.Chem.rdchem.Mol object
             A molecule represented with RDKit to use when assigning the
             connectivity of this Molecule object
+        core_constraint : int or str
+            It defines the atom to constrain in the core, thus, the core
+            will be forced to contain it. It can be an integer that
+            specifies the atom index or a string that specifies the atom
+            name. Default is None, which deactivates this option
 
         Examples
         --------
@@ -511,12 +516,26 @@ class Molecule(object):
         >>> molecule = Molecule('PDB_without_connectivity.pdb',
                                 template=template)
 
+        Load a molecule and create its rotamer library template with
+        a core constraint
+
+        >>> from offpele.topology import Molecule
+        >>> from offpele.topology import RotamerLibrary
+
+        >>> molecule = Molecule(smiles='CCCC', name='butane', tag='BUT',
+                                exclude_terminal_rotamers=False,
+                                core_constraint=0)
+
+        >>> rotamer_library = RotamerLibrary(mol)
+        >>> rotamer_library.to_file('butz')
+
         """
         self._name = name
         self._tag = tag
         self._rotamer_resolution = rotamer_resolution
         self._exclude_terminal_rotamers = exclude_terminal_rotamers
         self._connectivity_template = connectivity_template
+        self._core_constraint = core_constraint
 
         if isinstance(path, str):
             from pathlib import Path
@@ -636,7 +655,15 @@ class Molecule(object):
         if self.off_molecule and self.rdkit_molecule:
             logger.info(' - Generating rotamer library')
 
-            self._graph = MolecularGraph(self)
+            if self.core_constraint is not None:
+                self._graph = MolecularGraphWithConstrainedCore(
+                    self, self.core_constraint)
+                logger.info('   - Core forced to contain atom '
+                            + '{}'.format(self._graph.constraint_name.strip()))
+            else:
+                self._graph = MolecularGraph(self)
+                logger.info('   - Core set to the center of the molecule')
+
             self._rotamers = self._graph.get_rotamers()
 
     def set_name(self, name):
@@ -772,7 +799,8 @@ class Molecule(object):
 
         Raises
         ------
-        Exception if the requested charge method is unknown
+        ValueError
+            If the requested charge method is unknown
         """
 
         if charges_method == 'am1bcc' or charges_method is None:
@@ -785,8 +813,8 @@ class Molecule(object):
             return OPLSChargeCalculator(self)
 
         else:
-            raise Exception('Charges method \'{}\' '.format(charges_method)
-                            + 'is unknown')
+            raise ValueError('Charges method \'{}\' '.format(charges_method)
+                             + 'is unknown')
 
     def _assign_charges(self, method):
         """It computes the partial charges using the charge calculation
@@ -1217,7 +1245,7 @@ class Molecule(object):
 
         Returns
         -------
-        pdb_atom_names : str
+        pdb_atom_names : list[str]
             The PDB atom names of all the atoms in this Molecule object
         """
         rdkit_toolkit = RDKitToolkitWrapper()
@@ -1321,6 +1349,19 @@ class Molecule(object):
             connectivity of this Molecule object
         """
         return self._connectivity_template
+
+    @property
+    def core_constraint(self):
+        """
+        The index or the PDB name of the atom to constraint to the core
+        when building the rotamers.
+
+        Returns
+        -------
+        constraint_index : int or str
+            The index or PDB name of the atom to constrain
+        """
+        return self._core_constraint
 
     @property
     def off_molecule(self):
