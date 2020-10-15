@@ -16,10 +16,12 @@ This minor release extends the compatibility of offpele to fully handle dihedral
 New features
 """"""""""""
 - `PR #62 <https://github.com/martimunicoy/offpele/pull/62>`_: New functionality to generate rotamer libraries forcing an atom to be in the core.
+- `PR #63 <https://github.com/martimunicoy/offpele/pull/63>`_: Enhancements to the core constraints to allow the selection of multiple core atoms.
 
 Tests added
 """""""""""
 - `PR #62 <https://github.com/martimunicoy/offpele/pull/62>`_: Adds tests to validate the new rotamer library with core constraints.
+- `PR #63 <https://github.com/martimunicoy/offpele/pull/63>`_: More tests are added to validate the new rotamer library with core constraints.
 
 
 0.3.1 - General stability improvements
