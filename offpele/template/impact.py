@@ -21,6 +21,11 @@ class Impact(object):
         """
         Initializes an Impact object.
 
+        .. todo ::
+
+            * It needs to raise an Exception when the supplied molecule
+            is not parameterized
+
         Parameters
         ----------
         molecule : An offpele.topology.Molecule
