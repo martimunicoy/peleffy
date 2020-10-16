@@ -18,8 +18,8 @@ from offpele.utils import check_if_path_exists, create_path, Logger
 
 DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-1.2.0.offxml'
 DEFAULT_RESOLUTION = int(30)
-DEFAULT_CHARGES_METHOD = 'am1bcc'
-AVAILABLE_CHARGES_METHODS = ['am1bcc', 'gasteiger', 'OPLS']
+DEFAULT_CHARGE_METHOD = 'am1bcc'
+AVAILABLE_CHARGE_METHODS = ['am1bcc', 'gasteiger', 'OPLS']
 IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OFF/Parsley/HeteroAtoms/'
 ROTAMER_LIBRARY_PATH = 'DataLocal/LigandRotamerLibs/'
 SOLVENT_TEMPLATE_PATH = 'DataLocal/OBC/'
@@ -55,10 +55,10 @@ def parse_args():
     parser.add_argument('--as_DataLocal', dest='as_datalocal',
                         help="Output will be saved following PELE's DataLocal "
                         + "hierarchy", action='store_true')
-    parser.add_argument('-c', '--charges_method', metavar="NAME",
+    parser.add_argument('-c', '--charge_method', metavar="NAME",
                         type=str, help="The name of the method to use to "
-                        + "compute charges", default=DEFAULT_CHARGES_METHOD,
-                        choices=AVAILABLE_CHARGES_METHODS)
+                        + "compute charges", default=DEFAULT_CHARGE_METHOD,
+                        choices=AVAILABLE_CHARGE_METHODS)
     parser.add_argument('--include_terminal_rotamers',
                         dest="include_terminal_rotamers",
                         action='store_true',
@@ -147,7 +147,7 @@ def handle_output_paths(molecule, output, as_datalocal):
 
 def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
                 resolution=DEFAULT_RESOLUTION,
-                charges_method=DEFAULT_CHARGES_METHOD,
+                charge_method=DEFAULT_CHARGE_METHOD,
                 use_OPLS_nb_params=False,
                 use_OPLS_bonds_and_angles=False,
                 exclude_terminal_rotamers=True,
@@ -163,7 +163,7 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
         The name of an OpenForceField's forcefield
     resolution : float
         The resolution in degrees for the rotamer library. Default is 30
-    charges_method : str
+    charge_method : str
         The name of the method to use to compute partial charges. Default
         is 'am1bcc'
     use_OPLS_nb_params : bool
@@ -198,7 +198,7 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     log.info('   - DataLocal-like output:', as_datalocal)
     log.info(' - Parameterization:')
     log.info('   - Force field:', forcefield)
-    log.info('   - Charges method:', charges_method)
+    log.info('   - Charge method:', charge_method)
     log.info('   - Use OPLS nonbonding parameters:', use_OPLS_nb_params)
     log.info('   - Use OPLS bonds and angles:', use_OPLS_bonds_and_angles)
     log.info(' - Rotamer library:')
@@ -223,7 +223,7 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     rotamer_library = offpele.topology.RotamerLibrary(molecule)
     rotamer_library.to_file(rotlib_out)
 
-    molecule.parameterize(forcefield, charges_method=charges_method,
+    molecule.parameterize(forcefield, charge_method=charge_method,
                           use_OPLS_nonbonding_params=use_OPLS_nb_params,
                           use_OPLS_bonds_and_angles=use_OPLS_bonds_and_angles)
     impact = Impact(molecule)
@@ -268,7 +268,7 @@ def main():
         logger.set_level('INFO')
 
     run_offpele(args.pdb_file, args.forcefield, args.resolution,
-                args.charges_method, args.use_OPLS_nb_params,
+                args.charge_method, args.use_OPLS_nb_params,
                 args.use_OPLS_bonds_and_angles, exclude_terminal_rotamers,
                 args.output, args.with_solvent, args.as_datalocal)
 

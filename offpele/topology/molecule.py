@@ -3,7 +3,6 @@ This module handles all classes and functions related with molecular
 representations.
 """
 
-from pathlib import Path
 
 from .topology import Bond, Angle, OFFProper, OFFImproper
 from .rotamer import MolecularGraph, MolecularGraphWithConstrainedCore
@@ -569,9 +568,9 @@ class Molecule(object):
         self._off_molecule = None
         self._rotamers = None
         self._graph = None
-        self._parameterized = False
-        self._OPLS_included = False
-        self._OPLS_parameters = None
+
+        from offpele.forcefield.parameters import BaseParameterWrapper
+        self._parameters = BaseParameterWrapper()
 
     def _initialize_from_pdb(self, path):
         """
@@ -703,7 +702,7 @@ class Molecule(object):
 
         self._tag = tag.upper()
 
-    def parameterize(self, forcefield_name, charges_method=None,
+    def parameterize(self, forcefield_name, charge_method=None,
                      use_OPLS_nonbonding_params=False,
                      use_OPLS_bonds_and_angles=False):
         """
@@ -714,8 +713,8 @@ class Molecule(object):
         forcefield_name : str
             The name of the forcefield from which the parameters will be
             obtained
-        charges_method : str
-            The name of the charges method to employ. One of
+        charge_method : str
+            The name of the charge method to employ. One of
             ['gasteiger', 'am1bcc', 'OPLS']. If None, 'am1bcc' will be used
         use_OPLS_nonbonding_params : bool
             Whether to use Open Force Field or OPLS to obtain the
@@ -736,17 +735,17 @@ class Molecule(object):
         logger = Logger()
         logger.info(' - Loading forcefield')
         ff_selector = ForceFieldSelector()
-        forcefield = ff_selector.get_by_name(forcefield_name)
-        self.parameters = forcefield.parameterize(self)
 
-        # TODO check out type of the attribute below
-        self._forcefield = forcefield  # str(Path(forcefield).stem)
+        # Set forcefield and the corresponding parameters
+        self._forcefield = ff_selector.get_by_name(forcefield_name)
+        self._parameters = self.forcefield.parameterize(self)
 
-        charges_calculator = self._get_charges_calculator(charges_method)
+        # Initialize the charges calculator
+        charge_calculator = self._get_charge_calculator(charge_method)
 
         logger.info(' - Computing partial charges with '
-                    + '{}'.format(charges_calculator.name))
-        self._assign_charges(charges_calculator)
+                    + '{}'.format(charge_calculator.name))
+        self._assign_charges(charge_calculator)
 
         self._clean_lists()
 
@@ -783,14 +782,18 @@ class Molecule(object):
         except AssertionError:
             raise Exception('Molecule not parameterized')
 
-    def _get_charges_calculator(self, charges_method):
+    def _get_charge_calculator(self, charge_method):
         """
-        It returns the charges method that matches with the name that is
+        It returns the charge method that matches with the name that is
         supplied.
+
+        .. todo ::
+
+            * Move this function to an external charge calculator selector
 
         Parameters
         ----------
-        charges_method : str
+        charge_method : str
             The name of the charges method to employ.
             One of ['gasteiger', 'am1bcc']. If None, 'am1bcc' will be used
 
@@ -807,17 +810,23 @@ class Molecule(object):
             If the requested charge method is unknown
         """
 
-        if charges_method == 'am1bcc' or charges_method is None:
+        if charge_method == 'am1bcc':
             return Am1bccCalculator(self)
 
-        elif charges_method == 'gasteiger':
+        elif charge_method == 'gasteiger':
             return GasteigerCalculator(self)
 
-        elif charges_method == 'OPLS':
+        elif charge_method == 'OPLS':
             return OPLSChargeCalculator(self)
 
+        elif charge_method is None:
+            if self.forcefield.type == 'OPLS2005':
+                return OPLSChargeCalculator(self)
+            else:
+                return Am1bccCalculator(self)
+
         else:
-            raise ValueError('Charges method \'{}\' '.format(charges_method)
+            raise ValueError('Charge method \'{}\' '.format(charge_method)
                              + 'is unknown')
 
     def _assign_charges(self, method):
@@ -834,7 +843,7 @@ class Molecule(object):
 
         charges = method.get_partial_charges()
 
-        self.off_molecule.partial_charges = charges
+        self.parameters['charges'] = charges
 
     def _clean_lists(self):
         """It cleans all the lists before parameterizing."""
@@ -848,57 +857,24 @@ class Molecule(object):
 
     def _build_atoms(self):
         """It builds the atoms of the molecule."""
-        # PELE needs underscores instead of whitespaces
-        pdb_atom_names = {(i, ): name.replace(' ', '_',)
-                          for i, name in enumerate(self.get_pdb_atom_names())}
-
-        OPLS_types = {i: 'OFFT'
-                      for i in self.parameters.get_vdW_parameters().keys()}
-
-        # TODO Which is the purpose of unknown value? Is it important?
-        unknowns = {i: None
-                    for i in self.parameters.get_vdW_parameters().keys()}
-
-        # TODO Create z-matrix from 3D coordinates
-
         coords = RDKitToolkitWrapper().get_coordinates(self)
 
-        sigmas = self.parameters.get_vdW_sigmas()
-
-        if all([sigma is None for sigma in sigmas.values()]):
-            sigmas = self.parameters.get_vdW_sigmas_from_rmin_halves()
-
-        epsilons = self.parameters.get_vdW_epsilons()
-
-        # TODO Find a way to assign implicit solvent parameters to atoms with OFF
-        born_radii = {i: None
-                      for i in self.parameters.get_vdW_parameters().keys()}
-
-        # TODO Doublecheck later this relation
-        SASA_radii = {i: j / 2.0 for i, j in sigmas.items()}
-
-        # TODO Find a way to assign implicit solvent parameters to atoms with OFF
-        nonpolar_gammas = {i: None for i in
-                           self.parameters.get_vdW_parameters().keys()}
-        nonpolar_alphas = {i: None for i in
-                           self.parameters.get_vdW_parameters().keys()}
-
-        for index in self.parameters.get_vdW_parameters().keys():
-            assert len(index) == 1, 'Index should be a tupple of length 1'
-            atom = Atom(index=int(index[0]),
-                        PDB_name=pdb_atom_names[index],
-                        OPLS_type=OPLS_types[index],
-                        unknown=unknowns[index],
+        for index, (atom_name, atom_type, sigma, epsilon, charge,
+                    SGB_radius, vdW_radius, gamma, alpha) \
+                in enumerate(self.parameters.atom_iterator):
+            atom = Atom(index=index,
+                        PDB_name=atom_name,
+                        OPLS_type=atom_type,
                         x=coords[index][0],
                         y=coords[index][1],
                         z=coords[index][2],
-                        sigma=sigmas[index],
-                        epsilon=epsilons[index],
-                        charge=self.off_molecule.partial_charges[index],
-                        born_radius=born_radii[index],
-                        SASA_radius=SASA_radii[index],
-                        nonpolar_gamma=nonpolar_gammas[index],
-                        nonpolar_alpha=nonpolar_alphas[index])
+                        sigma=sigma,
+                        epsilon=epsilon,
+                        charge=charge,
+                        born_radius=SGB_radius,
+                        SASA_radius=vdW_radius,
+                        nonpolar_gamma=gamma,
+                        nonpolar_alpha=alpha)
             self._add_atom(atom)
 
     def _add_atom(self, atom):
@@ -914,19 +890,12 @@ class Molecule(object):
 
     def _build_bonds(self):
         """It builds the bonds of the molecule."""
-        lengths = self.parameters.get_bond_lengths()
-
-        ks = self.parameters.get_bond_ks()
-
-        bond_indexes = self.parameters.get_bond_parameters().keys()
-
-        for index, atom_indexes in enumerate(bond_indexes):
-            (atom1_idx, atom2_idx) = atom_indexes
-            # PELE works with half of the OFF's spring
-            k = ks[atom_indexes] / 2.0
-            bond = Bond(index=index, atom1_idx=atom1_idx, atom2_idx=atom2_idx,
-                        spring_constant=k,
-                        eq_dist=lengths[atom_indexes])
+        for index, bond in enumerate(self.parameters['bonds']):
+            bond = Bond(index=index,
+                        atom1_idx=bond['atom1_idx'],
+                        atom2_idx=bond['atom2_idx'],
+                        spring_constant=bond['spring_constant'],
+                        eq_dist=bond['eq_dist'])
             self._add_bond(bond)
 
     def _add_bond(self, bond):
@@ -942,20 +911,13 @@ class Molecule(object):
 
     def _build_angles(self):
         """It builds the angles of the molecule."""
-        angles = self.parameters.get_angle_angles()
-
-        ks = self.parameters.get_angle_ks()
-
-        angle_indexes = self.parameters.get_angle_parameters().keys()
-
-        for index, atom_indexes in enumerate(angle_indexes):
-            atom1_idx, atom2_idx, atom3_idx = atom_indexes
-            # PELE works with half of the OFF's spring
-            k = ks[atom_indexes] / 2.0
-            angle = Angle(index=index, atom1_idx=atom1_idx,
-                          atom2_idx=atom2_idx, atom3_idx=atom3_idx,
-                          spring_constant=k,
-                          eq_angle=angles[atom_indexes])
+        for index, angle in enumerate(self.parameters['angles']):
+            angle = Angle(index=index,
+                          atom1_idx=angle['atom1_idx'],
+                          atom2_idx=angle['atom2_idx'],
+                          atom3_idx=angle['atom3_idx'],
+                          spring_constant=angle['spring_constant'],
+                          eq_angle=angle['eq_angle'])
             self._add_angle(angle)
 
     def _add_angle(self, angle):
@@ -971,58 +933,19 @@ class Molecule(object):
 
     def _build_propers(self):
         """It builds the propers of the molecule."""
-        periodicities = self.parameters.get_dihedral_periodicities()
-        phases = self.parameters.get_dihedral_phases()
-        ks = self.parameters.get_dihedral_ks()
-        idivfs = self.parameters.get_dihedral_idivfs()
+        for index, proper in enumerate(self.parameters['propers']):
+            off_proper = OFFProper(atom1_idx=proper['atom1_idx'],
+                                   atom2_idx=proper['atom2_idx'],
+                                   atom3_idx=proper['atom3_idx'],
+                                   atom4_idx=proper['atom4_idx'],
+                                   periodicity=proper['periodicity'],
+                                   phase=proper['phase'],
+                                   k=proper['k'],
+                                   idivf=proper['idivf'])
 
-        # TODO in which situation these dicts are supposed to be None?
-        if periodicities is None or phases is None or ks is None:
-            return
-
-        # idivf is a optional parameter in OpenForceField
-        if len(idivfs) == 0:
-            for period_by_index in periodicities:
-                idivfs.append(dict(zip(
-                    period_by_index.keys(),
-                    [1, ] * len(period_by_index.keys()))))
-
-        assert len(periodicities) == len(phases) and \
-            len(periodicities) == len(ks) and \
-            len(periodicities) == len(idivfs), 'Unconsistent set of ' \
-            'OpenForceField\'s torsional parameters. They all should have ' \
-            'equal lengths'
-
-        for period_by_index, phase_by_index, k_by_index, idivf_by_index in \
-                zip(periodicities, phases, ks, idivfs):
-
-            assert period_by_index.keys() == phase_by_index.keys() and \
-                period_by_index.keys() == k_by_index.keys() and \
-                period_by_index.keys() == idivf_by_index.keys(), 'Unconsistent ' \
-                'torsional parameter indexes. Keys should match.'
-
-            for index in period_by_index.keys():
-                atom1_idx, atom2_idx, atom3_idx, atom4_idx = index
-
-                period = period_by_index[index]
-                phase = phase_by_index[index]
-                k = k_by_index[index]
-                idivf = idivf_by_index[index]
-
-                if (period is not None and phase is not None
-                        and k is not None and idivf is not None):
-                    off_proper = OFFProper(atom1_idx=atom1_idx,
-                                           atom2_idx=atom2_idx,
-                                           atom3_idx=atom3_idx,
-                                           atom4_idx=atom4_idx,
-                                           periodicity=period,
-                                           phase=phase,
-                                           k=k,
-                                           idivf=idivf)
-
-                    PELE_proper = off_proper.to_PELE()
-                    self._add_proper(PELE_proper)
-                    self._add_OFF_proper(off_proper)
+            PELE_proper = off_proper.to_PELE()
+            self._add_proper(PELE_proper)
+            self._add_OFF_proper(off_proper)
 
         self._handle_excluded_propers()
 
@@ -1102,58 +1025,19 @@ class Molecule(object):
 
     def _build_impropers(self):
         """It builds the impropers of the molecule."""
-        periodicities = self.parameters.get_improper_periodicities()
-        phases = self.parameters.get_improper_phases()
-        ks = self.parameters.get_improper_ks()
-        idivfs = self.parameters.get_improper_idivfs()
+        for index, improper in enumerate(self.parameters['impropers']):
+            off_improper = OFFImproper(atom1_idx=improper['atom1_idx'],
+                                       atom2_idx=improper['atom2_idx'],
+                                       atom3_idx=improper['atom3_idx'],
+                                       atom4_idx=improper['atom4_idx'],
+                                       periodicity=improper['periodicity'],
+                                       phase=improper['phase'],
+                                       k=improper['k'],
+                                       idivf=improper['idivf'])
 
-        # TODO in which situation these dicts are supposed to be None?
-        if periodicities is None or phases is None or ks is None:
-            return
-
-        # idivf is a optional parameter in OpenForceField
-        if len(idivfs) == 0:
-            for period_by_index in periodicities:
-                idivfs.append(dict(zip(
-                    period_by_index.keys(),
-                    [1, ] * len(period_by_index.keys()))))
-
-        assert len(periodicities) == len(phases) and \
-            len(periodicities) == len(ks) and \
-            len(periodicities) == len(idivfs), 'Unconsistent set of ' \
-            'OpenForceField\'s improper parameters. They all should ' \
-            'have equal lengths'
-
-        for period_by_index, phase_by_index, k_by_index, idivf_by_index in \
-                zip(periodicities, phases, ks, idivfs):
-
-            assert period_by_index.keys() == phase_by_index.keys() and \
-                period_by_index.keys() == k_by_index.keys() and \
-                period_by_index.keys() == idivf_by_index.keys(), 'Unconsistent ' \
-                'torsional parameter indexes. Keys should match.'
-
-            for index in period_by_index.keys():
-                atom1_idx, atom2_idx, atom3_idx, atom4_idx = index
-
-                period = period_by_index[index]
-                phase = phase_by_index[index]
-                k = k_by_index[index]
-                idivf = idivf_by_index[index]
-
-                if (period is not None and phase is not None
-                        and k is not None and idivf is not None):
-                    off_improper = OFFImproper(atom1_idx=atom1_idx,
-                                               atom2_idx=atom2_idx,
-                                               atom3_idx=atom3_idx,
-                                               atom4_idx=atom4_idx,
-                                               periodicity=period,
-                                               phase=phase,
-                                               k=k,
-                                               idivf=idivf)
-
-                    PELE_improper = off_improper.to_PELE()
-                    self._add_improper(PELE_improper)
-                    self._add_OFF_improper(off_improper)
+            PELE_improper = off_improper.to_PELE()
+            self._add_improper(PELE_improper)
+            self._add_OFF_improper(off_improper)
 
     def _add_improper(self, improper):
         """
@@ -1512,6 +1396,19 @@ class Molecule(object):
         return self._graph
 
     @property
+    def parameters(self):
+        """
+        It contains the parameter wrapper of the molecule. If the
+        molecule has not been parameterized yet, it is set to None.
+
+        Returns
+        -------
+        parameters : an BaseParameterWrapper object
+            The parameter wrapper
+        """
+        return self._parameters
+
+    @property
     def parameterized(self):
         """
         Whether the molecule has been parameterized with the Open Force Field
@@ -1522,35 +1419,7 @@ class Molecule(object):
         parameterized : bool
             The parameterization status
         """
-        return self._parameterized
-
-    @property
-    def OPLS_included(self):
-        """
-        Whether the molecule has been parameterized with OPLS in combination
-        with the Open Force Field toolkit or not.
-
-        Returns
-        -------
-        OPLS_included : bool
-            The OPLS combination status
-        """
-        return self._OPLS_included
-
-    @property
-    def OPLS_parameters(self):
-        """
-        The OPLS parameters of the molecule.
-
-        Returns
-        -------
-        OPLS_parameters : a SchrodingerToolkitWrapper.OPLSParameters object
-            The set of lists of parameters grouped by parameter type.
-            Thus, the dictionary has the following keys: atom_names,
-            atom_types, charges, sigmas, epsilons, SGB_radii, vdW_radii,
-            gammas, and alphas
-        """
-        return self.get_OPLS_parameters()
+        return self.parameters is not None
 
     def _ipython_display_(self):
         """

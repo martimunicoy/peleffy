@@ -15,7 +15,8 @@ from copy import deepcopy
 import numpy as np
 from simtk import unit
 
-from offpele.forcefield import (OpenForceFieldParameterWrapper)
+from offpele.forcefield import (OpenForceFieldParameterWrapper,
+                                OPLS2005ParameterWrapper)
 from offpele.utils import temporary_cd, get_data_file_path
 
 
@@ -637,8 +638,8 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
 
         Returns
         -------
-        openforcefield_parameters : an OpenForceFieldParameterWrapper object
-            The OpenForceFieldParameterWrapper object
+        openforcefield_parameters : dict
+            The OpenFF parameters stored in a dict keyed by parameter type
         """
         from openforcefield.typing.engines.smirnoff import ForceField
         from openforcefield.topology import Topology
@@ -657,7 +658,8 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
 
         assert len(molecule_parameters_list) == 1, 'A single molecule is ' \
             'expected'
-        return OpenForceFieldParameterWrapper(molecule_parameters_list[0])
+
+        return molecule_parameters_list[0]
 
     def get_parameter_handler_from_forcefield(self, parameter_handler_name,
                                               forcefield):
@@ -807,7 +809,7 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
 
         Returns
         -------
-        params : an OPLSParameters object
+        params : an OPLS2005ParameterWrapper object
             The set of lists of parameters grouped by parameter type.
             Thus, the dictionary has the following keys: atom_names,
             atom_types, charges, sigmas, and epsilons.
@@ -894,7 +896,7 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
                                                    unit.degrees)
                          })
 
-        return self.OPLSParameters(params)
+        return OPLS2005ParameterWrapper(params)
 
     def _add_solvent_parameters(self, OPLS_params):
         """
@@ -902,7 +904,7 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
 
         Parameters
         ----------
-        OPLS_params : an OPLSParameters object
+        OPLS_params : an OPLS2005ParameterWrapper object
             The set of lists of parameters grouped by parameter type.
             Thus, the dictionary has the following keys: atom_names,
             atom_types, charges, sigmas, and epsilons. The following
@@ -998,31 +1000,3 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
                     new_atom_type = atom_type1
 
         return new_atom_type
-
-    class OPLSParameters(dict):
-        """
-        OPLSParameters class that inherits from dict.
-        """
-
-        def __init__(self, parameters):
-            """
-            It initializes an OPLSParameters object.
-
-            parameters : dict
-                A dictionary keyed by parameter type
-            """
-            for key, value in parameters.items():
-                self[key] = value
-
-        def add_parameters(self, label, parameters):
-            """
-            It adds a list of parameters of the same type to the collection.
-
-            Parameters
-            ----------
-            label : str
-                The label to describe the parameter type
-            parameters : list
-                The list of parameters to include to the collection
-            """
-            self[label] = parameters
