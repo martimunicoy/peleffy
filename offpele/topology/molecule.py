@@ -10,6 +10,7 @@ from .rotamer import MolecularGraph, MolecularGraphWithConstrainedCore
 from offpele.utils.toolkits import (RDKitToolkitWrapper,
                                     OpenForceFieldToolkitWrapper,
                                     SchrodingerToolkitWrapper)
+from offpele.forcefield import ForceFieldSelector
 from offpele.charge import (Am1bccCalculator, GasteigerCalculator,
                             OPLSChargeCalculator)
 from offpele.utils import Logger
@@ -702,7 +703,7 @@ class Molecule(object):
 
         self._tag = tag.upper()
 
-    def parameterize(self, forcefield, charges_method=None,
+    def parameterize(self, forcefield_name, charges_method=None,
                      use_OPLS_nonbonding_params=False,
                      use_OPLS_bonds_and_angles=False):
         """
@@ -710,9 +711,9 @@ class Molecule(object):
 
         Parameters
         ----------
-        forcefield : str or openforcefield.typing.engines.smirnoff.ForceField
-                     object
-            The forcefield from which the parameters will be obtained
+        forcefield_name : str
+            The name of the forcefield from which the parameters will be
+            obtained
         charges_method : str
             The name of the charges method to employ. One of
             ['gasteiger', 'am1bcc', 'OPLS']. If None, 'am1bcc' will be used
@@ -734,14 +735,12 @@ class Molecule(object):
 
         logger = Logger()
         logger.info(' - Loading forcefield')
-        openforcefield_toolkit = OpenForceFieldToolkitWrapper()
-        parameters = openforcefield_toolkit.get_parameters_from_forcefield(
-            forcefield, self)
+        ff_selector = ForceFieldSelector()
+        forcefield = ff_selector.get_by_name(forcefield_name)
+        self.parameters = forcefield.parameterize(self)
 
-        self.parameters = parameters
-        # TODO Is there a way to retrieve the name of the OFF's ForceField object?
-        if isinstance(forcefield, str):
-            self._forcefield = str(Path(forcefield).stem)
+        # TODO check out type of the attribute below
+        self._forcefield = forcefield  # str(Path(forcefield).stem)
 
         charges_calculator = self._get_charges_calculator(charges_method)
 
