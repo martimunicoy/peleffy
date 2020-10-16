@@ -37,7 +37,7 @@ class TestBonds(object):
 
         # Parameterize
         molecule.parameterize('openff_unconstrained-1.2.0.offxml',
-                              charges_method='gasteiger')
+                              charge_method='gasteiger')
 
         # Check resulting parameters
         expected_lengths = {(0, 1): 1.389761064076,
@@ -66,20 +66,21 @@ class TestBonds(object):
                        (4, 10): 808.4160937,
                        (5, 11): 808.4160937}
 
-        for indexes, properties in dict(molecule.parameters['Bonds']).items():
+        for bond in molecule.parameters['bonds']:
+            indexes = (bond['atom1_idx'], bond['atom2_idx'])
             expected_length = unit.Quantity(expected_lengths[indexes],
                                             unit.angstrom)
             expected_k = unit.Quantity(expected_ks[indexes],
                                        unit.kilocalorie
                                        / (unit.angstrom ** 2 * unit.mole))
 
-            assert properties.length - expected_length \
+            assert bond['eq_dist'] - expected_length \
                 < unit.Quantity(MAX_THRESHOLD, unit.angstrom), \
-                'Invalid length for bond {} {}'.format(indexes, properties)
-            assert properties.k - expected_k \
+                'Invalid length for bond {}'.format(bond)
+            assert bond['spring_constant'] - expected_k \
                 < unit.Quantity(MAX_THRESHOLD, unit.kilocalorie
                                 / (unit.angstrom ** 2 * unit.mole)), \
-                'Invalid k for bond {} {}'.format(indexes, properties)
+                'Invalid k for bond {}'.format(bond)
 
     def test_Impact_writable_parameters(self):
         """
@@ -91,7 +92,7 @@ class TestBonds(object):
 
         # Parameterize
         molecule.parameterize('openff_unconstrained-1.2.0.offxml',
-                              charges_method='gasteiger')
+                              charge_method='gasteiger')
 
         expected_parameters = list([[1, 2, 332.5750972667, 1.523640340452],
                                     [1, 4, 376.8940758588, 1.094223427522],
@@ -126,7 +127,7 @@ class TestAngles(object):
 
         # Parameterize
         molecule.parameterize('openff_unconstrained-1.2.0.offxml',
-                              charges_method='gasteiger')
+                              charge_method='gasteiger')
 
         # Check resulting parameters
         expected_angles = {(0, 1, 2): 128.2771922378,
@@ -192,7 +193,7 @@ class TestAngles(object):
 
         # Parameterize
         molecule.parameterize('openff_unconstrained-1.2.0.offxml',
-                              charges_method='gasteiger')
+                              charge_method='gasteiger')
 
         expected_parameters = list(
             [[1, 2, 3, 78.67881492645, 128.2771922378],
@@ -231,7 +232,7 @@ class TestDihedrals(object):
 
         # Parameterize
         molecule.parameterize('openff_unconstrained-1.2.0.offxml',
-                              charges_method='gasteiger')
+                              charge_method='gasteiger')
 
         # Check resulting parameters for proper torsions
         expected_ks = {(0, 1, 2, 3): [0.603518062312, 0.5248455212365],
@@ -362,7 +363,7 @@ class TestDihedrals(object):
 
         # Parameterize
         molecule.parameterize('openff_unconstrained-1.2.0.offxml',
-                              charges_method='gasteiger')
+                              charge_method='gasteiger')
 
         expected_parameters = list(
             [[3, 2, 1, 4, 0.5107183999341, 1, 1, 0.0],
@@ -405,7 +406,7 @@ class TestDihedrals(object):
         for ligand_path in SET_OF_LIGAND_PATHS:
             ligand_path = get_data_file_path(ligand_path)
             molecule = Molecule(ligand_path)
-            molecule.parameterize(FORCEFIELD_NAME, charges_method='gasteiger')
+            molecule.parameterize(FORCEFIELD_NAME, charge_method='gasteiger')
 
             x = unit.Quantity(np.arange(0, np.pi, 0.1), unit=unit.radians)
 
@@ -499,7 +500,7 @@ class TestDihedrals(object):
         molecule = Molecule(smiles='c1c(c(n(n1)S(=O)(=O)C))O')
 
         molecule.parameterize('openff_unconstrained-1.2.0.offxml',
-                              charges_method='gasteiger')
+                              charge_method='gasteiger')
 
         expected_parameters = [[1, 2, -3, 4, 5.376019778605, -1, 2, 0.0],
                                [1, 2, 3, 12, 5.376019778605, -1, 2, 0.0],
@@ -569,7 +570,7 @@ class TestCharges(object):
 
         ligand_path = get_data_file_path(self.LIGAND_PATH)
         molecule = Molecule(ligand_path)
-        molecule.parameterize(FORCEFIELD_NAME, charges_method='am1bcc')
+        molecule.parameterize(FORCEFIELD_NAME, charge_method='am1bcc')
         check_CHO_charges_in_molecule(molecule)
 
     def test_gasteiger_method(self):
@@ -577,7 +578,7 @@ class TestCharges(object):
 
         ligand_path = get_data_file_path(self.LIGAND_PATH)
         molecule = Molecule(ligand_path)
-        molecule.parameterize(FORCEFIELD_NAME, charges_method='gasteiger')
+        molecule.parameterize(FORCEFIELD_NAME, charge_method='gasteiger')
         check_CHO_charges_in_molecule(molecule)
 
     def test_OPLS_method(self):
@@ -599,7 +600,7 @@ class TestCharges(object):
             {'charges': [unit.Quantity(charge, unit.elementary_charge)
                          for charge in charges]})
 
-        molecule.parameterize(FORCEFIELD_NAME, charges_method='OPLS')
+        molecule.parameterize(FORCEFIELD_NAME, charge_method='OPLS')
 
         assert len(molecule.off_molecule.partial_charges) == len(charges), \
             'Size of Molecule\'s partial charges is expected to match ' \
