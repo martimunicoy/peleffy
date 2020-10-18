@@ -168,20 +168,22 @@ class TestAngles(object):
                        (5, 0, 6): 68.40592742547,
                        (5, 4, 10): 68.40592742547}
 
-        for indexes, properties in dict(molecule.parameters['Angles']).items():
+        for angle in molecule.parameters['angles']:
+            indexes = (angle['atom1_idx'], angle['atom2_idx'],
+                       angle['atom3_idx'])
             expected_angle = unit.Quantity(expected_angles[indexes],
                                            unit.degree)
             expected_k = unit.Quantity(expected_ks[indexes],
                                        unit.kilocalorie
                                        / (unit.radian ** 2 * unit.mole))
 
-            assert properties.angle - expected_angle \
+            assert angle['eq_angle'] - expected_angle \
                 < unit.Quantity(MAX_THRESHOLD, unit.degree), \
-                'Invalid length for angle {} {}'.format(indexes, properties)
-            assert properties.k - expected_k \
+                'Invalid length for angle {}'.format(angle)
+            assert angle['spring_constant'] - expected_k \
                 < unit.Quantity(MAX_THRESHOLD, unit.kilocalorie
                                 / (unit.radian ** 2 * unit.mole)), \
-                'Invalid k for angle {} {}'.format(indexes, properties)
+                'Invalid k for angle {}'.format(angle)
 
     def test_Impact_writable_parameters(self):
         """
