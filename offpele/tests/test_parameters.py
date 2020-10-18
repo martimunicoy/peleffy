@@ -237,123 +237,112 @@ class TestDihedrals(object):
                               charge_method='gasteiger')
 
         # Check resulting parameters for proper torsions
-        expected_ks = {(0, 1, 2, 3): [0.603518062312, 0.5248455212365],
-                       (0, 1, 2, 4): [0.9350453896311],
-                       (1, 2, 4, 8): [2.529110648699],
-                       (2, 1, 0, 5): [5.376019778605],
-                       (2, 1, 0, 6): [5.376019778605],
-                       (3, 2, 1, 7): [0.9350453896311],
-                       (3, 2, 4, 8): [2.237928151469, 1.23728649144],
-                       (4, 2, 1, 7): [0.9350453896311],
-                       (5, 0, 1, 7): [5.376019778605],
-                       (6, 0, 1, 7): [5.376019778605]}
+        expected_propers = [(0, 1, 2, 3,
+                             unit.Quantity(0.603518062312,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(180.0, unit.degree),
+                             2, 1.0),
+                            (0, 1, 2, 3,
+                             unit.Quantity(0.5248455212365,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(0.0, unit.degree),
+                             3, 1.0),
+                            (0, 1, 2, 4,
+                             unit.Quantity(0.9350453896311,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(180.0, unit.degree),
+                             2, 1.0),
+                            (1, 2, 4, 8,
+                             unit.Quantity(2.529110648699,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(180.0, unit.degree),
+                             2, 1.0),
+                            (2, 1, 0, 5,
+                             unit.Quantity(5.376019778605,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(180.0, unit.degree),
+                             2, 1.0),
+                            (2, 1, 0, 6,
+                             unit.Quantity(5.376019778605,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(180.0, unit.degree),
+                             2, 1.0),
+                            (3, 2, 1, 7,
+                             unit.Quantity(0.9350453896311,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(180.0, unit.degree),
+                             2, 1.0),
+                            (3, 2, 4, 8,
+                             unit.Quantity(2.237928151469,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(180.0, unit.degree),
+                             2, 1.0),
+                            (3, 2, 4, 8,
+                             unit.Quantity(1.23728649144,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(0.0, unit.degree),
+                             1, 1.0),
+                            (4, 2, 1, 7,
+                             unit.Quantity(0.9350453896311,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(180.0, unit.degree),
+                             2, 1.0),
+                            (5, 0, 1, 7,
+                             unit.Quantity(5.376019778605,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(180.0, unit.degree),
+                             2, 1.0),
+                            (6, 0, 1, 7,
+                             unit.Quantity(5.376019778605,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(180.0, unit.degree),
+                             2, 1.0)]
 
-        expected_phases = {(0, 1, 2, 3): [180.0, 0.0],
-                           (0, 1, 2, 4): [180.0],
-                           (1, 2, 4, 8): [180.0],
-                           (2, 1, 0, 5): [180.0],
-                           (2, 1, 0, 6): [180.0],
-                           (3, 2, 1, 7): [180.0],
-                           (3, 2, 4, 8): [180.0, 0.0],
-                           (4, 2, 1, 7): [180.0],
-                           (5, 0, 1, 7): [180.0],
-                           (6, 0, 1, 7): [180.0]}
+        assert len(expected_propers) == len(molecule.parameters['propers']), \
+            'Unexpected number of proper torsions'
 
-        expected_periodicities = {(0, 1, 2, 3): [2, 3],
-                                  (0, 1, 2, 4): [2],
-                                  (1, 2, 4, 8): [2],
-                                  (2, 1, 0, 5): [2],
-                                  (2, 1, 0, 6): [2],
-                                  (3, 2, 1, 7): [2],
-                                  (3, 2, 4, 8): [2, 1],
-                                  (4, 2, 1, 7): [2],
-                                  (5, 0, 1, 7): [2],
-                                  (6, 0, 1, 7): [2]}
+        for proper in molecule.parameters['propers']:
+            proper_parameters = (proper['atom1_idx'], proper['atom2_idx'],
+                                 proper['atom3_idx'], proper['atom4_idx'],
+                                 proper['k'], proper['phase'],
+                                 proper['periodicity'], proper['idivf'])
 
-        expected_idivfs = {(0, 1, 2, 3): [1.0, 1.0],
-                           (0, 1, 2, 4): [1.0],
-                           (1, 2, 4, 8): [1.0],
-                           (2, 1, 0, 5): [1.0],
-                           (2, 1, 0, 6): [1.0],
-                           (3, 2, 1, 7): [1.0],
-                           (3, 2, 4, 8): [1.0, 1.0],
-                           (4, 2, 1, 7): [1.0],
-                           (5, 0, 1, 7): [1.0],
-                           (6, 0, 1, 7): [1.0]}
-
-        for indexes, properties in dict(
-                molecule.parameters['ProperTorsions']).items():
-            for i, (k, phase, periodicity, idivf) in enumerate(
-                    zip(properties.k, properties.phase,
-                        properties.periodicity, properties.idivf)):
-                expected_k = unit.Quantity(expected_ks[indexes][i],
-                                           unit.kilocalorie / unit.mole)
-                expected_phase = unit.Quantity(expected_phases[indexes][i],
-                                               unit.degree)
-                expected_periodicity = expected_periodicities[indexes][i]
-                expected_idivf = expected_idivfs[indexes][i]
-
-                assert k - expected_k < \
-                    unit.Quantity(MAX_THRESHOLD,
-                                  unit.kilocalorie / unit.mole), \
-                    'Invalid k for proper torsion ' \
-                    + '{} {}'.format(indexes, properties)
-
-                assert phase - expected_phase < \
-                    unit.Quantity(MAX_THRESHOLD, unit.degree), \
-                    'Invalid phase for proper torsion ' \
-                    + '{} {}'.format(indexes, properties)
-
-                assert periodicity - expected_periodicity < MAX_THRESHOLD, \
-                    'Invalid periodicity for proper torsion ' \
-                    + '{} {}'.format(indexes, properties)
-
-                assert idivf - expected_idivf < MAX_THRESHOLD, \
-                    'Invalid idivf for proper torsion ' \
-                    + '{} {}'.format(indexes, properties)
+            assert proper_parameters in expected_propers, \
+                'Unexpected proper torsion'
 
         # Check resulting parameters for improper torsions
-        expected_ks = {(0, 1, 2, 7): [1.1],
-                       (1, 0, 5, 6): [1.1],
-                       (1, 2, 3, 4): [10.5]}
+        expected_impropers = [(0, 1, 2, 7,
+                               unit.Quantity(1.1,
+                                             unit.kilocalorie / unit.mole),
+                               unit.Quantity(180.0, unit.degree),
+                               2, 1),
+                              (1, 0, 5, 6,
+                               unit.Quantity(1.1,
+                                             unit.kilocalorie / unit.mole),
+                               unit.Quantity(180.0, unit.degree),
+                               2, 1),
+                              (1, 2, 3, 4,
+                               unit.Quantity(10.5,
+                                             unit.kilocalorie / unit.mole),
+                               unit.Quantity(180.0, unit.degree),
+                               2, 1)]
 
-        expected_phases = {(0, 1, 2, 7): [180.0],
-                           (1, 0, 5, 6): [180.0],
-                           (1, 2, 3, 4): [180.0]}
+        assert len(expected_impropers) == \
+            len(molecule.parameters['impropers']), \
+            'Unexpected number of improper torsions'
 
-        expected_periodicities = {(0, 1, 2, 7): [2],
-                                  (1, 0, 5, 6): [2],
-                                  (1, 2, 3, 4): [2]}
+        for improper in molecule.parameters['impropers']:
+            improper_parameters = (improper['atom1_idx'],
+                                   improper['atom2_idx'],
+                                   improper['atom3_idx'],
+                                   improper['atom4_idx'],
+                                   improper['k'],
+                                   improper['phase'],
+                                   improper['periodicity'],
+                                   improper['idivf'])
 
-        for indexes, properties in dict(
-                molecule.parameters['ImproperTorsions']).items():
-            for i, (k, phase, periodicity) in enumerate(
-                    zip(properties.k, properties.phase,
-                        properties.periodicity)):
-                expected_k = unit.Quantity(expected_ks[indexes][i],
-                                           unit.kilocalorie / unit.mole)
-                expected_phase = unit.Quantity(expected_phases[indexes][i],
-                                               unit.degree)
-                expected_periodicity = expected_periodicities[indexes][i]
-
-                assert k - expected_k < \
-                    unit.Quantity(MAX_THRESHOLD,
-                                  unit.kilocalorie / unit.mole), \
-                    'Invalid k for improper torsion ' \
-                    + '{} {}'.format(indexes, properties)
-
-                assert phase - expected_phase < \
-                    unit.Quantity(MAX_THRESHOLD, unit.degree), \
-                    'Invalid phase for improper torsion ' \
-                    + '{} {}'.format(indexes, properties)
-
-                assert periodicity - expected_periodicity < MAX_THRESHOLD, \
-                    'Invalid periodicity for improper torsion ' \
-                    + '{} {}'.format(indexes, properties)
-
-            assert properties.idivf is None, \
-                'Invalid idivf for improper torsion ' \
-                + '{} {}'.format(indexes, properties)
+            assert improper_parameters in expected_impropers, \
+                'Unexpected improper torsion'
 
     def test_Impact_writable_parameters(self):
         """
