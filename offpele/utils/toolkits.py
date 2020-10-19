@@ -8,16 +8,13 @@ from distutils.spawn import find_executable
 import tempfile
 import os
 import subprocess
-from collections import defaultdict
 from pathlib import Path
 from copy import deepcopy
 
 import numpy as np
 from simtk import unit
 
-from offpele.forcefield import (OpenForceFieldParameterWrapper,
-                                OPLS2005ParameterWrapper)
-from offpele.utils import temporary_cd, get_data_file_path
+from offpele.utils import temporary_cd
 
 
 class ToolkitUnavailableException(Exception):
