@@ -702,7 +702,31 @@ class Molecule(object):
 
         self._tag = tag.upper()
 
-    def parameterize(self, forcefield_name, charge_method=None,
+    def set_forcefield(self, forcefield):
+        """
+        It sets the force field of the molecule.
+
+        Parameters
+        ----------
+        forcefield : any _BaseForceField object
+            The force field to employ to parameterize the molecule
+        """
+        from offpele.forcefield import OpenForceField as ff1
+        from offpele.forcefield import OPLS2005ForceField as ff2
+        from offpele.forcefield import OpenFFOPLS2005ForceField as ff3
+        from offpele.forcefield.forcefield \
+            import OpenForceField as ff4
+        from offpele.forcefield.forcefield \
+            import OPLS2005ForceField as ff5
+        from offpele.forcefield.forcefield \
+            import OpenFFOPLS2005ForceField as ff6
+
+        if not isinstance(forcefield, (ff1, ff2, ff3, ff4, ff5, ff6)):
+            raise TypeError('An invalid force field was supplied')
+
+        self._forcefield = forcefield
+
+    def parameterize(self, forcefield_name=None, charge_method=None,
                      use_OPLS_nonbonding_params=False,
                      use_OPLS_bonds_and_angles=False):
         """
@@ -737,7 +761,12 @@ class Molecule(object):
         ff_selector = ForceFieldSelector()
 
         # Set forcefield and the corresponding parameters
-        self._forcefield = ff_selector.get_by_name(forcefield_name)
+        if forcefield_name is not None:
+            forcefield = ff_selector.get_by_name(forcefield_name)
+            self.set_forcefield(forcefield)
+        else:
+            if self.forcefield is None:
+                raise ValueError('No force field has been set')
         self._parameters = self.forcefield.parameterize(self)
 
         # Initialize the charges calculator
@@ -759,18 +788,9 @@ class Molecule(object):
 
         self._build_impropers()
 
-        self._parameterized = True
-
         self.graph.set_core()
 
         self.graph.set_parents()
-
-        self._OPLS_included = False
-
-        if use_OPLS_nonbonding_params:
-            self.add_OPLS_nonbonding_params()
-        if use_OPLS_bonds_and_angles:
-            self.add_OPLS_bonds_and_angles()
 
     def assert_parameterized(self):
         """
@@ -1061,72 +1081,6 @@ class Molecule(object):
         """
         self._OFF_impropers.append(improper)
 
-    def add_OPLS_nonbonding_params(self):
-        """
-        It adds OPLS' nonbonding parameters to the molecule. Please, note
-        that OPLS' partial charges are not set in this function.
-        Instead, they are assigned in the Molecule's parameterize()
-        function when 'OPLS' is chosen as the 'charges_method'.
-        """
-
-        self.assert_parameterized()
-
-        OPLS_params = self.get_OPLS_parameters()
-
-        for atom, atom_type, sigma, epsilon, SGB_radius, \
-            vdW_radius, gamma, alpha in zip(self.atoms,
-                                            OPLS_params['atom_types'],
-                                            OPLS_params['sigmas'],
-                                            OPLS_params['epsilons'],
-                                            OPLS_params['SGB_radii'],
-                                            OPLS_params['vdW_radii'],
-                                            OPLS_params['gammas'],
-                                            OPLS_params['alphas']):
-            atom.set_OPLS_type(atom_type)
-            atom.set_sigma(sigma)
-            atom.set_epsilon(epsilon)
-            atom.set_born_radius(SGB_radius)
-            atom.set_SASA_radius(vdW_radius)
-            atom.set_nonpolar_gamma(gamma)
-            atom.set_nonpolar_alpha(alpha)
-
-        self._OPLS_included = True
-
-    def add_OPLS_bonds_and_angles(self):
-        """
-        It adds OPLS' bond and angle parameters to the molecule.
-        """
-
-        self.assert_parameterized()
-
-        OPLS_params = self.get_OPLS_parameters()
-
-        self._bonds = list()
-        for index, bond in enumerate(OPLS_params['bonds']):
-            atom1 = self.atoms[bond['atom1_idx']]
-            atom2 = self.atoms[bond['atom2_idx']]
-            OPLS_bond = Bond(index=index,
-                             atom1_idx=atom1.index,
-                             atom2_idx=atom2.index,
-                             spring_constant=bond['spring_constant'],
-                             eq_dist=bond['eq_dist'])
-            self._add_bond(OPLS_bond)
-
-        self._angles = list()
-        for index, angle in enumerate(OPLS_params['angles']):
-            atom1 = self.atoms[angle['atom1_idx']]
-            atom2 = self.atoms[angle['atom2_idx']]
-            atom3 = self.atoms[angle['atom3_idx']]
-            angle = Angle(index=index,
-                          atom1_idx=atom1.index,
-                          atom2_idx=atom2.index,
-                          atom3_idx=atom3.index,
-                          spring_constant=angle['spring_constant'],
-                          eq_angle=angle['eq_angle'])
-            self._add_angle(angle)
-
-        self._OPLS_included = True
-
     def get_pdb_atom_names(self):
         """
         It returns the PDB atom names of all the atoms in the molecule.
@@ -1160,30 +1114,6 @@ class Molecule(object):
         """
         rdkit_toolkit = RDKitToolkitWrapper()
         rdkit_toolkit.to_pdb_file(self, path)
-
-    def get_OPLS_parameters(self):
-        """
-        It returns the OPLS parameters of the molecule. It first looks
-        if they have already been calculated and returns them if found.
-        Otherwise, it uses the SchrodingerToolkitWrapper to generate
-        them.
-
-        Returns
-        -------
-        OPLS_parameters : a SchrodingerToolkitWrapper.OPLSParameters object
-            The set of lists of parameters grouped by parameter type.
-            Thus, the dictionary has the following keys: atom_names,
-            atom_types, charges, sigmas, epsilons, SGB_radii, vdW_radii,
-            gammas, and alphas
-        """
-
-        if self._OPLS_parameters is None:
-            schrodinger_toolkit = SchrodingerToolkitWrapper()
-
-            self._OPLS_parameters = \
-                schrodinger_toolkit.get_OPLS_parameters(self)
-
-        return self._OPLS_parameters
 
     def set_conformer(self, conformer):
         """
