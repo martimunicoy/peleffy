@@ -174,8 +174,7 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
         """
         self._openff = OpenForceField(forcefield_name)
         self._oplsff = OPLS2005ForceField('OPLS2005')
-        self._name = self._openff.name + ' + ' + self._oplsff.name
-        self._parameters = None
+        super().__init__(self._openff.name + ' + ' + self._oplsff.name)
 
         # Set default selections
         self._nonbonding = 'openff'
