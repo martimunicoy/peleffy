@@ -161,7 +161,7 @@ class BaseParameterWrapper(dict):
                    self['alphas'])
 
     @property
-    def type(self):
+    def name(self):
         """
         It returns the name of the current parameter wrapper.
 
@@ -475,110 +475,6 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
         parameters : an OpenForceFieldParameterWrapper object
             The resulting parameters wrapper
         """
-        def find_similar_atom_types(atom_type, tried):
-            """
-            It tries to find a similar atom type, skipping the ones that
-            have already been tried. It uses the definitions from the
-            similarity.param file.
-
-            Parameters
-            ----------
-            atom_type : str
-                The atom type from which similar atom types will be searched
-            tried : list[str]
-                The list of atom types that have already been tried and
-                will be skipped
-
-            Returns
-            -------
-            new_atom_type : str
-                The most similar atom type that has been found, if any.
-                Otherwise, it returns None
-            """
-
-            new_atom_type = None
-            best_similarity = 0
-            similarity_path = get_data_file_path(
-                'parameters/similarity.param')
-
-            with open(similarity_path) as f:
-                for line in f:
-                    fields = line.split()
-                    assert len(fields) > 2, 'Unexpected number of fields ' \
-                        + 'at line {}'.format(line)
-
-                    atom_type1, atom_type2, similarity = fields[0:3]
-                    if (atom_type == atom_type1
-                            and float(similarity) > best_similarity
-                            and atom_type2 not in tried):
-                        best_similarity = float(similarity)
-                        new_atom_type = atom_type2
-                    elif (atom_type == atom_type2
-                            and float(similarity) > best_similarity
-                            and atom_type1 not in tried):
-                        best_similarity = float(similarity)
-                        new_atom_type = atom_type1
-
-            return new_atom_type
-
-        def add_solvent_parameters(OPLS_params):
-            """
-            It add the solvent parameters to the OPLS parameters collection.
-
-            Parameters
-            ----------
-            OPLS_params : an OPLS2005ParameterWrapper object
-                The set of lists of parameters grouped by parameter type.
-                Thus, the dictionary has the following keys: atom_names,
-                atom_types, charges, sigmas, and epsilons. The following
-                solvent parameters will be added to the collection: SGB_radii,
-                vdW_radii, gammas, alphas
-            """
-            solvent_data = dict()
-            parameters_path = get_data_file_path(
-                'parameters/f14_sgbnp.param')
-
-            with open(parameters_path) as f:
-                for line in f:
-                    if line.startswith('#'):
-                        continue
-
-                    fields = line.split()
-                    assert len(fields) > 7, 'Unexpected line with less ' \
-                        'than 8 fields at {}'.format(line)
-
-                    atom_type = fields[1]
-
-                    solvent_data[atom_type] = {
-                        'SGB_radii': unit.Quantity(float(fields[4]),
-                                                   unit.angstrom),
-                        'vdW_radii': unit.Quantity(float(fields[5]),
-                                                   unit.angstrom),
-                        'gammas': float(fields[6]),
-                        'alphas': float(fields[7])}
-
-            parameters_to_add = defaultdict(list)
-            tried = list()
-
-            for atom_type in OPLS_params['atom_types']:
-                parameters_found = False
-                while(not parameters_found):
-                    if atom_type in solvent_data:
-                        for label, value in solvent_data[atom_type].items():
-                            parameters_to_add[label].append(value)
-                        parameters_found = True
-
-                    else:
-                        new_atom_type = find_similar_atom_types(
-                            atom_type, tried)
-                        if new_atom_type is None:
-                            atom_type = 'DF'  # Set it to default
-                        else:
-                            tried.append(new_atom_type)
-                            atom_type = new_atom_type
-
-            for label, params in parameters_to_add.items():
-                OPLS_params.add_parameters(label, params)
 
         from simtk import unit
 
@@ -621,7 +517,7 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
 
                     name_to_index[line[0:4]] = len(params['atom_names'])
 
-                    params['atom_names'].append(line[0:4])
+                    params['atom_names'].append(line[0:4].replace(' ', '_'))  # PELE needs underscores instead of whitespaces
                     params['atom_types'].append(fields[3])
                     params['charges'].append(
                         unit.Quantity(float(fields[4]),
@@ -664,5 +560,167 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                                                    unit.degrees)
                          })
 
+                elif section == 'propers':
+                    fields = line.split()
+                    assert len(fields) > 9, 'Unexpected number of fields ' \
+                        + 'found at line {}'.format(line)
+
+                    atom1_idx = name_to_index[line[0:4]]
+                    atom2_idx = name_to_index[line[8:12]]
+                    atom3_idx = name_to_index[line[16:20]]
+                    atom4_idx = name_to_index[line[24:28]]
+
+                    for k, periodicity, phase in zip(
+                            fields[4:8], [1, 2, 3, 4],
+                            [unit.Quantity(0.0, unit.degree),
+                             unit.Quantity(180.0, unit.degree),
+                             unit.Quantity(0.0, unit.degree),
+                             unit.Quantity(180.0, unit.degree)]):
+                        k = float(k)
+                        if k != 0.0:
+                            k = unit.Quantity(k, unit.kilocalorie / unit.mole)
+                            params['propers'].append(
+                                {'atom1_idx': atom1_idx,
+                                 'atom2_idx': atom2_idx,
+                                 'atom3_idx': atom3_idx,
+                                 'atom4_idx': atom4_idx,
+                                 'periodicity': periodicity,
+                                 'phase': phase,
+                                 'k': k / 2.0,  # PELE works with half of Schrodinger's force constant
+                                 'idivf': 1.0
+                                 })
+
+                elif section == 'impropers':
+                    fields = line.split()
+                    assert len(fields) > 5, 'Unexpected number of fields ' \
+                        + 'found at line {}'.format(line)
+
+                    k = unit.Quantity(float(fields[4]),
+                                      unit.kilocalorie / unit.mole)
+
+                    params['impropers'].append(
+                        {'atom1_idx': name_to_index[line[0:4]],
+                         'atom2_idx': name_to_index[line[8:12]],
+                         'atom3_idx': name_to_index[line[16:20]],
+                         'atom4_idx': name_to_index[line[24:28]],
+                         'periodicity': 2,
+                         'phase': unit.Quantity(180.0, unit.degree),
+                         'k': k / 2.0,  # PELE works with half of Schrodinger's force constant
+                         'idivf': 1.0
+                         })
+
         opls_parameters_wrapper = OPLS2005ParameterWrapper(params)
-        add_solvent_parameters(opls_parameters_wrapper)
+        OPLS2005ParameterWrapper._add_solvent_parameters(
+            opls_parameters_wrapper)
+
+        return opls_parameters_wrapper
+
+    @staticmethod
+    def _find_similar_atom_types(atom_type, tried):
+        """
+        It tries to find a similar atom type, skipping the ones that
+        have already been tried. It uses the definitions from the
+        similarity.param file.
+
+        Parameters
+        ----------
+        atom_type : str
+            The atom type from which similar atom types will be searched
+        tried : list[str]
+            The list of atom types that have already been tried and
+            will be skipped
+
+        Returns
+        -------
+        new_atom_type : str
+            The most similar atom type that has been found, if any.
+            Otherwise, it returns None
+        """
+
+        new_atom_type = None
+        best_similarity = 0
+        similarity_path = get_data_file_path(
+            'parameters/similarity.param')
+
+        with open(similarity_path) as f:
+            for line in f:
+                fields = line.split()
+                assert len(fields) > 2, 'Unexpected number of fields ' \
+                    + 'at line {}'.format(line)
+
+                atom_type1, atom_type2, similarity = fields[0:3]
+                if (atom_type == atom_type1
+                        and float(similarity) > best_similarity
+                        and atom_type2 not in tried):
+                    best_similarity = float(similarity)
+                    new_atom_type = atom_type2
+                elif (atom_type == atom_type2
+                        and float(similarity) > best_similarity
+                        and atom_type1 not in tried):
+                    best_similarity = float(similarity)
+                    new_atom_type = atom_type1
+
+        return new_atom_type
+
+    @staticmethod
+    def _add_solvent_parameters(OPLS_params):
+        """
+        It add the solvent parameters to the OPLS parameters collection.
+
+        Parameters
+        ----------
+        OPLS_params : an OPLS2005ParameterWrapper object
+            The set of lists of parameters grouped by parameter type.
+            Thus, the dictionary has the following keys: atom_names,
+            atom_types, charges, sigmas, and epsilons. The following
+            solvent parameters will be added to the collection: SGB_radii,
+            vdW_radii, gammas, alphas
+        """
+        from simtk import unit
+
+        solvent_data = dict()
+        parameters_path = get_data_file_path(
+            'parameters/f14_sgbnp.param')
+
+        with open(parameters_path) as f:
+            for line in f:
+                if line.startswith('#'):
+                    continue
+
+                fields = line.split()
+                assert len(fields) > 7, 'Unexpected line with less ' \
+                    'than 8 fields at {}'.format(line)
+
+                atom_type = fields[1]
+
+                solvent_data[atom_type] = {
+                    'SGB_radii': unit.Quantity(float(fields[4]),
+                                               unit.angstrom),
+                    'vdW_radii': unit.Quantity(float(fields[5]),
+                                               unit.angstrom),
+                    'gammas': float(fields[6]),
+                    'alphas': float(fields[7])}
+
+        parameters_to_add = defaultdict(list)
+        tried = list()
+
+        for atom_type in OPLS_params['atom_types']:
+            parameters_found = False
+            while(not parameters_found):
+                if atom_type in solvent_data:
+                    for label, value in solvent_data[atom_type].items():
+                        parameters_to_add[label].append(value)
+                    parameters_found = True
+
+                else:
+                    new_atom_type = \
+                        OPLS2005ParameterWrapper._find_similar_atom_types(
+                            atom_type, tried)
+                    if new_atom_type is None:
+                        atom_type = 'DF'  # Set it to default
+                    else:
+                        tried.append(new_atom_type)
+                        atom_type = new_atom_type
+
+        for label, params in parameters_to_add.items():
+            OPLS_params.add_parameters(label, params)

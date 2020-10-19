@@ -101,7 +101,7 @@ class OPLSChargeCalculator(_PartialChargeCalculator):
         # Only attempt to compute partial charges if the pure OpenFF has
         # been employed. Otherwise, OPLS2005 partial charges will already
         # be calculated and stored to molecule's parameters
-        if parameters.name == 'OpenFF':
+        if parameters is None or parameters.name == 'OpenFF':
             try:
                 from offpele.utils.toolkits import SchrodingerToolkitWrapper
 
