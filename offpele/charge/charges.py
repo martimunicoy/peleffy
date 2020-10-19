@@ -3,8 +3,6 @@ This module handles all classes and functions related with partial charge
 calculators.
 """
 
-import numpy as np
-from simtk import unit
 
 from offpele.utils.toolkits import (AmberToolkitWrapper,
                                     ToolkitUnavailableException)
