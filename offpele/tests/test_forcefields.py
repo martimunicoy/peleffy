@@ -154,7 +154,10 @@ class TestOPLS2005ForceField(object):
         oplsff = OPLS2005ForceField(FORCE_FIELD_NAME)
 
         # Set force field and obtain parameters
-        ffld_output = get_data_file_path('tests/MET_ffld_output.txt')
+        ffld_file = get_data_file_path('tests/MET_ffld_output.txt')
+        with open(ffld_file) as f:
+            ffld_output = f.read()
+
         parameters = OPLS2005ParameterWrapper.from_ffld_output(ffld_output)
         molecule.set_forcefield(oplsff)
         molecule._parameters = parameters
@@ -206,7 +209,9 @@ class TestOPLS2005ForceField(object):
         oplsff = OPLS2005ForceField(FORCE_FIELD_NAME)
 
         # Set force field and obtain parameters
-        ffld_output = get_data_file_path('tests/ETL_ffld_output.txt')
+        ffld_file = get_data_file_path('tests/ETL_ffld_output.txt')
+        with open(ffld_file) as f:
+            ffld_output = f.read()
         parameters = OPLS2005ParameterWrapper.from_ffld_output(ffld_output)
         molecule.set_forcefield(oplsff)
         molecule._parameters = parameters
@@ -338,7 +343,9 @@ class TestOpenFFOPLS2005ForceField(object):
         hybridff = OpenFFOPLS2005ForceField(FORCE_FIELD_NAME)
 
         # Workaround to skip Schrodinger dependency
-        ffld_output = get_data_file_path('tests/MET_ffld_output.txt')
+        ffld_file = get_data_file_path('tests/MET_ffld_output.txt')
+        with open(ffld_file) as f:
+            ffld_output = f.read()
         hybridff._oplsff._parameters = \
             OPLS2005ParameterWrapper.from_ffld_output(ffld_output)
 
@@ -467,7 +474,9 @@ class TestOpenFFOPLS2005ForceField(object):
         hybridff = OpenFFOPLS2005ForceField(FORCE_FIELD_NAME)
 
         # Workaround to skip Schrodinger dependency
-        ffld_output = get_data_file_path('tests/ETL_ffld_output.txt')
+        ffld_file = get_data_file_path('tests/ETL_ffld_output.txt')
+        with open(ffld_file) as f:
+            ffld_output = f.read()
         hybridff._oplsff._parameters = \
             OPLS2005ParameterWrapper.from_ffld_output(ffld_output)
 

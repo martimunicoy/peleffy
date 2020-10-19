@@ -481,134 +481,136 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
 
         params = defaultdict(list)
 
-        with open(ffld_output) as f:
-            section = 'out'
-            name_to_index = dict()  # To pair atom names and indexes
-            for line in f:
-                if line.startswith('OPLSAA FORCE FIELD TYPE ASSIGNED'):
-                    section = 'atoms'
+        section = 'out'
+        name_to_index = dict()  # To pair atom names and indexes
 
-                    # Skip the next 3 lines
-                    f.readline()
-                    f.readline()
-                    f.readline()
+        lines_iterator = iter(ffld_output.split('\n'))
 
-                elif line.startswith(' Stretch'):
-                    section = 'bonds'
+        for line in lines_iterator:
+            if line.startswith('OPLSAA FORCE FIELD TYPE ASSIGNED'):
+                section = 'atoms'
 
-                elif line.startswith(' Bending'):
-                    section = 'angles'
+                # Skip the next 3 lines
+                line = next(lines_iterator)
+                line = next(lines_iterator)
+                line = next(lines_iterator)
 
-                elif line.startswith(' proper Torsion'):
-                    section = 'propers'
+            elif line.startswith(' Stretch'):
+                section = 'bonds'
 
-                elif line.startswith(' improper Torsion'):
-                    section = 'impropers'
+            elif line.startswith(' Bending'):
+                section = 'angles'
 
-                elif line == '\n':
+            elif line.startswith(' proper Torsion'):
+                section = 'propers'
+
+            elif line.startswith(' improper Torsion'):
+                section = 'impropers'
+
+            elif line == '':
+                continue
+
+            elif section == 'atoms':
+                if line.startswith('-'):
                     continue
 
-                elif section == 'atoms':
-                    if line.startswith('-'):
-                        continue
+                fields = line.split()
+                assert len(fields) > 7, 'Unexpected number of fields ' \
+                    + 'found at line {}'.format(line)
 
-                    fields = line.split()
-                    assert len(fields) > 7, 'Unexpected number of fields ' \
-                        + 'found at line {}'.format(line)
+                name_to_index[line[0:4]] = len(params['atom_names'])
 
-                    name_to_index[line[0:4]] = len(params['atom_names'])
+                params['atom_names'].append(line[0:4].replace(' ', '_'))  # PELE needs underscores instead of whitespaces
+                params['atom_types'].append(fields[3])
+                params['charges'].append(
+                    unit.Quantity(float(fields[4]),
+                                  unit.elementary_charge))
+                params['sigmas'].append(
+                    unit.Quantity(float(fields[5]),
+                                  unit.angstrom))
+                params['epsilons'].append(
+                    unit.Quantity(float(fields[6]),
+                                  unit.kilocalorie / unit.mole))
 
-                    params['atom_names'].append(line[0:4].replace(' ', '_'))  # PELE needs underscores instead of whitespaces
-                    params['atom_types'].append(fields[3])
-                    params['charges'].append(
-                        unit.Quantity(float(fields[4]),
-                                      unit.elementary_charge))
-                    params['sigmas'].append(
-                        unit.Quantity(float(fields[5]),
-                                      unit.angstrom))
-                    params['epsilons'].append(
-                        unit.Quantity(float(fields[6]),
-                                      unit.kilocalorie / unit.mole))
+            elif section == 'bonds':
+                fields = line.split()
+                assert len(fields) > 4, 'Unexpected number of fields ' \
+                    + 'found at line {}'.format(line)
 
-                elif section == 'bonds':
-                    fields = line.split()
-                    assert len(fields) > 4, 'Unexpected number of fields ' \
-                        + 'found at line {}'.format(line)
+                params['bonds'].append(
+                    {'atom1_idx': name_to_index[line[0:4]],
+                     'atom2_idx': name_to_index[line[8:12]],
+                     'spring_constant': unit.Quantity(
+                        float(fields[2]), unit.kilocalorie
+                        / (unit.angstrom ** 2 * unit.mole)),
+                     'eq_dist': unit.Quantity(float(fields[3]),
+                                              unit.angstrom)
+                     })
 
-                    params['bonds'].append(
-                        {'atom1_idx': name_to_index[line[0:4]],
-                         'atom2_idx': name_to_index[line[8:12]],
-                         'spring_constant': unit.Quantity(
-                            float(fields[2]), unit.kilocalorie
-                            / (unit.angstrom ** 2 * unit.mole)),
-                         'eq_dist': unit.Quantity(float(fields[3]),
-                                                  unit.angstrom)
-                         })
+            elif section == 'angles':
+                fields = line.split()
+                assert len(fields) > 5, 'Unexpected number of fields ' \
+                    + 'found at line {}'.format(line)
 
-                elif section == 'angles':
-                    fields = line.split()
-                    assert len(fields) > 5, 'Unexpected number of fields ' \
-                        + 'found at line {}'.format(line)
+                params['angles'].append(
+                    {'atom1_idx': name_to_index[line[0:4]],
+                     'atom2_idx': name_to_index[line[8:12]],
+                     'atom3_idx': name_to_index[line[16:20]],
+                     'spring_constant': unit.Quantity(
+                        float(fields[3]), unit.kilocalorie
+                        / (unit.radian ** 2 * unit.mole)),
+                     'eq_angle': unit.Quantity(float(fields[4]),
+                                               unit.degrees)
+                     })
 
-                    params['angles'].append(
-                        {'atom1_idx': name_to_index[line[0:4]],
-                         'atom2_idx': name_to_index[line[8:12]],
-                         'atom3_idx': name_to_index[line[16:20]],
-                         'spring_constant': unit.Quantity(
-                            float(fields[3]), unit.kilocalorie
-                            / (unit.radian ** 2 * unit.mole)),
-                         'eq_angle': unit.Quantity(float(fields[4]),
-                                                   unit.degrees)
-                         })
+            elif section == 'propers':
+                fields = line.split()
+                assert len(fields) > 9, 'Unexpected number of fields ' \
+                    + 'found at line {}'.format(line)
 
-                elif section == 'propers':
-                    fields = line.split()
-                    assert len(fields) > 9, 'Unexpected number of fields ' \
-                        + 'found at line {}'.format(line)
+                atom1_idx = name_to_index[line[0:4]]
+                atom2_idx = name_to_index[line[8:12]]
+                atom3_idx = name_to_index[line[16:20]]
+                atom4_idx = name_to_index[line[24:28]]
 
-                    atom1_idx = name_to_index[line[0:4]]
-                    atom2_idx = name_to_index[line[8:12]]
-                    atom3_idx = name_to_index[line[16:20]]
-                    atom4_idx = name_to_index[line[24:28]]
+                for k, periodicity, phase in zip(
+                        fields[4:8], [1, 2, 3, 4],
+                        [unit.Quantity(0.0, unit.degree),
+                         unit.Quantity(180.0, unit.degree),
+                         unit.Quantity(0.0, unit.degree),
+                         unit.Quantity(180.0, unit.degree)]):
+                    k = float(k)
+                    if k != 0.0:
+                        k = unit.Quantity(k, unit.kilocalorie / unit.mole)
+                        params['propers'].append(
+                            {'atom1_idx': atom1_idx,
+                             'atom2_idx': atom2_idx,
+                             'atom3_idx': atom3_idx,
+                             'atom4_idx': atom4_idx,
+                             'periodicity': periodicity,
+                             'phase': phase,
+                             'k': k / 2.0,  # PELE works with half of Schrodinger's force constant
+                             'idivf': 1.0
+                             })
 
-                    for k, periodicity, phase in zip(
-                            fields[4:8], [1, 2, 3, 4],
-                            [unit.Quantity(0.0, unit.degree),
-                             unit.Quantity(180.0, unit.degree),
-                             unit.Quantity(0.0, unit.degree),
-                             unit.Quantity(180.0, unit.degree)]):
-                        k = float(k)
-                        if k != 0.0:
-                            k = unit.Quantity(k, unit.kilocalorie / unit.mole)
-                            params['propers'].append(
-                                {'atom1_idx': atom1_idx,
-                                 'atom2_idx': atom2_idx,
-                                 'atom3_idx': atom3_idx,
-                                 'atom4_idx': atom4_idx,
-                                 'periodicity': periodicity,
-                                 'phase': phase,
-                                 'k': k / 2.0,  # PELE works with half of Schrodinger's force constant
-                                 'idivf': 1.0
-                                 })
+            elif section == 'impropers':
+                fields = line.split()
+                assert len(fields) > 5, 'Unexpected number of fields ' \
+                    + 'found at line {}'.format(line)
 
-                elif section == 'impropers':
-                    fields = line.split()
-                    assert len(fields) > 5, 'Unexpected number of fields ' \
-                        + 'found at line {}'.format(line)
+                k = unit.Quantity(float(fields[4]),
+                                  unit.kilocalorie / unit.mole)
 
-                    k = unit.Quantity(float(fields[4]),
-                                      unit.kilocalorie / unit.mole)
-
-                    params['impropers'].append(
-                        {'atom1_idx': name_to_index[line[0:4]],
-                         'atom2_idx': name_to_index[line[8:12]],
-                         'atom3_idx': name_to_index[line[16:20]],
-                         'atom4_idx': name_to_index[line[24:28]],
-                         'periodicity': 2,
-                         'phase': unit.Quantity(180.0, unit.degree),
-                         'k': k / 2.0,  # PELE works with half of Schrodinger's force constant
-                         'idivf': 1.0
-                         })
+                params['impropers'].append(
+                    {'atom1_idx': name_to_index[line[0:4]],
+                     'atom2_idx': name_to_index[line[8:12]],
+                     'atom3_idx': name_to_index[line[16:20]],
+                     'atom4_idx': name_to_index[line[24:28]],
+                     'periodicity': 2,
+                     'phase': unit.Quantity(180.0, unit.degree),
+                     'k': k / 2.0,  # PELE works with half of Schrodinger's force constant
+                     'idivf': 1.0
+                     })
 
         opls_parameters_wrapper = OPLS2005ParameterWrapper(params)
         OPLS2005ParameterWrapper._add_solvent_parameters(

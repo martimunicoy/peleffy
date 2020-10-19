@@ -8,7 +8,6 @@ from simtk import unit
 import numpy as np
 
 from offpele.utils import get_data_file_path
-from offpele.utils.toolkits import SchrodingerToolkitWrapper
 from .utils import (SET_OF_LIGAND_PATHS, apply_PELE_dihedral_equation,
                     apply_OFF_dihedral_equation, check_CHO_charges_in_molecule)
 from offpele.topology import Molecule, Bond, Angle, Proper
@@ -590,7 +589,9 @@ class TestCharges(object):
         # Workaround to avoid the use of the Schrodinger Toolkit
         from offpele.forcefield import OPLS2005ParameterWrapper
 
-        ffld_output = get_data_file_path('tests/OLC_ffld_output.txt')
+        ffld_file = get_data_file_path('tests/OLC_ffld_output.txt')
+        with open(ffld_file) as f:
+            ffld_output = f.read()
         molecule._parameters = \
             OPLS2005ParameterWrapper.from_ffld_output(ffld_output)
 

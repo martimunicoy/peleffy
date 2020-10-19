@@ -147,11 +147,11 @@ class OPLS2005ForceField(_BaseForceField):
         from offpele.utils.toolkits import SchrodingerToolkitWrapper
 
         schrodinger_toolkit = SchrodingerToolkitWrapper()
-        ffld_output = schrodinger_toolkit.run_ffld_server(self)
+        ffld_output = schrodinger_toolkit.run_ffld_server(molecule)
 
-        from offpele.forcefield import OpenForceFieldParameterWrapper
+        from offpele.forcefield import OPLS2005ParameterWrapper
 
-        return OpenForceFieldParameterWrapper.from_ffld_output(ffld_output)
+        return OPLS2005ParameterWrapper.from_ffld_output(ffld_output)
 
 
 class OpenFFOPLS2005ForceField(_BaseForceField):
