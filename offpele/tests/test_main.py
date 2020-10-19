@@ -40,7 +40,7 @@ class TestMain(object):
                 run_offpele(ligand_path,
                             forcefield=FORCEFIELD_NAME,
                             resolution=10,
-                            charges_method='gasteiger',
+                            charge_method='gasteiger',
                             output=tmpdir,
                             with_solvent=True,
                             as_datalocal=True)

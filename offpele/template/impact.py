@@ -21,6 +21,11 @@ class Impact(object):
         """
         Initializes an Impact object.
 
+        .. todo ::
+
+            * It needs to raise an Exception when the supplied molecule
+            is not parameterized
+
         Parameters
         ----------
         molecule : An offpele.topology.Molecule
@@ -40,6 +45,9 @@ class Impact(object):
         >>> impact.write('molz')
 
         """
+        # The molecule needs to be parameterized
+        molecule.assert_parameterized()
+
         if (isinstance(molecule, offpele.topology.Molecule)
                 or isinstance(molecule, offpele.topology.molecule.Molecule)):
             self._initialize_from_molecule(molecule)
@@ -128,11 +136,7 @@ class Impact(object):
             File to write to
         """
         file.write('* LIGAND DATABASE FILE')
-        if self.molecule.forcefield:
-            if self.molecule.OPLS_included:
-                file.write(' ({} + OPLS2005)'.format(self.molecule.forcefield))
-            else:
-                file.write(' ({})'.format(self.molecule.forcefield))
+        file.write(' ({})'.format(self.molecule.forcefield.name))
         file.write('\n')
         file.write('* File generated with offpele-{}\n'.format(
             offpele.__version__))
@@ -300,7 +304,7 @@ class Impact(object):
         file.write('PHI\n')
         for proper in self.molecule.propers:
             w_proper = WritableProper(proper)
-            idx1, idx2, idx3, idx4, constant, prefactor, term = \
+            idx1, idx2, idx3, idx4, constant, prefactor, term, phase = \
                 [attr[1] for attr in list(w_proper)]
             # Atom 1 id
             file.write('{:5d}'.format(idx1))
@@ -322,6 +326,10 @@ class Impact(object):
             file.write(' ')
             # Number of term
             file.write('{:3.1f}'.format(term))
+            # Phase (only if different from 0)
+            if phase != 0.0:
+                file.write(' ')
+                file.write('{:5.1f}'.format(phase))
             file.write('\n')
 
     def _write_iphi(self, file):
@@ -971,7 +979,8 @@ class WritableProper(offpele.topology.Proper, WritableWrapper):
                          atom4_idx=proper.atom4_idx,
                          periodicity=proper.periodicity,
                          prefactor=proper.prefactor,
-                         constant=proper.constant)
+                         constant=proper.constant,
+                         phase=proper.phase)
 
         self.exclude = proper.exclude
 
@@ -1038,6 +1047,20 @@ class WritableProper(offpele.topology.Proper, WritableWrapper):
             The constant of this Proper object, expressed in kcal/mol
         """
         return super().constant
+
+    @property
+    @WritableWrapper.in_deg
+    def phase(self):
+        """
+        Proper's phase constant.
+
+        Returns
+        -------
+        phase : float
+            The phase constant of this Proper object, expressed in
+            degrees
+        """
+        return super().phase
 
 
 class WritableImproper(offpele.topology.Improper, WritableWrapper):

@@ -6,7 +6,6 @@ PELE's solvent templates.
 from simtk import unit
 
 from offpele.utils import get_data_file_path, warning_on_one_line
-from offpele.utils.toolkits import OpenForceFieldToolkitWrapper
 from offpele.utils import Logger
 
 
@@ -46,8 +45,9 @@ class _SolventWrapper(object):
         logger = Logger()
         logger.info(' - Loading solvent parameters')
 
-        off_toolkit = OpenForceFieldToolkitWrapper()
+        from offpele.utils.toolkits import OpenForceFieldToolkitWrapper
 
+        off_toolkit = OpenForceFieldToolkitWrapper()
         GBSA_handler = off_toolkit.get_parameter_handler_from_forcefield(
             'GBSA', self._ff_file)
 
@@ -56,11 +56,13 @@ class _SolventWrapper(object):
         self._surface_area_penalty = GBSA_handler.surface_area_penalty
         self._solvent_radius = GBSA_handler.solvent_radius
 
-        parameters = off_toolkit.get_parameters_from_forcefield(
-            self._ff_file, self.molecule)
+        from offpele.forcefield import OpenForceField
 
-        self._radii = parameters.get_GBSA_radii()
-        self._scales = parameters.get_GBSA_scales()
+        forcefield = OpenForceField(self._ff_file)
+        parameters = forcefield.parameterize(self.molecule)
+
+        self._radii = parameters['GBSA_radii']
+        self._scales = parameters['GBSA_scales']
 
     def to_dict(self):
         """
@@ -84,7 +86,7 @@ class _SolventWrapper(object):
         data['SolventParameters']['General']['surface_area_penalty'] = \
             round(self.surface_area_penalty.value_in_unit(
                 unit.kilocalorie / (unit.angstrom**2 * unit.mole)), 8)
-        data['SolventParameters'][self.molecule.name] = dict()
+        data['SolventParameters'][self.molecule.tag] = dict()
 
         atom_names = self.molecule.get_pdb_atom_names()
 
@@ -92,7 +94,7 @@ class _SolventWrapper(object):
                               atom_names):
             name = name.replace(' ', '_')
             index = atom.GetIdx()
-            data['SolventParameters'][self.molecule.name][name] = \
+            data['SolventParameters'][self.molecule.tag][name] = \
                 {'radius': round(self.radii[tuple((index, ))].value_in_unit(
                                  unit.angstrom), 5),
                  'scale': round(self.scales[tuple((index, ))], 5)}

@@ -31,6 +31,7 @@ setup(
         'offpele/template',
         'offpele/solvent',
         'offpele/topology',
+        'offpele/forcefield',
         'offpele/utils',
     ],
     long_description=read('README.md'),

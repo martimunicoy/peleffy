@@ -1,0 +1,65 @@
+FFLD_VERSION 4.1.0
+================================================================================
+  ATOMTYPES and PARAMETERS for molecule: 
+
+================================================================================
+
+ Total charge of the system =  0.0000
+Formal charge of the system =  0.0000
+
+
+Charges
+atom  formal fractional formal 
+1       0     0.000  
+2       0     0.000  
+3       0     0.000  
+4       0     0.000  
+5       0     0.000  
+6       0     0.000  
+
+BCI's             index  type   type    bci        assignement info
+ C1      C2          0   141    141     0.0000   exact type       CM-CM
+ C1      H3          0   141    146     0.1150   exact type       CM-HC
+ C1      H4          0   141    146     0.1150   exact type       CM-HC
+ C2      H5          0   141    146     0.1150   exact type       CM-HC
+ C2      H6          0   141    146     0.1150   exact type       CM-HC
+
+OPLSAA FORCE FIELD TYPE ASSIGNED
+-------------------------------------------------------------------------------
+ atom   type  vdw  symbol    charge   sigma    epsilon  quality   comment 
+-------------------------------------------------------------------------------
+ C1       141  C3   CM      -0.2300   3.5500   0.0760 high   alkene C (RH-C=) all atom
+ C2       141  C3   CM      -0.2300   3.5500   0.0760 high   alkene C (RH-C=) all atom
+ H3       146  H6   HC       0.1150   2.4200   0.0300 high   alkene H (H-C=)  all atom
+ H4       146  H6   HC       0.1150   2.4200   0.0300 high   alkene H (H-C=)  all atom
+ H5       146  H6   HC       0.1150   2.4200   0.0300 high   alkene H (H-C=)  all atom
+ H6       146  H6   HC       0.1150   2.4200   0.0300 high   alkene H (H-C=)  all atom
+------------------------------------------------------------------------------
+
+
+ Stretch            k            r0    quality         bt        comment
+ C1      C2      549.00000    1.34000   high         0  => 0     CM-CM      ==> CM-CM     
+ C1      H3      340.00000    1.08000   high         0  => 0     CM-HC      ==> HC-CM     
+ C1      H4      340.00000    1.08000   high         0  => 0     CM-HC      ==> HC-CM     
+ C2      H5      340.00000    1.08000   high         0  => 0     CM-HC      ==> HC-CM     
+ C2      H6      340.00000    1.08000   high         0  => 0     CM-HC      ==> HC-CM     
+
+ Bending                      k       theta0    quality   at  comment
+ C2      C1      H3        35.00000  120.00000   high     0   CM-CM-HC          ==> HC-CM-CM         
+ C2      C1      H4        35.00000  120.00000   high     0   CM-CM-HC          ==> HC-CM-CM         
+ H3      C1      H4        35.00000  117.00000   high     0   HC-CM-HC          ==> HC-CM-HC         
+ C1      C2      H5        35.00000  120.00000   high     0   CM-CM-HC          ==> HC-CM-CM         
+ C1      C2      H6        35.00000  120.00000   high     0   CM-CM-HC          ==> HC-CM-CM         
+ H5      C2      H6        35.00000  117.00000   high     0   HC-CM-HC          ==> HC-CM-HC         
+
+ proper Torsion                     V1      V2      V3      V4    quality  tt  comment
+ H3      C1      C2      H5        0.000  14.000   0.000   0.000    high   0   HC-CM-CM-HC          ==> ??-CM-CM-??         
+ H3      C1      C2      H6        0.000  14.000   0.000   0.000    high   0   HC-CM-CM-HC          ==> ??-CM-CM-??         
+ H4      C1      C2      H5        0.000  14.000   0.000   0.000    high   0   HC-CM-CM-HC          ==> ??-CM-CM-??         
+ H4      C1      C2      H6        0.000  14.000   0.000   0.000    high   0   HC-CM-CM-HC          ==> ??-CM-CM-??         
+
+ improper Torsion                   V2    quality  comment
+ H3      H4      C1      C2       30.000   high   C=  double bonded
+ H5      H6      C2      C1       30.000   high   C=  double bonded
+
+
