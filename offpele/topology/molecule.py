@@ -7,8 +7,7 @@ representations.
 from .topology import Bond, Angle, OFFProper, OFFImproper
 from .rotamer import MolecularGraph, MolecularGraphWithConstrainedCore
 from offpele.utils.toolkits import (RDKitToolkitWrapper,
-                                    OpenForceFieldToolkitWrapper,
-                                    SchrodingerToolkitWrapper)
+                                    OpenForceFieldToolkitWrapper)
 from offpele.forcefield import ForceFieldSelector
 from offpele.charge import (Am1bccCalculator, GasteigerCalculator,
                             OPLSChargeCalculator)
