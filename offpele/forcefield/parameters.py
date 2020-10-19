@@ -493,7 +493,7 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                 # Skip the next 3 lines
                 next(lines_iterator)
                 next(lines_iterator)
-                line = next(lines_iterator)
+                next(lines_iterator)
 
             elif line.startswith(' Stretch'):
                 section = 'bonds'
