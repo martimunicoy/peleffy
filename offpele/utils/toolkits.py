@@ -755,7 +755,7 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
 
         return None
 
-    def get_OPLS_parameters(self, molecule):
+    def run_ffld_server(self, molecule):
         """
         It calls Schrodinger's ffld_server to parameterize a molecule
         with OPLS.

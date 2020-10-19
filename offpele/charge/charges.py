@@ -96,19 +96,36 @@ class OPLSChargeCalculator(_PartialChargeCalculator):
             The array of partial charges
         """
 
-        try:
-            OPLS_params = self.molecule.get_OPLS_parameters()
-        except ToolkitUnavailableException:
-            raise ToolkitUnavailableException(
-                'OPLSChargeCalculator requires the Schrodinger '
-                + 'Toolkit to obtain partial charges')
+        parameters = self.molecule.parameters
 
+        # Only attempt to compute partial charges if the pure OpenFF has
+        # been employed. Otherwise, OPLS2005 partial charges will already
+        # be calculated and stored to molecule's parameters
+        if parameters.name == 'OpenFF':
+            try:
+                from offpele.utils.toolkits import SchrodingerToolkitWrapper
+
+                schrodinger_toolkit_wrapper = SchrodingerToolkitWrapper()
+                ffld_output = schrodinger_toolkit_wrapper.run_ffld_server(
+                    self.molecule)
+            except ToolkitUnavailableException:
+                raise ToolkitUnavailableException(
+                    'OPLSChargeCalculator requires the Schrodinger '
+                    + 'Toolkit to obtain partial charges')
+
+            from offpele.forcefield import OpenForceFieldParameterWrapper
+            parameters = OpenForceFieldParameterWrapper.from_ffld_output(
+                ffld_output)
+
+        """
         partial_charges = list()
-        for partial_charge in OPLS_params['charges']:
+        for partial_charge in parameters['charges']:
             value = partial_charge.value_in_unit(unit.elementary_charge)
             partial_charges.append(value)
 
+
         partial_charges = unit.Quantity(np.array(partial_charges),
                                         unit.elementary_charge)
+        """
 
-        return partial_charges
+        return parameters['charges']
