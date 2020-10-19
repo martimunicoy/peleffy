@@ -42,8 +42,8 @@ class _BaseForceField(object):
             The parameter wrapper containing the parameters generated
             with the current force field
         force_parameterization : bool
-            Whether to force a new parameterization to be performed,
-            instead of using parameters from a previous calculation,
+            Whether to force a new parameterization instead of attempting
+            to reuse parameters obtained in a previous parameterization,
             or not
         """
         if self.parameters is None or force_parameterization:
@@ -306,7 +306,7 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
         if self._bonds == 'openff':
             hybrid_parameters['bonds'] = openff_parameters['bonds']
         elif self._bonds == 'opls2005':
-            hybrid_parameters['bonds'] = openff_parameters['bonds']
+            hybrid_parameters['bonds'] = oplsff_parameters['bonds']
         else:
             raise ValueError('Invalid selection: '
                              + '\'{}\'. '.format(self._bonds)
@@ -316,7 +316,7 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
         if self._angles == 'openff':
             hybrid_parameters['angles'] = openff_parameters['angles']
         elif self._angles == 'opls2005':
-            hybrid_parameters['angles'] = openff_parameters['angles']
+            hybrid_parameters['angles'] = oplsff_parameters['angles']
         else:
             raise ValueError('Invalid selection: '
                              + '\'{}\'. '.format(self._angles)
@@ -327,8 +327,8 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
             hybrid_parameters['propers'] = openff_parameters['propers']
             hybrid_parameters['impropers'] = openff_parameters['impropers']
         elif self._torsions == 'opls2005':
-            hybrid_parameters['propers'] = openff_parameters['propers']
-            hybrid_parameters['impropers'] = openff_parameters['impropers']
+            hybrid_parameters['propers'] = oplsff_parameters['propers']
+            hybrid_parameters['impropers'] = oplsff_parameters['impropers']
         else:
             raise ValueError('Invalid selection: '
                              + '\'{}\'. '.format(self._torsions)
