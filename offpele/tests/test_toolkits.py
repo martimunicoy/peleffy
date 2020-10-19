@@ -146,8 +146,6 @@ class TestRDKitToolkitWrapper(object):
         initial_theta = Chem.rdMolTransforms.GetDihedralDeg(conformer,
                                                             *dihedral)
 
-        print(initial_theta)
-
         if initial_theta < -179:
             initial_theta += 180.0
         elif initial_theta > 179:
