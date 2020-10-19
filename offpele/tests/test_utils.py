@@ -7,7 +7,6 @@ of offpele.
 import pytest
 
 import io
-from contextlib import redirect_stdout
 from offpele.utils import Logger
 
 
