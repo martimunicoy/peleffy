@@ -168,7 +168,7 @@ class TestOutputPathHandler(object):
         # Load benzene molecule
         molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ')
         molecule.parameterize('openff_unconstrained-1.2.1.offxml',
-                              charges_method='gasteiger')
+                              charge_method='gasteiger')
 
         # Molecule's tag
         tag = molecule.tag
@@ -213,7 +213,7 @@ class TestOutputPathHandler(object):
         # Load benzene molecule
         molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ')
         molecule.parameterize('openff_unconstrained-1.2.1.offxml',
-                              charges_method='gasteiger')
+                              charge_method='gasteiger')
 
         # Molecule's tag
         tag = molecule.tag
@@ -262,7 +262,7 @@ class TestOutputPathHandler(object):
         # Load benzene molecule
         molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ')
         molecule.parameterize('openff_unconstrained-1.2.1.offxml',
-                              charges_method='gasteiger')
+                              charge_method='gasteiger')
 
         # Initialize output handler with an output_path set
         with tempfile.TemporaryDirectory() as tmpdir:

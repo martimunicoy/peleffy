@@ -87,7 +87,7 @@ arguments. To obtain the full list of flags you can type:
        --with_solvent        Generate solvent parameters for OBC
        --as_DataLocal        Output will be saved following PELE's DataLocal
                              hierarchy
-       -c NAME, --charges_method NAME
+       -c NAME, --charge_method NAME
                              The name of the method to use to compute charges
        --include_terminal_rotamers
                              Not exclude terminal rotamers when building the
@@ -183,11 +183,11 @@ It saves the output files following the DataLocal hierarchy expected by PELE.
 
         $ python -m offpele.main path/to/my_ligand.pdb --as_DataLocal
 
-Charges method
---------------
+Charge method
+-------------
 It sets the method to compute the partial charges.
 
-- Flag: ``-c NAME``, ``--charges_method NAME``
+- Flag: ``-c NAME``, ``--charge_method NAME``
 - Type: ``string``
 - Choices: one of [``gasteiger``, ``am1bcc``, ``OPLS``]
 - Default: ``am1bcc``
