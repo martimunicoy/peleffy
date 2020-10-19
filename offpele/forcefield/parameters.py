@@ -4,7 +4,8 @@ This module provides classes to define force field parameters.
 
 
 __all__ = ["OpenForceFieldParameterWrapper",
-           "OPLS2005ParameterWrapper"]
+           "OPLS2005ParameterWrapper",
+           "OpenFFOPLS2005ParameterWrapper"]
 
 
 from collections import defaultdict
@@ -724,3 +725,12 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
 
         for label, params in parameters_to_add.items():
             OPLS_params.add_parameters(label, params)
+
+
+class OpenFFOPLS2005ParameterWrapper(BaseParameterWrapper):
+    """
+    It defines a parameters wrapper for an hybrid OpenFF-OPLS2005 force
+    field.
+    """
+
+    _name = 'Openff + OPLS2005'

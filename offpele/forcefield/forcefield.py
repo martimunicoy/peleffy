@@ -175,6 +175,7 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
         self._openff = OpenForceField(forcefield_name)
         self._oplsff = OPLS2005ForceField('OPLS2005')
         self._name = self._openff.name + ' + ' + self._oplsff.name
+        self._parameters = None
 
         # Set default selections
         self._nonbonding = 'openff'
@@ -265,12 +266,14 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
             The parameter wrapper containing the parameters generated
             with the current force field
         """
-        hybrid_parameters = OpenFFOPLS2005ForceField()
+        from offpele.forcefield import OpenFFOPLS2005ParameterWrapper
+
+        hybrid_parameters = OpenFFOPLS2005ParameterWrapper()
 
         openff_parameters = self._openff.parameterize(molecule)
         oplsff_parameters = self._oplsff.parameterize(molecule)
 
-        if self._nonboding == 'openff':
+        if self._nonbonding == 'openff':
             hybrid_parameters['atom_names'] = openff_parameters['atom_names']
             hybrid_parameters['atom_types'] = openff_parameters['atom_types']
             hybrid_parameters['charges'] = openff_parameters['charges']
@@ -331,3 +334,5 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
                              + '\'{}\'. '.format(self._torsions)
                              + 'Valid selections are '
                              + '{}'.format(self._selections))
+
+        return hybrid_parameters

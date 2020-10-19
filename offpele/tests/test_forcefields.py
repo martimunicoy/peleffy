@@ -291,3 +291,123 @@ class TestOPLS2005ForceField(object):
             unit.Quantity(1.250, unit.angstrom), 'Unexpected vdW radius'
         assert params3['gammas'][0] == 0.005000000, 'Unexpected gamma'
         assert params3['alphas'][0] == 0.000000000, 'Unexpected alpha'
+
+
+class TestOpenFFOPLS2005ForceField(object):
+    """
+    It wraps all tests that check the OpenFFOPLS2005ForceField class.
+    """
+
+    def test_name(self):
+        """It checks the name assignment."""
+
+        from offpele.forcefield import OpenFFOPLS2005ForceField
+
+        FORCE_FIELD_NAME = 'openff_unconstrained-1.2.1.offxml'
+
+        hybridff = OpenFFOPLS2005ForceField(FORCE_FIELD_NAME)
+
+        assert hybridff.name == FORCE_FIELD_NAME + ' + OPLS2005', \
+            'Unexpected force field name'
+
+    def test_type(self):
+        """It checks the type assignment."""
+
+        from offpele.forcefield import OpenFFOPLS2005ForceField
+
+        FORCE_FIELD_NAME = 'openff_unconstrained-1.2.1.offxml'
+
+        hybridff = OpenFFOPLS2005ForceField(FORCE_FIELD_NAME)
+
+        assert hybridff.type == 'OpenFF + OPLS2005', \
+            'Unexpected force field type'
+
+    def test_parameterizer(self):
+        """It checks the parameterized method."""
+
+        from offpele.topology import Molecule
+        from offpele.forcefield import (OpenFFOPLS2005ForceField,
+                                        OPLS2005ParameterWrapper)
+        from offpele.utils import get_data_file_path
+        from .utils import check_parameters
+
+        FORCE_FIELD_NAME = 'openff_unconstrained-1.2.1.offxml'
+
+        # Load molecule
+        molecule = Molecule(get_data_file_path('ligands/methane.pdb'))
+        hybridff = OpenFFOPLS2005ForceField(FORCE_FIELD_NAME)
+
+        # Workaround to skip Schrodinger dependency
+        ffld_output = get_data_file_path('tests/MET_ffld_output.txt')
+        hybridff._oplsff._parameters = \
+            OPLS2005ParameterWrapper.from_ffld_output(ffld_output)
+
+        # Set force field and obtain parameters
+        molecule.set_forcefield(hybridff)
+        molecule.parameterize()
+
+        # Define expected parameters
+        expected_nonbonding = [
+            [1, 0, 'M', 'CT', '_C1_', 0, 3.5, 0.066, -0.24, 1.975, 1.75,
+             0.005, -0.74168571],
+            [2, 1, 'M', 'HC', '_H2_', 0, 2.5, 0.03, 0.06, 1.425, 1.25,
+             0.00859824, 0.268726247],
+            [3, 1, 'M', 'HC', '_H3_', 0, 2.5, 0.03, 0.06, 1.425, 1.25,
+             0.00859824, 0.268726247],
+            [4, 1, 'M', 'HC', '_H4_', 0, 2.5, 0.03, 0.06, 1.425, 1.25,
+             0.00859824, 0.268726247],
+            [5, 1, 'M', 'HC', '_H5_', 0, 2.5, 0.03, 0.06, 1.425, 1.25,
+             0.00859824, 0.268726247]]
+
+        expected_bonds = [
+            [1, 2, 340.0, 1.09],
+            [1, 3, 340.0, 1.09],
+            [1, 4, 340.0, 1.09],
+            [1, 5, 340.0, 1.09]]
+
+        expected_angles = [
+            [2, 1, 3, 33.0, 107.8],
+            [2, 1, 4, 33.0, 107.8],
+            [2, 1, 5, 33.0, 107.8],
+            [3, 1, 4, 33.0, 107.8],
+            [3, 1, 5, 33.0, 107.8],
+            [4, 1, 5, 33.0, 107.8]]
+
+        # Check it up
+        check_parameters(molecule,
+                         expected_nonbonding=expected_nonbonding,
+                         expected_bonds=expected_bonds,
+                         expected_angles=expected_angles)
+
+        # Load molecule
+        molecule = Molecule(get_data_file_path('ligands/ethylene.pdb'))
+        oplsff = OPLS2005ForceField(FORCE_FIELD_NAME)
+
+        # Set force field and obtain parameters
+        ffld_output = get_data_file_path('tests/ETL_ffld_output.txt')
+        parameters = OPLS2005ParameterWrapper.from_ffld_output(ffld_output)
+        molecule.set_forcefield(oplsff)
+        molecule._parameters = parameters
+
+        molecule._clean_lists()
+        molecule._build_atoms()
+        molecule._build_bonds()
+        molecule._build_angles()
+        molecule._build_propers()
+        molecule._build_impropers()
+
+        # Define expected parameters
+        expected_propers = [
+            [3, 1, 2, 5, 7.0, -1, 2, 0.0],
+            [3, 1, 2, 6, 7.0, -1, 2, 0.0],
+            [4, 1, 2, 5, 7.0, -1, 2, 0.0],
+            [4, 1, 2, 6, 7.0, -1, 2, 0.0]]
+
+        expected_impropers = [
+            [3, 4, 1, 2, 15.0, -1, 2],
+            [5, 6, 2, 1, 15.0, -1, 2]]
+
+        # Check it up
+        check_parameters(molecule,
+                         expected_propers=expected_propers,
+                         expected_impropers=expected_impropers)
