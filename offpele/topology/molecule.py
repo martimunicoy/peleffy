@@ -728,7 +728,8 @@ class Molecule(object):
 
     def parameterize(self, forcefield_name=None, charge_method=None,
                      use_OPLS_nonbonding_params=False,
-                     use_OPLS_bonds_and_angles=False):
+                     use_OPLS_bonds_and_angles=False,
+                     force_parameterization=False):
         """
         It parameterizes the molecule with a certain forcefield.
 
@@ -750,6 +751,10 @@ class Molecule(object):
             or not. Please, note that this option is only
             available if a valid Schrodinger installation is found in the
             current machine. Default is False
+        force_parameterization : bool
+            Whether to force a new parameterization instead of attempting
+            to reuse parameters obtained in a previous parameterization,
+            or not
         """
 
         if not self.off_molecule or not self.rdkit_molecule:
@@ -767,7 +772,8 @@ class Molecule(object):
         else:
             if self.forcefield is None:
                 raise ValueError('No force field has been set')
-        self._parameters = self.forcefield.parameterize(self)
+        self._parameters = self.forcefield.parameterize(self,
+                                                        force_parameterization)
 
         # Initialize the charges calculator
         charge_calculator = self._get_charge_calculator(charge_method)
