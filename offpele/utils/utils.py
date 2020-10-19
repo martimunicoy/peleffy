@@ -36,8 +36,8 @@ def get_data_file_path(relative_path):
 
     if not os.path.exists(output_path):
         raise ValueError(
-            "Sorry! {output_path} does not exist. If you just added it, "
-            + "you'll have to re-install")
+            "Sorry! {} does not exist. ".format(output_path)
+            + "If you just added it, you'll have to re-install")
 
     return output_path
 
