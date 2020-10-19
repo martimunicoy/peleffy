@@ -24,8 +24,9 @@ class _BaseForceField(object):
             The name of the forcefield
         """
         self._name = forcefield_name
+        self._parameters = None
 
-    def parameterize(self, molecule):
+    def parameterize(self, molecule, force_parameterization=False):
         """
         It parameterizes the supplied molecule.
 
@@ -40,10 +41,15 @@ class _BaseForceField(object):
                      object
             The parameter wrapper containing the parameters generated
             with the current force field
+        force_parameterization : bool
+            Whether to force a new parameterization to be performed,
+            instead of using parameters from a previous calculation,
+            or not
         """
-        parameters = self._get_parameters(molecule)
+        if self.parameters is None or force_parameterization:
+            self._parameters = self._get_parameters(molecule)
 
-        return parameters
+        return self.parameters
 
     @property
     def type(self):
@@ -68,6 +74,18 @@ class _BaseForceField(object):
             The name of the force field
         """
         return self._name
+
+    @property
+    def parameters(self):
+        """
+        It returns the parameters obtained with the force field.
+
+        Returns
+        -------
+        parameters : any class deriving from BaseParameterWrapper
+            The parameters obtained with the force field
+        """
+        return self._parameters
 
 
 class OpenForceField(_BaseForceField):
