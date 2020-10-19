@@ -73,3 +73,88 @@ def check_CHO_charges_in_molecule(molecule):
                 + '{}'.format(charge)
         else:
             raise ValueError('Unknown atom name')
+
+
+def check_parameters(molecule, expected_nonbonding=None,
+                     expected_bonds=None, expected_angles=None,
+                     expected_propers=None, expected_impropers=None):
+    """
+    It checks the current parameters of the molecule.
+
+    Parameters
+    ----------
+    molecule : an offpele.topology.Molecule
+        The offpele's Molecule object
+    expected_nonbonding : list[list]
+        The list of expected nonbonding parameters
+    expected_bonds : list[list]
+        The list of expected bond parameters
+    expected_angles : list[list]
+        The list of expected angle parameters
+    expected_propers : list[list]
+        The list of expected proper parameters
+    expected_impropers : list[list]
+        The list of expected improper parameters
+    """
+
+    from offpele.template.impact import (WritableAtom,
+                                         WritableBond,
+                                         WritableAngle,
+                                         WritableProper,
+                                         WritableImproper)
+
+    if expected_nonbonding is not None:
+        assert len(molecule.atoms) == len(expected_nonbonding), \
+            'Invalid number of nonbonding terms'
+
+        for atom in molecule.atoms:
+            w_atom = WritableAtom(atom)
+            w_parameters = [w_atom.index, w_atom.parent.index, w_atom.core,
+                            w_atom.OPLS_type, w_atom.PDB_name,
+                            w_atom.unknown, w_atom.sigma, w_atom.epsilon,
+                            w_atom.charge, w_atom.born_radius,
+                            w_atom.SASA_radius, w_atom.nonpolar_gamma,
+                            w_atom.nonpolar_alpha]
+            assert w_parameters in expected_nonbonding, \
+                'Invalid writable nonbonding parameters ' \
+                + '{}'.format(w_parameters)
+
+    if expected_bonds is not None:
+        assert len(molecule.bonds) == len(expected_bonds), \
+            'Invalid number of bond terms'
+
+        for bond in molecule.bonds:
+            w_bond = WritableBond(bond)
+            w_parameters = [attr[1] for attr in list(w_bond)]
+            assert w_parameters in expected_bonds, \
+                'Invalid writable bond parameters {}'.format(w_parameters)
+
+    if expected_angles is not None:
+        assert len(molecule.angles) == len(expected_angles), \
+            'Invalid number of angle terms'
+
+        for angle in molecule.angles:
+            w_angle = WritableAngle(angle)
+            w_parameters = [attr[1] for attr in list(w_angle)]
+            assert w_parameters in expected_angles, \
+                'Invalid writable angle parameters {}'.format(w_parameters)
+
+    if expected_propers is not None:
+        assert len(molecule.propers) == len(expected_propers), \
+            'Invalid number of proper terms'
+
+        for proper in molecule.propers:
+            w_proper = WritableProper(proper)
+            w_parameters = [attr[1] for attr in list(w_proper)]
+            assert w_parameters in expected_propers, \
+                'Invalid writable proper parameters {}'.format(w_parameters)
+
+    if expected_impropers is not None:
+        assert len(molecule.impropers) == len(expected_impropers), \
+            'Invalid number of improper terms'
+
+        for improper in molecule.impropers:
+            w_improper = WritableImproper(improper)
+            w_parameters = [attr[1] for attr in list(w_improper)]
+            assert w_parameters in expected_impropers, \
+                'Invalid writable improper parameters {}'.format(w_parameters)

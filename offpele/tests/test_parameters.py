@@ -8,7 +8,6 @@ from simtk import unit
 import numpy as np
 
 from offpele.utils import get_data_file_path
-from offpele.utils.toolkits import SchrodingerToolkitWrapper
 from .utils import (SET_OF_LIGAND_PATHS, apply_PELE_dihedral_equation,
                     apply_OFF_dihedral_equation, check_CHO_charges_in_molecule)
 from offpele.topology import Molecule, Bond, Angle, Proper
@@ -37,7 +36,7 @@ class TestBonds(object):
 
         # Parameterize
         molecule.parameterize('openff_unconstrained-1.2.0.offxml',
-                              charges_method='gasteiger')
+                              charge_method='gasteiger')
 
         # Check resulting parameters
         expected_lengths = {(0, 1): 1.389761064076,
@@ -66,20 +65,21 @@ class TestBonds(object):
                        (4, 10): 808.4160937,
                        (5, 11): 808.4160937}
 
-        for indexes, properties in dict(molecule.parameters['Bonds']).items():
+        for bond in molecule.parameters['bonds']:
+            indexes = (bond['atom1_idx'], bond['atom2_idx'])
             expected_length = unit.Quantity(expected_lengths[indexes],
                                             unit.angstrom)
             expected_k = unit.Quantity(expected_ks[indexes],
                                        unit.kilocalorie
                                        / (unit.angstrom ** 2 * unit.mole))
 
-            assert properties.length - expected_length \
+            assert bond['eq_dist'] - expected_length \
                 < unit.Quantity(MAX_THRESHOLD, unit.angstrom), \
-                'Invalid length for bond {} {}'.format(indexes, properties)
-            assert properties.k - expected_k \
+                'Invalid length for bond {}'.format(bond)
+            assert bond['spring_constant'] - expected_k \
                 < unit.Quantity(MAX_THRESHOLD, unit.kilocalorie
                                 / (unit.angstrom ** 2 * unit.mole)), \
-                'Invalid k for bond {} {}'.format(indexes, properties)
+                'Invalid k for bond {}'.format(bond)
 
     def test_Impact_writable_parameters(self):
         """
@@ -91,7 +91,7 @@ class TestBonds(object):
 
         # Parameterize
         molecule.parameterize('openff_unconstrained-1.2.0.offxml',
-                              charges_method='gasteiger')
+                              charge_method='gasteiger')
 
         expected_parameters = list([[1, 2, 332.5750972667, 1.523640340452],
                                     [1, 4, 376.8940758588, 1.094223427522],
@@ -126,7 +126,7 @@ class TestAngles(object):
 
         # Parameterize
         molecule.parameterize('openff_unconstrained-1.2.0.offxml',
-                              charges_method='gasteiger')
+                              charge_method='gasteiger')
 
         # Check resulting parameters
         expected_angles = {(0, 1, 2): 128.2771922378,
@@ -167,20 +167,22 @@ class TestAngles(object):
                        (5, 0, 6): 68.40592742547,
                        (5, 4, 10): 68.40592742547}
 
-        for indexes, properties in dict(molecule.parameters['Angles']).items():
+        for angle in molecule.parameters['angles']:
+            indexes = (angle['atom1_idx'], angle['atom2_idx'],
+                       angle['atom3_idx'])
             expected_angle = unit.Quantity(expected_angles[indexes],
                                            unit.degree)
             expected_k = unit.Quantity(expected_ks[indexes],
                                        unit.kilocalorie
                                        / (unit.radian ** 2 * unit.mole))
 
-            assert properties.angle - expected_angle \
+            assert angle['eq_angle'] - expected_angle \
                 < unit.Quantity(MAX_THRESHOLD, unit.degree), \
-                'Invalid length for angle {} {}'.format(indexes, properties)
-            assert properties.k - expected_k \
+                'Invalid length for angle {}'.format(angle)
+            assert angle['spring_constant'] - expected_k \
                 < unit.Quantity(MAX_THRESHOLD, unit.kilocalorie
                                 / (unit.radian ** 2 * unit.mole)), \
-                'Invalid k for angle {} {}'.format(indexes, properties)
+                'Invalid k for angle {}'.format(angle)
 
     def test_Impact_writable_parameters(self):
         """
@@ -192,7 +194,7 @@ class TestAngles(object):
 
         # Parameterize
         molecule.parameterize('openff_unconstrained-1.2.0.offxml',
-                              charges_method='gasteiger')
+                              charge_method='gasteiger')
 
         expected_parameters = list(
             [[1, 2, 3, 78.67881492645, 128.2771922378],
@@ -231,126 +233,115 @@ class TestDihedrals(object):
 
         # Parameterize
         molecule.parameterize('openff_unconstrained-1.2.0.offxml',
-                              charges_method='gasteiger')
+                              charge_method='gasteiger')
 
         # Check resulting parameters for proper torsions
-        expected_ks = {(0, 1, 2, 3): [0.603518062312, 0.5248455212365],
-                       (0, 1, 2, 4): [0.9350453896311],
-                       (1, 2, 4, 8): [2.529110648699],
-                       (2, 1, 0, 5): [5.376019778605],
-                       (2, 1, 0, 6): [5.376019778605],
-                       (3, 2, 1, 7): [0.9350453896311],
-                       (3, 2, 4, 8): [2.237928151469, 1.23728649144],
-                       (4, 2, 1, 7): [0.9350453896311],
-                       (5, 0, 1, 7): [5.376019778605],
-                       (6, 0, 1, 7): [5.376019778605]}
+        expected_propers = [(0, 1, 2, 3,
+                             unit.Quantity(0.603518062312,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(180.0, unit.degree),
+                             2, 1.0),
+                            (0, 1, 2, 3,
+                             unit.Quantity(0.5248455212365,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(0.0, unit.degree),
+                             3, 1.0),
+                            (0, 1, 2, 4,
+                             unit.Quantity(0.9350453896311,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(180.0, unit.degree),
+                             2, 1.0),
+                            (1, 2, 4, 8,
+                             unit.Quantity(2.529110648699,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(180.0, unit.degree),
+                             2, 1.0),
+                            (2, 1, 0, 5,
+                             unit.Quantity(5.376019778605,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(180.0, unit.degree),
+                             2, 1.0),
+                            (2, 1, 0, 6,
+                             unit.Quantity(5.376019778605,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(180.0, unit.degree),
+                             2, 1.0),
+                            (3, 2, 1, 7,
+                             unit.Quantity(0.9350453896311,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(180.0, unit.degree),
+                             2, 1.0),
+                            (3, 2, 4, 8,
+                             unit.Quantity(2.237928151469,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(180.0, unit.degree),
+                             2, 1.0),
+                            (3, 2, 4, 8,
+                             unit.Quantity(1.23728649144,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(0.0, unit.degree),
+                             1, 1.0),
+                            (4, 2, 1, 7,
+                             unit.Quantity(0.9350453896311,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(180.0, unit.degree),
+                             2, 1.0),
+                            (5, 0, 1, 7,
+                             unit.Quantity(5.376019778605,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(180.0, unit.degree),
+                             2, 1.0),
+                            (6, 0, 1, 7,
+                             unit.Quantity(5.376019778605,
+                                           unit.kilocalorie / unit.mole),
+                             unit.Quantity(180.0, unit.degree),
+                             2, 1.0)]
 
-        expected_phases = {(0, 1, 2, 3): [180.0, 0.0],
-                           (0, 1, 2, 4): [180.0],
-                           (1, 2, 4, 8): [180.0],
-                           (2, 1, 0, 5): [180.0],
-                           (2, 1, 0, 6): [180.0],
-                           (3, 2, 1, 7): [180.0],
-                           (3, 2, 4, 8): [180.0, 0.0],
-                           (4, 2, 1, 7): [180.0],
-                           (5, 0, 1, 7): [180.0],
-                           (6, 0, 1, 7): [180.0]}
+        assert len(expected_propers) == len(molecule.parameters['propers']), \
+            'Unexpected number of proper torsions'
 
-        expected_periodicities = {(0, 1, 2, 3): [2, 3],
-                                  (0, 1, 2, 4): [2],
-                                  (1, 2, 4, 8): [2],
-                                  (2, 1, 0, 5): [2],
-                                  (2, 1, 0, 6): [2],
-                                  (3, 2, 1, 7): [2],
-                                  (3, 2, 4, 8): [2, 1],
-                                  (4, 2, 1, 7): [2],
-                                  (5, 0, 1, 7): [2],
-                                  (6, 0, 1, 7): [2]}
+        for proper in molecule.parameters['propers']:
+            proper_parameters = (proper['atom1_idx'], proper['atom2_idx'],
+                                 proper['atom3_idx'], proper['atom4_idx'],
+                                 proper['k'], proper['phase'],
+                                 proper['periodicity'], proper['idivf'])
 
-        expected_idivfs = {(0, 1, 2, 3): [1.0, 1.0],
-                           (0, 1, 2, 4): [1.0],
-                           (1, 2, 4, 8): [1.0],
-                           (2, 1, 0, 5): [1.0],
-                           (2, 1, 0, 6): [1.0],
-                           (3, 2, 1, 7): [1.0],
-                           (3, 2, 4, 8): [1.0, 1.0],
-                           (4, 2, 1, 7): [1.0],
-                           (5, 0, 1, 7): [1.0],
-                           (6, 0, 1, 7): [1.0]}
-
-        for indexes, properties in dict(
-                molecule.parameters['ProperTorsions']).items():
-            for i, (k, phase, periodicity, idivf) in enumerate(
-                    zip(properties.k, properties.phase,
-                        properties.periodicity, properties.idivf)):
-                expected_k = unit.Quantity(expected_ks[indexes][i],
-                                           unit.kilocalorie / unit.mole)
-                expected_phase = unit.Quantity(expected_phases[indexes][i],
-                                               unit.degree)
-                expected_periodicity = expected_periodicities[indexes][i]
-                expected_idivf = expected_idivfs[indexes][i]
-
-                assert k - expected_k < \
-                    unit.Quantity(MAX_THRESHOLD,
-                                  unit.kilocalorie / unit.mole), \
-                    'Invalid k for proper torsion ' \
-                    + '{} {}'.format(indexes, properties)
-
-                assert phase - expected_phase < \
-                    unit.Quantity(MAX_THRESHOLD, unit.degree), \
-                    'Invalid phase for proper torsion ' \
-                    + '{} {}'.format(indexes, properties)
-
-                assert periodicity - expected_periodicity < MAX_THRESHOLD, \
-                    'Invalid periodicity for proper torsion ' \
-                    + '{} {}'.format(indexes, properties)
-
-                assert idivf - expected_idivf < MAX_THRESHOLD, \
-                    'Invalid idivf for proper torsion ' \
-                    + '{} {}'.format(indexes, properties)
+            assert proper_parameters in expected_propers, \
+                'Unexpected proper torsion'
 
         # Check resulting parameters for improper torsions
-        expected_ks = {(0, 1, 2, 7): [1.1],
-                       (1, 0, 5, 6): [1.1],
-                       (1, 2, 3, 4): [10.5]}
+        expected_impropers = [(0, 1, 2, 7,
+                               unit.Quantity(1.1,
+                                             unit.kilocalorie / unit.mole),
+                               unit.Quantity(180.0, unit.degree),
+                               2, 1),
+                              (1, 0, 5, 6,
+                               unit.Quantity(1.1,
+                                             unit.kilocalorie / unit.mole),
+                               unit.Quantity(180.0, unit.degree),
+                               2, 1),
+                              (1, 2, 3, 4,
+                               unit.Quantity(10.5,
+                                             unit.kilocalorie / unit.mole),
+                               unit.Quantity(180.0, unit.degree),
+                               2, 1)]
 
-        expected_phases = {(0, 1, 2, 7): [180.0],
-                           (1, 0, 5, 6): [180.0],
-                           (1, 2, 3, 4): [180.0]}
+        assert len(expected_impropers) == \
+            len(molecule.parameters['impropers']), \
+            'Unexpected number of improper torsions'
 
-        expected_periodicities = {(0, 1, 2, 7): [2],
-                                  (1, 0, 5, 6): [2],
-                                  (1, 2, 3, 4): [2]}
+        for improper in molecule.parameters['impropers']:
+            improper_parameters = (improper['atom1_idx'],
+                                   improper['atom2_idx'],
+                                   improper['atom3_idx'],
+                                   improper['atom4_idx'],
+                                   improper['k'],
+                                   improper['phase'],
+                                   improper['periodicity'],
+                                   improper['idivf'])
 
-        for indexes, properties in dict(
-                molecule.parameters['ImproperTorsions']).items():
-            for i, (k, phase, periodicity) in enumerate(
-                    zip(properties.k, properties.phase,
-                        properties.periodicity)):
-                expected_k = unit.Quantity(expected_ks[indexes][i],
-                                           unit.kilocalorie / unit.mole)
-                expected_phase = unit.Quantity(expected_phases[indexes][i],
-                                               unit.degree)
-                expected_periodicity = expected_periodicities[indexes][i]
-
-                assert k - expected_k < \
-                    unit.Quantity(MAX_THRESHOLD,
-                                  unit.kilocalorie / unit.mole), \
-                    'Invalid k for improper torsion ' \
-                    + '{} {}'.format(indexes, properties)
-
-                assert phase - expected_phase < \
-                    unit.Quantity(MAX_THRESHOLD, unit.degree), \
-                    'Invalid phase for improper torsion ' \
-                    + '{} {}'.format(indexes, properties)
-
-                assert periodicity - expected_periodicity < MAX_THRESHOLD, \
-                    'Invalid periodicity for improper torsion ' \
-                    + '{} {}'.format(indexes, properties)
-
-            assert properties.idivf is None, \
-                'Invalid idivf for improper torsion ' \
-                + '{} {}'.format(indexes, properties)
+            assert improper_parameters in expected_impropers, \
+                'Unexpected improper torsion'
 
     def test_Impact_writable_parameters(self):
         """
@@ -362,7 +353,7 @@ class TestDihedrals(object):
 
         # Parameterize
         molecule.parameterize('openff_unconstrained-1.2.0.offxml',
-                              charges_method='gasteiger')
+                              charge_method='gasteiger')
 
         expected_parameters = list(
             [[3, 2, 1, 4, 0.5107183999341, 1, 1, 0.0],
@@ -405,7 +396,7 @@ class TestDihedrals(object):
         for ligand_path in SET_OF_LIGAND_PATHS:
             ligand_path = get_data_file_path(ligand_path)
             molecule = Molecule(ligand_path)
-            molecule.parameterize(FORCEFIELD_NAME, charges_method='gasteiger')
+            molecule.parameterize(FORCEFIELD_NAME, charge_method='gasteiger')
 
             x = unit.Quantity(np.arange(0, np.pi, 0.1), unit=unit.radians)
 
@@ -499,7 +490,7 @@ class TestDihedrals(object):
         molecule = Molecule(smiles='c1c(c(n(n1)S(=O)(=O)C))O')
 
         molecule.parameterize('openff_unconstrained-1.2.0.offxml',
-                              charges_method='gasteiger')
+                              charge_method='gasteiger')
 
         expected_parameters = [[1, 2, -3, 4, 5.376019778605, -1, 2, 0.0],
                                [1, 2, 3, 12, 5.376019778605, -1, 2, 0.0],
@@ -569,7 +560,7 @@ class TestCharges(object):
 
         ligand_path = get_data_file_path(self.LIGAND_PATH)
         molecule = Molecule(ligand_path)
-        molecule.parameterize(FORCEFIELD_NAME, charges_method='am1bcc')
+        molecule.parameterize(FORCEFIELD_NAME, charge_method='am1bcc')
         check_CHO_charges_in_molecule(molecule)
 
     def test_gasteiger_method(self):
@@ -577,7 +568,7 @@ class TestCharges(object):
 
         ligand_path = get_data_file_path(self.LIGAND_PATH)
         molecule = Molecule(ligand_path)
-        molecule.parameterize(FORCEFIELD_NAME, charges_method='gasteiger')
+        molecule.parameterize(FORCEFIELD_NAME, charge_method='gasteiger')
         check_CHO_charges_in_molecule(molecule)
 
     def test_OPLS_method(self):
@@ -586,27 +577,35 @@ class TestCharges(object):
         ligand_path = get_data_file_path(self.LIGAND_PATH)
         molecule = Molecule(ligand_path)
 
-        # To avoid the use of Schrodinger Toolkit
-        charges = [-0.22, 0.7, -0.12, -0.8, -0.8, -0.12, -0.12, -0.12,
-                   -0.12, -0.12, -0.115, -0.115, -0.12, -0.12, -0.12,
-                   -0.12, -0.12, -0.12, -0.12, -0.18, 0.06, 0.06, 0.06,
-                   0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06,
-                   0.06, 0.06, 0.115, 0.115, 0.06, 0.06, 0.06, 0.06, 0.06,
-                   0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06,
-                   0.06, 0.06, 0.06]
+        expected_charges = [-0.22, 0.7, -0.12, -0.8, -0.8, -0.12, -0.12,
+                            -0.12, -0.12, -0.12, -0.115, -0.115, -0.12,
+                            -0.12, -0.12, -0.12, -0.12, -0.12, -0.12,
+                            -0.18, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06,
+                            0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06,
+                            0.06, 0.115, 0.115, 0.06, 0.06, 0.06, 0.06,
+                            0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06,
+                            0.06, 0.06, 0.06, 0.06, 0.06, 0.06]
 
-        molecule._OPLS_parameters = SchrodingerToolkitWrapper.OPLSParameters(
-            {'charges': [unit.Quantity(charge, unit.elementary_charge)
-                         for charge in charges]})
+        # Workaround to avoid the use of the Schrodinger Toolkit
+        from offpele.forcefield import OPLS2005ParameterWrapper
 
-        molecule.parameterize(FORCEFIELD_NAME, charges_method='OPLS')
+        ffld_file = get_data_file_path('tests/OLC_ffld_output.txt')
+        with open(ffld_file) as f:
+            ffld_output = f.read()
+        molecule._parameters = \
+            OPLS2005ParameterWrapper.from_ffld_output(ffld_output)
 
-        assert len(molecule.off_molecule.partial_charges) == len(charges), \
+        # Run charge calculator
+        from offpele.charge import OPLSChargeCalculator
+        charge_calculator = OPLSChargeCalculator(molecule)
+        partial_charges = charge_calculator.get_partial_charges()
+
+        assert len(partial_charges) == len(expected_charges), \
             'Size of Molecule\'s partial charges is expected to match ' \
             + 'with size of reference charges list'
 
-        for charge, expected_charge in zip(
-                molecule.off_molecule.partial_charges, charges):
-            assert charge == unit.Quantity(expected_charge,
-                                           unit.elementary_charge), \
-                'Unexpected charge {}'.format(charge)
+        for partial_charges, expected_charge in zip(partial_charges,
+                                                    expected_charges):
+            assert partial_charges == unit.Quantity(expected_charge,
+                                                    unit.elementary_charge), \
+                'Unexpected partial charge {}'.format(partial_charges)

@@ -45,6 +45,9 @@ class Impact(object):
         >>> impact.write('molz')
 
         """
+        # The molecule needs to be parameterized
+        molecule.assert_parameterized()
+
         if (isinstance(molecule, offpele.topology.Molecule)
                 or isinstance(molecule, offpele.topology.molecule.Molecule)):
             self._initialize_from_molecule(molecule)
@@ -133,11 +136,7 @@ class Impact(object):
             File to write to
         """
         file.write('* LIGAND DATABASE FILE')
-        if self.molecule.forcefield:
-            if self.molecule.OPLS_included:
-                file.write(' ({} + OPLS2005)'.format(self.molecule.forcefield))
-            else:
-                file.write(' ({})'.format(self.molecule.forcefield))
+        file.write(' ({})'.format(self.molecule.forcefield.name))
         file.write('\n')
         file.write('* File generated with offpele-{}\n'.format(
             offpele.__version__))

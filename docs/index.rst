@@ -28,3 +28,4 @@ API documentation
   template
   solvent
   charge
+  forcefield

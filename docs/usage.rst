@@ -114,7 +114,15 @@ contains ligand to parameterize.
 
 Force field
 -----------
-It defines the Open Force Field force field to employ to parameterize the ligand.
+It defines the force field to employ to parameterize the ligand. It can
+be any supported force field shipped by the OpenFF toolkit or the
+Schrodinger's OPLS2005.
+
+  .. warning::
+      Working with Schrodinger's OPLS2005 requires a valid Schrodinger
+      installation with the ffld_server. An environment variable called
+      `SCHRODINGER` must be set, pointing to the Schrodinger's
+      installation path.
 
 - Flag: ``-f NAME``, ``--forcefield NAME``
 - Type: ``string``
@@ -200,33 +208,3 @@ It always includes terminal rotamers, even if they belong to a terminal methyl g
   .. code-block:: bash
 
         $ python -m offpele.main path/to/my_ligand.pdb --include_terminal_rotamers
-
-Parameterize non-bonding terms with OPLS2005
---------------------------------------------
-  .. warning::
-      This option requires a valid Schrodinger installation with the ffld_server. An environment variable called `SCHRODINGER` must be set, pointing to the Schrodinger's installation path.
-
-It uses `OPLS2005` to parameterize the non-bonding terms of the ligand. It also assigns the atom types according to this force field.
-
-- Flag: ``--use_OPLS_nonbonding_param``
-- Default: ``False``, exclude terminal rotamers
-- Example: the code below will parameterize the non-bonding terms with OPLS2005
-
-  .. code-block:: bash
-
-        $ python -m offpele.main path/to/my_ligand.pdb --use_OPLS_nonbonding_param
-
-Parameterize bonding and angular terms with OPLS2005
-----------------------------------------------------
-  .. warning::
-      This option requires a valid Schrodinger installation with the ffld_server. An environment variable called `SCHRODINGER` must be set, pointing to the Schrodinger's installation path.
-
-It uses `OPLS2005` to parameterize the bonds and angle terms of the ligand.
-
-- Flag: ``--use_OPLS_bonds_and_angles``
-- Default: ``False``, exclude terminal rotamers
-- Example: the code below will parameterize the non-bonding, bonding and angular terms with OPLS2005
-
-  .. code-block:: bash
-
-        $ python -m offpele.main path/to/my_ligand.pdb --use_OPLS_nonbonding_param --use_OPLS_bonds_and_angles

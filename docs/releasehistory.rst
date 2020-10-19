@@ -18,12 +18,14 @@ New features
 - `PR #62 <https://github.com/martimunicoy/offpele/pull/62>`_: New functionality to generate rotamer libraries forcing an atom to be in the core.
 - `PR #63 <https://github.com/martimunicoy/offpele/pull/63>`_: Enhancements to the core constraints to allow the selection of multiple core atoms.
 - `PR #66 <https://github.com/martimunicoy/offpele/pull/66>`_: Full compatibility with OpenFF dihedrals.
+- `PR #69 <https://github.com/martimunicoy/offpele/pull/69>`_: Full compatibility with OPLS2005 force field.
 
 Tests added
 """""""""""
 - `PR #62 <https://github.com/martimunicoy/offpele/pull/62>`_: Adds tests to validate the new rotamer library with core constraints.
 - `PR #63 <https://github.com/martimunicoy/offpele/pull/63>`_: More tests are added to validate the new rotamer library with core constraints.
 - `PR #66 <https://github.com/martimunicoy/offpele/pull/66>`_: Adds tests to validate the handling of non standard dihedrals.
+- `PR #69 <https://github.com/martimunicoy/offpele/pull/69>`_: Adds tests to validate the integration of OPLS2005 force field.
 
 
 0.3.1 - General stability improvements
