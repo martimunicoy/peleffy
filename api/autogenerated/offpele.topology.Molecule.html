@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.g6242c42
+                0+untagged.1.g6366776
               </div>
             
           
@@ -104,6 +104,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../template.html">Template handlers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../solvent.html">Solvent models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../charge.html">Charge methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../forcefield.html">Forcefield methods</a></li>
 </ul>
 
             
@@ -262,45 +263,10 @@ a core constraint</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="offpele.topology.Molecule.add_OPLS_bonds_and_angles">
-<code class="sig-name descname">add_OPLS_bonds_and_angles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#Molecule.add_OPLS_bonds_and_angles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Molecule.add_OPLS_bonds_and_angles" title="Permalink to this definition">¶</a></dt>
-<dd><p>It adds OPLS’ bond and angle parameters to the molecule.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="offpele.topology.Molecule.add_OPLS_nonbonding_params">
-<code class="sig-name descname">add_OPLS_nonbonding_params</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#Molecule.add_OPLS_nonbonding_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Molecule.add_OPLS_nonbonding_params" title="Permalink to this definition">¶</a></dt>
-<dd><p>It adds OPLS’ nonbonding parameters to the molecule. Please, note
-that OPLS’ partial charges are not set in this function.
-Instead, they are assigned in the Molecule’s parameterize()
-function when ‘OPLS’ is chosen as the ‘charges_method’.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt id="offpele.topology.Molecule.assert_parameterized">
 <code class="sig-name descname">assert_parameterized</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#Molecule.assert_parameterized"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Molecule.assert_parameterized" title="Permalink to this definition">¶</a></dt>
 <dd><p>It checks that the molecule has been parameterized, raises an
 AssertionError otherwise.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="offpele.topology.Molecule.get_OPLS_parameters">
-<code class="sig-name descname">get_OPLS_parameters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#Molecule.get_OPLS_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Molecule.get_OPLS_parameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>It returns the OPLS parameters of the molecule. It first looks
-if they have already been calculated and returns them if found.
-Otherwise, it uses the SchrodingerToolkitWrapper to generate
-them.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><strong>OPLS_parameters</strong> – The set of lists of parameters grouped by parameter type.
-Thus, the dictionary has the following keys: atom_names,
-atom_types, charges, sigmas, epsilons, SGB_radii, vdW_radii,
-gammas, and alphas</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>a SchrodingerToolkitWrapper.OPLSParameters object</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -319,14 +285,14 @@ gammas, and alphas</p>
 
 <dl class="py method">
 <dt id="offpele.topology.Molecule.parameterize">
-<code class="sig-name descname">parameterize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">forcefield</span></em>, <em class="sig-param"><span class="n">charges_method</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_OPLS_nonbonding_params</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_OPLS_bonds_and_angles</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#Molecule.parameterize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Molecule.parameterize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">parameterize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">forcefield_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">charge_method</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_OPLS_nonbonding_params</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_OPLS_bonds_and_angles</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">force_parameterization</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#Molecule.parameterize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Molecule.parameterize" title="Permalink to this definition">¶</a></dt>
 <dd><p>It parameterizes the molecule with a certain forcefield.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>forcefield</strong> (<em>str or openforcefield.typing.engines.smirnoff.ForceField</em>) –          object
-The forcefield from which the parameters will be obtained</p></li>
-<li><p><strong>charges_method</strong> (<em>str</em>) – The name of the charges method to employ. One of
+<li><p><strong>forcefield_name</strong> (<em>str</em>) – The name of the forcefield from which the parameters will be
+obtained</p></li>
+<li><p><strong>charge_method</strong> (<em>str</em>) – The name of the charge method to employ. One of
 [‘gasteiger’, ‘am1bcc’, ‘OPLS’]. If None, ‘am1bcc’ will be used</p></li>
 <li><p><strong>use_OPLS_nonbonding_params</strong> (<em>bool</em>) – Whether to use Open Force Field or OPLS to obtain the
 nonbonding parameters. Please, note that this option is only
@@ -336,6 +302,9 @@ current machine. Default is False</p></li>
 or not. Please, note that this option is only
 available if a valid Schrodinger installation is found in the
 current machine. Default is False</p></li>
+<li><p><strong>force_parameterization</strong> (<em>bool</em>) – Whether to force a new parameterization instead of attempting
+to reuse parameters obtained in a previous parameterization,
+or not</p></li>
 </ul>
 </dd>
 </dl>
@@ -348,6 +317,17 @@ current machine. Default is False</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>conformer</strong> (<em>an RDKit.Chem.rdchem.Conformer object</em>) – The conformer to set to the molecule</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="offpele.topology.Molecule.set_forcefield">
+<code class="sig-name descname">set_forcefield</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">forcefield</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#Molecule.set_forcefield"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Molecule.set_forcefield" title="Permalink to this definition">¶</a></dt>
+<dd><p>It sets the force field of the molecule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>forcefield</strong> (<em>any _BaseForceField object</em>) – The force field to employ to parameterize the molecule</p>
 </dd>
 </dl>
 </dd></dl>
@@ -398,12 +378,6 @@ current machine. Default is False</p></li>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">OPLS_included</span></code></p></td>
-<td><p>Whether the molecule has been parameterized with OPLS in combination with the Open Force Field toolkit or not.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">OPLS_parameters</span></code></p></td>
-<td><p>The OPLS parameters of the molecule.</p></td>
-</tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">angles</span></code></p></td>
 <td><p>The list of angles of the molecule.</p></td>
 </tr>
@@ -440,19 +414,22 @@ current machine. Default is False</p></li>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">parameterized</span></code></p></td>
 <td><p>Whether the molecule has been parameterized with the Open Force Field toolkit or not.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">propers</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">parameters</span></code></p></td>
+<td><p>It contains the parameter wrapper of the molecule.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">propers</span></code></p></td>
 <td><p>The list of propers of the molecule.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rdkit_molecule</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rdkit_molecule</span></code></p></td>
 <td><p>The RDKit’s molecule instance linked to the molecule.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotamer_resolution</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotamer_resolution</span></code></p></td>
 <td><p>The resolution to be used when generating the rotamers library.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotamers</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotamers</span></code></p></td>
 <td><p>The list of rotamers of the molecule.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tag</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tag</span></code></p></td>
 <td><p>Molecule’s tag.</p></td>
 </tr>
 </tbody>

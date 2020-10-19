@@ -1,0 +1,30 @@
+offpele.forcefield.OpenFFOPLS2005ForceField
+===========================================
+
+.. currentmodule:: offpele.forcefield
+
+.. autoclass:: OpenFFOPLS2005ForceField
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: parameterize
+      .. automethod:: set_angle_parameters
+      .. automethod:: set_bond_parameters
+      .. automethod:: set_nonbonding_parameters
+      .. automethod:: set_torsion_parameters
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~OpenFFOPLS2005ForceField.name
+      ~OpenFFOPLS2005ForceField.parameters
+      ~OpenFFOPLS2005ForceField.type
+   
+   

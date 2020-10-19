@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0+untagged.1.g6242c42
+                0+untagged.1.g6366776
               </div>
             
           
@@ -95,6 +95,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../template.html">Template handlers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../solvent.html">Solvent models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../charge.html">Charge methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../forcefield.html">Forcefield methods</a></li>
 </ul>
 
             
@@ -206,6 +207,9 @@
 <span class="sd">        &gt;&gt;&gt; impact.write(&#39;molz&#39;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># The molecule needs to be parameterized</span>
+        <span class="n">molecule</span><span class="o">.</span><span class="n">assert_parameterized</span><span class="p">()</span>
+
         <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="n">offpele</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">Molecule</span><span class="p">)</span>
                 <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="n">offpele</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">Molecule</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_from_molecule</span><span class="p">(</span><span class="n">molecule</span><span class="p">)</span>
@@ -294,11 +298,7 @@
 <span class="sd">            File to write to</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;* LIGAND DATABASE FILE&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">forcefield</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">OPLS_included</span><span class="p">:</span>
-                <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; (</span><span class="si">{}</span><span class="s1"> + OPLS2005)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">forcefield</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">forcefield</span><span class="p">))</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">forcefield</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;* File generated with offpele-</span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">offpele</span><span class="o">.</span><span class="n">__version__</span><span class="p">))</span>
