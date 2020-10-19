@@ -578,27 +578,33 @@ class TestCharges(object):
         ligand_path = get_data_file_path(self.LIGAND_PATH)
         molecule = Molecule(ligand_path)
 
-        # To avoid the use of Schrodinger Toolkit
-        charges = [-0.22, 0.7, -0.12, -0.8, -0.8, -0.12, -0.12, -0.12,
-                   -0.12, -0.12, -0.115, -0.115, -0.12, -0.12, -0.12,
-                   -0.12, -0.12, -0.12, -0.12, -0.18, 0.06, 0.06, 0.06,
-                   0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06,
-                   0.06, 0.06, 0.115, 0.115, 0.06, 0.06, 0.06, 0.06, 0.06,
-                   0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06,
-                   0.06, 0.06, 0.06]
+        expected_charges = [-0.22, 0.7, -0.12, -0.8, -0.8, -0.12, -0.12,
+                            -0.12, -0.12, -0.12, -0.115, -0.115, -0.12,
+                            -0.12, -0.12, -0.12, -0.12, -0.12, -0.12,
+                            -0.18, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06,
+                            0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06,
+                            0.06, 0.115, 0.115, 0.06, 0.06, 0.06, 0.06,
+                            0.06, 0.06, 0.06, 0.06, 0.06, 0.06, 0.06,
+                            0.06, 0.06, 0.06, 0.06, 0.06, 0.06]
 
-        molecule._OPLS_parameters = SchrodingerToolkitWrapper.OPLSParameters(
-            {'charges': [unit.Quantity(charge, unit.elementary_charge)
-                         for charge in charges]})
+        # Workaround to avoid the use of the Schrodinger Toolkit
+        from offpele.forcefield import OPLS2005ParameterWrapper
 
-        molecule.parameterize(FORCEFIELD_NAME, charge_method='OPLS')
+        ffld_output = get_data_file_path('tests/OLC_ffld_output.txt')
+        molecule._parameters = \
+            OPLS2005ParameterWrapper.from_ffld_output(ffld_output)
 
-        assert len(molecule.off_molecule.partial_charges) == len(charges), \
+        # Run charge calculator
+        from offpele.charge import OPLSChargeCalculator
+        charge_calculator = OPLSChargeCalculator(molecule)
+        partial_charges = charge_calculator.get_partial_charges()
+
+        assert len(partial_charges) == len(expected_charges), \
             'Size of Molecule\'s partial charges is expected to match ' \
             + 'with size of reference charges list'
 
-        for charge, expected_charge in zip(
-                molecule.off_molecule.partial_charges, charges):
-            assert charge == unit.Quantity(expected_charge,
-                                           unit.elementary_charge), \
-                'Unexpected charge {}'.format(charge)
+        for partial_charges, expected_charge in zip(partial_charges,
+                                                    expected_charges):
+            assert partial_charges == unit.Quantity(expected_charge,
+                                                    unit.elementary_charge), \
+                'Unexpected partial charge {}'.format(partial_charges)

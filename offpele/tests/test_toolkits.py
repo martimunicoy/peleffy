@@ -9,8 +9,6 @@ import os
 from offpele.topology import Molecule
 from offpele.utils.toolkits import (SchrodingerToolkitWrapper,
                                     ToolkitUnavailableException)
-from offpele.template.impact import (WritableAtom, WritableBond,
-                                     WritableAngle)
 from offpele.forcefield import OPLS2005ParameterWrapper
 
 from simtk import unit
