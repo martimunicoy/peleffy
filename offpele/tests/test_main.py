@@ -4,11 +4,8 @@ This module contains the tests to check offpele's molecular representations.
 
 import pytest
 
-import os
 import tempfile
-from offpele.main import run_offpele, handle_output_paths
 from offpele.utils import get_data_file_path, temporary_cd
-from offpele.topology import Molecule
 
 
 FORCEFIELD_NAME = 'openff_unconstrained-1.2.0.offxml'
@@ -23,6 +20,8 @@ class TestMain(object):
         """
         It checks the default call of offpele's main function.
         """
+        from offpele.main import run_offpele
+
         LIGAND_PATH = 'ligands/BNZ.pdb'
         ligand_path = get_data_file_path(LIGAND_PATH)
 
@@ -34,6 +33,8 @@ class TestMain(object):
         """
         It checks the custom call of offpele's main function.
         """
+        from offpele.main import run_offpele
+
         LIGAND_PATH = 'ligands/BNZ.pdb'
         ligand_path = get_data_file_path(LIGAND_PATH)
 
@@ -47,80 +48,237 @@ class TestMain(object):
                             with_solvent=True,
                             as_datalocal=True)
 
-    def test_default_output_paths(self):
-        """
-        It checks the default output paths that are used for each parameter
-        file from offpele.
-        """
+    def test_offpele_argparse(self):
+        """It checks the command-line argument parser of offpele."""
+        from offpele.main import parse_args
 
-        def from_PosixPath_to_string(paths):
-            """
-            Convert PosixPaths to strings
-            """
-            return map(str, paths)
+        # Test positional arguments
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+            parsed_args = parse_args([])
 
-        molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ')
+        assert pytest_wrapped_e.type == SystemExit
+        assert pytest_wrapped_e.value.code == 2
 
-        rotlib_path, impact_path, solvent_path = \
-            handle_output_paths(molecule, '', False)
+        # Test defaults
+        parsed_args = parse_args(['BNZ.pdb'])
 
-        # Convert PosixPaths to strings
-        rotlib_path, impact_path, solvent_path = map(
-            str, [rotlib_path, impact_path, solvent_path])
+        assert parsed_args.as_datalocal is False, \
+            'Unexpected as_datalocal settings were parsed'
+        assert parsed_args.charge_method == 'am1bcc', \
+            'Unexpected charge_method settings were parsed'
+        assert parsed_args.debug is False, \
+            'Unexpected debug settings were parsed'
+        assert parsed_args.forcefield == 'openff_unconstrained-1.2.0.offxml', \
+            'Unexpected forcefield settings were parsed'
+        assert parsed_args.include_terminal_rotamers is False, \
+            'Unexpected include_terminal_rotamers settings were parsed'
+        assert parsed_args.output is None, \
+            'Unexpected output settings were parsed'
+        assert parsed_args.pdb_file == 'BNZ.pdb', \
+            'Unexpected pdb_file settings were parsed'
+        assert parsed_args.resolution == 30, \
+            'Unexpected resolution settings were parsed'
+        assert parsed_args.silent is False, \
+            'Unexpected silent settings were parsed'
+        assert parsed_args.with_solvent is False, \
+            'Unexpected with_solvent settings were parsed'
 
-        assert rotlib_path == 'BNZ.rot.assign', 'Unexpected default ' \
-            + 'rotamer library path'
-        assert impact_path == 'bnzz', 'Unexpected default Impact ' \
-            + 'template path'
-        assert solvent_path == 'ligandParams.txt', 'Unexpected default ' \
-            + 'solvent parameters path'
+        # Test custom shorts
+        parsed_args = parse_args(['TOL.pdb',
+                                  '-f', 'openff_unconstrained-1.0.0.offxml',
+                                  '-r', '60',
+                                  '-o', 'my_custom_output',
+                                  '-c', 'gasteiger'])
 
-        with tempfile.TemporaryDirectory() as tmpdir:
-            with temporary_cd(tmpdir):
-                # To avoid the complain about unexistent folder
-                os.mkdir('output')
-                rotlib_path, impact_path, solvent_path = \
-                    handle_output_paths(molecule, 'output', False)
+        assert parsed_args.as_datalocal is False, \
+            'Unexpected as_datalocal settings were parsed'
+        assert parsed_args.charge_method == 'gasteiger', \
+            'Unexpected charge_method settings were parsed'
+        assert parsed_args.debug is False, \
+            'Unexpected debug settings were parsed'
+        assert parsed_args.forcefield == 'openff_unconstrained-1.0.0.offxml', \
+            'Unexpected forcefield settings were parsed'
+        assert parsed_args.include_terminal_rotamers is False, \
+            'Unexpected include_terminal_rotamers settings were parsed'
+        assert parsed_args.output == 'my_custom_output', \
+            'Unexpected output settings were parsed'
+        assert parsed_args.pdb_file == 'TOL.pdb', \
+            'Unexpected pdb_file settings were parsed'
+        assert parsed_args.resolution == 60, \
+            'Unexpected resolution settings were parsed'
+        assert parsed_args.silent is False, \
+            'Unexpected silent settings were parsed'
+        assert parsed_args.with_solvent is False, \
+            'Unexpected with_solvent settings were parsed'
 
-        # Convert PosixPaths to strings
-        rotlib_path, impact_path, solvent_path = map(
-            str, [rotlib_path, impact_path, solvent_path])
+        # Test custom longs
+        parsed_args = parse_args(['MET.pdb',
+                                  '--forcefield',
+                                  'openff_unconstrained-1.0.1.offxml',
+                                  '--resolution', '120',
+                                  '--output', 'my_custom_output2',
+                                  '--charge_method', 'gasteiger'])
 
-        assert rotlib_path == 'output/BNZ.rot.assign', 'Unexpected default ' \
-            + 'rotamer library path'
-        assert impact_path == 'output/bnzz', 'Unexpected default Impact ' \
-            + 'template path'
-        assert solvent_path == 'output/ligandParams.txt', 'Unexpected ' \
-            + 'default solvent parameters path'
+        assert parsed_args.as_datalocal is False, \
+            'Unexpected as_datalocal settings were parsed'
+        assert parsed_args.charge_method == 'gasteiger', \
+            'Unexpected charge_method settings were parsed'
+        assert parsed_args.debug is False, \
+            'Unexpected debug settings were parsed'
+        assert parsed_args.forcefield == 'openff_unconstrained-1.0.1.offxml', \
+            'Unexpected forcefield settings were parsed'
+        assert parsed_args.include_terminal_rotamers is False, \
+            'Unexpected include_terminal_rotamers settings were parsed'
+        assert parsed_args.output == 'my_custom_output2', \
+            'Unexpected output settings were parsed'
+        assert parsed_args.pdb_file == 'MET.pdb', \
+            'Unexpected pdb_file settings were parsed'
+        assert parsed_args.resolution == 120, \
+            'Unexpected resolution settings were parsed'
+        assert parsed_args.silent is False, \
+            'Unexpected silent settings were parsed'
+        assert parsed_args.with_solvent is False, \
+            'Unexpected with_solvent settings were parsed'
 
-        rotlib_path, impact_path, solvent_path = \
-            handle_output_paths(molecule, '', True)
+        # Test unexpected charge method
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+            parsed_args = parse_args(['TOL.pdb', '-c', 'unexpected'])
 
-        # Convert PosixPaths to strings
-        rotlib_path, impact_path, solvent_path = map(
-            str, [rotlib_path, impact_path, solvent_path])
+        assert pytest_wrapped_e.type == SystemExit
+        assert pytest_wrapped_e.value.code == 2
 
-        assert rotlib_path == 'DataLocal/LigandRotamerLibs/' \
-            + 'BNZ.rot.assign', 'Unexpected default rotamer library path'
-        assert impact_path == 'DataLocal/Templates/OFF/Parsley/' \
-            + 'HeteroAtoms/bnzz', 'Unexpected default Impact template'
-        assert solvent_path == 'DataLocal/OBC/ligandParams.txt', \
-            'Unexpected default solvent parameters path'
+        # Test as_datalocal argument
+        parsed_args = parse_args(['MET.pdb',
+                                  '--as_datalocal'])
 
-        with tempfile.TemporaryDirectory() as tmpdir:
-            with temporary_cd(tmpdir):
-                # To avoid the complain about unexistent folder
-                os.mkdir('output')
-                rotlib_path, impact_path, solvent_path = \
-                    handle_output_paths(molecule, 'output', True)
+        assert parsed_args.as_datalocal is True, \
+            'Unexpected as_datalocal settings were parsed'
+        assert parsed_args.charge_method == 'am1bcc', \
+            'Unexpected charge_method settings were parsed'
+        assert parsed_args.debug is False, \
+            'Unexpected debug settings were parsed'
+        assert parsed_args.forcefield == 'openff_unconstrained-1.2.0.offxml', \
+            'Unexpected forcefield settings were parsed'
+        assert parsed_args.include_terminal_rotamers is False, \
+            'Unexpected include_terminal_rotamers settings were parsed'
+        assert parsed_args.output is None, \
+            'Unexpected output settings were parsed'
+        assert parsed_args.pdb_file == 'MET.pdb', \
+            'Unexpected pdb_file settings were parsed'
+        assert parsed_args.resolution == 30, \
+            'Unexpected resolution settings were parsed'
+        assert parsed_args.silent is False, \
+            'Unexpected silent settings were parsed'
+        assert parsed_args.with_solvent is False, \
+            'Unexpected with_solvent settings were parsed'
 
-        # Convert PosixPaths to strings
-        rotlib_path, impact_path, solvent_path = map(
-            str, [rotlib_path, impact_path, solvent_path])
+        # Test include_terminal_rotamers argument
+        parsed_args = parse_args(['MET.pdb',
+                                  '--include_terminal_rotamers'])
 
-        assert rotlib_path == 'output/DataLocal/LigandRotamerLibs/' \
-            + 'BNZ.rot.assign', 'Unexpected default rotamer library path'
-        assert impact_path == 'output/DataLocal/Templates/OFF/Parsley/' \
-            + 'HeteroAtoms/bnzz', 'Unexpected default Impact template path'
-        assert solvent_path == 'output/DataLocal/OBC/ligandParams.txt', \
-            'Unexpected default solvent parameters path'
+        assert parsed_args.as_datalocal is False, \
+            'Unexpected as_datalocal settings were parsed'
+        assert parsed_args.charge_method == 'am1bcc', \
+            'Unexpected charge_method settings were parsed'
+        assert parsed_args.debug is False, \
+            'Unexpected debug settings were parsed'
+        assert parsed_args.forcefield == 'openff_unconstrained-1.2.0.offxml', \
+            'Unexpected forcefield settings were parsed'
+        assert parsed_args.include_terminal_rotamers is True, \
+            'Unexpected include_terminal_rotamers settings were parsed'
+        assert parsed_args.output is None, \
+            'Unexpected output settings were parsed'
+        assert parsed_args.pdb_file == 'MET.pdb', \
+            'Unexpected pdb_file settings were parsed'
+        assert parsed_args.resolution == 30, \
+            'Unexpected resolution settings were parsed'
+        assert parsed_args.silent is False, \
+            'Unexpected silent settings were parsed'
+        assert parsed_args.with_solvent is False, \
+            'Unexpected with_solvent settings were parsed'
+
+        # Test silent argument
+        parsed_args = parse_args(['MET.pdb',
+                                  '-s'])
+
+        assert parsed_args.as_datalocal is False, \
+            'Unexpected as_datalocal settings were parsed'
+        assert parsed_args.charge_method == 'am1bcc', \
+            'Unexpected charge_method settings were parsed'
+        assert parsed_args.debug is False, \
+            'Unexpected debug settings were parsed'
+        assert parsed_args.forcefield == 'openff_unconstrained-1.2.0.offxml', \
+            'Unexpected forcefield settings were parsed'
+        assert parsed_args.include_terminal_rotamers is False, \
+            'Unexpected include_terminal_rotamers settings were parsed'
+        assert parsed_args.output is None, \
+            'Unexpected output settings were parsed'
+        assert parsed_args.pdb_file == 'MET.pdb', \
+            'Unexpected pdb_file settings were parsed'
+        assert parsed_args.resolution == 30, \
+            'Unexpected resolution settings were parsed'
+        assert parsed_args.silent is True, \
+            'Unexpected silent settings were parsed'
+        assert parsed_args.with_solvent is False, \
+            'Unexpected with_solvent settings were parsed'
+
+        parse_args(['MET.pdb', '-s']) == parse_args(['MET.pdb', '--silent'])
+
+        # Test debug argument
+        parsed_args = parse_args(['MET.pdb',
+                                  '-d'])
+
+        assert parsed_args.as_datalocal is False, \
+            'Unexpected as_datalocal settings were parsed'
+        assert parsed_args.charge_method == 'am1bcc', \
+            'Unexpected charge_method settings were parsed'
+        assert parsed_args.debug is True, \
+            'Unexpected debug settings were parsed'
+        assert parsed_args.forcefield == 'openff_unconstrained-1.2.0.offxml', \
+            'Unexpected forcefield settings were parsed'
+        assert parsed_args.include_terminal_rotamers is False, \
+            'Unexpected include_terminal_rotamers settings were parsed'
+        assert parsed_args.output is None, \
+            'Unexpected output settings were parsed'
+        assert parsed_args.pdb_file == 'MET.pdb', \
+            'Unexpected pdb_file settings were parsed'
+        assert parsed_args.resolution == 30, \
+            'Unexpected resolution settings were parsed'
+        assert parsed_args.silent is False, \
+            'Unexpected silent settings were parsed'
+        assert parsed_args.with_solvent is False, \
+            'Unexpected with_solvent settings were parsed'
+
+        parse_args(['MET.pdb', '-d']) == parse_args(['MET.pdb', '--debug'])
+
+    def test_offpele_main(self):
+        """It checks the main function of offpele."""
+        from offpele.main import parse_args, main
+        from offpele.utils import Logger
+        import logging
+
+        ligand_path = get_data_file_path('ligands/BNZ.pdb')
+
+        # Test default settings
+        args = parse_args([ligand_path])
+        main(args)
+
+        logger = Logger()
+        for handler in logger._logger.handlers:
+            assert handler.level == logging.INFO
+
+        # Test silent settings
+        args = parse_args([ligand_path, '--silent'])
+        main(args)
+
+        logger = Logger()
+        for handler in logger._logger.handlers:
+            assert handler.level == logging.CRITICAL
+
+        # Test silent settings
+        args = parse_args([ligand_path, '--debug'])
+        main(args)
+
+        logger = Logger()
+        for handler in logger._logger.handlers:
+            assert handler.level == logging.DEBUG

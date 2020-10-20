@@ -726,8 +726,6 @@ class Molecule(object):
         self._forcefield = forcefield
 
     def parameterize(self, forcefield_name=None, charge_method=None,
-                     use_OPLS_nonbonding_params=False,
-                     use_OPLS_bonds_and_angles=False,
                      force_parameterization=False):
         """
         It parameterizes the molecule with a certain forcefield.
@@ -740,16 +738,6 @@ class Molecule(object):
         charge_method : str
             The name of the charge method to employ. One of
             ['gasteiger', 'am1bcc', 'OPLS']. If None, 'am1bcc' will be used
-        use_OPLS_nonbonding_params : bool
-            Whether to use Open Force Field or OPLS to obtain the
-            nonbonding parameters. Please, note that this option is only
-            available if a valid Schrodinger installation is found in the
-            current machine. Default is False
-        use_OPLS_bonds_and_angles : bool
-            Whether to use OPLS to obtain the bond and angle parameters
-            or not. Please, note that this option is only
-            available if a valid Schrodinger installation is found in the
-            current machine. Default is False
         force_parameterization : bool
             Whether to force a new parameterization instead of attempting
             to reuse parameters obtained in a previous parameterization,
