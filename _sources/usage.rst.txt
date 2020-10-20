@@ -68,8 +68,7 @@ arguments. To obtain the full list of flags you can type:
 .. code-block::
 
      usage: main.py [-h] [-f NAME] [-r INT] [-o PATH] [--with_solvent]
-                    [--as_DataLocal] [-c NAME] [--include_terminal_rotamers]
-                    [--use_OPLS_nonbonding_params] [--use_OPLS_bonds_and_angles]
+                    [--as_datalocal] [-c NAME] [--include_terminal_rotamers]
                     PDB FILE
 
      positional arguments:
@@ -85,17 +84,13 @@ arguments. To obtain the full list of flags you can type:
        -o PATH, --output PATH
                              Output path. Default is the current working directory
        --with_solvent        Generate solvent parameters for OBC
-       --as_DataLocal        Output will be saved following PELE's DataLocal
+       --as_datalocal        Output will be saved following PELE's DataLocal
                              hierarchy
-       -c NAME, --charges_method NAME
+       -c NAME, --charge_method NAME
                              The name of the method to use to compute charges
        --include_terminal_rotamers
                              Not exclude terminal rotamers when building the
                              rotamer library
-       --use_OPLS_nonbonding_params
-                             Use OPLS to set the nonbonding parameters
-       --use_OPLS_bonds_and_angles
-                             Use OPLS to set the parameters for bonds and angles
 
 Find below the complete list of command-line arguments in full detail.
 
@@ -175,19 +170,19 @@ Save output as DataLocal
 ------------------------
 It saves the output files following the DataLocal hierarchy expected by PELE.
 
-- Flag: ``--as_DataLocal``
+- Flag: ``--as_datalocal``
 - Default: ``False``, do not save output files as DataLocal
 - Example: the code below will generate and save output files following the DataLocal hierarcy of PELE
 
   .. code-block:: bash
 
-        $ python -m offpele.main path/to/my_ligand.pdb --as_DataLocal
+        $ python -m offpele.main path/to/my_ligand.pdb --as_datalocal
 
-Charges method
---------------
+Charge method
+-------------
 It sets the method to compute the partial charges.
 
-- Flag: ``-c NAME``, ``--charges_method NAME``
+- Flag: ``-c NAME``, ``--charge_method NAME``
 - Type: ``string``
 - Choices: one of [``gasteiger``, ``am1bcc``, ``OPLS``]
 - Default: ``am1bcc``

@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.gb6287d6
+                0+untagged.1.gd72b8d8
               </div>
             
           
@@ -285,7 +285,7 @@ AssertionError otherwise.</p>
 
 <dl class="py method">
 <dt id="offpele.topology.Molecule.parameterize">
-<code class="sig-name descname">parameterize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">forcefield_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">charge_method</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_OPLS_nonbonding_params</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_OPLS_bonds_and_angles</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">force_parameterization</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#Molecule.parameterize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Molecule.parameterize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">parameterize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">forcefield_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">charge_method</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">force_parameterization</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/molecule.html#Molecule.parameterize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Molecule.parameterize" title="Permalink to this definition">¶</a></dt>
 <dd><p>It parameterizes the molecule with a certain forcefield.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -294,14 +294,6 @@ AssertionError otherwise.</p>
 obtained</p></li>
 <li><p><strong>charge_method</strong> (<em>str</em>) – The name of the charge method to employ. One of
 [‘gasteiger’, ‘am1bcc’, ‘OPLS’]. If None, ‘am1bcc’ will be used</p></li>
-<li><p><strong>use_OPLS_nonbonding_params</strong> (<em>bool</em>) – Whether to use Open Force Field or OPLS to obtain the
-nonbonding parameters. Please, note that this option is only
-available if a valid Schrodinger installation is found in the
-current machine. Default is False</p></li>
-<li><p><strong>use_OPLS_bonds_and_angles</strong> (<em>bool</em>) – Whether to use OPLS to obtain the bond and angle parameters
-or not. Please, note that this option is only
-available if a valid Schrodinger installation is found in the
-current machine. Default is False</p></li>
 <li><p><strong>force_parameterization</strong> (<em>bool</em>) – Whether to force a new parameterization instead of attempting
 to reuse parameters obtained in a previous parameterization,
 or not</p></li>
