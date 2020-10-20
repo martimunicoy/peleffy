@@ -1,0 +1,83 @@
+REMARK   4      COMPLIES WITH FORMAT V. 3.0, 1-DEC-2006
+REMARK 888
+REMARK 888 WRITTEN BY MAESTRO (A PRODUCT OF SCHRODINGER, LLC)
+TITLE     top_result - preprocessed
+MODEL        1
+HETATM    1  N   GRW A 145       9.637 -24.041 105.056  1.00 31.83           N  
+HETATM    2  CA  GRW A 145       9.563 -24.139 106.510  1.00 29.71           C  
+HETATM    3  C   GRW A 145       9.952 -25.553 106.972  1.00 30.11           C  
+HETATM    4  O   GRW A 145       9.735 -26.540 106.266  1.00 29.28           O  
+HETATM    5  CB  GRW A 145       8.213 -23.668 107.070  1.00  0.00           C  
+HETATM    6  SG  GRW A 145       8.186 -21.848 106.914  1.00  0.00           S  
+HETATM    7  C1  GRW A 145       6.114 -22.372 104.995  1.00  0.00           C  
+HETATM    8  N1  GRW A 145       6.534 -23.579 104.354  1.00  0.00           N  
+HETATM    9  C2  GRW A 145       5.301 -24.231 103.738  1.00  0.00           C  
+HETATM   10  C3  GRW A 145       4.166 -23.353 103.947  1.00  0.00           C  
+HETATM   11  O1  GRW A 145       4.693 -22.184 104.730  1.00  0.00           O  
+HETATM   12  C4  GRW A 145       6.872 -21.388 105.767  1.00  0.00           C  
+HETATM   13  N2  GRW A 145       6.634 -20.148 105.689  1.00  0.00           N  
+HETATM   14  C5  GRW A 145       2.705 -23.386 103.621  1.00  0.00           C  
+HETATM   15  C6  GRW A 145       5.367 -25.574 103.093  1.00  0.00           C  
+HETATM   16  C7  GRW A 145       2.296 -24.466 102.606  1.00  0.00           C  
+HETATM   17  C8  GRW A 145       0.782 -24.523 102.375  1.00  0.00           C  
+HETATM   18  H   GRW A 145       8.788 -23.990 104.511  1.00  0.00           H  
+HETATM   19  HA  GRW A 145      10.323 -23.470 106.912  1.00  0.00           H  
+HETATM   20  HB2 GRW A 145       7.362 -24.179 106.630  1.00  0.00           H  
+HETATM   21  HB3 GRW A 145       8.166 -23.887 108.138  1.00  0.00           H  
+HETATM   22  H1  GRW A 145       2.398 -22.409 103.246  1.00  0.00           H  
+HETATM   23  H3  GRW A 145       2.149 -23.534 104.546  1.00  0.00           H  
+HETATM   24  H4  GRW A 145       6.375 -25.988 103.125  1.00  0.00           H  
+HETATM   25  H5  GRW A 145       4.712 -26.280 103.602  1.00  0.00           H  
+HETATM   26  H6  GRW A 145       5.055 -25.533 102.049  1.00  0.00           H  
+HETATM   27  H7  GRW A 145       5.884 -19.945 105.040  1.00  0.00           H  
+HETATM   28  H2  GRW A 145       2.617 -25.446 102.951  1.00  0.00           H  
+HETATM   29  H8  GRW A 145       2.802 -24.290 101.656  1.00  0.00           H  
+HETATM   30  H9  GRW A 145       0.523 -25.317 101.673  1.00  0.00           H  
+HETATM   31  H10 GRW A 145       0.245 -24.721 103.304  1.00  0.00           H  
+HETATM   32  H11 GRW A 145       0.410 -23.584 101.965  1.00  0.00           H  
+HETATM   33  HN  GRW A 145      10.143 -23.205 104.800  1.00  0.00           H  
+HETATM   34  HXT GRW A 145      10.424 -25.672 107.936  1.00  0.00           H  
+CONECT    1    2   18   33
+CONECT    2    1    3    5   19
+CONECT    3    2    4   34
+CONECT    3    4
+CONECT    4    3
+CONECT    4    3
+CONECT    5    2    6   20   21
+CONECT    6    5   12
+CONECT   18    1
+CONECT   19    2
+CONECT   20    5
+CONECT   21    5
+CONECT    7    8   11   12
+CONECT    7    8
+CONECT    8    7    9
+CONECT    8    7
+CONECT    9    8   10   15
+CONECT    9   10
+CONECT   10    9   11   14
+CONECT   10    9
+CONECT   11    7   10
+CONECT   12    6    7   13
+CONECT   12   13
+CONECT   13   12   27
+CONECT   13   12
+CONECT   14   10   22   23   16
+CONECT   15    9   24   25   26
+CONECT   22   14
+CONECT   23   14
+CONECT   24   15
+CONECT   25   15
+CONECT   26   15
+CONECT   27   13
+CONECT   16   14   17   28   29
+CONECT   17   16   30   31   32
+CONECT   28   16
+CONECT   29   16
+CONECT   30   17
+CONECT   31   17
+CONECT   32   17
+CONECT   33    1
+CONECT   34    3
+ENDMDL
+END   
