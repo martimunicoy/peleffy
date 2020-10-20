@@ -1,0 +1,40 @@
+offpele.template.impact.WritableBond
+====================================
+
+.. currentmodule:: offpele.template.impact
+
+.. autoclass:: WritableBond
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: dummy_to_writable
+      .. automethod:: in_angstrom
+      .. automethod:: in_deg
+      .. automethod:: in_elementarycharge
+      .. automethod:: in_kcal_angstrom2mol
+      .. automethod:: in_kcal_rad2mol
+      .. automethod:: in_kcalmol
+      .. automethod:: none_to_dummy
+      .. automethod:: none_to_zero
+      .. automethod:: set_atom1_idx
+      .. automethod:: set_atom2_idx
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~WritableBond.atom1_idx
+      ~WritableBond.atom2_idx
+      ~WritableBond.eq_dist
+      ~WritableBond.index
+      ~WritableBond.n_writable_attrs
+      ~WritableBond.name
+      ~WritableBond.spring_constant
+   
+   

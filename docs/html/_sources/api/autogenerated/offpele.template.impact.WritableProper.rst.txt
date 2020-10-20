@@ -1,0 +1,46 @@
+offpele.template.impact.WritableProper
+======================================
+
+.. currentmodule:: offpele.template.impact
+
+.. autoclass:: WritableProper
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: dummy_to_writable
+      .. automethod:: in_angstrom
+      .. automethod:: in_deg
+      .. automethod:: in_elementarycharge
+      .. automethod:: in_kcal_angstrom2mol
+      .. automethod:: in_kcal_rad2mol
+      .. automethod:: in_kcalmol
+      .. automethod:: none_to_dummy
+      .. automethod:: none_to_zero
+      .. automethod:: plot
+      .. automethod:: set_atom1_idx
+      .. automethod:: set_atom2_idx
+      .. automethod:: set_atom3_idx
+      .. automethod:: set_atom4_idx
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~WritableProper.atom1_idx
+      ~WritableProper.atom2_idx
+      ~WritableProper.atom3_idx
+      ~WritableProper.atom4_idx
+      ~WritableProper.constant
+      ~WritableProper.index
+      ~WritableProper.n_writable_attrs
+      ~WritableProper.name
+      ~WritableProper.periodicity
+      ~WritableProper.prefactor
+   
+   

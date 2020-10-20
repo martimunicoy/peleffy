@@ -1,0 +1,43 @@
+offpele.topology.Atom
+=====================
+
+.. currentmodule:: offpele.topology
+
+.. autoclass:: Atom
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: set_as_branch
+      .. automethod:: set_as_core
+      .. automethod:: set_coords
+      .. automethod:: set_index
+      .. automethod:: set_parent
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Atom.OPLS_type
+      ~Atom.PDB_name
+      ~Atom.SASA_radius
+      ~Atom.born_radius
+      ~Atom.charge
+      ~Atom.core
+      ~Atom.epsilon
+      ~Atom.index
+      ~Atom.nonpolar_alpha
+      ~Atom.nonpolar_gamma
+      ~Atom.parent
+      ~Atom.sigma
+      ~Atom.unknown
+      ~Atom.x
+      ~Atom.y
+      ~Atom.z
+   
+   

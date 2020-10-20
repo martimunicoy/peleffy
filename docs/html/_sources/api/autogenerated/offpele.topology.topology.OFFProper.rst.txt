@@ -1,0 +1,26 @@
+offpele.topology.topology.OFFProper
+===================================
+
+.. currentmodule:: offpele.topology.topology
+
+.. autoclass:: OFFProper
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: plot
+      .. automethod:: to_PELE
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~OFFProper.n_writable_attrs
+      ~OFFProper.name
+   
+   

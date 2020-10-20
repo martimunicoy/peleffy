@@ -1,0 +1,919 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>offpele.topology.topology &mdash; Open Force Field for PELE  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> Open Force Field for PELE
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.2+144.g70cbdb9.dirty
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../topology.html">Topology representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../template.html">Template handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../solvent.html">Solvent models</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Open Force Field for PELE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>offpele.topology.topology</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for offpele.topology.topology</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module handles the topological elements of force fields.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">simtk</span> <span class="kn">import</span> <span class="n">unit</span>
+
+
+<span class="k">class</span> <span class="nc">TopologyElement</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A wrapper for any topological element.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_writable_attrs</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">class</span> <span class="nc">TopologyIterator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        An iterator for topological elements that iterates over their</span>
+<span class="sd">        attributes in an ordered way.</span>
+
+<span class="sd">        It is useful when writing topological elements to file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_el</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            It initiates a TopologyIterator object.</span>
+
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            top_el : a TopologyElement object</span>
+<span class="sd">                The topology element to iterate on.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_top_el</span> <span class="o">=</span> <span class="n">top_el</span>
+
+        <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            It returns the next item for the iteration.</span>
+
+<span class="sd">            Returns</span>
+<span class="sd">            -------</span>
+<span class="sd">            attr_name : str</span>
+<span class="sd">                The name of the attribute</span>
+<span class="sd">            attr_value : float</span>
+<span class="sd">                The value of the attribute</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_el</span><span class="o">.</span><span class="n">_writable_attrs</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">StopIteration</span>
+
+            <span class="n">attr_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_el</span><span class="o">.</span><span class="n">_writable_attrs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">]</span>
+            <span class="n">attr_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_el</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">return</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The name that this topological element has.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            The name of the topological element</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_writable_attrs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The number of writable attributes this topological element has.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        n_writable_attrs : int</span>
+<span class="sd">            The number of writable attributes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_writable_attrs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It returns an instance of the TopologyIterator.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        iterator : a TopologyIterator</span>
+<span class="sd">            The TopologyIterator object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">TopologyIterator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It returns the representation string of this topological element.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        repr_string : str</span>
+<span class="sd">            The representation string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">repr_string</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">(&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">)</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">attr</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">repr_string</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">=</span><span class="si">{}</span><span class="s1">, &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attr_name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">repr_string</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">=</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">attrs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">repr_string</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It returns the readable representation string of this topological</span>
+<span class="sd">        element.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str_string : str</span>
+<span class="sd">            The readable representation string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Bond"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Bond.html#offpele.template.impact.Bond">[docs]</a><span class="k">class</span> <span class="nc">Bond</span><span class="p">(</span><span class="n">TopologyElement</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents a bond in the topology.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;Bond&#39;</span>
+    <span class="n">_writable_attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;atom1_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;atom2_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;spring_constant&#39;</span><span class="p">,</span> <span class="s1">&#39;eq_dist&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Bond.__init__"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Bond.html#offpele.template.impact.Bond.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">atom1_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atom2_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">spring_constant</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eq_dist</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initiates a Bond object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of this Bond object</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the first atom involved in this Bond</span>
+<span class="sd">        atom2_idx : int</span>
+<span class="sd">            The index of the second atom involved in this Bond</span>
+<span class="sd">        spring_constant : simtk.unit.Quantity</span>
+<span class="sd">            The spring constant of this Bond</span>
+<span class="sd">        eq_dist : simtk.unit.Quantity</span>
+<span class="sd">            The equilibrium distance of this Bond</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom1_idx</span> <span class="o">=</span> <span class="n">atom1_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom2_idx</span> <span class="o">=</span> <span class="n">atom2_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spring_constant</span> <span class="o">=</span> <span class="n">spring_constant</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_eq_dist</span> <span class="o">=</span> <span class="n">eq_dist</span></div>
+
+<div class="viewcode-block" id="Bond.set_atom1_idx"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Bond.html#offpele.template.impact.Bond.set_atom1_idx">[docs]</a>    <span class="k">def</span> <span class="nf">set_atom1_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets atom1&#39;s index.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the first atom involved in this Bond</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom1_idx</span> <span class="o">=</span> <span class="n">index</span></div>
+
+<div class="viewcode-block" id="Bond.set_atom2_idx"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Bond.html#offpele.template.impact.Bond.set_atom2_idx">[docs]</a>    <span class="k">def</span> <span class="nf">set_atom2_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets atom2&#39;s index.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the second atom involved in this Bond</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom2_idx</span> <span class="o">=</span> <span class="n">index</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bond&#39;s index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of this Bond object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">atom1_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bond&#39;s atom1 index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the first atom involved in this Bond object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom1_idx</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">atom2_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bond&#39;s atom2 index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        atom2_idx : int</span>
+<span class="sd">            The index of the second atom involved in this Bond object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom2_idx</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">spring_constant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bond&#39;s spring constant.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        spring_constant : simtk.unit.Quantity</span>
+<span class="sd">            The spring constant of this Bond object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spring_constant</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">eq_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bond&#39;s equilibrium distance.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        eq_dist : simtk.unit.Quantity</span>
+<span class="sd">            The equilibrium distance of this Bond object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eq_dist</span></div>
+
+
+<div class="viewcode-block" id="Angle"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Angle.html#offpele.template.impact.Angle">[docs]</a><span class="k">class</span> <span class="nc">Angle</span><span class="p">(</span><span class="n">TopologyElement</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents an angle in the topology.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;Angle&#39;</span>
+    <span class="n">_writable_attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;atom1_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;atom2_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;atom3_idx&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;spring_constant&#39;</span><span class="p">,</span> <span class="s1">&#39;eq_angle&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Angle.__init__"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Angle.html#offpele.template.impact.Angle.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">atom1_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atom2_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">atom3_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spring_constant</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eq_angle</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initiates an Angle object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of this Angle object</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the first atom involved in this Angle</span>
+<span class="sd">        atom2_idx : int</span>
+<span class="sd">            The index of the second atom involved in this Angle</span>
+<span class="sd">        atom3_idx : int</span>
+<span class="sd">            The index of the third atom involved in this Angle</span>
+<span class="sd">        spring_constant : simtk.unit.Quantity</span>
+<span class="sd">            The spring constant of this Angle</span>
+<span class="sd">        eq_angle : simtk.unit.Quantity</span>
+<span class="sd">            The equilibrium angle of this Angle</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom1_idx</span> <span class="o">=</span> <span class="n">atom1_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom2_idx</span> <span class="o">=</span> <span class="n">atom2_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom3_idx</span> <span class="o">=</span> <span class="n">atom3_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spring_constant</span> <span class="o">=</span> <span class="n">spring_constant</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_eq_angle</span> <span class="o">=</span> <span class="n">eq_angle</span></div>
+
+<div class="viewcode-block" id="Angle.set_atom1_idx"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Angle.html#offpele.template.impact.Angle.set_atom1_idx">[docs]</a>    <span class="k">def</span> <span class="nf">set_atom1_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets atom1&#39;s index.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the first atom involved in this Angle</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom1_idx</span> <span class="o">=</span> <span class="n">index</span></div>
+
+<div class="viewcode-block" id="Angle.set_atom2_idx"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Angle.html#offpele.template.impact.Angle.set_atom2_idx">[docs]</a>    <span class="k">def</span> <span class="nf">set_atom2_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets atom2&#39;s index.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the second atom involved in this Angle</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom2_idx</span> <span class="o">=</span> <span class="n">index</span></div>
+
+<div class="viewcode-block" id="Angle.set_atom3_idx"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Angle.html#offpele.template.impact.Angle.set_atom3_idx">[docs]</a>    <span class="k">def</span> <span class="nf">set_atom3_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets atom3&#39;s index.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the third atom involved in this Angle</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom3_idx</span> <span class="o">=</span> <span class="n">index</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Angle&#39;s index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of this Angle object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">atom1_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Angle&#39;s atom1 index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the first atom involved in this Angle object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom1_idx</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">atom2_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Angle&#39;s atom2 index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the second atom involved in this Angle object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom2_idx</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">atom3_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Angle&#39;s atom3 index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the third atom involved in this Angle object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom3_idx</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">spring_constant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Angle&#39;s spring constant.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        spring_constant : simtk.unit.Quantity</span>
+<span class="sd">            The spring constant of this Angle object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spring_constant</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">eq_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Angle&#39;s equilibrium angle.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        eq_angle : simtk.unit.Quantity</span>
+<span class="sd">            The equilibrium angle of this Angle object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eq_angle</span></div>
+
+
+<div class="viewcode-block" id="Dihedral"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Dihedral.html#offpele.template.impact.Dihedral">[docs]</a><span class="k">class</span> <span class="nc">Dihedral</span><span class="p">(</span><span class="n">TopologyElement</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents a dihedral in the topology.</span>
+
+<span class="sd">    It can be a proper or an improper dihedral.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;Dihedral&#39;</span>
+    <span class="n">_writable_attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;atom1_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;atom2_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;atom3_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;atom4_idx&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="s1">&#39;prefactor&#39;</span><span class="p">,</span> <span class="s1">&#39;periodicity&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Dihedral.__init__"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Dihedral.html#offpele.template.impact.Dihedral.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">atom1_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atom2_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">atom3_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atom4_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">periodicity</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">prefactor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">constant</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initiates an Dihedral object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of this Dihedral object</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the first atom involved in this Dihedral</span>
+<span class="sd">        atom2_idx : int</span>
+<span class="sd">            The index of the second atom involved in this Dihedral</span>
+<span class="sd">        atom3_idx : int</span>
+<span class="sd">            The index of the third atom involved in this Dihedral</span>
+<span class="sd">        atom4_idx : int</span>
+<span class="sd">            The index of the fourth atom involved in this Dihedral</span>
+<span class="sd">        periodicity : int</span>
+<span class="sd">            The periodicity of this Dihedral</span>
+<span class="sd">        prefactor : int</span>
+<span class="sd">            The prefactor of this Dihedral</span>
+<span class="sd">        constant : simtk.unit.Quantity</span>
+<span class="sd">            The constant of this Dihedral</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom1_idx</span> <span class="o">=</span> <span class="n">atom1_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom2_idx</span> <span class="o">=</span> <span class="n">atom2_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom3_idx</span> <span class="o">=</span> <span class="n">atom3_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom4_idx</span> <span class="o">=</span> <span class="n">atom4_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_periodicity</span> <span class="o">=</span> <span class="n">periodicity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prefactor</span> <span class="o">=</span> <span class="n">prefactor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_constant</span> <span class="o">=</span> <span class="n">constant</span></div>
+
+<div class="viewcode-block" id="Dihedral.set_atom1_idx"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Dihedral.html#offpele.template.impact.Dihedral.set_atom1_idx">[docs]</a>    <span class="k">def</span> <span class="nf">set_atom1_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets atom1&#39;s index.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the first atom involved in this Dihedral</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom1_idx</span> <span class="o">=</span> <span class="n">index</span></div>
+
+<div class="viewcode-block" id="Dihedral.set_atom2_idx"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Dihedral.html#offpele.template.impact.Dihedral.set_atom2_idx">[docs]</a>    <span class="k">def</span> <span class="nf">set_atom2_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets atom2&#39;s index.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the second atom involved in this Dihedral</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom2_idx</span> <span class="o">=</span> <span class="n">index</span></div>
+
+<div class="viewcode-block" id="Dihedral.set_atom3_idx"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Dihedral.html#offpele.template.impact.Dihedral.set_atom3_idx">[docs]</a>    <span class="k">def</span> <span class="nf">set_atom3_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets atom3&#39;s index.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the third atom involved in this Dihedral</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom3_idx</span> <span class="o">=</span> <span class="n">index</span></div>
+
+<div class="viewcode-block" id="Dihedral.set_atom4_idx"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Dihedral.html#offpele.template.impact.Dihedral.set_atom4_idx">[docs]</a>    <span class="k">def</span> <span class="nf">set_atom4_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets atom4&#39;s index.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the fourth atom involved in this Dihedral</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom4_idx</span> <span class="o">=</span> <span class="n">index</span></div>
+
+<div class="viewcode-block" id="Dihedral.plot"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Dihedral.html#offpele.template.impact.Dihedral.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It plots this Dihedral as a function of phi angle.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span>
+        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="o">.</span><span class="n">radians</span><span class="p">)</span>
+        <span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">constant</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefactor</span>
+                                        <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">periodicity</span> <span class="o">*</span> <span class="n">x</span><span class="p">)),</span>
+                    <span class="s1">&#39;r--&#39;</span><span class="p">)</span>
+
+        <span class="n">pyplot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dihedral&#39;s index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of this Dihedral object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">atom1_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dihedral&#39;s atom1 index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the first atom involved in this Dihedral object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom1_idx</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">atom2_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dihedral&#39;s atom2 index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the second atom involved in this Dihedral object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom2_idx</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">atom3_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dihedral&#39;s atom3 index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the third atom involved in this Dihedral object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom3_idx</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">atom4_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dihedral&#39;s atom4 index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the fourth atom involved in this Dihedral object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom4_idx</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">periodicity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dihedral&#39;s periodicity.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        periodicity : int</span>
+<span class="sd">            The periodicity this Dihedral object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_periodicity</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">prefactor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dihedral&#39;s prefactor.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        prefactor : int</span>
+<span class="sd">            The prefactor this Dihedral object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefactor</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">constant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dihedral&#39;s constant.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        constant : int</span>
+<span class="sd">            The constant this Dihedral object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_constant</span></div>
+
+
+<div class="viewcode-block" id="Proper"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Proper.html#offpele.template.impact.Proper">[docs]</a><span class="k">class</span> <span class="nc">Proper</span><span class="p">(</span><span class="n">Dihedral</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents a proper dihedral in the topology.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;Proper&#39;</span></div>
+
+
+<div class="viewcode-block" id="Improper"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.Improper.html#offpele.template.impact.Improper">[docs]</a><span class="k">class</span> <span class="nc">Improper</span><span class="p">(</span><span class="n">Dihedral</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents an improper dihedral in the topology.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;Improper&#39;</span></div>
+
+
+<div class="viewcode-block" id="OFFDihedral"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.topology.OFFDihedral.html#offpele.template.impact.OFFDihedral">[docs]</a><span class="k">class</span> <span class="nc">OFFDihedral</span><span class="p">(</span><span class="n">TopologyElement</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents a dihedral in the Open Force Field&#39;s topology.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;OFFDihedral&#39;</span>
+    <span class="n">_writable_attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;atom1_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;atom2_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;atom3_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;atom4_idx&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;periodicity&#39;</span><span class="p">,</span> <span class="s1">&#39;phase&#39;</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="s1">&#39;idivf&#39;</span><span class="p">]</span>
+    <span class="n">_to_PELE_class</span> <span class="o">=</span> <span class="n">Dihedral</span>
+
+<div class="viewcode-block" id="OFFDihedral.__init__"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.topology.OFFDihedral.html#offpele.template.impact.OFFDihedral.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">atom1_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atom2_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">atom3_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atom4_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">periodicity</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">idivf</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initiates an Dihedral object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of this Dihedral object</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the first atom involved in this Dihedral</span>
+<span class="sd">        atom2_idx : int</span>
+<span class="sd">            The index of the second atom involved in this Dihedral</span>
+<span class="sd">        atom3_idx : int</span>
+<span class="sd">            The index of the third atom involved in this Dihedral</span>
+<span class="sd">        atom4_idx : int</span>
+<span class="sd">            The index of the fourth atom involved in this Dihedral</span>
+<span class="sd">        periodicity : int</span>
+<span class="sd">            The periodicity of this Dihedral</span>
+<span class="sd">        phase : simtk.unit.Quantity</span>
+<span class="sd">            The phase of this Dihedral</span>
+<span class="sd">        k : simtk.unit.Quantity</span>
+<span class="sd">            The constant of this Dihedral</span>
+<span class="sd">        idivf : int</span>
+<span class="sd">            The idivf of this Dihedral</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atom1_idx</span> <span class="o">=</span> <span class="n">atom1_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atom2_idx</span> <span class="o">=</span> <span class="n">atom2_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atom3_idx</span> <span class="o">=</span> <span class="n">atom3_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atom4_idx</span> <span class="o">=</span> <span class="n">atom4_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">periodicity</span> <span class="o">=</span> <span class="n">periodicity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phase</span> <span class="o">=</span> <span class="n">phase</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idivf</span> <span class="o">=</span> <span class="n">idivf</span></div>
+
+<div class="viewcode-block" id="OFFDihedral.to_PELE"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.topology.OFFDihedral.html#offpele.template.impact.OFFDihedral.to_PELE">[docs]</a>    <span class="k">def</span> <span class="nf">to_PELE</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It converts this Open Force Field Dihedral object into a</span>
+<span class="sd">        PELE-compatible one.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        PELE_dihedral : a Dihedral</span>
+<span class="sd">            The PELE-compatible Dihedral object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">periodicity</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">idivf</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">periodicity</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="s1">&#39;Expected values for &#39;</span> \
+            <span class="s1">&#39;periodicity are 1, 2, 3, 4 or 6, obtained &#39;</span> \
+            <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">periodicity</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">value_in_unit</span><span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">degree</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">180</span><span class="p">),</span> \
+            <span class="s1">&#39;Expected values for phase are 0 or 180, obtained &#39;</span> \
+            <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">idivf</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;The expected value for idivf is 1, &#39;</span> \
+            <span class="s1">&#39;obtained </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">divf</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">value_in_unit</span><span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">degree</span><span class="p">)</span> <span class="o">==</span> <span class="mi">180</span><span class="p">:</span>
+            <span class="n">PELE_prefactor</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">PELE_prefactor</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># TODO doublecheck idivf term in OFF&#39;s torsion equation</span>
+        <span class="n">PELE_constant</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">idivf</span>
+
+        <span class="n">PELE_dihedral_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;index&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+                                <span class="s1">&#39;atom1_idx&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom1_idx</span><span class="p">,</span>
+                                <span class="s1">&#39;atom2_idx&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom2_idx</span><span class="p">,</span>
+                                <span class="s1">&#39;atom3_idx&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom3_idx</span><span class="p">,</span>
+                                <span class="s1">&#39;atom4_idx&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom4_idx</span><span class="p">,</span>
+                                <span class="s1">&#39;periodicity&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">periodicity</span><span class="p">,</span>
+                                <span class="s1">&#39;prefactor&#39;</span><span class="p">:</span> <span class="n">PELE_prefactor</span><span class="p">,</span>
+                                <span class="s1">&#39;constant&#39;</span><span class="p">:</span> <span class="n">PELE_constant</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_PELE_class</span><span class="p">(</span><span class="o">**</span><span class="n">PELE_dihedral_kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OFFDihedral.plot"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.topology.OFFDihedral.html#offpele.template.impact.OFFDihedral.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It plots this Dihedral as a function of phi angle.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span>
+        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="o">.</span><span class="n">radians</span><span class="p">)</span>
+        <span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">periodicity</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="p">)),</span>
+                    <span class="s1">&#39;r--&#39;</span><span class="p">)</span>
+
+        <span class="n">pyplot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="OFFProper"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.topology.OFFProper.html#offpele.template.impact.OFFProper">[docs]</a><span class="k">class</span> <span class="nc">OFFProper</span><span class="p">(</span><span class="n">OFFDihedral</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents a proper dihedral in the Open Force Field&#39;s topology.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;OFFProper&#39;</span>
+    <span class="n">_to_PELE_class</span> <span class="o">=</span> <span class="n">Proper</span></div>
+
+
+<div class="viewcode-block" id="OFFImproper"><a class="viewcode-back" href="../../../api/autogenerated/offpele.topology.topology.OFFImproper.html#offpele.template.impact.OFFImproper">[docs]</a><span class="k">class</span> <span class="nc">OFFImproper</span><span class="p">(</span><span class="n">OFFDihedral</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents an improper dihedral in the Open Force Field&#39;s topology.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;OFFImproper&#39;</span>
+    <span class="n">_to_PELE_class</span> <span class="o">=</span> <span class="n">Improper</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Barcelona Supercomputing Center
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

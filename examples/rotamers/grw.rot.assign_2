@@ -1,0 +1,9 @@
+rot assign res modified_sidechain &
+   sidelib FREE30 _CB_ _CA_ &
+   sidelib FREE30 _CB_ _SG_ &
+   sidelib FREE30 _SG_ _C4_ &
+   sidelib FREE30 _C1_ _C4_ &
+   sidelib FREE30 _C2_ _C6_ &
+   sidelib FREE30 _C3_ _C5_ &
+   sidelib FREE30 _C5_ _C7_ &
+   sidelib FREE30 _C7_ _C8_ &
