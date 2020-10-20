@@ -57,7 +57,7 @@ def parse_args(args):
     parser.add_argument('--with_solvent', dest='with_solvent',
                         help="Generate solvent parameters for OBC",
                         action='store_true')
-    parser.add_argument('--as_DataLocal', dest='as_datalocal',
+    parser.add_argument('--as_datalocal', dest='as_datalocal',
                         help="Output will be saved following PELE's DataLocal "
                         + "hierarchy", action='store_true')
     parser.add_argument('-c', '--charge_method', metavar="NAME",
@@ -179,7 +179,7 @@ def main(args):
     From the command-line:
 
     >>> python main.py molecule.pdb -f openff_unconstrained-1.2.0.offxml
-        -r 30 -o output_path/ --with_solvent --as_DataLocal -c gasteiger
+        -r 30 -o output_path/ --with_solvent --as_datalocal -c gasteiger
 
     """
 
