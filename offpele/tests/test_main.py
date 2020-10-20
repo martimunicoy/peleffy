@@ -147,9 +147,9 @@ class TestMain(object):
         assert pytest_wrapped_e.type == SystemExit
         assert pytest_wrapped_e.value.code == 2
 
-        # Test as_DataLocal argument
+        # Test as_datalocal argument
         parsed_args = parse_args(['MET.pdb',
-                                  '--as_DataLocal'])
+                                  '--as_datalocal'])
 
         assert parsed_args.as_datalocal is True, \
             'Unexpected as_datalocal settings were parsed'
