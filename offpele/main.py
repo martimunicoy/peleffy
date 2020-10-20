@@ -26,13 +26,18 @@ SOLVENT_TEMPLATE_PATH = 'DataLocal/OBC/'
 DEFAULT_TERMINAL_ROT_TO_IGNORE = 1
 
 
-def parse_args():
+def parse_args(args):
     """
     It parses the command-line arguments.
 
+    Parameters
+    ----------
+    args : list[str]
+        List of command-line arguments to parse
+
     Returns
     -------
-    args : argparse.Namespace
+    parsed_args : argparse.Namespace
         It contains the command-line arguments that are supplied by the user
     """
     parser = ap.ArgumentParser()
@@ -42,7 +47,7 @@ def parse_args():
                         type=str, help="OpenForceField's forcefield name. "
                         + "Default is " + str(DEFAULT_OFF_FORCEFIELD),
                         default=DEFAULT_OFF_FORCEFIELD)
-    parser.add_argument("-r", "--resolution", metavar="INT",
+    parser.add_argument("-r", "--resolution", metavar="INT", type=int,
                         help="Rotamer library resolution in degrees. "
                         + "Default is " + str(DEFAULT_RESOLUTION),
                         default=DEFAULT_RESOLUTION)
@@ -64,15 +69,6 @@ def parse_args():
                         action='store_true',
                         help="Not exclude terminal rotamers "
                         + "when building the rotamer library")
-    parser.add_argument('--use_OPLS_nonbonding_params',
-                        dest="use_OPLS_nb_params",
-                        action='store_true',
-                        help="Use OPLS to set the nonbonding parameters")
-    parser.add_argument('--use_OPLS_bonds_and_angles',
-                        dest="use_OPLS_bonds_and_angles",
-                        action='store_true',
-                        help="Use OPLS to set the parameters for bonds "
-                        + "and angles")
     parser.add_argument('-s', '--silent',
                         dest="silent",
                         action='store_true',
@@ -85,21 +81,17 @@ def parse_args():
     parser.set_defaults(as_datalocal=False)
     parser.set_defaults(with_solvent=False)
     parser.set_defaults(include_terminal_rotamers=False)
-    parser.set_defaults(use_OPLS_nb_params=False)
-    parser.set_defaults(use_OPLS_bonds_and_angles=False)
     parser.set_defaults(silent=False)
     parser.set_defaults(debug=False)
 
-    args = parser.parse_args()
+    parsed_args = parser.parse_args(args)
 
-    return args
+    return parsed_args
 
 
 def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
                 resolution=DEFAULT_RESOLUTION,
                 charge_method=DEFAULT_CHARGE_METHOD,
-                use_OPLS_nb_params=False,
-                use_OPLS_bonds_and_angles=False,
                 exclude_terminal_rotamers=True,
                 output=None, with_solvent=False, as_datalocal=False):
     """
@@ -116,16 +108,6 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     charge_method : str
         The name of the method to use to compute partial charges. Default
         is 'am1bcc'
-    use_OPLS_nb_params : bool
-        Whether to use Open Force Field or OPLS to obtain the
-        nonbonding parameters. Please, note that this option is only
-        available if a valid Schrodinger installation is found in the
-        current machine. Default is False
-    use_OPLS_bonds_and_angles : bool
-        Whether to use OPLS to obtain the bond and angle parameters
-        or not. Please, note that this option is only
-        available if a valid Schrodinger installation is found in the
-        current machine. Default is False
     exclude_terminal_rotamers : bool
         Whether to exclude terminal rotamers or not
     output : str
@@ -149,8 +131,6 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     log.info(' - Parameterization:')
     log.info('   - Force field:', forcefield)
     log.info('   - Charge method:', charge_method)
-    log.info('   - Use OPLS nonbonding parameters:', use_OPLS_nb_params)
-    log.info('   - Use OPLS bonds and angles:', use_OPLS_bonds_and_angles)
     log.info(' - Rotamer library:')
     log.info('   - Resolution:', resolution)
     log.info('   - Exclude terminal rotamers:', exclude_terminal_rotamers)
@@ -167,14 +147,12 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
                         exclude_terminal_rotamers=exclude_terminal_rotamers)
 
     output_handler = OutputPathHandler(molecule, output_path=output,
-                                       as_DataLocal=True)
+                                       as_datalocal=as_datalocal)
 
     rotamer_library = offpele.topology.RotamerLibrary(molecule)
     rotamer_library.to_file(output_handler.get_rotamer_library_path())
 
-    molecule.parameterize(forcefield, charge_method=charge_method,
-                          use_OPLS_nonbonding_params=use_OPLS_nb_params,
-                          use_OPLS_bonds_and_angles=use_OPLS_bonds_and_angles)
+    molecule.parameterize(forcefield, charge_method=charge_method)
     impact = Impact(molecule)
     impact.write(output_handler.get_impact_template_path())
 
@@ -186,9 +164,14 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     log.info('-' * 60)
 
 
-def main():
+def main(args):
     """
     It reads the command-line arguments and runs offpele.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        It contains the command-line arguments that are supplied by the user
 
     Examples
     --------
@@ -199,7 +182,6 @@ def main():
         -r 30 -o output_path/ --with_solvent --as_DataLocal -c gasteiger
 
     """
-    args = parse_args()
 
     exclude_terminal_rotamers = not args.include_terminal_rotamers
 
@@ -217,10 +199,11 @@ def main():
         logger.set_level('INFO')
 
     run_offpele(args.pdb_file, args.forcefield, args.resolution,
-                args.charge_method, args.use_OPLS_nb_params,
-                args.use_OPLS_bonds_and_angles, exclude_terminal_rotamers,
+                args.charge_method, exclude_terminal_rotamers,
                 args.output, args.with_solvent, args.as_datalocal)
 
 
 if __name__ == '__main__':
-    main()
+    import sys
+    args = parse_args(sys.argv[1:])
+    main(args)
