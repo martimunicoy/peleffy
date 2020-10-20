@@ -1,9 +1,0 @@
-rot assign res BNZ &
-   sidelib FREE30 _C3_ _C7_ &
-   sidelib FREE30 _C5_ _C8_ &
-   sidelib FREE30 _C8_ _C10 &
-     newgrp &
-   sidelib FREE30 _C9_ _C7_ &
-   sidelib FREE30 _C9_ _C14 &
-   sidelib FREE30 _C12 _C17 &
-   sidelib FREE30 _C17 _C18 &

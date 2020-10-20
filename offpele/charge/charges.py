@@ -111,8 +111,8 @@ class OPLSChargeCalculator(_PartialChargeCalculator):
                     'OPLSChargeCalculator requires the Schrodinger '
                     + 'Toolkit to obtain partial charges')
 
-            from offpele.forcefield import OPLS2005ParameterWrapper
-            parameters = OPLS2005ParameterWrapper.from_ffld_output(
+            from offpele.forcefield import OpenForceFieldParameterWrapper
+            parameters = OpenForceFieldParameterWrapper.from_ffld_output(
                 ffld_output)
 
         """
