@@ -14,12 +14,13 @@ class OutputPathHandler(object):
     It handles the output paths of offpele parameter files.
     """
 
-    IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OFF/Parsley/HeteroAtoms/'
+    OFF_IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OFF/Parsley/HeteroAtoms/'
+    OPLS_IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OPLS2005/HeteroAtoms/'
     ROTAMER_LIBRARY_PATH = 'DataLocal/LigandRotamerLibs/'
     SOLVENT_TEMPLATE_PATH = 'DataLocal/OBC/'
     FILE_TYPES = ['impact template', 'rotamer library', 'solvent template']
 
-    def __init__(self, molecule, as_DataLocal=False, output_path=None):
+    def __init__(self, molecule, as_datalocal=False, output_path=None):
         """
         It initializes an OutputPathHandler object.
 
@@ -27,7 +28,7 @@ class OutputPathHandler(object):
         ----------
         molecule : An offpele.topology.Molecule
             A Molecule object to be written as an Impact file
-        as_DataLocal : bool
+        as_datalocal : bool
             Whether to save output files following PELE's DataLocal
             hierarchy or not
         output_path : str
@@ -35,23 +36,23 @@ class OutputPathHandler(object):
             is the current directory
         """
         self._molecule = molecule
-        self._as_DataLocal = as_DataLocal
+        self._as_datalocal = as_datalocal
         if output_path is None:
             self._output_path = os.path.curdir
         else:
             self._output_path = output_path
 
-    def set_DataLocal_behaviour(self, as_DataLocal):
+    def set_DataLocal_behaviour(self, as_datalocal):
         """
         It sets the DataLocal behaviour of this OutputPathHandler object.
 
         Parameters
         ----------
-        as_DataLocal : bool
+        as_datalocal : bool
             Whether to save output files following PELE's DataLocal
             hierarchy or not
         """
-        self._as_DataLocal = as_DataLocal
+        self._as_datalocal = as_datalocal
 
     def get_path(self, file_type, create_missing_folders=True):
         """
@@ -99,8 +100,22 @@ class OutputPathHandler(object):
         """
         file_name = self._molecule.tag.lower() + 'z'
 
-        if self.as_DataLocal:
-            path = os.path.join(self.output_path, self.IMPACT_TEMPLATE_PATH)
+        if self.as_datalocal:
+            forcefield = self.molecule.forcefield
+            if forcefield is not None:
+                if forcefield.type == 'OpenFF':
+                    path = os.path.join(self.output_path,
+                                        self.OFF_IMPACT_TEMPLATE_PATH)
+                elif forcefield.type == 'OpenFF + OPLS2005':
+                    if forcefield._nonbonding == 'openff':
+                        path = os.path.join(self.output_path,
+                                            self.OFF_IMPACT_TEMPLATE_PATH)
+                    else:
+                        path = os.path.join(self.output_path,
+                                            self.OPLS_IMPACT_TEMPLATE_PATH)
+                else:
+                    path = os.path.join(self.output_path,
+                                        self.OPLS_IMPACT_TEMPLATE_PATH)
         else:
             path = self.output_path
 
@@ -125,7 +140,7 @@ class OutputPathHandler(object):
         """
         file_name = self._molecule.tag.upper() + '.rot.assign'
 
-        if self.as_DataLocal:
+        if self.as_datalocal:
             path = os.path.join(self.output_path, self.ROTAMER_LIBRARY_PATH)
         else:
             path = self.output_path
@@ -151,7 +166,7 @@ class OutputPathHandler(object):
         """
         file_name = 'ligandParams.txt'
 
-        if self.as_DataLocal:
+        if self.as_datalocal:
             path = os.path.join(self.output_path, self.SOLVENT_TEMPLATE_PATH)
         else:
             path = self.output_path
@@ -162,17 +177,17 @@ class OutputPathHandler(object):
         return os.path.join(path, file_name)
 
     @property
-    def as_DataLocal(self):
+    def as_datalocal(self):
         """
         The DataLocal configuration of this OutputPathHandler object.
 
         Returns
         -------
-        as_DataLocal : bool
+        as_datalocal : bool
             Whether to save output files following PELE's DataLocal
             hierarchy or not
         """
-        return self._as_DataLocal
+        return self._as_datalocal
 
     @property
     def molecule(self):

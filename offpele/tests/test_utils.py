@@ -174,7 +174,7 @@ class TestOutputPathHandler(object):
         tag = molecule.tag
 
         # Initialize output handler without output_path
-        output_handler = OutputPathHandler(molecule, as_DataLocal=False)
+        output_handler = OutputPathHandler(molecule, as_datalocal=False)
 
         # Validate output paths
         assert output_handler.get_rotamer_library_path() == \
@@ -190,7 +190,7 @@ class TestOutputPathHandler(object):
         # Initialize output handler with an output_path set
         with tempfile.TemporaryDirectory() as tmpdir:
             output_handler = OutputPathHandler(
-                molecule, as_DataLocal=False,
+                molecule, as_datalocal=False,
                 output_path=os.path.join(tmpdir, 'output'))
 
             assert output_handler.get_rotamer_library_path() == \
@@ -204,10 +204,8 @@ class TestOutputPathHandler(object):
                 os.path.join(tmpdir, 'output', 'ligandParams.txt'), \
                 'Unexpected default solvent parameters path'
 
-    def test_datalocal_paths(self):
-        """
-        It tests the datalocal paths assignment.
-        """
+    def test_datalocal_paths_for_openff(self):
+        """It tests the datalocal paths assignment for OpenFF."""
         from offpele.utils import OutputPathHandler
 
         # Load benzene molecule
@@ -219,7 +217,7 @@ class TestOutputPathHandler(object):
         tag = molecule.tag
 
         # Initialize output handler without output_path
-        output_handler = OutputPathHandler(molecule, as_DataLocal=True)
+        output_handler = OutputPathHandler(molecule, as_datalocal=True)
 
         # Validate output paths
         assert output_handler.get_rotamer_library_path() == \
@@ -237,7 +235,7 @@ class TestOutputPathHandler(object):
         # Initialize output handler with an output_path set
         with tempfile.TemporaryDirectory() as tmpdir:
             output_handler = OutputPathHandler(
-                molecule, as_DataLocal=True,
+                molecule, as_datalocal=True,
                 output_path=os.path.join(tmpdir, 'output'))
 
             assert output_handler.get_rotamer_library_path() == \
@@ -247,6 +245,141 @@ class TestOutputPathHandler(object):
             assert output_handler.get_impact_template_path() == \
                 os.path.join(tmpdir, 'output', 'DataLocal/Templates/OFF/Pars'
                              + 'ley/HeteroAtoms/{}z'.format(tag.lower())), \
+                'Unexpected default Impact template path'
+            assert output_handler.get_solvent_template_path() == \
+                os.path.join(tmpdir, 'output',
+                             'DataLocal/OBC/ligandParams.txt'), \
+                'Unexpected default solvent parameters path'
+
+    def test_datalocal_paths_for_opls(self):
+        """It tests the datalocal paths assignment for OPLS2005."""
+        from offpele.utils import OutputPathHandler
+        from offpele.forcefield import OPLS2005ForceField
+
+        # Load benzene molecule
+        molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ')
+        molecule._forcefield = OPLS2005ForceField('OPLS2005')
+
+        # Molecule's tag
+        tag = molecule.tag
+
+        # Initialize output handler without output_path
+        output_handler = OutputPathHandler(molecule, as_datalocal=True)
+
+        # Validate output paths
+        assert output_handler.get_rotamer_library_path() == \
+            './DataLocal/LigandRotamerLibs/' \
+            + '{}.rot.assign'.format(tag.upper()), \
+            'Unexpected default rotamer library path'
+        assert output_handler.get_impact_template_path() == \
+            './DataLocal/Templates/OPLS2005/HeteroAtoms/' \
+            + '{}z'.format(tag.lower()), \
+            'Unexpected default Impact template path'
+        assert output_handler.get_solvent_template_path() == \
+            './DataLocal/OBC/ligandParams.txt', \
+            'Unexpected default solvent parameters path'
+
+        # Initialize output handler with an output_path set
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_handler = OutputPathHandler(
+                molecule, as_datalocal=True,
+                output_path=os.path.join(tmpdir, 'output'))
+
+            assert output_handler.get_rotamer_library_path() == \
+                os.path.join(tmpdir, 'output', 'DataLocal/LigandRotamerLibs/'
+                             + '{}.rot.assign'.format(tag.upper())), \
+                'Unexpected default rotamer library path'
+            assert output_handler.get_impact_template_path() == \
+                os.path.join(tmpdir, 'output', 'DataLocal/Templates/OPLS2005/'
+                             + 'HeteroAtoms/{}z'.format(tag.lower())), \
+                'Unexpected default Impact template path'
+            assert output_handler.get_solvent_template_path() == \
+                os.path.join(tmpdir, 'output',
+                             'DataLocal/OBC/ligandParams.txt'), \
+                'Unexpected default solvent parameters path'
+
+    def test_datalocal_paths_for_offopls(self):
+        """
+        It tests the datalocal paths assignment for OpenFF-OPLS2005
+        force field.
+        """
+        from offpele.utils import OutputPathHandler
+        from offpele.forcefield import OpenFFOPLS2005ForceField
+
+        # Load benzene molecule
+        molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ')
+        molecule._forcefield = OpenFFOPLS2005ForceField('OPLS2005')
+
+        # Molecule's tag
+        tag = molecule.tag
+
+        # Initialize output handler without output_path
+        output_handler = OutputPathHandler(molecule, as_datalocal=True)
+
+        # Validate output paths
+        assert output_handler.get_rotamer_library_path() == \
+            './DataLocal/LigandRotamerLibs/' \
+            + '{}.rot.assign'.format(tag.upper()), \
+            'Unexpected default rotamer library path'
+        assert output_handler.get_impact_template_path() == \
+            './DataLocal/Templates/OFF/Parsley/HeteroAtoms/' \
+            + '{}z'.format(tag.lower()), \
+            'Unexpected default Impact template path'
+        assert output_handler.get_solvent_template_path() == \
+            './DataLocal/OBC/ligandParams.txt', \
+            'Unexpected default solvent parameters path'
+
+        # Initialize output handler with an output_path set
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_handler = OutputPathHandler(
+                molecule, as_datalocal=True,
+                output_path=os.path.join(tmpdir, 'output'))
+
+            assert output_handler.get_rotamer_library_path() == \
+                os.path.join(tmpdir, 'output', 'DataLocal/LigandRotamerLibs/'
+                             + '{}.rot.assign'.format(tag.upper())), \
+                'Unexpected default rotamer library path'
+            assert output_handler.get_impact_template_path() == \
+                os.path.join(tmpdir, 'output', 'DataLocal/Templates/OFF/Pars'
+                             + 'ley/HeteroAtoms/{}z'.format(tag.lower())), \
+                'Unexpected default Impact template path'
+            assert output_handler.get_solvent_template_path() == \
+                os.path.join(tmpdir, 'output',
+                             'DataLocal/OBC/ligandParams.txt'), \
+                'Unexpected default solvent parameters path'
+
+        # Initialize output handler without output_path
+        output_handler = OutputPathHandler(molecule, as_datalocal=True)
+
+        # Set force field source for nonbonding parameters
+        molecule._forcefield.set_nonbonding_parameters('opls2005')
+
+        # Validate output paths
+        assert output_handler.get_rotamer_library_path() == \
+            './DataLocal/LigandRotamerLibs/' \
+            + '{}.rot.assign'.format(tag.upper()), \
+            'Unexpected default rotamer library path'
+        assert output_handler.get_impact_template_path() == \
+            './DataLocal/Templates/OPLS2005/HeteroAtoms/' \
+            + '{}z'.format(tag.lower()), \
+            'Unexpected default Impact template path'
+        assert output_handler.get_solvent_template_path() == \
+            './DataLocal/OBC/ligandParams.txt', \
+            'Unexpected default solvent parameters path'
+
+        # Initialize output handler with an output_path set
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_handler = OutputPathHandler(
+                molecule, as_datalocal=True,
+                output_path=os.path.join(tmpdir, 'output'))
+
+            assert output_handler.get_rotamer_library_path() == \
+                os.path.join(tmpdir, 'output', 'DataLocal/LigandRotamerLibs/'
+                             + '{}.rot.assign'.format(tag.upper())), \
+                'Unexpected default rotamer library path'
+            assert output_handler.get_impact_template_path() == \
+                os.path.join(tmpdir, 'output', 'DataLocal/Templates/OPLS2005/'
+                             + 'HeteroAtoms/{}z'.format(tag.lower())), \
                 'Unexpected default Impact template path'
             assert output_handler.get_solvent_template_path() == \
                 os.path.join(tmpdir, 'output',
@@ -268,7 +401,7 @@ class TestOutputPathHandler(object):
         with tempfile.TemporaryDirectory() as tmpdir:
             # Initialize output handler without output_path
             output_handler = OutputPathHandler(
-                molecule, as_DataLocal=True,
+                molecule, as_datalocal=True,
                 output_path=os.path.join(tmpdir, 'output'))
 
             # Test path getter without folder creation
@@ -292,7 +425,7 @@ class TestOutputPathHandler(object):
         with tempfile.TemporaryDirectory() as tmpdir:
             # Initialize output handler without output_path
             output_handler = OutputPathHandler(
-                molecule, as_DataLocal=True,
+                molecule, as_datalocal=True,
                 output_path=os.path.join(tmpdir, 'output'))
 
             # Test path getter with folder creation
