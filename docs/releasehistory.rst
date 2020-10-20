@@ -15,6 +15,7 @@ This minor release extends the compatibility of offpele to fully handle OPLS2005
 
 New features
 """"""""""""
+- `PR #56 <https://github.com/martimunicoy/offpele/pull/56>`_: Dynamic output path handler.
 - `PR #62 <https://github.com/martimunicoy/offpele/pull/62>`_: New functionality to generate rotamer libraries forcing an atom to be in the core.
 - `PR #63 <https://github.com/martimunicoy/offpele/pull/63>`_: Enhancements to the core constraints to allow the selection of multiple core atoms.
 - `PR #66 <https://github.com/martimunicoy/offpele/pull/66>`_: Full compatibility with OpenFF dihedrals.
@@ -22,6 +23,7 @@ New features
 
 Tests added
 """""""""""
+- `PR #56 <https://github.com/martimunicoy/offpele/pull/56>`_: Adds tests to validate the new output path handler.
 - `PR #62 <https://github.com/martimunicoy/offpele/pull/62>`_: Adds tests to validate the new rotamer library with core constraints.
 - `PR #63 <https://github.com/martimunicoy/offpele/pull/63>`_: More tests are added to validate the new rotamer library with core constraints.
 - `PR #66 <https://github.com/martimunicoy/offpele/pull/66>`_: Adds tests to validate the handling of non standard dihedrals.
