@@ -29,6 +29,11 @@ class TestLogger(object):
 
         import logging
 
+        # Force a hard reset of logging library and the logger it manages
+        from importlib import reload
+        logging.shutdown()
+        reload(logging)
+
         # Initiate logger
         log = Logger()
 
