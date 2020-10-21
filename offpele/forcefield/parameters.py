@@ -461,13 +461,15 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
     _name = 'OPLS2005'
 
     @staticmethod
-    def from_ffld_output(ffld_output):
+    def from_ffld_output(molecule, ffld_output):
         """
         It parses the parameters coming from the Schrodinger's
         ffld_server output file.
 
         Parameters
         ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
         ffld_output : str
             The path to the ffld_server's output file
 
@@ -480,6 +482,13 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
         from simtk import unit
 
         params = defaultdict(list)
+
+        # Assign atom names according to the input PDB file (if any)
+        pdb_atom_names = molecule.get_pdb_atom_names()
+
+        # PELE needs underscores instead of whitespaces
+        params['atom_names'] = [name.replace(' ', '_') for name
+                                in pdb_atom_names]
 
         section = 'out'
         name_to_index = dict()  # To pair atom names and indexes
@@ -518,9 +527,8 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                 assert len(fields) > 7, 'Unexpected number of fields ' \
                     + 'found at line {}'.format(line)
 
-                name_to_index[line[0:4]] = len(params['atom_names'])
+                name_to_index[line[0:4]] = len(name_to_index)
 
-                params['atom_names'].append(line[0:4].replace(' ', '_'))  # PELE needs underscores instead of whitespaces
                 params['atom_types'].append(fields[3])
                 params['charges'].append(
                     unit.Quantity(float(fields[4]),

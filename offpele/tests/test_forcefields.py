@@ -158,7 +158,8 @@ class TestOPLS2005ForceField(object):
         with open(ffld_file) as f:
             ffld_output = f.read()
 
-        parameters = OPLS2005ParameterWrapper.from_ffld_output(ffld_output)
+        parameters = OPLS2005ParameterWrapper.from_ffld_output(molecule,
+                                                               ffld_output)
         molecule.set_forcefield(oplsff)
         molecule._parameters = parameters
 
@@ -175,13 +176,13 @@ class TestOPLS2005ForceField(object):
         expected_nonbonding = [
             [1, 0, 'M', 'CT', '_C1_', 0, 3.5, 0.066, -0.24, 1.975, 1.75,
              0.005, -0.74168571],
-            [2, 1, 'M', 'HC', '_H2_', 0, 2.5, 0.03, 0.06, 1.425, 1.25,
+            [2, 1, 'M', 'HC', '_H1_', 0, 2.5, 0.03, 0.06, 1.425, 1.25,
              0.00859824, 0.268726247],
-            [3, 1, 'M', 'HC', '_H3_', 0, 2.5, 0.03, 0.06, 1.425, 1.25,
+            [3, 1, 'M', 'HC', '_H2_', 0, 2.5, 0.03, 0.06, 1.425, 1.25,
              0.00859824, 0.268726247],
-            [4, 1, 'M', 'HC', '_H4_', 0, 2.5, 0.03, 0.06, 1.425, 1.25,
+            [4, 1, 'M', 'HC', '_H3_', 0, 2.5, 0.03, 0.06, 1.425, 1.25,
              0.00859824, 0.268726247],
-            [5, 1, 'M', 'HC', '_H5_', 0, 2.5, 0.03, 0.06, 1.425, 1.25,
+            [5, 1, 'M', 'HC', '_H4_', 0, 2.5, 0.03, 0.06, 1.425, 1.25,
              0.00859824, 0.268726247]]
 
         expected_bonds = [
@@ -212,7 +213,8 @@ class TestOPLS2005ForceField(object):
         ffld_file = get_data_file_path('tests/ETL_ffld_output.txt')
         with open(ffld_file) as f:
             ffld_output = f.read()
-        parameters = OPLS2005ParameterWrapper.from_ffld_output(ffld_output)
+        parameters = OPLS2005ParameterWrapper.from_ffld_output(molecule,
+                                                               ffld_output)
         molecule.set_forcefield(oplsff)
         molecule._parameters = parameters
 
@@ -347,7 +349,8 @@ class TestOpenFFOPLS2005ForceField(object):
         with open(ffld_file) as f:
             ffld_output = f.read()
         hybridff._oplsff._parameters = \
-            OPLS2005ParameterWrapper.from_ffld_output(ffld_output)
+            OPLS2005ParameterWrapper.from_ffld_output(molecule,
+                                                      ffld_output)
 
         # Set force field and obtain parameters
         molecule.set_forcefield(hybridff)
@@ -383,13 +386,13 @@ class TestOpenFFOPLS2005ForceField(object):
         expected_opls_nonbonding = [
             [1, 0, 'M', 'CT', '_C1_', 0, 3.5, 0.066, -0.1088, 1.975, 1.75,
              0.005, -0.74168571],
-            [2, 1, 'M', 'HC', '_H2_', 0, 2.5, 0.03, 0.0267, 1.425, 1.25,
+            [2, 1, 'M', 'HC', '_H1_', 0, 2.5, 0.03, 0.0267, 1.425, 1.25,
              0.00859824, 0.268726247],
-            [3, 1, 'M', 'HC', '_H3_', 0, 2.5, 0.03, 0.0267, 1.425, 1.25,
+            [3, 1, 'M', 'HC', '_H2_', 0, 2.5, 0.03, 0.0267, 1.425, 1.25,
              0.00859824, 0.268726247],
-            [4, 1, 'M', 'HC', '_H4_', 0, 2.5, 0.03, 0.0267, 1.425, 1.25,
+            [4, 1, 'M', 'HC', '_H3_', 0, 2.5, 0.03, 0.0267, 1.425, 1.25,
              0.00859824, 0.268726247],
-            [5, 1, 'M', 'HC', '_H5_', 0, 2.5, 0.03, 0.0267, 1.425, 1.25,
+            [5, 1, 'M', 'HC', '_H4_', 0, 2.5, 0.03, 0.0267, 1.425, 1.25,
              0.00859824, 0.268726247]]
 
         expected_opls_bonds = [
@@ -478,7 +481,8 @@ class TestOpenFFOPLS2005ForceField(object):
         with open(ffld_file) as f:
             ffld_output = f.read()
         hybridff._oplsff._parameters = \
-            OPLS2005ParameterWrapper.from_ffld_output(ffld_output)
+            OPLS2005ParameterWrapper.from_ffld_output(molecule,
+                                                      ffld_output)
 
         # Set force field and obtain parameters
         molecule.set_forcefield(hybridff)

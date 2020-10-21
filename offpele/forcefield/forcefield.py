@@ -34,17 +34,17 @@ class _BaseForceField(object):
         ----------
         molecule : an offpele.topology.Molecule
             The offpele's Molecule object to parameterize
-
-        Returns
-        -------
-        parameters : an offpele.forcefield.parameters.BaseParameterWrapper
-                     object
-            The parameter wrapper containing the parameters generated
-            with the current force field
         force_parameterization : bool
             Whether to force a new parameterization instead of attempting
             to reuse parameters obtained in a previous parameterization,
             or not
+
+        Returns
+        -------
+        parameters : an offpele.forcefield.parameters.BaseParameterWrapper object
+            The parameter wrapper containing the parameters generated
+            with the current force field
+
         """
         if self.parameters is None or force_parameterization:
             self._parameters = self._get_parameters(molecule)
@@ -151,7 +151,8 @@ class OPLS2005ForceField(_BaseForceField):
 
         from offpele.forcefield import OPLS2005ParameterWrapper
 
-        return OPLS2005ParameterWrapper.from_ffld_output(ffld_output)
+        return OPLS2005ParameterWrapper.from_ffld_output(molecule,
+                                                         ffld_output)
 
 
 class OpenFFOPLS2005ForceField(_BaseForceField):
