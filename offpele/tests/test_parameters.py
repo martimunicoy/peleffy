@@ -593,7 +593,8 @@ class TestCharges(object):
         with open(ffld_file) as f:
             ffld_output = f.read()
         molecule._parameters = \
-            OPLS2005ParameterWrapper.from_ffld_output(ffld_output)
+            OPLS2005ParameterWrapper.from_ffld_output(molecule,
+                                                      ffld_output)
 
         # Run charge calculator
         from offpele.charge import OPLSChargeCalculator

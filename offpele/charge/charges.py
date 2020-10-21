@@ -113,7 +113,7 @@ class OPLSChargeCalculator(_PartialChargeCalculator):
 
             from offpele.forcefield import OPLS2005ParameterWrapper
             parameters = OPLS2005ParameterWrapper.from_ffld_output(
-                ffld_output)
+                self.molecule, ffld_output)
 
         """
         partial_charges = list()
