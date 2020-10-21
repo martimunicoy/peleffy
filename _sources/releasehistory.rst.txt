@@ -21,6 +21,10 @@ New features
 - `PR #66 <https://github.com/martimunicoy/offpele/pull/66>`_: Full compatibility with OpenFF dihedrals.
 - `PR #69 <https://github.com/martimunicoy/offpele/pull/69>`_: Full compatibility with OPLS2005 force field.
 
+Bugfixes
+""""""""
+- `PR #74 <https://github.com/martimunicoy/offpele/pull/74>`_: Corrects wrong assignment of PDB atom names when using the OPLS2005 force field.
+
 Tests added
 """""""""""
 - `PR #56 <https://github.com/martimunicoy/offpele/pull/56>`_: Adds tests to validate the new output path handler.

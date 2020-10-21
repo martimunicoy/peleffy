@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0+untagged.1.ged4b751
+                0+untagged.1.gdc98668
               </div>
             
           
@@ -197,18 +197,19 @@ OPLS2005.</p>
 <dd><p>It parameterizes the supplied molecule.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>molecule</strong> (<em>an offpele.topology.Molecule</em>) – The offpele’s Molecule object to parameterize</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>parameters</strong> (<em>an offpele.forcefield.parameters.BaseParameterWrapper</em>) –          object
-The parameter wrapper containing the parameters generated
-with the current force field</p></li>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>molecule</strong> (<em>an offpele.topology.Molecule</em>) – The offpele’s Molecule object to parameterize</p></li>
 <li><p><strong>force_parameterization</strong> (<em>bool</em>) – Whether to force a new parameterization instead of attempting
 to reuse parameters obtained in a previous parameterization,
 or not</p></li>
 </ul>
-</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>parameters</strong> – The parameter wrapper containing the parameters generated
+with the current force field</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>an offpele.forcefield.parameters.BaseParameterWrapper object</p>
 </dd>
 </dl>
 </dd></dl>
