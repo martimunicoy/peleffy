@@ -465,6 +465,19 @@ class Dihedral(TopologyElement):
         """
         self._atom4_idx = index
 
+    def get_bonds(self):
+        """
+        It returns a list of tuples containing the atom indices of the bonds
+        that make the dihedral
+
+        Returns
+        -------
+        bonds : list
+            List of the bonds involved in this Dihedral object, identified by
+            the indexes of the atoms
+        """
+        return [(self._atom1_idx, self._atom2_idx), (self.atom2_idx, self._atom3_idx), (self.atom3_idx, self.atom4_idx)]
+
     def plot(self):
         """
         It plots this Dihedral as a function of phi angle.
@@ -539,6 +552,18 @@ class Dihedral(TopologyElement):
             The index of the fourth atom involved in this Dihedral object
         """
         return self._atom4_idx
+
+    @property
+    def atoms(self):
+        """
+        Dihedral's atom indexes
+
+        Returns
+        -------
+        atoms_idx: tuple
+            The indexes of all atoms involved in this Dihedral object
+        """
+        return (self._atom1_idx, self._atom2_idx, self._atom3_idx, self._atom4_idx)
 
     @property
     def periodicity(self):
