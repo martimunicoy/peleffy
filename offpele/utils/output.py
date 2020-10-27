@@ -18,7 +18,8 @@ class OutputPathHandler(object):
     OPLS_IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OPLS2005/HeteroAtoms/'
     ROTAMER_LIBRARY_PATH = 'DataLocal/LigandRotamerLibs/'
     SOLVENT_TEMPLATE_PATH = 'DataLocal/OBC/'
-    FILE_TYPES = ['impact template', 'rotamer library', 'solvent template']
+    DIHEDRALS_LIBRARY_PATH = 'DataLocal/Dihedrals/'
+    FILE_TYPES = ['impact template', 'rotamer library', 'solvent template', 'dihedral library']
 
     def __init__(self, molecule, as_datalocal=False, output_path=None):
         """
@@ -83,6 +84,9 @@ class OutputPathHandler(object):
 
         if file_type.lower() == 'solvent template':
             return self.get_solvent_template_path(create_missing_folders)
+
+        if file_type.lower() == 'dihedral library':
+            return self.get_dihedral_library_path(create_missing_folders)
 
     def get_impact_template_path(self, create_missing_folders=True):
         """
@@ -168,6 +172,32 @@ class OutputPathHandler(object):
 
         if self.as_datalocal:
             path = os.path.join(self.output_path, self.SOLVENT_TEMPLATE_PATH)
+        else:
+            path = self.output_path
+
+        if create_missing_folders:
+            create_path(path)
+
+        return os.path.join(path, file_name)
+
+    def get_dihedral_library_path(self, create_missing_folders=True):
+        """
+        It returns the path for a dihedral library file.
+
+        Parameters
+        ----------
+        create_missing_folders : bool
+            Whether to create missing folders or not. Default is True
+
+        Returns
+        -------
+        file_path : str
+            The path for a dihedral library file
+        """
+        file_name = self._molecule.tag.upper() + '.dihedral'
+
+        if self.as_datalocal:
+            path = os.path.join(self.output_path, self.DIHEDRALS_LIBRARY_PATH)
         else:
             path = self.output_path
 
