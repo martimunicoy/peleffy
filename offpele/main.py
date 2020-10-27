@@ -54,6 +54,9 @@ def parse_args(args):
     parser.add_argument("-o", "--output", metavar="PATH",
                         help="Output path. Default is the current working "
                         + "directory")
+    parser.add_argument("--dihedrals_info_path", default=None, type=str, 
+                        help="Path to the folder containing the BCE output"
+                        + " used to collect dihedral angles for PELE")
     parser.add_argument('--with_solvent', dest='with_solvent',
                         help="Generate solvent parameters for OBC",
                         action='store_true')
@@ -93,7 +96,8 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
                 resolution=DEFAULT_RESOLUTION,
                 charge_method=DEFAULT_CHARGE_METHOD,
                 exclude_terminal_rotamers=True,
-                output=None, with_solvent=False, as_datalocal=False):
+                output=None, with_solvent=False, as_datalocal=False,
+                dihedral_path=None):
     """
     It runs offpele.
 
@@ -139,6 +143,7 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     from offpele.topology import Molecule
     from offpele.template import Impact
     from offpele.solvent import OBC2
+    from offpele.BCEDihedrals import BCEDihedrals
 
     if not output:
         output = os.getcwd()
@@ -159,6 +164,11 @@ def run_offpele(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     if with_solvent:
         solvent = OBC2(molecule)
         solvent.to_json_file(output_handler.get_solvent_template_path())
+
+    if dihedral_path is not None:
+        dihedrals = BCEDihedrals(molecule, dihedral_path)
+        dihedrals.calculate()
+        dihedrals.save(output_handler.get_dihedral_library_path())
 
     log.info(' - All files were generated successfully')
     log.info('-' * 60)
@@ -200,7 +210,8 @@ def main(args):
 
     run_offpele(args.pdb_file, args.forcefield, args.resolution,
                 args.charge_method, exclude_terminal_rotamers,
-                args.output, args.with_solvent, args.as_datalocal)
+                args.output, args.with_solvent, args.as_datalocal,
+                dihedral_path=args.dihedrals_info_path)
 
 
 if __name__ == '__main__':
