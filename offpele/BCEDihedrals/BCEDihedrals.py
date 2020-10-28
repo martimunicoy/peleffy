@@ -5,9 +5,10 @@ BCE server
 """
 import os
 import glob
-from rdkit.Chem import rdMolTransforms
+import offpele
 from offpele.utils import Logger
 from offpele.topology import molecule
+from offpele.utils.toolkits import RDKitToolkitWrapper
 
 class BCEDihedrals(object):
     """
@@ -57,16 +58,17 @@ class BCEDihedrals(object):
         dihedral_list: list
             List of the tuples containing the atoms that form the dihedrals
         """
+        rdkit_wrapper = RDKitToolkitWrapper()
         pdb_dihedrals = []
         # use the input molecule as template since the cluster structures
         # probably will not have proper stereochemistry
         mol = molecule.Molecule(cluster_pdb, connectivity_template=self._molecule.rdkit_molecule)
         # we use substructure matching to ensure that the indices in the
         # clusters pdb and the input ligand are the same
-        rename_dict = {i: x for i, x in enumerate(self._molecule.rdkit_molecule.GetSubstructMatch(mol.rdkit_molecule))}
+        rename_dict = {i: x for i, x in enumerate(rdkit_wrapper.get_substruct_match(self._molecule, mol))}
         for dihedral in dihedral_list:
             names = [self._molecule.atoms[rename_dict[atom]].PDB_name for atom in dihedral]
-            angle = rdMolTransforms.GetDihedralRad(mol.rdkit_molecule.GetConformer(), *dihedral)
+            angle = rdkit_wrapper.get_dihedral(mol, *dihedral, units="degrees")
             pdb_dihedrals.append(names+[angle])
         self.dihedral_library[cluster_pdb] = pdb_dihedrals
 
@@ -80,10 +82,11 @@ class BCEDihedrals(object):
             Where to save the dihedral library
         """
         with open(output_path, "w") as fw:
+            fw.write("* DIHEDRAL LIBRARY FILE\n")
+            fw.write('* File generated with offpele-{}\n'.format( offpele.__version__))
             for dihedral_file, dihedral_values in self.dihedral_library.items():
-                fw.write("BEGINDIHEDRALS\n")
-                fw.write("File: {:s}\n".format(dihedral_file))
-                fw.write("Atom 1 Atom 2 Atom3 Atom 4 Angle  \n")
+                fw.write("* File: {:s}\n".format(dihedral_file))
+                fw.write("{:s} {:d} {:d}\n".format(self._molecule.tag.upper(), len(dihedral_values), len(self.dihedral_library)))
                 for dihedral in dihedral_values:
                     fw.write("{:s} {:s} {:s} {:s} {:5f}\n".format(*dihedral))
                 fw.write("ENDDIHEDRALS\n")
