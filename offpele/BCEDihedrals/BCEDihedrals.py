@@ -68,7 +68,7 @@ class BCEDihedrals(object):
         rename_dict = {i: x for i, x in enumerate(rdkit_wrapper.get_substruct_match(self._molecule, mol))}
         for dihedral in dihedral_list:
             names = [self._molecule.atoms[rename_dict[atom]].PDB_name for atom in dihedral]
-            angle = rdkit_wrapper.get_dihedral(mol, *dihedral, units="degrees")
+            angle = rdkit_wrapper.get_dihedral(mol, *dihedral, units="radians")
             pdb_dihedrals.append(names+[angle])
         self.dihedral_library[cluster_pdb] = pdb_dihedrals
 
