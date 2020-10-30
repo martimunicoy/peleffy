@@ -25,6 +25,7 @@ Bugfixes
 """"""""
 - `PR #74 <https://github.com/martimunicoy/offpele/pull/74>`_: Corrects wrong assignment of PDB atom names when using the OPLS2005 force field.
 - `PR #79 <https://github.com/martimunicoy/offpele/pull/79>`_: Corrects error with missing modules in the Conda installation.
+- `PR #82 <https://github.com/martimunicoy/offpele/pull/82>`_: Corrects a bug that caused some important propers obtained with OPLS2005 to be missing.
 
 Tests added
 """""""""""

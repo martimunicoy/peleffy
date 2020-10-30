@@ -601,6 +601,22 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                              'idivf': 1.0
                              })
 
+                # In case all four k's are zero, we still need to include
+                # the proper torsion to be used by PELE in the 1-4
+                # interactions
+                if all([float(k) == 0.0 for k in fields[4:8]]):
+                    params['propers'].append(
+                        {'atom1_idx': atom1_idx,
+                         'atom2_idx': atom2_idx,
+                         'atom3_idx': atom3_idx,
+                         'atom4_idx': atom4_idx,
+                         'periodicity': 1.0,
+                         'phase': unit.Quantity(0.0, unit.degree),
+                         'k': unit.Quantity(0.0,
+                                            unit.kilocalorie / unit.mole),
+                         'idivf': 1.0
+                         })
+
             elif section == 'impropers':
                 fields = line.split()
                 assert len(fields) > 5, 'Unexpected number of fields ' \
