@@ -9,13 +9,11 @@ offpele.topology.Molecule
    
    
       .. automethod:: __init__
-      .. automethod:: add_OPLS_bonds_and_angles
-      .. automethod:: add_OPLS_nonbonding_params
       .. automethod:: assert_parameterized
-      .. automethod:: get_OPLS_parameters
       .. automethod:: get_pdb_atom_names
       .. automethod:: parameterize
       .. automethod:: set_conformer
+      .. automethod:: set_forcefield
       .. automethod:: set_name
       .. automethod:: set_tag
       .. automethod:: to_impact_file
@@ -29,12 +27,11 @@ offpele.topology.Molecule
 
    .. autosummary::
    
-      ~Molecule.OPLS_included
-      ~Molecule.OPLS_parameters
       ~Molecule.angles
       ~Molecule.atoms
       ~Molecule.bonds
       ~Molecule.connectivity_template
+      ~Molecule.core_constraints
       ~Molecule.exclude_terminal_rotamers
       ~Molecule.forcefield
       ~Molecule.graph
@@ -42,6 +39,7 @@ offpele.topology.Molecule
       ~Molecule.name
       ~Molecule.off_molecule
       ~Molecule.parameterized
+      ~Molecule.parameters
       ~Molecule.propers
       ~Molecule.rdkit_molecule
       ~Molecule.rotamer_resolution

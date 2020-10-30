@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.gc66f0b5
+                0+untagged.1.g63adefc
               </div>
             
           
@@ -117,6 +117,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../template.html">Template handlers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../solvent.html">Solvent models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../charge.html">Charge methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../forcefield.html">Forcefield methods</a></li>
 </ul>
 
             
@@ -188,12 +189,12 @@
 <h1>offpele.topology.Proper<a class="headerlink" href="#offpele-topology-proper" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="offpele.topology.Proper">
-<em class="property">class </em><code class="sig-prename descclassname">offpele.topology.</code><code class="sig-name descname">Proper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">atom1_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom2_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom3_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom4_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">periodicity</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prefactor</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">constant</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/topology.html#Proper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Proper" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">offpele.topology.</code><code class="sig-name descname">Proper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">atom1_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom2_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom3_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom4_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">periodicity</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prefactor</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">constant</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">phase</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/offpele/topology/topology.html#Proper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#offpele.topology.Proper" title="Permalink to this definition">¶</a></dt>
 <dd><p>It represents a proper dihedral in the topology.</p>
 <blockquote>
 <div><dl class="py method">
 <dt id="offpele.topology.Proper.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">atom1_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom2_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom3_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom4_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">periodicity</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prefactor</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">constant</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#offpele.topology.Proper.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">atom1_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom2_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom3_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom4_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">periodicity</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prefactor</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">constant</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">phase</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#offpele.topology.Proper.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>It initiates an Dihedral object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -206,6 +207,7 @@
 <li><p><strong>periodicity</strong> (<em>int</em>) – The periodicity of this Dihedral</p></li>
 <li><p><strong>prefactor</strong> (<em>int</em>) – The prefactor of this Dihedral</p></li>
 <li><p><strong>constant</strong> (<em>simtk.unit.Quantity</em>) – The constant of this Dihedral</p></li>
+<li><p><strong>phase</strong> (<em>simtk.unit.Quantity</em>) – The phase constant of this Dihedral</p></li>
 </ul>
 </dd>
 </dl>
@@ -306,7 +308,10 @@ setting the index of the third atom to negative.</p>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">periodicity</span></code></p></td>
 <td><p>Dihedral’s periodicity.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prefactor</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">phase</span></code></p></td>
+<td><p>Dihedral’s phase constant.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">prefactor</span></code></p></td>
 <td><p>Dihedral’s prefactor.</p></td>
 </tr>
 </tbody>

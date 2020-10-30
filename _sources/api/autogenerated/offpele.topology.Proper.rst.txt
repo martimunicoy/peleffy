@@ -34,6 +34,7 @@ offpele.topology.Proper
       ~Proper.n_writable_attrs
       ~Proper.name
       ~Proper.periodicity
+      ~Proper.phase
       ~Proper.prefactor
    
    

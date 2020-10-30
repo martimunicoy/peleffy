@@ -32,6 +32,7 @@ offpele.topology.Dihedral
       ~Dihedral.n_writable_attrs
       ~Dihedral.name
       ~Dihedral.periodicity
+      ~Dihedral.phase
       ~Dihedral.prefactor
    
    

@@ -1,0 +1,26 @@
+offpele.forcefield.OpenForceField
+=================================
+
+.. currentmodule:: offpele.forcefield
+
+.. autoclass:: OpenForceField
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: parameterize
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~OpenForceField.name
+      ~OpenForceField.parameters
+      ~OpenForceField.type
+   
+   

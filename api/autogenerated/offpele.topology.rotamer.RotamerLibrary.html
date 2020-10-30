@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.gc66f0b5
+                0+untagged.1.g63adefc
               </div>
             
           
@@ -117,6 +117,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../template.html">Template handlers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../solvent.html">Solvent models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../charge.html">Charge methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../forcefield.html">Forcefield methods</a></li>
 </ul>
 
             
@@ -197,7 +198,23 @@
 <dd><p>It initiates a RotamerLibrary object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>molecule</strong> (<em>An offpele.topology.Molecule</em>) – The Molecule object whose rotamer library will be generated</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>molecule</strong> (<em>An offpele.topology.Molecule</em>) – The Molecule object whose rotamer library will be generated</p></li>
+<li><p><strong>Load a molecule and create its rotamer library template</strong></p></li>
+<li><p><strong>&gt;&gt;&gt; from offpele.topology import Molecule</strong></p></li>
+<li><p><strong>&gt;&gt;&gt; from offpele.topology import RotamerLibrary</strong></p></li>
+<li><p><strong>&gt;&gt;&gt; molecule = Molecule(smiles=’CCCC’, name=’butane’, tag=’BUT’)</strong></p></li>
+<li><p><strong>&gt;&gt;&gt; rotamer_library = RotamerLibrary(mol)</strong></p></li>
+<li><p><strong>&gt;&gt;&gt; rotamer_library.to_file(‘butz’)</strong></p></li>
+<li><p><strong>Load a molecule and create its rotamer library template with</strong></p></li>
+<li><p><strong>a core constraint</strong></p></li>
+<li><p><strong>&gt;&gt;&gt; from offpele.topology import Molecule</strong></p></li>
+<li><p><strong>&gt;&gt;&gt; from offpele.topology import RotamerLibrary</strong></p></li>
+<li><p><strong>&gt;&gt;&gt; molecule = Molecule(smiles=’CCCC’, name=’butane’, tag=’BUT’,</strong> – exclude_terminal_rotamers=False,
+core_constraints=[0, ])</p></li>
+<li><p><strong>&gt;&gt;&gt; rotamer_library = RotamerLibrary(mol)</strong></p></li>
+<li><p><strong>&gt;&gt;&gt; rotamer_library.to_file(‘butz’)</strong></p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
