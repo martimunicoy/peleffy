@@ -33,6 +33,7 @@ setup(
         'offpele/topology',
         'offpele/forcefield',
         'offpele/utils',
+        'offpele/charge',
     ],
     long_description=read('README.md'),
     classifiers=[
