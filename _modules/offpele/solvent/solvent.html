@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0+untagged.1.gdc98668
+                0+untagged.1.gc66f0b5
               </div>
             
           
@@ -95,7 +95,6 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../template.html">Template handlers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../solvent.html">Solvent models</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../charge.html">Charge methods</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../forcefield.html">Forcefield methods</a></li>
 </ul>
 
             
@@ -168,6 +167,7 @@
 <span class="kn">from</span> <span class="nn">simtk</span> <span class="kn">import</span> <span class="n">unit</span>
 
 <span class="kn">from</span> <span class="nn">offpele.utils</span> <span class="kn">import</span> <span class="n">get_data_file_path</span><span class="p">,</span> <span class="n">warning_on_one_line</span>
+<span class="kn">from</span> <span class="nn">offpele.utils.toolkits</span> <span class="kn">import</span> <span class="n">OpenForceFieldToolkitWrapper</span>
 <span class="kn">from</span> <span class="nn">offpele.utils</span> <span class="kn">import</span> <span class="n">Logger</span>
 
 
@@ -207,9 +207,8 @@
         <span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39; - Loading solvent parameters&#39;</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">offpele.utils.toolkits</span> <span class="kn">import</span> <span class="n">OpenForceFieldToolkitWrapper</span>
-
         <span class="n">off_toolkit</span> <span class="o">=</span> <span class="n">OpenForceFieldToolkitWrapper</span><span class="p">()</span>
+
         <span class="n">GBSA_handler</span> <span class="o">=</span> <span class="n">off_toolkit</span><span class="o">.</span><span class="n">get_parameter_handler_from_forcefield</span><span class="p">(</span>
             <span class="s1">&#39;GBSA&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ff_file</span><span class="p">)</span>
 
@@ -218,13 +217,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_surface_area_penalty</span> <span class="o">=</span> <span class="n">GBSA_handler</span><span class="o">.</span><span class="n">surface_area_penalty</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_solvent_radius</span> <span class="o">=</span> <span class="n">GBSA_handler</span><span class="o">.</span><span class="n">solvent_radius</span>
 
-        <span class="kn">from</span> <span class="nn">offpele.forcefield</span> <span class="kn">import</span> <span class="n">OpenForceField</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="n">off_toolkit</span><span class="o">.</span><span class="n">get_parameters_from_forcefield</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ff_file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="p">)</span>
 
-        <span class="n">forcefield</span> <span class="o">=</span> <span class="n">OpenForceField</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ff_file</span><span class="p">)</span>
-        <span class="n">parameters</span> <span class="o">=</span> <span class="n">forcefield</span><span class="o">.</span><span class="n">parameterize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_radii</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;GBSA_radii&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_scales</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;GBSA_scales&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_radii</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_GBSA_radii</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scales</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get_GBSA_scales</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

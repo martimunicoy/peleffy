@@ -8,33 +8,6 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
-0.4.0 - Full compatibility for OPLS2005 and OpenFF dihedrals and rotamer library improvements - Current development
--------------------------------------------------------------------------------------------------------------------
-
-This minor release extends the compatibility of offpele to fully handle OPLS2005 parameters and OpenFF dihedrals. Besides, it includes a functionality to generate rotamer libraries with core constraints to allow the user to force an atom to be in the core.
-
-New features
-""""""""""""
-- `PR #56 <https://github.com/martimunicoy/offpele/pull/56>`_: Dynamic output path handler.
-- `PR #62 <https://github.com/martimunicoy/offpele/pull/62>`_: New functionality to generate rotamer libraries forcing an atom to be in the core.
-- `PR #63 <https://github.com/martimunicoy/offpele/pull/63>`_: Enhancements to the core constraints to allow the selection of multiple core atoms.
-- `PR #66 <https://github.com/martimunicoy/offpele/pull/66>`_: Full compatibility with OpenFF dihedrals.
-- `PR #69 <https://github.com/martimunicoy/offpele/pull/69>`_: Full compatibility with OPLS2005 force field.
-
-Bugfixes
-""""""""
-- `PR #74 <https://github.com/martimunicoy/offpele/pull/74>`_: Corrects wrong assignment of PDB atom names when using the OPLS2005 force field.
-
-Tests added
-"""""""""""
-- `PR #56 <https://github.com/martimunicoy/offpele/pull/56>`_: Adds tests to validate the new output path handler.
-- `PR #62 <https://github.com/martimunicoy/offpele/pull/62>`_: Adds tests to validate the new rotamer library with core constraints.
-- `PR #63 <https://github.com/martimunicoy/offpele/pull/63>`_: More tests are added to validate the new rotamer library with core constraints.
-- `PR #66 <https://github.com/martimunicoy/offpele/pull/66>`_: Adds tests to validate the handling of non standard dihedrals.
-- `PR #69 <https://github.com/martimunicoy/offpele/pull/69>`_: Adds tests to validate the integration of OPLS2005 force field.
-- `PR #70 <https://github.com/martimunicoy/offpele/pull/70>`_: Adds tests to validate main CLI.
-
-
 0.3.1 - General stability improvements
 --------------------------------------
 

@@ -32,7 +32,6 @@ offpele.topology.Improper
       ~Improper.n_writable_attrs
       ~Improper.name
       ~Improper.periodicity
-      ~Improper.phase
       ~Improper.prefactor
    
    

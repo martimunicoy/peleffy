@@ -43,7 +43,6 @@ offpele.template.impact.WritableProper
       ~WritableProper.n_writable_attrs
       ~WritableProper.name
       ~WritableProper.periodicity
-      ~WritableProper.phase
       ~WritableProper.prefactor
    
    
