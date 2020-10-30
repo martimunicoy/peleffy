@@ -604,7 +604,7 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                 # In case all four k's are zero, we still need to include
                 # the proper torsion to be used by PELE in the 1-4
                 # interactions
-                if all([k == 0.0 for k in fields[4:8]]):
+                if all([float(k) == 0.0 for k in fields[4:8]]):
                     params['propers'].append(
                         {'atom1_idx': atom1_idx,
                          'atom2_idx': atom2_idx,
