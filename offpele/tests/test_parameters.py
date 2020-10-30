@@ -548,6 +548,36 @@ class TestDihedrals(object):
             assert w_parameters in expected_parameters, \
                 'Invalid writable improper parameters {}'.format(w_parameters)
 
+    def test_OPLS_dummy_propers(self):
+        """
+        It checks that the number of propers that are obtained from OPLS
+        is correct, ensuring that dummy propers (propers with a null
+        force constant whose definitions are only used in the 1-4 lists
+        of PELE) are present in the parameterized proper list.
+        """
+        from offpele.forcefield import OPLS2005ForceField
+        from offpele.forcefield import OPLS2005ParameterWrapper
+
+        # Load molecule
+        molecule = Molecule(get_data_file_path('ligands/CO1.pdb'))
+        oplsff = OPLS2005ForceField('OPLS2005')
+
+        # Set force field and obtain parameters
+        ffld_file = get_data_file_path('tests/CO1_ffld_output.txt')
+        with open(ffld_file) as f:
+            ffld_output = f.read()
+
+        parameters = OPLS2005ParameterWrapper.from_ffld_output(molecule,
+                                                               ffld_output)
+        oplsff._parameters = parameters
+
+        molecule.set_forcefield(oplsff)
+        molecule.parameterize(charge_method='gasteiger')
+
+        # Validate number of propers
+        assert len(molecule.propers) == 100, \
+            'Unexpected number of proper torsions'
+
 
 class TestCharges(object):
     """
