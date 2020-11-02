@@ -41,16 +41,31 @@ class TestImpactTemplate(object):
 			impact = Impact(molecule_string)
 
 
+	def _compare_files(self, FILE1, FILE2): 
+		"""
+			It comapares two files line by line and gives an AssertionError if there 
+			is any difference. 
+		"""
+		with open(FILE1, 'r') as f1: 
+			dataA = f1.readlines()[3:]
+		with open(FILE2, 'r') as f2: 
+			dataB = f2.readlines()[3:]
+		linesA = str(dataA).split('\n')
+		linesB = str(dataB).split('\n')
+		assert len(linesA) == len(linesB), 'Number of lines do not match'
+		for i, (lineA, lineB) in enumerate(zip(linesA, linesB)):
+			assert lineA == lineB, 'Found different lines at line {}:' + lineA + ' - ' + lineB
+
 	def test_writer(self):
 		"""
 		It tests the writer attribute of the Impact class. 
 		"""
 
-		LIGAND_PATH = 'ligands/BNZ.pdb'
 		FORCEFIELD_NAME = 'openff_unconstrained-1.1.1.offxml'
-		TEMPLATE_METZ = '/home/lauramalo/repos/offpele/offpele/tests/reference_templates/metz'
-		TEMPLATE_MATZ = '/home/lauramalo/repos/offpele/offpele/tests/reference_templates/malz'
-		TEMPLATE_ETLZ = '/home/lauramalo/repos/offpele/offpele/tests/reference_templates/etlz'
+
+		TEMPLATE_METZ = get_data_file_path('tests/metz')
+		TEMPLATE_MATZ = get_data_file_path('tests/malz')
+		TEMPLATE_ETLZ = get_data_file_path('tests/etlz')
 
 		# Generates the tempalte for methane
 		pdb_path = get_data_file_path('ligands/methane.pdb')
@@ -60,11 +75,7 @@ class TestImpactTemplate(object):
 		impact.write('metz')
 
 		# Compare the reference template and the generated template
-		with open(TEMPLATE_METZ, 'r') as f1: 
-			dataA = f1.readlines()[3:]
-		with open('metz', 'r') as f2: 
-			dataB = f2.readlines()[3:]
-		assert dataA == dataB
+		self._compare_files(FILE1 = TEMPLATE_METZ, FILE2 = 'metz')
 
 		# Generates the template for malonate
 		pdb_path = get_data_file_path('ligands/malonate.pdb')
@@ -74,11 +85,7 @@ class TestImpactTemplate(object):
 		impact.write('malz')
 
 		# Compare the reference template and the generated template
-		with open(TEMPLATE_MATZ, 'r') as f1: 
-			dataA = f1.readlines()[3:]
-		with open('malz', 'r') as f2: 
-			dataB = f2.readlines()[3:]
-		assert dataA == dataB
+		self._compare_files(FILE1 = TEMPLATE_MATZ, FILE2 = 'malz')
 
 		# Generates the template for ethylene
 		pdb_path = get_data_file_path('ligands/ethylene.pdb')
@@ -88,17 +95,7 @@ class TestImpactTemplate(object):
 		impact.write('etlz')
 
 		# Compare the reference template and the generated template
-		with open(TEMPLATE_ETLZ, 'r') as f1: 
-			dataA = f1.readlines()[3:]
-		with open('etlz', 'r') as f2: 
-			dataB = f2.readlines()[3:]
-		assert dataA == dataB
-
-
-	
-
-
-
+		self._compare_files(FILE1 = TEMPLATE_ETLZ, FILE2 = 'etlz')
 
 
 
