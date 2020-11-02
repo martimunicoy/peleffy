@@ -1,9 +1,11 @@
-Open Force Field for PELE
-=========================
+PELE Force Field Yielder
+========================
 
-The Open Force Field for PELE is a Python package that builds
-PELE-compatible force field templates using the Open Force Field
-toolkit.
+The `peleffy` (PELE Force Field Yielder) is a Python package that builds
+PELE-compatible force field templates. The current supported force fields
+are:
+- Any force field from the [Open Force Field toolkit](https://github.com/openforcefield/openforcefield).
+- OPLS2005.
 
 
 User guide
@@ -28,3 +30,4 @@ API documentation
   template
   solvent
   charge
+  forcefield

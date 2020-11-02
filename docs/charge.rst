@@ -6,7 +6,7 @@ Charge methods
 This module provides different methods to calculate partial charges
 for PELE.
 
-.. currentmodule:: offpele.charge
+.. currentmodule:: peleffy.charge
 
 Primary objects
 ---------------
