@@ -1334,15 +1334,14 @@ class Molecule(object):
     @property
     def parameterized(self):
         """
-        Whether the molecule has been parameterized with the Open Force Field
-        toolkit or not.
+        Whether the molecule has been parameterized or not.
 
         Returns
         -------
         parameterized : bool
             The parameterization status
         """
-        return self.parameters is not None
+        return not self.parameters.is_empty()
 
     def _ipython_display_(self):
         """

@@ -158,3 +158,34 @@ def check_parameters(molecule, expected_nonbonding=None,
             w_parameters = [attr[1] for attr in list(w_improper)]
             assert w_parameters in expected_impropers, \
                 'Invalid writable improper parameters {}'.format(w_parameters)
+
+
+def compare_files(file1, file2):
+    """
+    It compares two files line by line and gives an AssertionError if there
+    is any difference.
+
+    Parameters
+    ----------
+    file1 : str
+        Path to the first file to compare
+    file2 : str
+        Path to the second file to compare
+
+    Raises
+    ------
+        AssertionError
+            If any difference is found between files
+    """
+    with open(file1, 'r') as f1:
+        lines1 = [line for line in f1.readlines()
+                  if not line.startswith("*")]
+    with open(file2, 'r') as f2:
+        lines2 = [line for line in f2.readlines()
+                  if not line.startswith("*")]
+    assert len(lines1) == len(lines2), \
+        'Number of lines do not match: ' \
+        + str(len(lines1)) + ' and ' + str(len(lines2))
+    for i, (line1, line2) in enumerate(zip(lines1, lines2)):
+        assert line1 == line2, \
+            'Found different lines at line {}:'.format(i) + '\n' + line1 + line2

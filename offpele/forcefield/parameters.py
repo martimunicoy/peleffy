@@ -161,6 +161,17 @@ class BaseParameterWrapper(dict):
                    self['vdW_radii'], self['gammas'],
                    self['alphas'])
 
+    def is_empty(self):
+        """
+        If the are no parameters stored in this wrapper, it returns True.
+
+        Returns
+        -------
+        answer : bool
+            Whether this parameter wrapper is empty or not
+        """
+        return all(len(self[key]) == 0 for key in self)
+
     @property
     def name(self):
         """
