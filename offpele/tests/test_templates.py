@@ -43,18 +43,47 @@ class TestImpactTemplate(object):
 		"""
 		It comapares two files line by line and gives an AssertionError if there 
 		is any difference. 
+		Input: 
+		-------
+			the two files to be compared. 
 		"""
 		with open(FILE1, 'r') as f1: 
 			linesA = [line for line in f1.readlines() if not line.startswith("*")]
 		with open(FILE2, 'r') as f2: 
 			linesB = [line for line in f2.readlines() if not line.startswith("*")]
-		assert len(linesA) == len(linesB), 'Number of lines do not match'
+		assert len(linesA) == len(linesB), 'Number of lines do not match: ' + str(len(linesA)) + ' and ' + str(len(linesB))
 		for i, (lineA, lineB) in enumerate(zip(linesA, linesB)):
 			assert lineA == lineB, 'Found different lines at line {}:'.format(i) + '\n' + lineA  + lineB
 
+	def _prepare_molecule_OPLS(self, pdb_name,ffld_name): 
+		"""
+		It initialices and parametrizes a molecule using OPLS. 
+		Input: 
+		---------
+			pdb_name: 	relative path to the PBD of the molecule.
+			ffld_name:	relative path to the TXT file containing OPLS parameters.
+		"""
+		from offpele.forcefield import (OPLS2005ForceField,
+										OPLS2005ParameterWrapper)
+		FORCE_FIELD_NAME = 'OPLS2005'
+		# Loads the molecule and the force field
+		pdb_path = get_data_file_path(pdb_name)
+		m = Molecule(pdb_path)
+		oplsff = OPLS2005ForceField(FORCE_FIELD_NAME)
+		
+		# Set force field and obtain parameters
+		ffld_file = get_data_file_path(ffld_name)
+		with open(ffld_file) as f:
+			ffld_output = f.read()
+		m.set_forcefield(oplsff)
+		m._parameters = \
+			OPLS2005ParameterWrapper.from_ffld_output(m, ffld_output)
+		m.parameterize()
+		return m
+
 	def test_writer_OFF(self):
 		"""
-		It tests the writer attribute of the Impact class using OFF. 
+		It tests the writer attribute of the Impact class using OFF to parameterize. 
 		"""
 		FORCEFIELD_NAME = 'openff_unconstrained-1.1.1.offxml'
 
@@ -94,58 +123,38 @@ class TestImpactTemplate(object):
 
 	def test_writer_OPLS(self): 
 		"""
-		It tests the writer attribute of the Impact class using OPLS. 
+		It tests the writer attribute of the Impact class using OPLS to parameterize. 
 		"""
-		from offpele.forcefield import (OPLS2005ForceField,
-										OPLS2005ParameterWrapper)
-		FORCE_FIELD_NAME = 'OPLS2005'
-
 		TEMPLATE_METZ_OPLS = get_data_file_path('tests/OPLS_metz')
+		TEMPLATE_MALZ_OPLS = get_data_file_path('tests/OPLS_malz')
 		TEMPLATE_ETLZ_OPLS = get_data_file_path('tests/OPLS_etlz')
-
-		# Generates the template for methane
-		pdb_path = get_data_file_path('ligands/methane.pdb')
-		m = Molecule(pdb_path)
-		oplsff = OPLS2005ForceField(FORCE_FIELD_NAME)
 		
-		# Set force field and obtain parameters
-		ffld_file = get_data_file_path('tests/MET_ffld_output.txt')
-		with open(ffld_file) as f:
-			ffld_output = f.read()
-
-		# Set force field and obtain parameters
-		m.set_forcefield(oplsff)
-		m._parameters = \
-			OPLS2005ParameterWrapper.from_ffld_output(m, ffld_output)
-		m.parameterize()
+		# Generates the template for methane using OPLS
+		m = self._prepare_molecule_OPLS(pdb_name = 'ligands/methane.pdb',
+									ffld_name = 'tests/MET_ffld_output.txt')
 		impact = Impact(m)
 		impact.write('metz')
 
 		# Compare the reference template and the generated template
 		self._compare_files(FILE1 = TEMPLATE_METZ_OPLS, FILE2 = 'metz')
 
-		# Generates the template for ethylene
-		pdb_path = get_data_file_path('ligands/ethylene.pdb')
-		m = Molecule(pdb_path, tag='ETL')
-		oplsff = OPLS2005ForceField(FORCE_FIELD_NAME)
-		
-		# Set force field and obtain parameters
-		ffld_file = get_data_file_path('tests/ETL_ffld_output.txt')
-		with open(ffld_file) as f:
-			ffld_output = f.read()
+		# Generates the template for malonate
+		m = self._prepare_molecule_OPLS(pdb_name = 'ligands/malonate.pdb',
+									ffld_name = 'tests/MAL_ffld_output.txt')		
+		impact = Impact(m)
+		impact.write('malz')
 
-		# Set force field and obtain parameters
-		m.set_forcefield(oplsff)
-		m._parameters = \
-			OPLS2005ParameterWrapper.from_ffld_output(m, ffld_output)
-		m.parameterize()
+		# Compare the reference template and the generated template
+		self._compare_files(FILE1 = TEMPLATE_MALZ_OPLS, FILE2 = 'malz')
+
+		# Generates the template for ethylene
+		m = self._prepare_molecule_OPLS(pdb_name = 'ligands/ethylene.pdb',
+									ffld_name = 'tests/ETL_ffld_output.txt')	
 		impact = Impact(m)
 		impact.write('etlz')
 
 		# Compare the reference template and the generated template
 		self._compare_files(FILE1 = TEMPLATE_ETLZ_OPLS, FILE2 = 'etlz')
-
-
 
 
 
