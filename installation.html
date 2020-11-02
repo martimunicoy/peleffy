@@ -37,7 +37,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Release History" href="releasehistory.html" />
-    <link rel="prev" title="Open Force Field for PELE" href="index.html" /> 
+    <link rel="prev" title="PELE Force Field Yielder" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.g08b5fb9
+                0+untagged.1.g8486cbe
               </div>
             
           
@@ -172,7 +172,7 @@
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="installing-via-conda">
 <h2>Installing via <cite>conda</cite><a class="headerlink" href="#installing-via-conda" title="Permalink to this headline">¶</a></h2>
-<p>The more straightforward way to install <cite>offpele</cite> along with the required
+<p>The more straightforward way to install <cite>peleffy</cite> along with the required
 dependencies is through the <a class="reference external" href="http://www.continuum.io/blog/conda">conda</a>
 package manager.</p>
 <p>First, you need to install the
@@ -194,34 +194,34 @@ the following commands:</p>
 $ conda activate base
 </pre></div>
 </div>
-<p>You can also create a custom conda environment to handle offpele:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda create --name offpele_env
+<p>You can also create a custom conda environment to handle peleffy:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda create --name peleffy_env
 </pre></div>
 </div>
 <p>which can be activated and deactivated with the two commands from below:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda activate offpele_env
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda activate peleffy_env
 $ conda deactivate
 </pre></div>
 </div>
-<p>To install de dependencies of offpele, the following <cite>conda</cite> channels need
+<p>To install de dependencies of peleffy, the following <cite>conda</cite> channels need
 to be added and updated:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda config --add channels omnia --add channels conda-forge --add channels martimunicoy
 $ conda update --all
 </pre></div>
 </div>
-<p>Finally, you can install the latest stable build of <cite>offpele</cite></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda install offpele
+<p>Finally, you can install the latest stable build of <cite>peleffy</cite></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda install peleffy
 </pre></div>
 </div>
 </div>
 <div class="section" id="installing-via-pypi">
 <h2>Installing via <cite>PyPI</cite><a class="headerlink" href="#installing-via-pypi" title="Permalink to this headline">¶</a></h2>
-<p><cite>offpele</cite> can also be installed through <a class="reference external" href="https://pypi.org">PyPI</a>
+<p><cite>peleffy</cite> can also be installed through <a class="reference external" href="https://pypi.org">PyPI</a>
 with the following command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install offpele
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install peleffy
 </pre></div>
 </div>
-<p>However, with <cite>PyPI</cite> some of the required dependencies of <cite>offpele</cite> are not
+<p>However, with <cite>PyPI</cite> some of the required dependencies of <cite>peleffy</cite> are not
 installed and have to be installed manually such as:</p>
 <ul class="simple">
 <li><p>Open Force Field Toolkit</p></li>
@@ -232,20 +232,20 @@ installed and have to be installed manually such as:</p>
 </div>
 <div class="section" id="external-dependencies">
 <h2>External dependencies<a class="headerlink" href="#external-dependencies" title="Permalink to this headline">¶</a></h2>
-<p>Some of the functionalities of <cite>offpele</cite> require external dependencies.
+<p>Some of the functionalities of <cite>peleffy</cite> require external dependencies.
 They are normally included with the standard <cite>conda</cite> installation, as
 explained above. However, the Schrodinger toolkit must be installed
 manually. It is only required when combining <cite>Open Force Field</cite> parameters
 with <cite>OPLS2005</cite> (as it uses the Schrodinger’s <cite>ffld_server</cite>). Nevertheless,
-in case that Schrodinger dependencies are missing, <cite>offpele</cite> can still be
+in case that Schrodinger dependencies are missing, <cite>peleffy</cite> can still be
 employed to generate pure <cite>Open Force Field</cite> parameters.</p>
 <p>The easiest way to get a valid Schrodinger installation is downloading
 <a class="reference external" href="https://www.schrodinger.com/freemaestro">Free Maestro</a>. It can be
-installed in both platforms that are supported by <cite>offpele</cite>: Linux and
-MacOS. Once installed, <cite>offpele</cite> will need an environment variable to be
+installed in both platforms that are supported by <cite>peleffy</cite>: Linux and
+MacOS. Once installed, <cite>peleffy</cite> will need an environment variable to be
 set in order to known the Schrodinger’s installation path. So, please,
 check that the following environment variable is set before running
-<cite>offpele</cite> if you plant to work with <cite>OPLS2005</cite> parameters:</p>
+<cite>peleffy</cite> if you plant to work with <cite>OPLS2005</cite> parameters:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">SCHRODINGER</span><span class="o">=</span>/path/to/Schrodinger/installation/
 </pre></div>
 </div>
@@ -254,7 +254,7 @@ check that the following environment variable is set before running
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">SCHRODINGER</span><span class="o">=</span>/opt/schrodinger/suites2020-2/
 </pre></div>
 </div>
-<p>This variable must be set every time <cite>offpele</cite> is employed to work with
+<p>This variable must be set every time <cite>peleffy</cite> is employed to work with
 <cite>OPLS2005</cite> parameters in a new console session. To avoid future concerns about
 this issue, you can set the environment variable automatically every time you
 initiate a bash session in your console. You can do so by modifying your
@@ -274,7 +274,7 @@ line above.</p>
         <a href="releasehistory.html" class="btn btn-neutral float-right" title="Release History" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral float-left" title="Open Force Field for PELE" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="PELE Force Field Yielder" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

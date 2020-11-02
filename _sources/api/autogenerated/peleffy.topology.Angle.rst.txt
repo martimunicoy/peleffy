@@ -1,0 +1,33 @@
+peleffy.topology.Angle
+======================
+
+.. currentmodule:: peleffy.topology
+
+.. autoclass:: Angle
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: set_atom1_idx
+      .. automethod:: set_atom2_idx
+      .. automethod:: set_atom3_idx
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Angle.atom1_idx
+      ~Angle.atom2_idx
+      ~Angle.atom3_idx
+      ~Angle.eq_angle
+      ~Angle.index
+      ~Angle.n_writable_attrs
+      ~Angle.name
+      ~Angle.spring_constant
+   
+   

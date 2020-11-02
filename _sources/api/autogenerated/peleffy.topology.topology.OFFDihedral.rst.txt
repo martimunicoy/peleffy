@@ -1,0 +1,26 @@
+peleffy.topology.topology.OFFDihedral
+=====================================
+
+.. currentmodule:: peleffy.topology.topology
+
+.. autoclass:: OFFDihedral
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: plot
+      .. automethod:: to_PELE
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~OFFDihedral.n_writable_attrs
+      ~OFFDihedral.name
+   
+   

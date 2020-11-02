@@ -1,0 +1,25 @@
+peleffy.charge.GasteigerCalculator
+==================================
+
+.. currentmodule:: peleffy.charge
+
+.. autoclass:: GasteigerCalculator
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: get_partial_charges
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~GasteigerCalculator.molecule
+      ~GasteigerCalculator.name
+   
+   

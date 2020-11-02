@@ -1,0 +1,26 @@
+peleffy.topology.topology.OFFImproper
+=====================================
+
+.. currentmodule:: peleffy.topology.topology
+
+.. autoclass:: OFFImproper
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: plot
+      .. automethod:: to_PELE
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~OFFImproper.n_writable_attrs
+      ~OFFImproper.name
+   
+   

@@ -3,7 +3,7 @@
 Generate PELE parameter files
 *****************************
 
-The main purpose of `offpele` is to build the parameter files for PELE. Basically, PELE requires two files for each non-standard residue found in the system:
+The main purpose of `peleffy` is to build the parameter files for PELE. Basically, PELE requires two files for each non-standard residue found in the system:
 
 - `IMPACT template <https://eapm-bsc.github.io/PELE-repo/fileFormats.html#impact-template-file-format>`_: a file containing the atom types and parameters of the ligand. Its job is to link each atom with the corresponding parameters using PDB atom names. Thus, PDB atom names in the input PDB file must match with the expected PDB atom names in the Impact file. This file intrinsically contains the information about the topology and connectivity of each residue.
 
@@ -15,20 +15,20 @@ Besides, a third file with the `Solvent parameters` might be required when emplo
   :width: 400
   :alt: Scheme with all the files that PELE requires to run a simulation
 
-The `Open Force Field Toolkit <https://github.com/openforcefield/openforcefield>`_ is employed to assign the parameters to each atom according to its chemical environment. Besides, the PDB atom names are stored using `RDKit <https://www.rdkit.org>`_. With this dual molecular representation, `offpele` can run the parameterization workflow of Open Force Field while tracking the PDB atom names with RDKit.
+The `Open Force Field Toolkit <https://github.com/openforcefield/openforcefield>`_ is employed to assign the parameters to each atom according to its chemical environment. Besides, the PDB atom names are stored using `RDKit <https://www.rdkit.org>`_. With this dual molecular representation, `peleffy` can run the parameterization workflow of Open Force Field while tracking the PDB atom names with RDKit.
 
 .. image:: figures/dual_representation.png
   :width: 400
-  :alt: Scheme with the dual molecular representation employed in offpele
+  :alt: Scheme with the dual molecular representation employed in peleffy
 
 
 Basic usage
 ===========
-The more straightforward way to install `offpele` along with the required dependencies is through the command-line interface built in `main.py <https://github.com/martimunicoy/offpele/blob/master/offpele/main.py>`_ module. Therefore, the parameter files for a particular ligand can be obtained with:
+The more straightforward way to install `peleffy` along with the required dependencies is through the command-line interface built in `main.py <https://github.com/martimunicoy/peleffy/blob/master/peleffy/main.py>`_ module. Therefore, the parameter files for a particular ligand can be obtained with:
 
 .. code-block:: bash
 
-   $ python -m offpele.main my_ligand.pdb
+   $ python -m peleffy.main my_ligand.pdb
 
 .. code-block::
 
@@ -63,7 +63,7 @@ arguments. To obtain the full list of flags you can type:
 
 .. code-block:: bash
 
-   $ python -m offpele.main --help
+   $ python -m peleffy.main --help
 
 .. code-block::
 
@@ -101,11 +101,11 @@ contains ligand to parameterize.
 
 - Flag: ``PDB FILE``
 - Type: ``string``
-- Example: the code below will run `offpele` to parameterize the ligand at `path/to/my_ligand.pdb`
+- Example: the code below will run `peleffy` to parameterize the ligand at `path/to/my_ligand.pdb`
 
   .. code-block:: bash
 
-        $ python -m offpele.main path/to/my_ligand.pdb
+        $ python -m peleffy.main path/to/my_ligand.pdb
 
 Force field
 -----------
@@ -122,11 +122,11 @@ Schrodinger's OPLS2005.
 - Flag: ``-f NAME``, ``--forcefield NAME``
 - Type: ``string``
 - Default: ``openff_unconstrained-1.2.0.offxml``
-- Example: the code below will run offpele using the forcefield named as 'openff_unconstrained-1.0.0.offxml'
+- Example: the code below will run peleffy using the forcefield named as 'openff_unconstrained-1.0.0.offxml'
 
   .. code-block:: bash
 
-        $ python -m offpele.main path/to/my_ligand.pdb -f openff_unconstrained-1.0.0.offxml
+        $ python -m peleffy.main path/to/my_ligand.pdb -f openff_unconstrained-1.0.0.offxml
 
 Rotamer library resolution
 --------------------------
@@ -135,11 +135,11 @@ It defines the resolution, in degrees, to use in the rotamer library.
 - Flag: ``-r INT``, ``--resolution INT``
 - Type: ``int``
 - Default: ``30``
-- Example: the code below will run offpele using a resolution of 60 for the rotamer library
+- Example: the code below will run peleffy using a resolution of 60 for the rotamer library
 
   .. code-block:: bash
 
-        $ python -m offpele.main path/to/my_ligand.pdb -r 60
+        $ python -m peleffy.main path/to/my_ligand.pdb -r 60
 
 Output path
 -----------
@@ -152,7 +152,7 @@ It defines the output path where the resulting files will be saved.
 
   .. code-block:: bash
 
-        $ python -m offpele.main path/to/my_ligand.pdb -o my_custom_folder
+        $ python -m peleffy.main path/to/my_ligand.pdb -o my_custom_folder
 
 Include solvent parameters
 --------------------------
@@ -164,7 +164,7 @@ It also generates the OBC solvent parameters and saves them into the output loca
 
   .. code-block:: bash
 
-        $ python -m offpele.main path/to/my_ligand.pdb --with_solvent
+        $ python -m peleffy.main path/to/my_ligand.pdb --with_solvent
 
 Save output as DataLocal
 ------------------------
@@ -176,7 +176,7 @@ It saves the output files following the DataLocal hierarchy expected by PELE.
 
   .. code-block:: bash
 
-        $ python -m offpele.main path/to/my_ligand.pdb --as_datalocal
+        $ python -m peleffy.main path/to/my_ligand.pdb --as_datalocal
 
 Charge method
 -------------
@@ -190,7 +190,7 @@ It sets the method to compute the partial charges.
 
   .. code-block:: bash
 
-        $ python -m offpele.main path/to/my_ligand.pdb -c gasteiger
+        $ python -m peleffy.main path/to/my_ligand.pdb -c gasteiger
 
 Include terminal rotamers
 -------------------------
@@ -202,4 +202,4 @@ It always includes terminal rotamers, even if they belong to a terminal methyl g
 
   .. code-block:: bash
 
-        $ python -m offpele.main path/to/my_ligand.pdb --include_terminal_rotamers
+        $ python -m peleffy.main path/to/my_ligand.pdb --include_terminal_rotamers

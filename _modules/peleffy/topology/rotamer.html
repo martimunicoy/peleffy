@@ -1,0 +1,1041 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>peleffy.topology.rotamer &mdash; Open Force Field for PELE  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> Open Force Field for PELE
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.1.g8486cbe
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releasehistory.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Generate PELE parameter files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../topology.html">Topology representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../template.html">Template handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../solvent.html">Solvent models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../charge.html">Charge methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../forcefield.html">Forcefield methods</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Open Force Field for PELE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>peleffy.topology.rotamer</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for peleffy.topology.rotamer</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module handles all classes and functions related with rotamers.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="kn">from</span> <span class="nn">peleffy.utils.toolkits</span> <span class="kn">import</span> <span class="n">RDKitToolkitWrapper</span>
+
+
+<div class="viewcode-block" id="Rotamer"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.rotamer.Rotamer.html#peleffy.topology.rotamer.Rotamer">[docs]</a><span class="k">class</span> <span class="nc">Rotamer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents the conformational space of a rotatable bond, discretized</span>
+<span class="sd">    with a certain resolution.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Rotamer.__init__"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.rotamer.Rotamer.html#peleffy.topology.rotamer.Rotamer.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initiates an Rotamer object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        atom1 : int</span>
+<span class="sd">            The index of the first atom involved in the rotamer</span>
+<span class="sd">        atom2 : int</span>
+<span class="sd">            The index of the second atom involved in the rotamer</span>
+<span class="sd">        resolution : float</span>
+<span class="sd">            The resolution to discretize the rotamer&#39;s conformational space</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index1</span> <span class="o">=</span> <span class="n">index1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index2</span> <span class="o">=</span> <span class="n">index2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_resolution</span> <span class="o">=</span> <span class="n">resolution</span></div>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Define equality operator&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index1</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">index1</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">index2</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">index2</span><span class="p">)</span> \
+            <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index1</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">index2</span>
+                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">index2</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">index1</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">index1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rotamer&#39;s atom1 index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        index1 : int</span>
+<span class="sd">            The index of the first atom involved in this Rotamer object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index1</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">index2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rotamer&#39;s atom2 index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        index2 : int</span>
+<span class="sd">            The index of the second atom involved in this Rotamer object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index2</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">resolution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rotamer&#39;s resolution.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        resolution : float</span>
+<span class="sd">            The resolution of this Rotamer object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolution</span></div>
+
+
+<div class="viewcode-block" id="RotamerLibrary"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.rotamer.RotamerLibrary.html#peleffy.topology.rotamer.RotamerLibrary">[docs]</a><span class="k">class</span> <span class="nc">RotamerLibrary</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents a set of rotamers found in the same molecule.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="RotamerLibrary.__init__"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.rotamer.RotamerLibrary.html#peleffy.topology.rotamer.RotamerLibrary.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecule</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initiates a RotamerLibrary object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        molecule : An peleffy.topology.Molecule</span>
+<span class="sd">            The Molecule object whose rotamer library will be generated</span>
+
+<span class="sd">        Load a molecule and create its rotamer library template</span>
+
+<span class="sd">        &gt;&gt;&gt; from peleffy.topology import Molecule</span>
+<span class="sd">        &gt;&gt;&gt; from peleffy.topology import RotamerLibrary</span>
+
+<span class="sd">        &gt;&gt;&gt; molecule = Molecule(smiles=&#39;CCCC&#39;, name=&#39;butane&#39;, tag=&#39;BUT&#39;)</span>
+
+<span class="sd">        &gt;&gt;&gt; rotamer_library = RotamerLibrary(mol)</span>
+<span class="sd">        &gt;&gt;&gt; rotamer_library.to_file(&#39;butz&#39;)</span>
+
+<span class="sd">        Load a molecule and create its rotamer library template with</span>
+<span class="sd">        a core constraint</span>
+
+<span class="sd">        &gt;&gt;&gt; from peleffy.topology import Molecule</span>
+<span class="sd">        &gt;&gt;&gt; from peleffy.topology import RotamerLibrary</span>
+
+<span class="sd">        &gt;&gt;&gt; molecule = Molecule(smiles=&#39;CCCC&#39;, name=&#39;butane&#39;, tag=&#39;BUT&#39;,</span>
+<span class="sd">                                exclude_terminal_rotamers=False,</span>
+<span class="sd">                                core_constraints=[0, ])</span>
+
+<span class="sd">        &gt;&gt;&gt; rotamer_library = RotamerLibrary(mol)</span>
+<span class="sd">        &gt;&gt;&gt; rotamer_library.to_file(&#39;butz&#39;)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_molecule</span> <span class="o">=</span> <span class="n">molecule</span></div>
+
+<div class="viewcode-block" id="RotamerLibrary.to_file"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.rotamer.RotamerLibrary.html#peleffy.topology.rotamer.RotamerLibrary.to_file">[docs]</a>    <span class="k">def</span> <span class="nf">to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It writes this RotamerLibrary to a file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : str</span>
+<span class="sd">            Path to save the RotamerLibrary to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># PELE needs underscores instead of whitespaces</span>
+        <span class="n">pdb_atom_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,)</span>
+                          <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">get_pdb_atom_names</span><span class="p">()]</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;rot assign res </span><span class="si">{}</span><span class="s1"> &amp;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">rotamer_branches</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">rotamers</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;     newgrp &amp;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">rotamer</span> <span class="ow">in</span> <span class="n">rotamer_branches</span><span class="p">:</span>
+                    <span class="n">atom_name1</span> <span class="o">=</span> <span class="n">pdb_atom_names</span><span class="p">[</span><span class="n">rotamer</span><span class="o">.</span><span class="n">index1</span><span class="p">]</span>
+                    <span class="n">atom_name2</span> <span class="o">=</span> <span class="n">pdb_atom_names</span><span class="p">[</span><span class="n">rotamer</span><span class="o">.</span><span class="n">index2</span><span class="p">]</span>
+                    <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;   sidelib FREE</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> &amp;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">rotamer</span><span class="o">.</span><span class="n">resolution</span><span class="p">,</span> <span class="n">atom_name1</span><span class="p">,</span> <span class="n">atom_name2</span><span class="p">))</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">molecule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The peleffy&#39;s Molecule.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        molecule : an peleffy.topology.Molecule</span>
+<span class="sd">            The peleffy&#39;s Molecule object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_molecule</span>
+
+    <span class="k">def</span> <span class="nf">_ipython_display_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It displays a 2D molecular representation with bonds highlighted</span>
+<span class="sd">        according to this rotamer library object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        representation_2D : a IPython display object</span>
+<span class="sd">            It is displayable RDKit molecule with an embeded 2D</span>
+<span class="sd">            representation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">COLORS</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">82</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">215</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span> <span class="o">/</span> <span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">255</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">154</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">71</span> <span class="o">/</span> <span class="mi">255</span><span class="p">),</span>
+                  <span class="p">(</span><span class="mi">161</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">102</span> <span class="o">/</span> <span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">255</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">173</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">209</span> <span class="o">/</span> <span class="mi">255</span><span class="p">),</span>
+                  <span class="p">(</span><span class="mi">154</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">92</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span> <span class="o">/</span> <span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">66</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">167</span> <span class="o">/</span> <span class="mi">255</span><span class="p">),</span>
+                  <span class="p">(</span><span class="mi">251</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">17</span> <span class="o">/</span> <span class="mi">255</span><span class="p">)]</span>
+
+        <span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">Chem</span>
+        <span class="kn">from</span> <span class="nn">rdkit.Chem.Draw</span> <span class="kn">import</span> <span class="n">rdMolDraw2D</span>
+
+        <span class="c1"># Get 2D molecular representation</span>
+        <span class="n">rdkit_toolkit</span> <span class="o">=</span> <span class="n">RDKitToolkitWrapper</span><span class="p">()</span>
+        <span class="n">representation</span> <span class="o">=</span> <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">get_2D_representation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="p">)</span>
+
+        <span class="c1"># Get rotamer branches from molecule</span>
+        <span class="n">rotamer_branches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">rotamers</span>
+
+        <span class="n">bond_indexes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">bond_color_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">bond</span> <span class="ow">in</span> <span class="n">representation</span><span class="o">.</span><span class="n">GetBonds</span><span class="p">():</span>
+            <span class="n">rotamer</span> <span class="o">=</span> <span class="n">Rotamer</span><span class="p">(</span><span class="n">bond</span><span class="o">.</span><span class="n">GetBeginAtom</span><span class="p">()</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">(),</span>
+                              <span class="n">bond</span><span class="o">.</span><span class="n">GetEndAtom</span><span class="p">()</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">())</span>
+
+            <span class="k">for</span> <span class="n">color_index</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rotamer_branches</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">rotamer</span> <span class="ow">in</span> <span class="n">group</span><span class="p">:</span>
+                    <span class="n">bond_indexes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bond</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">())</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">bond_color_dict</span><span class="p">[</span><span class="n">bond</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()]</span> <span class="o">=</span> <span class="n">COLORS</span><span class="p">[</span><span class="n">color_index</span><span class="p">]</span>
+                    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                        <span class="n">bond_color_dict</span><span class="p">[</span><span class="n">bond</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">99</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span>
+                                                          <span class="mi">122</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span>
+                                                          <span class="mi">126</span> <span class="o">/</span> <span class="mi">255</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+        <span class="n">atom_indexes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">radii_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">atom_color_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">representation</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">():</span>
+            <span class="n">atom_index</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">atom_index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">core_nodes</span><span class="p">:</span>
+                <span class="n">atom_indexes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">())</span>
+                <span class="n">radii_dict</span><span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()]</span> <span class="o">=</span> <span class="mf">0.6</span>
+                <span class="n">atom_color_dict</span><span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">243</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">133</span> <span class="o">/</span> <span class="mi">255</span><span class="p">)</span>
+
+        <span class="n">draw</span> <span class="o">=</span> <span class="n">rdMolDraw2D</span><span class="o">.</span><span class="n">MolDraw2DSVG</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+        <span class="n">draw</span><span class="o">.</span><span class="n">SetLineWidth</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">rdMolDraw2D</span><span class="o">.</span><span class="n">PrepareAndDrawMolecule</span><span class="p">(</span><span class="n">draw</span><span class="p">,</span> <span class="n">representation</span><span class="p">,</span>
+                                           <span class="n">highlightAtoms</span><span class="o">=</span><span class="n">atom_indexes</span><span class="p">,</span>
+                                           <span class="n">highlightAtomRadii</span><span class="o">=</span><span class="n">radii_dict</span><span class="p">,</span>
+                                           <span class="n">highlightAtomColors</span><span class="o">=</span><span class="n">atom_color_dict</span><span class="p">,</span>
+                                           <span class="n">highlightBonds</span><span class="o">=</span><span class="n">bond_indexes</span><span class="p">,</span>
+                                           <span class="n">highlightBondColors</span><span class="o">=</span><span class="n">bond_color_dict</span><span class="p">)</span>
+        <span class="n">draw</span><span class="o">.</span><span class="n">FinishDrawing</span><span class="p">()</span>
+
+        <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">SVG</span><span class="p">,</span> <span class="n">display</span>
+
+        <span class="n">image</span> <span class="o">=</span> <span class="n">SVG</span><span class="p">(</span><span class="n">draw</span><span class="o">.</span><span class="n">GetDrawingText</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">display</span><span class="p">(</span><span class="n">image</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MolecularGraph"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.rotamer.MolecularGraph.html#peleffy.topology.rotamer.MolecularGraph">[docs]</a><span class="k">class</span> <span class="nc">MolecularGraph</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents the structure of a Molecule as a networkx.Graph.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="MolecularGraph.__init__"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.rotamer.MolecularGraph.html#peleffy.topology.rotamer.MolecularGraph.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecule</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initializes a MolecularGraph object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        molecule : An peleffy.topology.Molecule</span>
+<span class="sd">            A Molecule object to be written as an Impact file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_molecule</span> <span class="o">=</span> <span class="n">molecule</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compute_rotamer_graph</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_core_nodes</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_compute_rotamer_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initializes the netwrokx.Graph with a Molecule object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rdkit_toolkit</span> <span class="o">=</span> <span class="n">RDKitToolkitWrapper</span><span class="p">()</span>
+        <span class="n">rot_bonds_atom_ids</span> <span class="o">=</span> \
+            <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">get_atom_ids_with_rotatable_bonds</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="p">)</span>
+
+        <span class="n">rdkit_molecule</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">rdkit_molecule</span>
+
+        <span class="n">atom_names</span> <span class="o">=</span> <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">get_atom_names</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">atom_names</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">rdkit_molecule</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">()),</span> \
+            <span class="s1">&#39;The length of atom names must match the length of &#39;</span> \
+            <span class="o">+</span> <span class="s1">&#39;molecule</span><span class="se">\&#39;</span><span class="s1">s atoms&#39;</span>
+
+        <span class="k">for</span> <span class="n">atom</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">rdkit_molecule</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">(),</span> <span class="n">atom_names</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">(),</span> <span class="n">pdb_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                          <span class="n">nrot_neighbors</span><span class="o">=</span><span class="nb">list</span><span class="p">())</span>
+
+        <span class="k">for</span> <span class="n">bond</span> <span class="ow">in</span> <span class="n">rdkit_molecule</span><span class="o">.</span><span class="n">GetBonds</span><span class="p">():</span>
+            <span class="n">atom1</span> <span class="o">=</span> <span class="n">bond</span><span class="o">.</span><span class="n">GetBeginAtomIdx</span><span class="p">()</span>
+            <span class="n">atom2</span> <span class="o">=</span> <span class="n">bond</span><span class="o">.</span><span class="n">GetEndAtomIdx</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="nb">frozenset</span><span class="p">([</span><span class="n">atom1</span><span class="p">,</span> <span class="n">atom2</span><span class="p">])</span> <span class="ow">in</span> <span class="n">rot_bonds_atom_ids</span><span class="p">):</span>
+                <span class="n">rotatable</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rotatable</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">atom1</span><span class="p">][</span><span class="s1">&#39;nrot_neighbors&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom2</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">atom2</span><span class="p">][</span><span class="s1">&#39;nrot_neighbors&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom1</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">bond</span><span class="o">.</span><span class="n">GetBeginAtomIdx</span><span class="p">(),</span>
+                          <span class="n">bond</span><span class="o">.</span><span class="n">GetEndAtomIdx</span><span class="p">(),</span>
+                          <span class="n">weight</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">rotatable</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">rot_bonds_atom_ids</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;rotatable&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="s1">&#39;rotatable&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">_build_core_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It builds the list of core nodes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">get_all_nrot_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atom_id</span><span class="p">,</span> <span class="n">visited_neighbors</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            A recursive function that hierarchically visits all atom neighbors</span>
+<span class="sd">            in the graph.</span>
+
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            atom_id : int</span>
+<span class="sd">                Is is both the id of the graph&#39;s node and index of the</span>
+<span class="sd">                corresponding atom</span>
+<span class="sd">            visited_neighbors : set[int]</span>
+<span class="sd">                The ids of the nodes that have already been visited</span>
+
+<span class="sd">            Returns</span>
+<span class="sd">            -------</span>
+<span class="sd">            visited_neighbors : set[int]</span>
+<span class="sd">                The updated set that contains the ids of the nodes that have</span>
+<span class="sd">                already been visited</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">atom_id</span> <span class="ow">in</span> <span class="n">visited_neighbors</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">visited_neighbors</span>
+            <span class="n">visited_neighbors</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">atom_id</span><span class="p">)</span>
+            <span class="n">nrot_neighbors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">atom_id</span><span class="p">][</span><span class="s1">&#39;nrot_neighbors&#39;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">nrot_neighbor</span> <span class="ow">in</span> <span class="n">nrot_neighbors</span><span class="p">:</span>
+                <span class="n">visited_neighbors</span> <span class="o">=</span> <span class="n">get_all_nrot_neighbors</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span> <span class="n">nrot_neighbor</span><span class="p">,</span> <span class="n">visited_neighbors</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">visited_neighbors</span>
+
+        <span class="kn">from</span> <span class="nn">networkx.algorithms.shortest_paths.generic</span> <span class="kn">import</span> \
+            <span class="n">shortest_path_length</span>
+        <span class="kn">from</span> <span class="nn">networkx.algorithms.distance_measures</span> <span class="kn">import</span> <span class="n">eccentricity</span>
+
+        <span class="c1"># Calculate graph distances according to weight values</span>
+        <span class="n">weighted_distances</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">shortest_path_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">))</span>
+
+        <span class="c1"># Calculate eccentricites using weighted distances</span>
+        <span class="n">eccentricities</span> <span class="o">=</span> <span class="n">eccentricity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sp</span><span class="o">=</span><span class="n">weighted_distances</span><span class="p">)</span>
+
+        <span class="c1"># Group nodes by eccentricity</span>
+        <span class="n">nodes_by_eccentricities</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">ecc</span> <span class="ow">in</span> <span class="n">eccentricities</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">nodes_by_eccentricities</span><span class="p">[</span><span class="n">ecc</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="c1"># Core atoms must have the minimum eccentricity</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">centered_nodes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">nodes_by_eccentricities</span><span class="o">.</span><span class="n">items</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Construct nrot groups with centered nodes</span>
+        <span class="c1"># already_visited = set()</span>
+        <span class="n">centered_node_groups</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">centered_nodes</span><span class="p">:</span>
+            <span class="c1"># if node in already_visited:</span>
+            <span class="c1">#    continue</span>
+            <span class="n">centered_node_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">get_all_nrot_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span>
+                                                               <span class="nb">set</span><span class="p">()))</span>
+
+        <span class="c1"># In case of more than one group, core will be the largest</span>
+        <span class="n">core_nodes</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">centered_node_groups</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># To do: think on what to do with the code below</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        # Core can hold a maximum of one rotatable bond &lt;- Not true!</span>
+<span class="sd">        # Get all core&#39;s neighbors</span>
+<span class="sd">        neighbor_candidates = set()</span>
+<span class="sd">        for node in core_nodes:</span>
+<span class="sd">            neighbors = self.neighbors(node)</span>
+<span class="sd">            for neighbor in neighbors:</span>
+<span class="sd">                if neighbor not in core_nodes:</span>
+<span class="sd">                    neighbor_candidates.add(neighbor)</span>
+
+<span class="sd">        # If any core&#39;s neighbor, get the deepest one and include it to</span>
+<span class="sd">        # the core</span>
+<span class="sd">        if len(neighbor_candidates) &gt; 0:</span>
+<span class="sd">            branch_graph = deepcopy(self)</span>
+
+<span class="sd">            for node in core_nodes:</span>
+<span class="sd">                branch_graph.remove_node(node)</span>
+
+<span class="sd">            branch_groups = list(nx.connected_components(branch_graph))</span>
+
+<span class="sd">            rot_bonds_per_group = self._get_rot_bonds_per_group(branch_groups)</span>
+
+<span class="sd">            best_group = sorted(rot_bonds_per_group, key=len,</span>
+<span class="sd">                                reverse=True)[0]</span>
+
+<span class="sd">            for neighbor in neighbor_candidates:</span>
+<span class="sd">                if any([neighbor in rot_bond for rot_bond in best_group]):</span>
+<span class="sd">                    deepest_neighbor = neighbor</span>
+<span class="sd">                    break</span>
+<span class="sd">            else:</span>
+<span class="sd">                raise Exception(&#39;Unconsistent graph&#39;)</span>
+
+<span class="sd">            deepest_neighbors = get_all_nrot_neighbors(self, deepest_neighbor,</span>
+<span class="sd">                                                       set())</span>
+
+<span class="sd">            for neighbor in deepest_neighbors:</span>
+<span class="sd">                core_nodes.add(neighbor)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_core_nodes</span> <span class="o">=</span> <span class="n">core_nodes</span>
+
+<div class="viewcode-block" id="MolecularGraph.set_core"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.rotamer.MolecularGraph.html#peleffy.topology.rotamer.MolecularGraph.set_core">[docs]</a>    <span class="k">def</span> <span class="nf">set_core</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the core of the molecule to minimize the amount of consecutive</span>
+<span class="sd">        rotamers as much as possible.</span>
+
+<span class="sd">        Please, note that the molecule needs to be already parameterized with</span>
+<span class="sd">        the Open Force Field toolkit before calling this function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">assert_parameterized</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_nodes</span><span class="p">:</span>
+                <span class="n">atom</span><span class="o">.</span><span class="n">set_as_core</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">atom</span><span class="o">.</span><span class="n">set_as_branch</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MolecularGraph.set_parents"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.rotamer.MolecularGraph.html#peleffy.topology.rotamer.MolecularGraph.set_parents">[docs]</a>    <span class="k">def</span> <span class="nf">set_parents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the parent of each atom according to the molecular graph.</span>
+
+<span class="sd">        Please, note that the molecule needs to be already parameterized with</span>
+<span class="sd">        the Open Force Field toolkit before calling this function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">recursive_child_visitor</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">already_visited</span><span class="o">=</span><span class="nb">set</span><span class="p">()):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            A recursive function that hierarchically visits all the childs of</span>
+<span class="sd">            each atom.</span>
+
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            parent : an peleffy.topology.Atom</span>
+<span class="sd">                The atom whose childs will be visited</span>
+<span class="sd">            already_visited : set[peleffy.topology.Atom]</span>
+<span class="sd">                The Atom objects that have already been visited</span>
+
+<span class="sd">            Returns</span>
+<span class="sd">            -------</span>
+<span class="sd">            visited_neighbors : set[peleffy.topology.Atom]</span>
+<span class="sd">                The updated set that contains the Atom objects that have</span>
+<span class="sd">                already been visited</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">already_visited</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">already_visited</span>
+
+            <span class="n">already_visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+
+            <span class="n">childs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">index</span><span class="p">)]</span>
+
+            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">childs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">already_visited</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">child</span><span class="o">.</span><span class="n">set_parent</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+                <span class="n">already_visited</span> <span class="o">=</span> <span class="n">recursive_child_visitor</span><span class="p">(</span><span class="n">child</span><span class="p">,</span>
+                                                          <span class="n">already_visited</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">already_visited</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">assert_parameterized</span><span class="p">()</span>
+
+        <span class="c1"># Start from an atom from the core</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">core</span><span class="p">:</span>
+                <span class="n">parent</span> <span class="o">=</span> <span class="n">atom</span>
+                <span class="k">break</span>
+
+        <span class="c1"># Assert a parent was found</span>
+        <span class="k">assert</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;No core atom found in molecule &#39;</span> \
+            <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">already_visited</span> <span class="o">=</span> <span class="n">recursive_child_visitor</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+
+        <span class="c1"># Assert all nodes were explored</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">already_visited</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">atoms</span><span class="p">),</span> <span class="s1">&#39;Not all &#39;</span> \
+            <span class="s1">&#39;nodes were explored&#39;</span>
+
+        <span class="c1"># Assert absolut parent is the only with a None parent value</span>
+        <span class="k">assert</span> <span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> \
+            <span class="nb">sum</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">atoms</span><span class="p">])</span> \
+            <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Found descendant without parent&#39;</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_rot_bonds_per_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branch_groups</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It constructs the rotatable bonds of each branch group.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        branch_groups : list[list[int]]</span>
+<span class="sd">            The node ids of each branch</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        rot_bonds_per_group : list[tuple[int, int]]</span>
+<span class="sd">            The atom ids of all the graph&#39;s edges that belong to a rotatable</span>
+<span class="sd">            bond</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rot_bonds_per_group</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">branch_groups</span><span class="p">:</span>
+            <span class="n">rot_bonds</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="n">visited_bonds</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">group</span><span class="p">:</span>
+                <span class="n">bonds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">bond</span> <span class="ow">in</span> <span class="n">bonds</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">bond</span> <span class="ow">in</span> <span class="n">visited_bonds</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="p">[</span><span class="n">bond</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="n">bond</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">rot_bonds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bond</span><span class="p">)</span>
+                    <span class="n">visited_bonds</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">bond</span><span class="p">)</span>
+                    <span class="n">visited_bonds</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">bond</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">bond</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="n">rot_bonds_per_group</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rot_bonds</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">rot_bonds_per_group</span>
+
+    <span class="k">def</span> <span class="nf">_get_core_atom_per_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rot_bonds_per_group</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It obtains the core atom for each group.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rot_bonds_per_group : list[tuple[int, int]]</span>
+<span class="sd">            The atom ids of all the graph&#39;s edges that belong to a rotatable</span>
+<span class="sd">            bond</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        core_atom_per_group : list[int]</span>
+<span class="sd">            The atom id of the atom that belongs to the core for each branch</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">core_atom_per_group</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">rot_bonds</span> <span class="ow">in</span> <span class="n">rot_bonds_per_group</span><span class="p">:</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">)</span> <span class="ow">in</span> <span class="n">rot_bonds</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">a1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_nodes</span><span class="p">:</span>
+                    <span class="n">core_atom_per_group</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a1</span><span class="p">)</span>
+                    <span class="k">break</span>
+                <span class="k">elif</span> <span class="n">a2</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_nodes</span><span class="p">:</span>
+                    <span class="n">core_atom_per_group</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a2</span><span class="p">)</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">core_atom_per_group</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">core_atom_per_group</span>
+
+    <span class="k">def</span> <span class="nf">_get_sorted_bonds_per_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">core_atom_per_group</span><span class="p">,</span>
+                                    <span class="n">rot_bonds_per_group</span><span class="p">,</span> <span class="n">distances</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sorts in increasing order the rotamers of each group according</span>
+<span class="sd">        to their distance with respect to the corresponding core atom.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        core_atom_per_group : list[int]</span>
+<span class="sd">            The atom id of the atom that belongs to the core for each branch</span>
+<span class="sd">        rot_bonds_per_group : list[tuple[int, int]]</span>
+<span class="sd">            The atom ids of all the graph&#39;s edges that belong to a rotatable</span>
+<span class="sd">            bond</span>
+<span class="sd">        distances : dict[int, dict[int, int]]</span>
+<span class="sd">            The distance between each pair of nodes (or atoms)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        sorted_rot_bonds_per_group : list[list]</span>
+<span class="sd">            The rotatable bonds per group, sorted in increasing order by</span>
+<span class="sd">            their distance with respect to the corresponding core atom</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sorted_rot_bonds_per_group</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">core_atom</span><span class="p">,</span> <span class="n">rot_bonds</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">core_atom_per_group</span><span class="p">,</span>
+                                        <span class="n">rot_bonds_per_group</span><span class="p">):</span>
+            <span class="n">sorting_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">bond</span> <span class="ow">in</span> <span class="n">rot_bonds</span><span class="p">:</span>
+                <span class="n">min_d</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">distances</span><span class="p">[</span><span class="n">core_atom</span><span class="p">][</span><span class="n">bond</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+                             <span class="n">distances</span><span class="p">[</span><span class="n">core_atom</span><span class="p">][</span><span class="n">bond</span><span class="p">[</span><span class="mi">1</span><span class="p">]]])</span>
+                <span class="n">sorting_dict</span><span class="p">[</span><span class="n">bond</span><span class="p">]</span> <span class="o">=</span> <span class="n">min_d</span>
+
+            <span class="n">sorted_rot_bonds_per_group</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
+                 <span class="nb">sorted</span><span class="p">(</span><span class="n">sorting_dict</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])])</span>
+
+        <span class="k">return</span> <span class="n">sorted_rot_bonds_per_group</span>
+
+    <span class="k">def</span> <span class="nf">_ignore_terminal_rotatable_bonds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sorted_rot_bonds_per_group</span><span class="p">,</span>
+                                         <span class="n">distances</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It ignores a certain number of terminal rotatable bonds of each</span>
+<span class="sd">        group.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        sorted_rot_bonds_per_group : list[list]</span>
+<span class="sd">            The rotatable bonds per group, sorted in increasing order by</span>
+<span class="sd">            their distance with respect to the corresponding core atom</span>
+<span class="sd">        distances : dict[int, dict[int, int]]</span>
+<span class="sd">            The distance between each pair of nodes (or atoms)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        filtered_rot_bonds_per_group : list[list]</span>
+<span class="sd">            The filtered rotatable bonds per group that are obtained</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filtered_rot_bonds_per_group</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+        <span class="c1"># To determine the outter atom in a rotamer, we only need to</span>
+        <span class="c1"># calculate their distance to any core atom</span>
+        <span class="n">core_atom</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">core_nodes</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">rot_bonds</span> <span class="ow">in</span> <span class="n">sorted_rot_bonds_per_group</span><span class="p">:</span>
+            <span class="n">rotamer_to_evaluate</span> <span class="o">=</span> <span class="n">rot_bonds</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="n">node1</span><span class="p">,</span> <span class="n">node2</span> <span class="o">=</span> <span class="n">rotamer_to_evaluate</span>
+
+            <span class="n">distance1</span> <span class="o">=</span> <span class="n">distances</span><span class="p">[</span><span class="n">core_atom</span><span class="p">][</span><span class="n">node1</span><span class="p">]</span>
+            <span class="n">distance2</span> <span class="o">=</span> <span class="n">distances</span><span class="p">[</span><span class="n">core_atom</span><span class="p">][</span><span class="n">node2</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">distance1</span> <span class="o">&lt;</span> <span class="n">distance2</span><span class="p">:</span>
+                <span class="n">inner_node</span> <span class="o">=</span> <span class="n">node1</span>
+                <span class="n">outter_node</span> <span class="o">=</span> <span class="n">node2</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">inner_node</span> <span class="o">=</span> <span class="n">node2</span>
+                <span class="n">outter_node</span> <span class="o">=</span> <span class="n">node1</span>
+
+            <span class="c1"># The condition for the current rotamer to be ignored is that the</span>
+            <span class="c1"># outter node is only attached to terminal nodes (with degree 1)</span>
+            <span class="n">ignore_this_rotamer</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">outter_node</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">neighbor</span> <span class="ow">is</span> <span class="n">inner_node</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">neighbor</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">ignore_this_rotamer</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">break</span>
+
+            <span class="k">if</span> <span class="n">ignore_this_rotamer</span><span class="p">:</span>
+                <span class="n">filtered_rot_bonds_per_group</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rot_bonds</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">filtered_rot_bonds_per_group</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rot_bonds</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">filtered_rot_bonds_per_group</span>
+
+<div class="viewcode-block" id="MolecularGraph.get_rotamers"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.rotamer.MolecularGraph.html#peleffy.topology.rotamer.MolecularGraph.get_rotamers">[docs]</a>    <span class="k">def</span> <span class="nf">get_rotamers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It builds the RotamerLibrary object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        rotamers : list[list]</span>
+<span class="sd">            The list of rotamers grouped by the branch they belong to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">resolution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">rotamer_resolution</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">core_nodes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;No core nodes were found&#39;</span>
+
+        <span class="n">branch_graph</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_nodes</span><span class="p">:</span>
+            <span class="n">branch_graph</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="n">branch_groups</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">branch_graph</span><span class="p">))</span>
+
+        <span class="n">rot_bonds_per_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_rot_bonds_per_group</span><span class="p">(</span><span class="n">branch_groups</span><span class="p">)</span>
+
+        <span class="n">core_atom_per_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_core_atom_per_group</span><span class="p">(</span>
+            <span class="n">rot_bonds_per_group</span><span class="p">)</span>
+
+        <span class="n">distances</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">shortest_path_length</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+        <span class="n">sorted_rot_bonds_per_group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sorted_bonds_per_group</span><span class="p">(</span>
+            <span class="n">core_atom_per_group</span><span class="p">,</span> <span class="n">rot_bonds_per_group</span><span class="p">,</span> <span class="n">distances</span><span class="p">)</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        if not include_terminal_rotamers:</span>
+<span class="sd">            sorted_rot_bonds_per_group = \</span>
+<span class="sd">                self._ignore_terminal_rotatable_bonds(</span>
+<span class="sd">                    sorted_rot_bonds_per_group, distances)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">rotamers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+        <span class="c1"># TODO extend core by including one rotatable bond from the largest</span>
+        <span class="c1"># branch to increase the performance of the algorithm.</span>
+        <span class="k">for</span> <span class="n">group_id</span><span class="p">,</span> <span class="n">rot_bonds</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sorted_rot_bonds_per_group</span><span class="p">):</span>
+            <span class="n">branch_rotamers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">atom1_index</span><span class="p">,</span> <span class="n">atom2_index</span><span class="p">)</span> <span class="ow">in</span> <span class="n">rot_bonds</span><span class="p">:</span>
+                <span class="n">rotamer</span> <span class="o">=</span> <span class="n">Rotamer</span><span class="p">(</span><span class="n">atom1_index</span><span class="p">,</span> <span class="n">atom2_index</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
+                <span class="n">branch_rotamers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rotamer</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">branch_rotamers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">rotamers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">branch_rotamers</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">rotamers</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">molecule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The peleffy&#39;s Molecule.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        molecule : an peleffy.topology.Molecule</span>
+<span class="sd">            The peleffy&#39;s Molecule object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_molecule</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">core_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The list of core nodes.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        core_nodes : list[int]</span>
+<span class="sd">            The nodes in the core</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_core_nodes</span></div>
+
+
+<span class="k">class</span> <span class="nc">MolecularGraphWithConstrainedCore</span><span class="p">(</span><span class="n">MolecularGraph</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents the structure of a Molecule as a networkx.Graph.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecule</span><span class="p">,</span> <span class="n">atom_constraints</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initializes a MolecularGraph object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        molecule : An peleffy.topology.Molecule</span>
+<span class="sd">            A Molecule object to be written as an Impact file</span>
+<span class="sd">        atom_constraint : list[int or str]</span>
+<span class="sd">            It defines the list of atoms to constrain in the core, thus,</span>
+<span class="sd">            the core will be forced to contain them. Atoms can be specified</span>
+<span class="sd">            through integers that match the atom index or strings that</span>
+<span class="sd">            match with the atom PDB name</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the supplied array of atom constraints is empty</span>
+<span class="sd">            If the PDB atom name in atom_constraint does not match with</span>
+<span class="sd">            any atom in the molecule</span>
+<span class="sd">        TypeError</span>
+<span class="sd">            If the atom_constraint is of invalid type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">atom_constraints</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Supplied empty array of atom constraints&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_constraint_indices</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">atom_constraint</span> <span class="ow">in</span> <span class="n">atom_constraints</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">atom_constraint</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_constraint_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom_constraint</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">atom_constraint</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">atom_names</span> <span class="o">=</span> <span class="n">molecule</span><span class="o">.</span><span class="n">get_pdb_atom_names</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">atom_names</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="n">atom_constraint</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_constraint_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+                        <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Supplied PDB atom name &#39;</span>
+                                     <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\&#39;</span><span class="si">{}</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">atom_constraint</span><span class="p">)</span>
+                                     <span class="o">+</span> <span class="s1">&#39;is missing in molecule&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Invalid type for the atom_constraint&#39;</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">molecule</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_safety_check</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_build_core_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It builds the list of core nodes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="kn">from</span> <span class="nn">networkx.algorithms.shortest_paths.generic</span> <span class="kn">import</span> \
+            <span class="n">shortest_path_length</span>
+
+        <span class="c1"># Force core to contain constrained atoms</span>
+        <span class="n">core_nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">index</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint_indices</span><span class="p">]</span>
+
+        <span class="c1"># Calculate graph distances according to weight values</span>
+        <span class="n">weighted_distances</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">shortest_path_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">))</span>
+
+        <span class="c1"># Add also all atoms at 0 distance with respect to constrained</span>
+        <span class="c1"># atom into the core</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">constraint_index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint_indices</span><span class="p">:</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">weighted_distances</span><span class="p">[</span><span class="n">constraint_index</span><span class="p">][</span><span class="n">node</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">d</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">core_nodes</span><span class="p">:</span>
+                    <span class="n">core_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_core_nodes</span> <span class="o">=</span> <span class="n">core_nodes</span>
+
+    <span class="k">def</span> <span class="nf">_safety_check</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Perform a safety check on the atom constraints.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constraint_indices</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">safe_indices</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">cidx1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constraint_indices</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">cidx1</span> <span class="ow">in</span> <span class="n">safe_indices</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">cidx2</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint_indices</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">cidx2</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">cidx1</span><span class="p">):</span>
+                    <span class="n">safe_indices</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cidx1</span><span class="p">)</span>
+                    <span class="n">safe_indices</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cidx2</span><span class="p">)</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;All atoms in atom constraints must be &#39;</span>
+                                 <span class="o">+</span> <span class="s1">&#39;adjacent and atom &#39;</span>
+                                 <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint_names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                                 <span class="o">+</span> <span class="s1">&#39; is not&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">constraint_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The indices of atoms to constraint to the core.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        constraint_indices : list[int]</span>
+<span class="sd">            List of atom indices</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_constraint_indices</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">constraint_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The names of atoms to constraint to the core.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        constraint_names : list[str]</span>
+<span class="sd">            List of atom names</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">atom_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">get_pdb_atom_names</span><span class="p">()</span>
+
+        <span class="n">constraint_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint_indices</span><span class="p">:</span>
+            <span class="n">constraint_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom_names</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">constraint_names</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Barcelona Supercomputing Center
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

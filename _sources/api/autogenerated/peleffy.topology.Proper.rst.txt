@@ -1,0 +1,40 @@
+peleffy.topology.Proper
+=======================
+
+.. currentmodule:: peleffy.topology
+
+.. autoclass:: Proper
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: exclude_from_14_list
+      .. automethod:: plot
+      .. automethod:: set_atom1_idx
+      .. automethod:: set_atom2_idx
+      .. automethod:: set_atom3_idx
+      .. automethod:: set_atom4_idx
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Proper.atom1_idx
+      ~Proper.atom2_idx
+      ~Proper.atom3_idx
+      ~Proper.atom4_idx
+      ~Proper.constant
+      ~Proper.exclude
+      ~Proper.index
+      ~Proper.n_writable_attrs
+      ~Proper.name
+      ~Proper.periodicity
+      ~Proper.phase
+      ~Proper.prefactor
+   
+   

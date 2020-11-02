@@ -1,0 +1,38 @@
+peleffy.topology.Dihedral
+=========================
+
+.. currentmodule:: peleffy.topology
+
+.. autoclass:: Dihedral
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: plot
+      .. automethod:: set_atom1_idx
+      .. automethod:: set_atom2_idx
+      .. automethod:: set_atom3_idx
+      .. automethod:: set_atom4_idx
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Dihedral.atom1_idx
+      ~Dihedral.atom2_idx
+      ~Dihedral.atom3_idx
+      ~Dihedral.atom4_idx
+      ~Dihedral.constant
+      ~Dihedral.index
+      ~Dihedral.n_writable_attrs
+      ~Dihedral.name
+      ~Dihedral.periodicity
+      ~Dihedral.phase
+      ~Dihedral.prefactor
+   
+   

@@ -7,7 +7,7 @@ This module provides different topological representations to
 translate from external toolkits the different molecular parameters
 for PELE.
 
-.. currentmodule:: offpele.topology
+.. currentmodule:: peleffy.topology
 
 Primary objects
 ---------------

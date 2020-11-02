@@ -1,0 +1,1884 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>peleffy.topology.ZMatrix &mdash; Open Force Field for PELE  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="peleffy.topology.rotamer.Rotamer" href="peleffy.topology.rotamer.Rotamer.html" />
+    <link rel="prev" title="peleffy.topology.topology.OFFImproper" href="peleffy.topology.topology.OFFImproper.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Open Force Field for PELE
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.1.g8486cbe
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releasehistory.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Generate PELE parameter files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../topology.html">Topology representations</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../topology.html#primary-objects">Primary objects</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../topology.html#secondary-objects">Secondary objects</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.Atom.html">peleffy.topology.Atom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.Bond.html">peleffy.topology.Bond</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.Angle.html">peleffy.topology.Angle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.Dihedral.html">peleffy.topology.Dihedral</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.Proper.html">peleffy.topology.Proper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.Improper.html">peleffy.topology.Improper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.molecule.DummyAtom.html">peleffy.topology.molecule.DummyAtom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.topology.OFFDihedral.html">peleffy.topology.topology.OFFDihedral</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.topology.OFFProper.html">peleffy.topology.topology.OFFProper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.topology.OFFImproper.html">peleffy.topology.topology.OFFImproper</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">peleffy.topology.ZMatrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.rotamer.Rotamer.html">peleffy.topology.rotamer.Rotamer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.rotamer.RotamerLibrary.html">peleffy.topology.rotamer.RotamerLibrary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.rotamer.MolecularGraph.html">peleffy.topology.rotamer.MolecularGraph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../template.html">Template handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../solvent.html">Solvent models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../charge.html">Charge methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../forcefield.html">Forcefield methods</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Open Force Field for PELE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../topology.html">Topology representations</a> &raquo;</li>
+        
+      <li>peleffy.topology.ZMatrix</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/api/autogenerated/peleffy.topology.ZMatrix.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="peleffy-topology-zmatrix">
+<h1>peleffy.topology.ZMatrix<a class="headerlink" href="#peleffy-topology-zmatrix" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="peleffy.topology.ZMatrix">
+<em class="property">class </em><code class="sig-prename descclassname">peleffy.topology.</code><code class="sig-name descname">ZMatrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">molecule</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/topology/zmatrix.html#ZMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.topology.ZMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>It generates the zmatrix of a molecule as a numpy.array.</p>
+<p>Inspired by the PlopRotTemp algorithm.</p>
+<blockquote>
+<div><dl class="py method">
+<dt id="peleffy.topology.ZMatrix.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">molecule</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/topology/zmatrix.html#ZMatrix.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.topology.ZMatrix.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>It initializes a ZMatrix object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>molecule</strong> (<em>An peleffy.topology.Molecule</em>) – A Molecule object to be written as an Impact file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.all">
+<code class="sig-name descname">all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keepdims</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if all elements evaluate to True.</p>
+<p>Refer to <cite>numpy.all</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.all()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.any">
+<code class="sig-name descname">any</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keepdims</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.any" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if any of the elements of <cite>a</cite> evaluate to True.</p>
+<p>Refer to <cite>numpy.any</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.any()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.argmax">
+<code class="sig-name descname">argmax</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.argmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return indices of the maximum values along the given axis.</p>
+<p>Refer to <cite>numpy.argmax</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.argmax()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.argmin">
+<code class="sig-name descname">argmin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.argmin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return indices of the minimum values along the given axis of <cite>a</cite>.</p>
+<p>Refer to <cite>numpy.argmin</cite> for detailed documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.argmin()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.argpartition">
+<code class="sig-name descname">argpartition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kth</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'introselect'</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.argpartition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the indices that would partition this array.</p>
+<p>Refer to <cite>numpy.argpartition</cite> for full documentation.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.8.0.</span></p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.argpartition()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.argsort">
+<code class="sig-name descname">argsort</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.argsort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the indices that would sort this array.</p>
+<p>Refer to <cite>numpy.argsort</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.argsort()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.astype">
+<code class="sig-name descname">astype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dtype</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">'K'</span></em>, <em class="sig-param"><span class="n">casting</span><span class="o">=</span><span class="default_value">'unsafe'</span></em>, <em class="sig-param"><span class="n">subok</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">copy</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.astype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy of the array, cast to a specified type.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul>
+<li><p><strong>dtype</strong> (<em>str or dtype</em>) – Typecode or data-type to which the array is cast.</p></li>
+<li><p><strong>order</strong> (<em>{‘C’, ‘F’, ‘A’, ‘K’}, optional</em>) – Controls the memory layout order of the result.
+‘C’ means C order, ‘F’ means Fortran order, ‘A’
+means ‘F’ order if all the arrays are Fortran contiguous,
+‘C’ order otherwise, and ‘K’ means as close to the
+order the array elements appear in memory as possible.
+Default is ‘K’.</p></li>
+<li><p><strong>casting</strong> (<em>{‘no’, ‘equiv’, ‘safe’, ‘same_kind’, ‘unsafe’}, optional</em>) – Controls what kind of data casting may occur. Defaults to ‘unsafe’
+for backwards compatibility.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>‘no’ means the data types should not be cast at all.</p></li>
+<li><p>‘equiv’ means only byte-order changes are allowed.</p></li>
+<li><p>‘safe’ means only casts which can preserve values are allowed.</p></li>
+<li><p>‘same_kind’ means only safe casts or casts within a kind,
+like float64 to float32, are allowed.</p></li>
+<li><p>‘unsafe’ means any data conversions may be done.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>subok</strong> (<em>bool, optional</em>) – If True, then sub-classes will be passed-through (default), otherwise
+the returned array will be forced to be a base-class array.</p></li>
+<li><p><strong>copy</strong> (<em>bool, optional</em>) – By default, astype always returns a newly allocated array. If this
+is set to false, and the <cite>dtype</cite>, <cite>order</cite>, and <cite>subok</cite>
+requirements are satisfied, the input array is returned instead
+of a copy.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>arr_t</strong> – Unless <cite>copy</cite> is False and the other conditions for returning the input
+array are satisfied (see description for <cite>copy</cite> input parameter), <cite>arr_t</cite>
+is a new array of the same shape as the input array, with dtype, order
+given by <cite>dtype</cite>, <cite>order</cite>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.17.0: </span>Casting between a simple data type and a structured one is possible only
+for “unsafe” casting.  Casting to multiple fields is allowed, but
+casting from multiple fields is not.</p>
+</div>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.9.0: </span>Casting from numeric to string types in ‘safe’ casting mode requires
+that the string dtype length is long enough to store the max
+integer/float value converted.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ComplexWarning</strong> – When casting from complex to float or int. To avoid this,
+    one should use <code class="docutils literal notranslate"><span class="pre">a.real.astype(t)</span></code>.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">array([1. ,  2. ,  2.5])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="go">array([1, 2, 2])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.byteswap">
+<code class="sig-name descname">byteswap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inplace</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.byteswap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Swap the bytes of the array elements</p>
+<p>Toggle between low-endian and big-endian data representation by
+returning a byteswapped array, optionally swapped in-place.
+Arrays of byte-strings are not swapped. The real and imaginary
+parts of a complex number are swapped individually.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inplace</strong> (<em>bool, optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, swap bytes in-place, default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – The byteswapped array. If <cite>inplace</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, this is
+a view to self.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">8755</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">hex</span><span class="p">,</span> <span class="n">A</span><span class="p">))</span>
+<span class="go">[&#39;0x1&#39;, &#39;0x100&#39;, &#39;0x2233&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">byteswap</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">array([  256,     1, 13090], dtype=int16)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">hex</span><span class="p">,</span> <span class="n">A</span><span class="p">))</span>
+<span class="go">[&#39;0x100&#39;, &#39;0x1&#39;, &#39;0x3322&#39;]</span>
+</pre></div>
+</div>
+<p>Arrays of byte-strings are not swapped</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="sa">b</span><span class="s1">&#39;ceg&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;fac&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">byteswap</span><span class="p">()</span>
+<span class="go">array([b&#39;ceg&#39;, b&#39;fac&#39;], dtype=&#39;|S3&#39;)</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">A.newbyteorder().byteswap()</span></code> produces an array with the same values</dt><dd><p>but different representation in memory</p>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+<span class="go">array([1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0,</span>
+<span class="go">       0, 0], dtype=uint8)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">newbyteorder</span><span class="p">()</span><span class="o">.</span><span class="n">byteswap</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">array([1, 2, 3])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+<span class="go">array([0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0,</span>
+<span class="go">       0, 3], dtype=uint8)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.choose">
+<code class="sig-name descname">choose</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">choices</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'raise'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.choose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use an index array to construct a new array from a set of choices.</p>
+<p>Refer to <cite>numpy.choose</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.choose()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.clip">
+<code class="sig-name descname">clip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">min</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.clip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an array whose values are limited to <code class="docutils literal notranslate"><span class="pre">[min,</span> <span class="pre">max]</span></code>.
+One of max or min must be given.</p>
+<p>Refer to <cite>numpy.clip</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.clip()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.compress">
+<code class="sig-name descname">compress</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">condition</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.compress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return selected slices of this array along given axis.</p>
+<p>Refer to <cite>numpy.compress</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.compress()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.conj">
+<code class="sig-name descname">conj</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.conj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Complex-conjugate all elements.</p>
+<p>Refer to <cite>numpy.conjugate</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.conjugate()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.conjugate">
+<code class="sig-name descname">conjugate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.conjugate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the complex conjugate, element-wise.</p>
+<p>Refer to <cite>numpy.conjugate</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.conjugate()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">'C'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of the array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>order</strong> (<em>{‘C’, ‘F’, ‘A’, ‘K’}, optional</em>) – Controls the memory layout of the copy. ‘C’ means C-order,
+‘F’ means F-order, ‘A’ means ‘F’ if <cite>a</cite> is Fortran contiguous,
+‘C’ otherwise. ‘K’ means match the layout of <cite>a</cite> as closely
+as possible. (Note that this function and <code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.copy()</span></code> are very
+similar, but have different default values for their order=
+arguments.)</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.copy()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.copyto()</span></code></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]],</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">array([[0, 0, 0],</span>
+<span class="go">       [0, 0, 0]])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span>
+<span class="go">array([[1, 2, 3],</span>
+<span class="go">       [4, 5, 6]])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="o">.</span><span class="n">flags</span><span class="p">[</span><span class="s1">&#39;C_CONTIGUOUS&#39;</span><span class="p">]</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.cumprod">
+<code class="sig-name descname">cumprod</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.cumprod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the cumulative product of the elements along the given axis.</p>
+<p>Refer to <cite>numpy.cumprod</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.cumprod()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.cumsum">
+<code class="sig-name descname">cumsum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.cumsum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the cumulative sum of the elements along the given axis.</p>
+<p>Refer to <cite>numpy.cumsum</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.cumsum()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.diagonal">
+<code class="sig-name descname">diagonal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">offset</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">axis1</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">axis2</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.diagonal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return specified diagonals. In NumPy 1.9 the returned array is a
+read-only view instead of a copy as in previous NumPy versions.  In
+a future version the read-only restriction will be removed.</p>
+<p>Refer to <code class="xref py py-func docutils literal notranslate"><span class="pre">numpy.diagonal()</span></code> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.diagonal()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.dot">
+<code class="sig-name descname">dot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.dot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dot product of two arrays.</p>
+<p>Refer to <cite>numpy.dot</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.dot()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="go">array([[2.,  2.],</span>
+<span class="go">       [2.,  2.]])</span>
+</pre></div>
+</div>
+<p>This array method can be conveniently chained:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="go">array([[8.,  8.],</span>
+<span class="go">       [8.,  8.]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.dump">
+<code class="sig-name descname">dump</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.dump" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump a pickle of the array to the specified file.
+The array can be read back with pickle.load or numpy.load.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file</strong> (<em>str or Path</em>) – A string naming the dump file.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.17.0: </span><cite>pathlib.Path</cite> objects are now accepted.</p>
+</div>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.dumps">
+<code class="sig-name descname">dumps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.dumps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the pickle of the array as a string.
+pickle.loads or numpy.loads will convert the string back to an array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.fill">
+<code class="sig-name descname">fill</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.fill" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fill the array with a scalar value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>scalar</em>) – All elements of <cite>a</cite> will be assigned this value.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">array([0, 0])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">array([1.,  1.])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.flatten">
+<code class="sig-name descname">flatten</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">'C'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.flatten" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of the array collapsed into one dimension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>order</strong> (<em>{‘C’, ‘F’, ‘A’, ‘K’}, optional</em>) – ‘C’ means to flatten in row-major (C-style) order.
+‘F’ means to flatten in column-major (Fortran-
+style) order. ‘A’ means to flatten in column-major
+order if <cite>a</cite> is Fortran <em>contiguous</em> in memory,
+row-major order otherwise. ‘K’ means to flatten
+<cite>a</cite> in the order the elements occur in memory.
+The default is ‘C’.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>y</strong> – A copy of the input array, flattened to one dimension.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#peleffy.topology.ZMatrix.ravel" title="peleffy.topology.ZMatrix.ravel"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ravel()</span></code></a></dt><dd><p>Return a flattened array.</p>
+</dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">flat()</span></code></dt><dd><p>A 1-D flat iterator over the array.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+<span class="go">array([1, 2, 3, 4])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+<span class="go">array([1, 3, 2, 4])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.getfield">
+<code class="sig-name descname">getfield</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dtype</span></em>, <em class="sig-param"><span class="n">offset</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.getfield" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a field of the given array as a certain type.</p>
+<p>A field is a view of the array data with a given data-type. The values in
+the view are determined by the given type and the offset into the current
+array in bytes. The offset needs to be such that the view dtype fits in the
+array dtype; for example an array of dtype complex128 has 16-byte elements.
+If taking a view with a 32-bit integer (4 bytes), the offset needs to be
+between 0 and 12 bytes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dtype</strong> (<em>str or dtype</em>) – The data type of the view. The dtype size of the view can not be larger
+than that of the array itself.</p></li>
+<li><p><strong>offset</strong> (<em>int</em>) – Number of bytes to skip before beginning the element view.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="mf">1.</span><span class="o">+</span><span class="mf">1.</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">+</span> <span class="mf">4.</span><span class="n">j</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">array([[1.+1.j,  0.+0.j],</span>
+<span class="go">       [0.+0.j,  2.+4.j]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">getfield</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="go">array([[1.,  0.],</span>
+<span class="go">       [0.,  2.]])</span>
+</pre></div>
+</div>
+<p>By choosing an offset of 8 bytes we can select the complex part of the
+array for our view:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">getfield</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="go">array([[1.,  0.],</span>
+<span class="go">       [0.,  4.]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.item">
+<code class="sig-name descname">item</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.item" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy an element of an array to a standard Python scalar and return it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>*args</strong> (<em>Arguments (variable number and type)</em>) –</p>
+<ul class="simple">
+<li><p>none: in this case, the method only works for arrays
+with one element (<cite>a.size == 1</cite>), which element is
+copied into a standard Python scalar object and returned.</p></li>
+<li><p>int_type: this argument is interpreted as a flat index into
+the array, specifying which element to copy and return.</p></li>
+<li><p>tuple of int_types: functions as does a single int_type argument,
+except that the argument is interpreted as an nd-index into the
+array.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>z</strong> – A copy of the specified element of the array as a suitable
+Python scalar</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Standard Python scalar object</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>When the data type of <cite>a</cite> is longdouble or clongdouble, item() returns
+a scalar array object because there is no available Python scalar that
+would not lose information. Void arrays return a buffer object for item(),
+unless fields are defined, in which case a tuple is returned.</p>
+<p><cite>item</cite> is very similar to a[args], except, instead of an array scalar,
+a standard Python scalar is returned. This can be useful for speeding up
+access to elements of the array and doing arithmetic on elements of the
+array using Python’s optimized math.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">array([[2, 2, 6],</span>
+<span class="go">       [1, 3, 6],</span>
+<span class="go">       [1, 0, 1]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">item</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">item</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.itemset">
+<code class="sig-name descname">itemset</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.itemset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert scalar into an array (scalar is cast to array’s dtype, if possible)</p>
+<p>There must be at least 1 argument, and define the last argument
+as <em>item</em>.  Then, <code class="docutils literal notranslate"><span class="pre">a.itemset(*args)</span></code> is equivalent to but faster
+than <code class="docutils literal notranslate"><span class="pre">a[args]</span> <span class="pre">=</span> <span class="pre">item</span></code>.  The item should be a scalar value and <cite>args</cite>
+must select a single item in the array <cite>a</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>*args</strong> (<em>Arguments</em>) – If one argument: a scalar, only used in case <cite>a</cite> is of size 1.
+If two arguments: the last argument is the value to be set
+and must be a scalar, the first argument specifies a single array
+element location. It is either an int or a tuple.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Compared to indexing syntax, <cite>itemset</cite> provides some speed increase
+for placing a scalar into a particular location in an <cite>ndarray</cite>,
+if you must do this.  However, generally this is discouraged:
+among other problems, it complicates the appearance of the code.
+Also, when using <cite>itemset</cite> (and <cite>item</cite>) inside a loop, be sure
+to assign the methods to a local variable to avoid the attribute
+look-up at each loop iteration.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">array([[2, 2, 6],</span>
+<span class="go">       [1, 3, 6],</span>
+<span class="go">       [1, 0, 1]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">itemset</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">itemset</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">9</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">array([[2, 2, 6],</span>
+<span class="go">       [1, 0, 6],</span>
+<span class="go">       [1, 0, 9]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.max">
+<code class="sig-name descname">max</code><span class="sig-paren">(</span><em class="sig-param">axis=None</em>, <em class="sig-param">out=None</em>, <em class="sig-param">keepdims=False</em>, <em class="sig-param">initial=&lt;no value&gt;</em>, <em class="sig-param">where=True</em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the maximum along a given axis.</p>
+<p>Refer to <cite>numpy.amax</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.amax()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.mean">
+<code class="sig-name descname">mean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keepdims</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the average of the array elements along given axis.</p>
+<p>Refer to <cite>numpy.mean</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.mean()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.min">
+<code class="sig-name descname">min</code><span class="sig-paren">(</span><em class="sig-param">axis=None</em>, <em class="sig-param">out=None</em>, <em class="sig-param">keepdims=False</em>, <em class="sig-param">initial=&lt;no value&gt;</em>, <em class="sig-param">where=True</em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.min" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the minimum along a given axis.</p>
+<p>Refer to <cite>numpy.amin</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.amin()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.newbyteorder">
+<code class="sig-name descname">newbyteorder</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_order</span><span class="o">=</span><span class="default_value">'S'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.newbyteorder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the array with the same data viewed with a different byte order.</p>
+<p>Equivalent to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">arr</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">newbytorder</span><span class="p">(</span><span class="n">new_order</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Changes are also made in all fields and sub-arrays of the array data
+type.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>new_order</strong> (<em>string, optional</em>) – Byte order to force; a value from the byte order specifications
+below. <cite>new_order</cite> codes can be any of:</p>
+<ul class="simple">
+<li><p>‘S’ - swap dtype from current to opposite endian</p></li>
+<li><p>{‘&lt;’, ‘L’} - little endian</p></li>
+<li><p>{‘&gt;’, ‘B’} - big endian</p></li>
+<li><p>{‘=’, ‘N’} - native order</p></li>
+<li><p>{‘|’, ‘I’} - ignore (no change to byte order)</p></li>
+</ul>
+<p>The default value (‘S’) results in swapping the current
+byte order. The code does a case-insensitive check on the first
+letter of <cite>new_order</cite> for the alternatives above.  For example,
+any of ‘B’ or ‘b’ or ‘biggish’ are valid to specify big-endian.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>new_arr</strong> – New array object with the dtype reflecting given change to the
+byte order.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.nonzero">
+<code class="sig-name descname">nonzero</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.nonzero" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the indices of the elements that are non-zero.</p>
+<p>Refer to <cite>numpy.nonzero</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.nonzero()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.partition">
+<code class="sig-name descname">partition</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kth</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'introselect'</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.partition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rearranges the elements in the array in such a way that the value of the
+element in kth position is in the position it would be in a sorted array.
+All elements smaller than the kth element are moved before this element and
+all equal or greater are moved behind it. The ordering of the elements in
+the two partitions is undefined.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.8.0.</span></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kth</strong> (<em>int or sequence of ints</em>) – Element index to partition by. The kth element value will be in its
+final sorted position and all smaller elements will be moved before it
+and all equal or greater elements behind it.
+The order of all elements in the partitions is undefined.
+If provided with a sequence of kth it will partition all elements
+indexed by kth of them into their sorted position at once.</p></li>
+<li><p><strong>axis</strong> (<em>int, optional</em>) – Axis along which to sort. Default is -1, which means sort along the
+last axis.</p></li>
+<li><p><strong>kind</strong> (<em>{‘introselect’}, optional</em>) – Selection algorithm. Default is ‘introselect’.</p></li>
+<li><p><strong>order</strong> (<em>str or list of str, optional</em>) – When <cite>a</cite> is an array with fields defined, this argument specifies
+which fields to compare first, second, etc. A single field can
+be specified as a string, and not all fields need to be specified,
+but unspecified fields will still be used, in the order in which
+they come up in the dtype, to break ties.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.partition()</span></code></dt><dd><p>Return a parititioned copy of an array.</p>
+</dd>
+<dt><a class="reference internal" href="#peleffy.topology.ZMatrix.argpartition" title="peleffy.topology.ZMatrix.argpartition"><code class="xref py py-meth docutils literal notranslate"><span class="pre">argpartition()</span></code></a></dt><dd><p>Indirect partition.</p>
+</dd>
+<dt><a class="reference internal" href="#peleffy.topology.ZMatrix.sort" title="peleffy.topology.ZMatrix.sort"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sort()</span></code></a></dt><dd><p>Full sort.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>See <code class="docutils literal notranslate"><span class="pre">np.partition</span></code> for notes on the different algorithms.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">array([2, 1, 3, 4])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">partition</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">array([1, 2, 3, 4])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.prod">
+<code class="sig-name descname">prod</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keepdims</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">initial</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">where</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.prod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the product of the array elements over the given axis</p>
+<p>Refer to <cite>numpy.prod</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.prod()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.ptp">
+<code class="sig-name descname">ptp</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keepdims</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.ptp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Peak to peak (maximum - minimum) value along a given axis.</p>
+<p>Refer to <cite>numpy.ptp</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ptp()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.put">
+<code class="sig-name descname">put</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">indices</span></em>, <em class="sig-param"><span class="n">values</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'raise'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.put" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set <code class="docutils literal notranslate"><span class="pre">a.flat[n]</span> <span class="pre">=</span> <span class="pre">values[n]</span></code> for all <cite>n</cite> in indices.</p>
+<p>Refer to <cite>numpy.put</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.put()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.ravel">
+<code class="sig-name descname">ravel</code><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param">order</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.ravel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a flattened array.</p>
+<p>Refer to <cite>numpy.ravel</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.ravel()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">ndarray.flat()</span></code></dt><dd><p>a flat iterator on the array.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.repeat">
+<code class="sig-name descname">repeat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">repeats</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.repeat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Repeat elements of an array.</p>
+<p>Refer to <cite>numpy.repeat</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.repeat()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.reshape">
+<code class="sig-name descname">reshape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">shape</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">'C'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.reshape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an array containing the same data with a new shape.</p>
+<p>Refer to <cite>numpy.reshape</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.reshape()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>Unlike the free function <cite>numpy.reshape</cite>, this method on <cite>ndarray</cite> allows
+the elements of the shape parameter to be passed in as separate arguments.
+For example, <code class="docutils literal notranslate"><span class="pre">a.reshape(10,</span> <span class="pre">11)</span></code> is equivalent to
+<code class="docutils literal notranslate"><span class="pre">a.reshape((10,</span> <span class="pre">11))</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.resize">
+<code class="sig-name descname">resize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_shape</span></em>, <em class="sig-param"><span class="n">refcheck</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.resize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change shape and size of array in-place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>new_shape</strong> (tuple of ints, or <cite>n</cite> ints) – Shape of resized array.</p></li>
+<li><p><strong>refcheck</strong> (<em>bool, optional</em>) – If False, reference count will not be checked. Default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If <cite>a</cite> does not own its own data or references or views to it exist,
+    and the data memory must be changed.
+    PyPy only: will always raise if the data memory must be changed, since
+    there is no reliable way to determine if references or views to it
+    exist.</p></li>
+<li><p><strong>SystemError</strong> – If the <cite>order</cite> keyword argument is specified. This behaviour is a
+    bug in NumPy.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#peleffy.topology.ZMatrix.resize" title="peleffy.topology.ZMatrix.resize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">resize()</span></code></a></dt><dd><p>Return a new array with the specified shape.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>This reallocates space for the data area if necessary.</p>
+<p>Only contiguous arrays (data elements consecutive in memory) can be
+resized.</p>
+<p>The purpose of the reference count check is to make sure you
+do not use this array as a buffer for another Python object and then
+reallocate the memory. However, reference counts can increase in
+other ways so if you are sure that you have not shared the memory
+for this array with another Python object, then you may safely set
+<cite>refcheck</cite> to False.</p>
+<p class="rubric">Examples</p>
+<p>Shrinking an array: array is flattened (in the order that the data are
+stored in memory), resized, and reshaped:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]],</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">array([[0],</span>
+<span class="go">       [1]])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]],</span> <span class="n">order</span><span class="o">=</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">array([[0],</span>
+<span class="go">       [2]])</span>
+</pre></div>
+</div>
+<p>Enlarging an array: as above, but missing entries are filled with zeros:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="c1"># new_shape parameter doesn&#39;t have to be a tuple</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span>
+<span class="go">array([[0, 1, 2],</span>
+<span class="go">       [3, 0, 0]])</span>
+</pre></div>
+</div>
+<p>Referencing an array prevents resizing…</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">a</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValueError</span>: <span class="n">cannot resize an array that references or is referenced ...</span>
+</pre></div>
+</div>
+<p>Unless <cite>refcheck</cite> is False:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">refcheck</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">array([[0]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span>
+<span class="go">array([[0]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.round">
+<code class="sig-name descname">round</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">decimals</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.round" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return <cite>a</cite> with each element rounded to the given number of decimals.</p>
+<p>Refer to <cite>numpy.around</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.around()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.searchsorted">
+<code class="sig-name descname">searchsorted</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v</span></em>, <em class="sig-param"><span class="n">side</span><span class="o">=</span><span class="default_value">'left'</span></em>, <em class="sig-param"><span class="n">sorter</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.searchsorted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find indices where elements of v should be inserted in a to maintain order.</p>
+<p>For full documentation, see <cite>numpy.searchsorted</cite></p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.searchsorted()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.setfield">
+<code class="sig-name descname">setfield</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">val</span></em>, <em class="sig-param"><span class="n">dtype</span></em>, <em class="sig-param"><span class="n">offset</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.setfield" title="Permalink to this definition">¶</a></dt>
+<dd><p>Put a value into a specified place in a field defined by a data-type.</p>
+<p>Place <cite>val</cite> into <cite>a</cite>’s field defined by <cite>dtype</cite> and beginning <cite>offset</cite>
+bytes into the field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>val</strong> (<em>object</em>) – Value to be placed in field.</p></li>
+<li><p><strong>dtype</strong> (<em>dtype object</em>) – Data-type of the field in which to place <cite>val</cite>.</p></li>
+<li><p><strong>offset</strong> (<em>int, optional</em>) – The number of bytes into the field at which to place <cite>val</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#peleffy.topology.ZMatrix.getfield" title="peleffy.topology.ZMatrix.getfield"><code class="xref py py-meth docutils literal notranslate"><span class="pre">getfield()</span></code></a></p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">getfield</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="go">array([[1.,  0.,  0.],</span>
+<span class="go">       [0.,  1.,  0.],</span>
+<span class="go">       [0.,  0.,  1.]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">setfield</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">getfield</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+<span class="go">array([[3, 3, 3],</span>
+<span class="go">       [3, 3, 3],</span>
+<span class="go">       [3, 3, 3]], dtype=int32)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">array([[1.0e+000, 1.5e-323, 1.5e-323],</span>
+<span class="go">       [1.5e-323, 1.0e+000, 1.5e-323],</span>
+<span class="go">       [1.5e-323, 1.5e-323, 1.0e+000]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">setfield</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">array([[1.,  0.,  0.],</span>
+<span class="go">       [0.,  1.,  0.],</span>
+<span class="go">       [0.,  0.,  1.]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.setflags">
+<code class="sig-name descname">setflags</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">write</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">align</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">uic</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.setflags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set array flags WRITEABLE, ALIGNED, (WRITEBACKIFCOPY and UPDATEIFCOPY),
+respectively.</p>
+<p>These Boolean-valued flags affect how numpy interprets the memory
+area used by <cite>a</cite> (see Notes below). The ALIGNED flag can only
+be set to True if the data is actually aligned according to the type.
+The WRITEBACKIFCOPY and (deprecated) UPDATEIFCOPY flags can never be set
+to True. The flag WRITEABLE can only be set to True if the array owns its
+own memory, or the ultimate owner of the memory exposes a writeable buffer
+interface, or is a string. (The exception for string is made so that
+unpickling can be done without copying memory.)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>write</strong> (<em>bool, optional</em>) – Describes whether or not <cite>a</cite> can be written to.</p></li>
+<li><p><strong>align</strong> (<em>bool, optional</em>) – Describes whether or not <cite>a</cite> is aligned properly for its type.</p></li>
+<li><p><strong>uic</strong> (<em>bool, optional</em>) – Describes whether or not <cite>a</cite> is a copy of another “base” array.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Array flags provide information about how the memory area used
+for the array is to be interpreted. There are 7 Boolean flags
+in use, only four of which can be changed by the user:
+WRITEBACKIFCOPY, UPDATEIFCOPY, WRITEABLE, and ALIGNED.</p>
+<p>WRITEABLE (W) the data area can be written to;</p>
+<p>ALIGNED (A) the data and strides are aligned appropriately for the hardware
+(as determined by the compiler);</p>
+<p>UPDATEIFCOPY (U) (deprecated), replaced by WRITEBACKIFCOPY;</p>
+<p>WRITEBACKIFCOPY (X) this array is a copy of some other array (referenced
+by .base). When the C-API function PyArray_ResolveWritebackIfCopy is
+called, the base array will be updated with the contents of this array.</p>
+<p>All flags can be accessed using the single (upper case) letter as well
+as the full name.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span>
+<span class="gp">... </span>              <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+<span class="gp">... </span>              <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">9</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span>
+<span class="go">array([[3, 1, 7],</span>
+<span class="go">       [2, 0, 0],</span>
+<span class="go">       [8, 5, 9]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="o">.</span><span class="n">flags</span>
+<span class="go">  C_CONTIGUOUS : True</span>
+<span class="go">  F_CONTIGUOUS : False</span>
+<span class="go">  OWNDATA : True</span>
+<span class="go">  WRITEABLE : True</span>
+<span class="go">  ALIGNED : True</span>
+<span class="go">  WRITEBACKIFCOPY : False</span>
+<span class="go">  UPDATEIFCOPY : False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="o">.</span><span class="n">setflags</span><span class="p">(</span><span class="n">write</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="o">.</span><span class="n">flags</span>
+<span class="go">  C_CONTIGUOUS : True</span>
+<span class="go">  F_CONTIGUOUS : False</span>
+<span class="go">  OWNDATA : True</span>
+<span class="go">  WRITEABLE : False</span>
+<span class="go">  ALIGNED : False</span>
+<span class="go">  WRITEBACKIFCOPY : False</span>
+<span class="go">  UPDATEIFCOPY : False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="o">.</span><span class="n">setflags</span><span class="p">(</span><span class="n">uic</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+<span class="gr">ValueError</span>: <span class="n">cannot set WRITEBACKIFCOPY flag to True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.sort">
+<code class="sig-name descname">sort</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort an array in-place. Refer to <cite>numpy.sort</cite> for full documentation.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul>
+<li><p><strong>axis</strong> (<em>int, optional</em>) – Axis along which to sort. Default is -1, which means sort along the
+last axis.</p></li>
+<li><p><strong>kind</strong> (<em>{‘quicksort’, ‘mergesort’, ‘heapsort’, ‘stable’}, optional</em>) – Sorting algorithm. The default is ‘quicksort’. Note that both ‘stable’
+and ‘mergesort’ use timsort under the covers and, in general, the
+actual implementation will vary with datatype. The ‘mergesort’ option
+is retained for backwards compatibility.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.15.0.: </span>The ‘stable’ option was added.</p>
+</div>
+</li>
+<li><p><strong>order</strong> (<em>str or list of str, optional</em>) – When <cite>a</cite> is an array with fields defined, this argument specifies
+which fields to compare first, second, etc.  A single field can
+be specified as a string, and not all fields need be specified,
+but unspecified fields will still be used, in the order in which
+they come up in the dtype, to break ties.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.sort()</span></code></dt><dd><p>Return a sorted copy of an array.</p>
+</dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.argsort()</span></code></dt><dd><p>Indirect sort.</p>
+</dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.lexsort()</span></code></dt><dd><p>Indirect stable sort on multiple keys.</p>
+</dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.searchsorted()</span></code></dt><dd><p>Find elements in sorted array.</p>
+</dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.partition()</span></code></dt><dd><p>Partial sort.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>See <cite>numpy.sort</cite> for notes on the different sorting algorithms.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">array([[1, 4],</span>
+<span class="go">       [1, 3]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">array([[1, 3],</span>
+<span class="go">       [1, 4]])</span>
+</pre></div>
+</div>
+<p>Use the <cite>order</cite> keyword to specify a field to use when sorting a
+structured array:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;S1&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">array([(b&#39;c&#39;, 1), (b&#39;a&#39;, 2)],</span>
+<span class="go">      dtype=[(&#39;x&#39;, &#39;S1&#39;), (&#39;y&#39;, &#39;&lt;i8&#39;)])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.squeeze">
+<code class="sig-name descname">squeeze</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.squeeze" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove single-dimensional entries from the shape of <cite>a</cite>.</p>
+<p>Refer to <cite>numpy.squeeze</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.squeeze()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.std">
+<code class="sig-name descname">std</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ddof</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">keepdims</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.std" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the standard deviation of the array elements along given axis.</p>
+<p>Refer to <cite>numpy.std</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.std()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.sum">
+<code class="sig-name descname">sum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">keepdims</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">initial</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">where</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.sum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the sum of the array elements over the given axis.</p>
+<p>Refer to <cite>numpy.sum</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.sum()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.swapaxes">
+<code class="sig-name descname">swapaxes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis1</span></em>, <em class="sig-param"><span class="n">axis2</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.swapaxes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a view of the array with <cite>axis1</cite> and <cite>axis2</cite> interchanged.</p>
+<p>Refer to <cite>numpy.swapaxes</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.swapaxes()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.take">
+<code class="sig-name descname">take</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">indices</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'raise'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.take" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an array formed from the elements of <cite>a</cite> at the given indices.</p>
+<p>Refer to <cite>numpy.take</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.take()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.tobytes">
+<code class="sig-name descname">tobytes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">'C'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.tobytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct Python bytes containing the raw data bytes in the array.</p>
+<p>Constructs Python bytes showing a copy of the raw contents of
+data memory. The bytes object can be produced in either ‘C’ or ‘Fortran’,
+or ‘Any’ order (the default is ‘C’-order). ‘Any’ order means C-order
+unless the F_CONTIGUOUS flag in the array is set, in which case it
+means ‘Fortran’ order.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 1.9.0.</span></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>order</strong> (<em>{‘C’, ‘F’, None}, optional</em>) – Order of the data for multidimensional arrays:
+C, Fortran, or the same as for the original array.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>s</strong> – Python bytes exhibiting a copy of <cite>a</cite>’s raw data.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bytes</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;&lt;u2&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
+<span class="go">b&#39;\x00\x00\x01\x00\x02\x00\x03\x00&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">tobytes</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">x</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">tobytes</span><span class="p">(</span><span class="s1">&#39;F&#39;</span><span class="p">)</span>
+<span class="go">b&#39;\x00\x00\x02\x00\x01\x00\x03\x00&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.tofile">
+<code class="sig-name descname">tofile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fid</span></em>, <em class="sig-param"><span class="n">sep</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">format</span><span class="o">=</span><span class="default_value">'%s'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.tofile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write array to a file as text or binary (default).</p>
+<p>Data is always written in ‘C’ order, independent of the order of <cite>a</cite>.
+The data produced by this method can be recovered using the function
+fromfile().</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul>
+<li><p><strong>fid</strong> (<em>file or str or Path</em>) – An open file object, or a string containing a filename.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 1.17.0: </span><cite>pathlib.Path</cite> objects are now accepted.</p>
+</div>
+</li>
+<li><p><strong>sep</strong> (<em>str</em>) – Separator between array items for text output.
+If “” (empty), a binary file is written, equivalent to
+<code class="docutils literal notranslate"><span class="pre">file.write(a.tobytes())</span></code>.</p></li>
+<li><p><strong>format</strong> (<em>str</em>) – Format string for text file output.
+Each entry in the array is formatted to text by first converting
+it to the closest Python type, and then using “format” % item.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This is a convenience function for quick storage of array data.
+Information on endianness and precision is lost, so this method is not a
+good choice for files intended to archive data or transport data between
+machines with different endianness. Some of these problems can be overcome
+by outputting the data as text files, at the expense of speed and file
+size.</p>
+<p>When fid is a file object, array contents are directly written to the
+file, bypassing the file object’s <code class="docutils literal notranslate"><span class="pre">write</span></code> method. As a result, tofile
+cannot be used with files objects supporting compression (e.g., GzipFile)
+or file-like objects that do not support <code class="docutils literal notranslate"><span class="pre">fileno()</span></code> (e.g., BytesIO).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.tolist">
+<code class="sig-name descname">tolist</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.tolist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the array as an <code class="docutils literal notranslate"><span class="pre">a.ndim</span></code>-levels deep nested list of Python scalars.</p>
+<p>Return a copy of the array data as a (nested) Python list.
+Data items are converted to the nearest compatible builtin Python type, via
+the <cite>~numpy.ndarray.item</cite> function.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">a.ndim</span></code> is 0, then since the depth of the nested list is 0, it will
+not be a list at all, but a simple Python scalar.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>none</strong></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>y</strong> – The possibly nested list of array elements.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>object, or list of object, or list of list of object, or ..</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The array may be recreated via <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">np.array(a.tolist())</span></code>, although this
+may sometimes lose precision.</p>
+<p class="rubric">Examples</p>
+<p>For a 1D array, <code class="docutils literal notranslate"><span class="pre">a.tolist()</span></code> is almost the same as <code class="docutils literal notranslate"><span class="pre">list(a)</span></code>,
+except that <code class="docutils literal notranslate"><span class="pre">tolist</span></code> changes numpy scalars to Python scalars:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a_list</span>
+<span class="go">[1, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">a_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">&lt;class &#39;numpy.uint32&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a_tolist</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a_tolist</span>
+<span class="go">[1, 2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">a_tolist</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">&lt;class &#39;int&#39;&gt;</span>
+</pre></div>
+</div>
+<p>Additionally, for a 2D array, <code class="docutils literal notranslate"><span class="pre">tolist</span></code> applies recursively:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="go">[array([1, 2]), array([3, 4])]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="go">[[1, 2], [3, 4]]</span>
+</pre></div>
+</div>
+<p>The base case for this recursion is a 0D array:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+  <span class="c">...</span>
+<span class="gr">TypeError</span>: <span class="n">iteration over a 0-d array</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.tostring">
+<code class="sig-name descname">tostring</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">'C'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.tostring" title="Permalink to this definition">¶</a></dt>
+<dd><p>A compatibility alias for <cite>tobytes</cite>, with exactly the same behavior.</p>
+<p>Despite its name, it returns <cite>bytes</cite> not <cite>str</cite>s.</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version 1.19.0.</span></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.trace">
+<code class="sig-name descname">trace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">offset</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">axis1</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">axis2</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the sum along diagonals of the array.</p>
+<p>Refer to <cite>numpy.trace</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.trace()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.transpose">
+<code class="sig-name descname">transpose</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">axes</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.transpose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a view of the array with axes transposed.</p>
+<p>For a 1-D array this has no effect, as a transposed vector is simply the
+same vector. To convert a 1-D array into a 2D column vector, an additional
+dimension must be added. <cite>np.atleast2d(a).T</cite> achieves this, as does
+<cite>a[:, np.newaxis]</cite>.
+For a 2-D array, this is a standard matrix transpose.
+For an n-D array, if axes are given, their order indicates how the
+axes are permuted (see Examples). If axes are not provided and
+<code class="docutils literal notranslate"><span class="pre">a.shape</span> <span class="pre">=</span> <span class="pre">(i[0],</span> <span class="pre">i[1],</span> <span class="pre">...</span> <span class="pre">i[n-2],</span> <span class="pre">i[n-1])</span></code>, then
+<code class="docutils literal notranslate"><span class="pre">a.transpose().shape</span> <span class="pre">=</span> <span class="pre">(i[n-1],</span> <span class="pre">i[n-2],</span> <span class="pre">...</span> <span class="pre">i[1],</span> <span class="pre">i[0])</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>axes</strong> (None, tuple of ints, or <cite>n</cite> ints) –</p>
+<ul class="simple">
+<li><p>None or no argument: reverses the order of the axes.</p></li>
+<li><p>tuple of ints: <cite>i</cite> in the <cite>j</cite>-th place in the tuple means <cite>a</cite>’s
+<cite>i</cite>-th axis becomes <cite>a.transpose()</cite>’s <cite>j</cite>-th axis.</p></li>
+<li><p><cite>n</cite> ints: same as an n-tuple of the same ints (this form is
+intended simply as a “convenience” alternative to the tuple form)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – View of <cite>a</cite>, with axes suitably permuted.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">ndarray.T()</span></code></dt><dd><p>Array property returning the array transposed.</p>
+</dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">ndarray.reshape()</span></code></dt><dd><p>Give a new shape to an array without changing its data.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">array([[1, 2],</span>
+<span class="go">       [3, 4]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+<span class="go">array([[1, 3],</span>
+<span class="go">       [2, 4]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="go">array([[1, 3],</span>
+<span class="go">       [2, 4]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="go">array([[1, 3],</span>
+<span class="go">       [2, 4]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.var">
+<code class="sig-name descname">var</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ddof</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">keepdims</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.var" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the variance of the array elements, along given axis.</p>
+<p>Refer to <cite>numpy.var</cite> for full documentation.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">numpy.var()</span></code></dt><dd><p>equivalent function</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.ZMatrix.view">
+<code class="sig-name descname">view</code><span class="sig-paren">(</span><em class="sig-param">[dtype][, type]</em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.ZMatrix.view" title="Permalink to this definition">¶</a></dt>
+<dd><p>New view of array with the same data.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Passing None for <code class="docutils literal notranslate"><span class="pre">dtype</span></code> is different from omitting the parameter,
+since the former invokes <code class="docutils literal notranslate"><span class="pre">dtype(None)</span></code> which is an alias for
+<code class="docutils literal notranslate"><span class="pre">dtype('float_')</span></code>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dtype</strong> (<em>data-type or ndarray sub-class, optional</em>) – Data-type descriptor of the returned view, e.g., float32 or int16.
+Omitting it results in the view having the same data-type as <cite>a</cite>.
+This argument can also be specified as an ndarray sub-class, which
+then specifies the type of the returned object (this is equivalent to
+setting the <code class="docutils literal notranslate"><span class="pre">type</span></code> parameter).</p></li>
+<li><p><strong>type</strong> (<em>Python type, optional</em>) – Type of the returned view, e.g., ndarray or matrix.  Again, omission
+of the parameter results in type preservation.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p><code class="docutils literal notranslate"><span class="pre">a.view()</span></code> is used two different ways:</p>
+<p><code class="docutils literal notranslate"><span class="pre">a.view(some_dtype)</span></code> or <code class="docutils literal notranslate"><span class="pre">a.view(dtype=some_dtype)</span></code> constructs a view
+of the array’s memory with a different data-type.  This can cause a
+reinterpretation of the bytes of memory.</p>
+<p><code class="docutils literal notranslate"><span class="pre">a.view(ndarray_subclass)</span></code> or <code class="docutils literal notranslate"><span class="pre">a.view(type=ndarray_subclass)</span></code> just
+returns an instance of <cite>ndarray_subclass</cite> that looks at the same array
+(same shape, dtype, etc.)  This does not cause a reinterpretation of the
+memory.</p>
+<p>For <code class="docutils literal notranslate"><span class="pre">a.view(some_dtype)</span></code>, if <code class="docutils literal notranslate"><span class="pre">some_dtype</span></code> has a different number of
+bytes per entry than the previous dtype (for example, converting a
+regular array to a structured array), then the behavior of the view
+cannot be predicted just from the superficial appearance of <code class="docutils literal notranslate"><span class="pre">a</span></code> (shown
+by <code class="docutils literal notranslate"><span class="pre">print(a)</span></code>). It also depends on exactly how <code class="docutils literal notranslate"><span class="pre">a</span></code> is stored in
+memory. Therefore if <code class="docutils literal notranslate"><span class="pre">a</span></code> is C-ordered versus fortran-ordered, versus
+defined as a slice or transpose, etc., the view may give different
+results.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)])</span>
+</pre></div>
+</div>
+<p>Viewing array data using a different type and dtype:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span>
+<span class="go">matrix([[513]], dtype=int16)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+<span class="go">&lt;class &#39;numpy.matrix&#39;&gt;</span>
+</pre></div>
+</div>
+<p>Creating a view on a structured array so it can be used in calculations</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),(</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xv</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xv</span>
+<span class="go">array([[1, 2],</span>
+<span class="go">       [3, 4]], dtype=int8)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xv</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">array([2.,  3.])</span>
+</pre></div>
+</div>
+<p>Making changes to the view changes the underlying array</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xv</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
+<span class="go">array([(1, 20), (3,  4)], dtype=[(&#39;a&#39;, &#39;i1&#39;), (&#39;b&#39;, &#39;i1&#39;)])</span>
+</pre></div>
+</div>
+<p>Using a view to convert an array to a recarray:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">recarray</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span><span class="o">.</span><span class="n">a</span>
+<span class="go">array([1, 3], dtype=int8)</span>
+</pre></div>
+</div>
+<p>Views share data:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">(9, 10)</span>
+</pre></div>
+</div>
+<p>Views that change the dtype size (bytes per entry) should normally be
+avoided on arrays defined by slices, transposes, fortran-ordering, etc.:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span>
+<span class="go">array([[1, 2],</span>
+<span class="go">       [4, 5]], dtype=int16)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;width&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;length&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)])</span>
+<span class="gt">Traceback (most recent call last):</span>
+    <span class="o">...</span>
+<span class="gr">ValueError</span>: <span class="n">To change to a dtype of a different size, the array must be C-contiguous</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;width&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;length&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)])</span>
+<span class="go">array([[(1, 2)],</span>
+<span class="go">       [(4, 5)]], dtype=[(&#39;width&#39;, &#39;&lt;i2&#39;), (&#39;length&#39;, &#39;&lt;i2&#39;)])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div></blockquote>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code></p></td>
+<td><p>The transposed array.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">base</span></code></p></td>
+<td><p>Base object if memory is from some other object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ctypes</span></code></p></td>
+<td><p>An object to simplify the interaction of the array with the ctypes module.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">data</span></code></p></td>
+<td><p>Python buffer object pointing to the start of the array’s data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype</span></code></p></td>
+<td><p>Data-type of the array’s elements.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">flags</span></code></p></td>
+<td><p>Information about the memory layout of the array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">flat</span></code></p></td>
+<td><p>A 1-D iterator over the array.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">imag</span></code></p></td>
+<td><p>The imaginary part of the array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">itemsize</span></code></p></td>
+<td><p>Length of one array element in bytes.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">nbytes</span></code></p></td>
+<td><p>Total bytes consumed by the elements of the array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndim</span></code></p></td>
+<td><p>Number of array dimensions.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">real</span></code></p></td>
+<td><p>The real part of the array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></p></td>
+<td><p>Tuple of array dimensions.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">size</span></code></p></td>
+<td><p>Number of elements in the array.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">strides</span></code></p></td>
+<td><p>Tuple of bytes to step in each dimension when traversing an array.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="peleffy.topology.rotamer.Rotamer.html" class="btn btn-neutral float-right" title="peleffy.topology.rotamer.Rotamer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="peleffy.topology.topology.OFFImproper.html" class="btn btn-neutral float-left" title="peleffy.topology.topology.OFFImproper" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Barcelona Supercomputing Center
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
