@@ -21,11 +21,6 @@ class Impact(object):
         """
         Initializes an Impact object.
 
-        .. todo ::
-
-            * It needs to raise an Exception when the supplied molecule
-            is not parameterized
-
         Parameters
         ----------
         molecule : An offpele.topology.Molecule
@@ -45,14 +40,16 @@ class Impact(object):
         >>> impact.write('molz')
 
         """
-        # The molecule needs to be parameterized
-        molecule.assert_parameterized()
 
+        # Check input parameters
         if (isinstance(molecule, offpele.topology.Molecule)
                 or isinstance(molecule, offpele.topology.molecule.Molecule)):
             self._initialize_from_molecule(molecule)
         else:
-            raise Exception('Invalid input molecule for Impact template')
+            raise TypeError('Invalid input molecule for Impact template')
+
+        # The molecule needs to be parameterized
+        molecule.assert_parameterized()
 
     def _initialize_from_molecule(self, molecule):
         """
