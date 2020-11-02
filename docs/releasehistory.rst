@@ -8,10 +8,10 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
-0.4.0 - Full compatibility for OPLS2005 and OpenFF dihedrals and rotamer library improvements - Current development
+1.0.0 - Full compatibility for OPLS2005 and OpenFF dihedrals and rotamer library improvements - Current development
 -------------------------------------------------------------------------------------------------------------------
 
-This minor release extends the compatibility of peleffy to fully handle OPLS2005 parameters and OpenFF dihedrals. Besides, it includes a functionality to generate rotamer libraries with core constraints to allow the user to force an atom to be in the core.
+This major release renames the package to peleffy as it now supports both OpenFF and OPLS2005 force fields. Therefore, this release extends the compatibility of peleffy to fully handle OPLS2005 parameters. Some unsupported OpenFF dihedrals now can be handled. Besides, it includes a functionality to generate rotamer libraries with core constraints to allow the user to force an atom to be in the core.
 
 New features
 """"""""""""
@@ -20,6 +20,7 @@ New features
 - `PR #63 <https://github.com/martimunicoy/peleffy/pull/63>`_: Enhancements to the core constraints to allow the selection of multiple core atoms.
 - `PR #66 <https://github.com/martimunicoy/peleffy/pull/66>`_: Full compatibility with OpenFF dihedrals.
 - `PR #69 <https://github.com/martimunicoy/peleffy/pull/69>`_: Full compatibility with OPLS2005 force field.
+- `PR #85 <https://github.com/martimunicoy/peleffy/pull/85>`_: Package is renamed to peleffy.
 
 Bugfixes
 """"""""
