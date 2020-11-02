@@ -17,23 +17,23 @@ def find_package_data(data_root, package_root):
 
 
 setup(
-    name="offpele",
+    name="peleffy",
     author="Martí Municoy",
     author_email="martimunicoy@gmail.com",
     description=("Open Force Field to PELE"),
     license="MIT",
     keywords="molecular mechanics, forcefield, potential energy",
-    url="http://github.com/martimunicoy/offpele",
+    url="http://github.com/martimunicoy/peleffy",
     packages=[
-        'offpele',
-        'offpele/tests',
-        'offpele/data',
-        'offpele/template',
-        'offpele/solvent',
-        'offpele/topology',
-        'offpele/forcefield',
-        'offpele/utils',
-        'offpele/charge',
+        'peleffy',
+        'peleffy/tests',
+        'peleffy/data',
+        'peleffy/template',
+        'peleffy/solvent',
+        'peleffy/topology',
+        'peleffy/forcefield',
+        'peleffy/utils',
+        'peleffy/charge',
     ],
     long_description=read('README.md'),
     classifiers=[
@@ -48,6 +48,6 @@ setup(
     ],
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
-    package_data={'offpele': find_package_data(
-        'offpele/data', 'offpele')},
+    package_data={'peleffy': find_package_data(
+        'peleffy/data', 'peleffy')},
 )

@@ -5,7 +5,7 @@ Template handlers
 
 This module provides a toolkit to generate parameter templates for PELE.
 
-.. currentmodule:: offpele.template
+.. currentmodule:: peleffy.template
 
 Primary objects
 ---------------

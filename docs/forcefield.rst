@@ -6,7 +6,7 @@ Forcefield methods
 This module defines the different force fields that are available
 to parameterize molecules for PELE.
 
-.. currentmodule:: offpele.forcefield
+.. currentmodule:: peleffy.forcefield
 
 Primary objects
 ---------------

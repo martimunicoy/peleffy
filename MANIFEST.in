@@ -1,2 +1,2 @@
 include versioneer.py
-include offpele/_version.py
+include peleffy/_version.py
