@@ -6,7 +6,7 @@
 # PELE Force Field Yielder
 The `peleffy` (PELE Force Field Yielder) is a Python package that builds [PELE](https://pele.bsc.es/pele.wt)-compatible force field templates. The current supported force fields are:
 - Any force field from the [Open Force Field toolkit](https://github.com/openforcefield/openforcefield).
-- The OPLS2005.
+- OPLS2005.
 
 ## Documentation
 The documentation for the `peleffy` package is available at [GitHub Pages](https://martimunicoy.github.io/peleffy).
