@@ -35,6 +35,7 @@ Tests added
 - `PR #66 <https://github.com/martimunicoy/offpele/pull/66>`_: Adds tests to validate the handling of non standard dihedrals.
 - `PR #69 <https://github.com/martimunicoy/offpele/pull/69>`_: Adds tests to validate the integration of OPLS2005 force field.
 - `PR #70 <https://github.com/martimunicoy/offpele/pull/70>`_: Adds tests to validate main CLI.
+- `PR #84 <https://github.com/martimunicoy/offpele/pull/840>`_: Adds tests to validate the Impact class.
 
 
 0.3.1 - General stability improvements

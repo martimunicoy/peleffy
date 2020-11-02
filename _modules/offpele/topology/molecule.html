@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0+untagged.1.g8d69f4f
+                0+untagged.1.g1b95fe9
               </div>
             
           
@@ -1496,15 +1496,14 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">parameterized</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Whether the molecule has been parameterized with the Open Force Field</span>
-<span class="sd">        toolkit or not.</span>
+<span class="sd">        Whether the molecule has been parameterized or not.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        parameterized : bool</span>
 <span class="sd">            The parameterization status</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">is_empty</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_ipython_display_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

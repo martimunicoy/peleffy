@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0+untagged.1.g8d69f4f
+                0+untagged.1.g1b95fe9
               </div>
             
           
@@ -183,11 +183,6 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes an Impact object.</span>
 
-<span class="sd">        .. todo ::</span>
-
-<span class="sd">            * It needs to raise an Exception when the supplied molecule</span>
-<span class="sd">            is not parameterized</span>
-
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        molecule : An offpele.topology.Molecule</span>
@@ -207,14 +202,16 @@
 <span class="sd">        &gt;&gt;&gt; impact.write(&#39;molz&#39;)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># The molecule needs to be parameterized</span>
-        <span class="n">molecule</span><span class="o">.</span><span class="n">assert_parameterized</span><span class="p">()</span>
 
+        <span class="c1"># Check input parameters</span>
         <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="n">offpele</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">Molecule</span><span class="p">)</span>
                 <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="n">offpele</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">Molecule</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_from_molecule</span><span class="p">(</span><span class="n">molecule</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Invalid input molecule for Impact template&#39;</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Invalid input molecule for Impact template&#39;</span><span class="p">)</span>
+
+        <span class="c1"># The molecule needs to be parameterized</span>
+        <span class="n">molecule</span><span class="o">.</span><span class="n">assert_parameterized</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_initialize_from_molecule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecule</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
