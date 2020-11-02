@@ -1,0 +1,137 @@
+FFLD_VERSION 4.1.0
+================================================================================
+  ATOMTYPES and PARAMETERS for molecule: 
+
+================================================================================
+
+ Total charge of the system =  0.0000
+Formal charge of the system =  0.0000
+
+
+Charges
+atom  formal fractional formal 
+1       0     0.000  
+2       0     0.000  
+3       0     0.000  
+4       0     0.000  
+5       0     0.000  
+6       0     0.000  
+7       0     0.000  
+8       0     0.000  
+9       0     0.000  
+10      0     0.000  
+11      0     0.000  
+12      0     0.000  
+
+BCI's             index  type   type    bci        assignement info
+ C1      C2          0   125   2157     0.0000   empirical rule   C4T-C4T
+ C1      C4          0   125   2157     0.0000   empirical rule   C4T-C4T
+ C1      F11         0   125    727    -0.3575   empirical rule   C4T-F
+ C1      F12         0   125    727    -0.3575   empirical rule   C4T-F
+ C2      C3          0  2157   2157     0.0000   exact type       C4T-C4T
+ C2      F9          0  2157    727    -0.1200   exact type       C4T-F
+ C2      F10         0  2157    727    -0.1200   exact type       C4T-F
+ C3      C4          0  2157   2157     0.0000   exact type       C4T-C4T
+ C3      F7          0  2157    727    -0.1200   exact type       C4T-F
+ C3      F8          0  2157    727    -0.1200   exact type       C4T-F
+ C4      F5          0  2157    727    -0.1200   exact type       C4T-F
+ C4      F6          0  2157    727    -0.1200   exact type       C4T-F
+
+OPLSAA FORCE FIELD TYPE ASSIGNED
+-------------------------------------------------------------------------------
+ atom   type  vdw  symbol    charge   sigma    epsilon  quality   comment 
+-------------------------------------------------------------------------------
+ C1       125  C1   C4T      0.7150   3.5000   0.0660 high   saturated cyclobutyl carbon
+ C2      2157  C16  C4T      0.2400   3.2500   0.0620 high  di fluoro methyl 
+ C3      2157  C16  C4T      0.2400   3.2500   0.0620 high  di fluoro methyl 
+ C4      2157  C16  C4T      0.2400   3.2500   0.0620 high  di fluoro methyl 
+ F5       727  F3   F       -0.1200   2.9500   0.0530 high  F attached to di halogen C
+ F6       727  F3   F       -0.1200   2.9500   0.0530 high  F attached to di halogen C
+ F7       727  F3   F       -0.1200   2.9500   0.0530 high  F attached to di halogen C
+ F8       727  F3   F       -0.1200   2.9500   0.0530 high  F attached to di halogen C
+ F9       727  F3   F       -0.1200   2.9500   0.0530 high  F attached to di halogen C
+ F10      727  F3   F       -0.1200   2.9500   0.0530 high  F attached to di halogen C
+ F11      727  F3   F       -0.3575   2.9500   0.0530 high  F attached to di halogen C
+ F12      727  F3   F       -0.3575   2.9500   0.0530 high  F attached to di halogen C
+------------------------------------------------------------------------------
+
+
+ Stretch            k            r0    quality         bt        comment
+ C1      C2      268.00000    1.52900   high         4  => 4     C4T-C4T    ==> C4T-C4T   
+ C1      C4      268.00000    1.52900   high         4  => 4     C4T-C4T    ==> C4T-C4T   
+ C1      F11     367.00000    1.33200   high         0  => 0     C4T-F      ==> CT-F      
+ C1      F12     367.00000    1.33200   high         0  => 0     C4T-F      ==> CT-F      
+ C2      C3      268.00000    1.52900   high         4  => 4     C4T-C4T    ==> C4T-C4T   
+ C2      F9      367.00000    1.33200   high         0  => 0     C4T-F      ==> CT-F      
+ C2      F10     367.00000    1.33200   high         0  => 0     C4T-F      ==> CT-F      
+ C3      C4      268.00000    1.52900   high         4  => 4     C4T-C4T    ==> C4T-C4T   
+ C3      F7      367.00000    1.33200   high         0  => 0     C4T-F      ==> CT-F      
+ C3      F8      367.00000    1.33200   high         0  => 0     C4T-F      ==> CT-F      
+ C4      F5      367.00000    1.33200   high         0  => 0     C4T-F      ==> CT-F      
+ C4      F6      367.00000    1.33200   high         0  => 0     C4T-F      ==> CT-F      
+
+ Bending                      k       theta0    quality   at  comment
+ C2      C1      C4        63.00000   92.00000   high     4   C4T-C4T-C4T       ==> C4T-C4T-C4T      
+ C2      C1      F11       50.00000  109.50000   high     0   C4T-C4T-F         ==> CT-CT-F          
+ C2      C1      F12       50.00000  109.50000   high     0   C4T-C4T-F         ==> CT-CT-F          
+ C4      C1      F11       50.00000  109.50000   high     0   C4T-C4T-F         ==> CT-CT-F          
+ C4      C1      F12       50.00000  109.50000   high     0   C4T-C4T-F         ==> CT-CT-F          
+ F11     C1      F12       77.00000  109.10000   high     0   F-C4T-F           ==> F-CT-F           
+ C1      C2      C3        63.00000   92.00000   high     4   C4T-C4T-C4T       ==> C4T-C4T-C4T      
+ C1      C2      F9        50.00000  109.50000   high     0   C4T-C4T-F         ==> CT-CT-F          
+ C1      C2      F10       50.00000  109.50000   high     0   C4T-C4T-F         ==> CT-CT-F          
+ C3      C2      F9        50.00000  109.50000   high     0   C4T-C4T-F         ==> CT-CT-F          
+ C3      C2      F10       50.00000  109.50000   high     0   C4T-C4T-F         ==> CT-CT-F          
+ F9      C2      F10       77.00000  109.10000   high     0   F-C4T-F           ==> F-CT-F           
+ C2      C3      C4        63.00000   92.00000   high     4   C4T-C4T-C4T       ==> C4T-C4T-C4T      
+ C2      C3      F7        50.00000  109.50000   high     0   C4T-C4T-F         ==> CT-CT-F          
+ C2      C3      F8        50.00000  109.50000   high     0   C4T-C4T-F         ==> CT-CT-F          
+ C4      C3      F7        50.00000  109.50000   high     0   C4T-C4T-F         ==> CT-CT-F          
+ C4      C3      F8        50.00000  109.50000   high     0   C4T-C4T-F         ==> CT-CT-F          
+ F7      C3      F8        77.00000  109.10000   high     0   F-C4T-F           ==> F-CT-F           
+ C1      C4      C3        63.00000   92.00000   high     4   C4T-C4T-C4T       ==> C4T-C4T-C4T      
+ C1      C4      F5        50.00000  109.50000   high     0   C4T-C4T-F         ==> CT-CT-F          
+ C1      C4      F6        50.00000  109.50000   high     0   C4T-C4T-F         ==> CT-CT-F          
+ C3      C4      F5        50.00000  109.50000   high     0   C4T-C4T-F         ==> CT-CT-F          
+ C3      C4      F6        50.00000  109.50000   high     0   C4T-C4T-F         ==> CT-CT-F          
+ F5      C4      F6        77.00000  109.10000   high     0   F-C4T-F           ==> F-CT-F           
+
+ proper Torsion                     V1      V2      V3      V4    quality  tt  comment
+ C4      C1      C2      C3        0.000   0.000   0.000   0.000    high   4   C4T-C4T-C4T-C4T      ==> C4T-C4T-C4T-C4T     
+ C4      C1      C2      F9        0.793  -0.367   0.829   0.000    high   0   C4T-C4T-C4T-F        ==> F-CT-CT-CT          
+ C4      C1      C2      F10       0.793  -0.367   0.829   0.000    high   0   C4T-C4T-C4T-F        ==> F-CT-CT-CT          
+ F11     C1      C2      C3        0.793  -0.367   0.829   0.000    high   0   F-C4T-C4T-C4T        ==> F-CT-CT-CT          
+ F11     C1      C2      F9        0.602  -2.719   0.734   0.000    high   0   F-C4T-C4T-F          ==> F-CT-CT-F           
+ F11     C1      C2      F10       0.602  -2.719   0.734   0.000    high   0   F-C4T-C4T-F          ==> F-CT-CT-F           
+ F12     C1      C2      C3        0.793  -0.367   0.829   0.000    high   0   F-C4T-C4T-C4T        ==> F-CT-CT-CT          
+ F12     C1      C2      F9        0.602  -2.719   0.734   0.000    high   0   F-C4T-C4T-F          ==> F-CT-CT-F           
+ F12     C1      C2      F10       0.602  -2.719   0.734   0.000    high   0   F-C4T-C4T-F          ==> F-CT-CT-F           
+ C2      C1      C4      C3        0.000   0.000   0.000   0.000    high   4   C4T-C4T-C4T-C4T      ==> C4T-C4T-C4T-C4T     
+ C2      C1      C4      F5        0.793  -0.367   0.829   0.000    high   0   C4T-C4T-C4T-F        ==> F-CT-CT-CT          
+ C2      C1      C4      F6        0.793  -0.367   0.829   0.000    high   0   C4T-C4T-C4T-F        ==> F-CT-CT-CT          
+ F11     C1      C4      C3        0.793  -0.367   0.829   0.000    high   0   F-C4T-C4T-C4T        ==> F-CT-CT-CT          
+ F11     C1      C4      F5        0.602  -2.719   0.734   0.000    high   0   F-C4T-C4T-F          ==> F-CT-CT-F           
+ F11     C1      C4      F6        0.602  -2.719   0.734   0.000    high   0   F-C4T-C4T-F          ==> F-CT-CT-F           
+ F12     C1      C4      C3        0.793  -0.367   0.829   0.000    high   0   F-C4T-C4T-C4T        ==> F-CT-CT-CT          
+ F12     C1      C4      F5        0.602  -2.719   0.734   0.000    high   0   F-C4T-C4T-F          ==> F-CT-CT-F           
+ F12     C1      C4      F6        0.602  -2.719   0.734   0.000    high   0   F-C4T-C4T-F          ==> F-CT-CT-F           
+ C1      C2      C3      C4        0.000   0.000   0.000   0.000    high   4   C4T-C4T-C4T-C4T      ==> C4T-C4T-C4T-C4T     
+ C1      C2      C3      F7        0.793  -0.367   0.829   0.000    high   0   C4T-C4T-C4T-F        ==> F-CT-CT-CT          
+ C1      C2      C3      F8        0.793  -0.367   0.829   0.000    high   0   C4T-C4T-C4T-F        ==> F-CT-CT-CT          
+ F9      C2      C3      C4        0.793  -0.367   0.829   0.000    high   0   F-C4T-C4T-C4T        ==> F-CT-CT-CT          
+ F9      C2      C3      F7        0.602  -2.719   0.734   0.000    high   0   F-C4T-C4T-F          ==> F-CT-CT-F           
+ F9      C2      C3      F8        0.602  -2.719   0.734   0.000    high   0   F-C4T-C4T-F          ==> F-CT-CT-F           
+ F10     C2      C3      C4        0.793  -0.367   0.829   0.000    high   0   F-C4T-C4T-C4T        ==> F-CT-CT-CT          
+ F10     C2      C3      F7        0.602  -2.719   0.734   0.000    high   0   F-C4T-C4T-F          ==> F-CT-CT-F           
+ F10     C2      C3      F8        0.602  -2.719   0.734   0.000    high   0   F-C4T-C4T-F          ==> F-CT-CT-F           
+ C2      C3      C4      C1        0.000   0.000   0.000   0.000    high   4   C4T-C4T-C4T-C4T      ==> C4T-C4T-C4T-C4T     
+ C2      C3      C4      F5        0.793  -0.367   0.829   0.000    high   0   C4T-C4T-C4T-F        ==> F-CT-CT-CT          
+ C2      C3      C4      F6        0.793  -0.367   0.829   0.000    high   0   C4T-C4T-C4T-F        ==> F-CT-CT-CT          
+ F7      C3      C4      C1        0.793  -0.367   0.829   0.000    high   0   F-C4T-C4T-C4T        ==> F-CT-CT-CT          
+ F7      C3      C4      F5        0.602  -2.719   0.734   0.000    high   0   F-C4T-C4T-F          ==> F-CT-CT-F           
+ F7      C3      C4      F6        0.602  -2.719   0.734   0.000    high   0   F-C4T-C4T-F          ==> F-CT-CT-F           
+ F8      C3      C4      C1        0.793  -0.367   0.829   0.000    high   0   F-C4T-C4T-C4T        ==> F-CT-CT-CT          
+ F8      C3      C4      F5        0.602  -2.719   0.734   0.000    high   0   F-C4T-C4T-F          ==> F-CT-CT-F           
+ F8      C3      C4      F6        0.602  -2.719   0.734   0.000    high   0   F-C4T-C4T-F          ==> F-CT-CT-F           
+
+
