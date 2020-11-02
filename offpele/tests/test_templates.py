@@ -48,21 +48,54 @@ class TestImpactTemplate(object):
 
 		LIGAND_PATH = 'ligands/BNZ.pdb'
 		FORCEFIELD_NAME = 'openff_unconstrained-1.1.1.offxml'
-		TEMPLATE_EXAMPLE = 'ghfdh'
+		TEMPLATE_METZ = '/home/lauramalo/repos/offpele/offpele/tests/reference_templates/metz'
+		TEMPLATE_MATZ = '/home/lauramalo/repos/offpele/offpele/tests/reference_templates/malz'
+		TEMPLATE_ETLZ = '/home/lauramalo/repos/offpele/offpele/tests/reference_templates/etlz'
 
-		ligand_path = get_data_file_path(LIGAND_PATH)
-		molecule = Molecule(ligand_path)
-		molecule.parameterize(FORCEFIELD_NAME)
-		impact = Impact(molecule)
-		impact.write('molz')
+		# Generates the tempalte for methane
+		pdb_path = get_data_file_path('ligands/methane.pdb')
+		m = Molecule(pdb_path)
+		m.parameterize('openff_unconstrained-1.2.1.offxml')
+		impact = Impact(m)
+		impact.write('metz')
 
-		with open(TEMPLATE_EXAMPLE, 'r') as f1: 
-			contentA = set(f1)
-		with open('molz', 'r') as f2: 
-			contentB = set(f2)
-		assert contentA == contentB
+		# Compare the reference template and the generated template
+		with open(TEMPLATE_METZ, 'r') as f1: 
+			dataA = f1.readlines()[3:]
+		with open('metz', 'r') as f2: 
+			dataB = f2.readlines()[3:]
+		assert dataA == dataB
+
+		# Generates the template for malonate
+		pdb_path = get_data_file_path('ligands/malonate.pdb')
+		m = Molecule(pdb_path)
+		m.parameterize('openff_unconstrained-1.2.1.offxml')
+		impact = Impact(m)
+		impact.write('malz')
+
+		# Compare the reference template and the generated template
+		with open(TEMPLATE_MATZ, 'r') as f1: 
+			dataA = f1.readlines()[3:]
+		with open('malz', 'r') as f2: 
+			dataB = f2.readlines()[3:]
+		assert dataA == dataB
+
+		# Generates the template for ethylene
+		pdb_path = get_data_file_path('ligands/ethylene.pdb')
+		m = Molecule(pdb_path, tag='ETL')  # Note that in this case we are assigning a tag to the molecule which will be used in the Impact template
+		m.parameterize('openff_unconstrained-1.2.1.offxml')
+		impact = Impact(m)
+		impact.write('etlz')
+
+		# Compare the reference template and the generated template
+		with open(TEMPLATE_ETLZ, 'r') as f1: 
+			dataA = f1.readlines()[3:]
+		with open('etlz', 'r') as f2: 
+			dataB = f2.readlines()[3:]
+		assert dataA == dataB
 
 
+	
 
 
 
