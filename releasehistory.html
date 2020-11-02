@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.g1b95fe9
+                0+untagged.1.g08b5fb9
               </div>
             
           
@@ -96,25 +96,25 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#general-stability-improvements">0.3.1 - General stability improvements</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id6">New features</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id7">Bugfixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id8">Tests added</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">New features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">Bugfixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">Tests added</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#rotamers-opls2005-smiles-and-stability-improvements">0.3.0 - Rotamers, OPLS2005, SMILES and stability improvements</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id14">New features</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id15">Bugfixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id17">Tests added</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">New features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id16">Bugfixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id18">Tests added</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id22">0.2.1</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id23">New features</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id24">Bugfixes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id25">Tests added</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id23">0.2.1</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id24">New features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id25">Bugfixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id26">Tests added</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id28">0.2.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id29">New features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id29">0.2.0</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id30">New features</a></li>
 </ul>
 </li>
 </ul>
@@ -220,6 +220,7 @@
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/74">PR #74</a>: Corrects wrong assignment of PDB atom names when using the OPLS2005 force field.</p></li>
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/79">PR #79</a>: Corrects error with missing modules in the Conda installation.</p></li>
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/82">PR #82</a>: Corrects a bug that caused some important propers obtained with OPLS2005 to be missing.</p></li>
+<li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/84">PR #84</a>: Corrects a bug that caused unparameterized Molecules to be undetected.</p></li>
 </ul>
 </div>
 <div class="section" id="tests-added">
@@ -238,23 +239,23 @@
 <div class="section" id="general-stability-improvements">
 <h2>0.3.1 - General stability improvements<a class="headerlink" href="#general-stability-improvements" title="Permalink to this headline">¶</a></h2>
 <p>This is a micro release that includes general bug fixes and stability improvements. It is still a preliminary version of the Open Force Field to PELE package which is under development.</p>
-<div class="section" id="id6">
-<h3>New features<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id7">
+<h3>New features<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/52">PR #52</a>: Molecule connectivity can be assigned from an RDKit molecular template when loading it from a PDB file without connectivity.</p></li>
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/55">PR #55</a>: Standard output prints follow the logging hierarchy and can be modified by the user.</p></li>
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/59">PR #59</a>: Set alternative conformers to the offpele’s molecule representation.</p></li>
 </ul>
 </div>
-<div class="section" id="id7">
-<h3>Bugfixes<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id8">
+<h3>Bugfixes<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/48">PR #48</a>: Fixes CLI’s default output paths.</p></li>
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/58">PR #58</a>: Fixes unconsistencies between PDB residue name and molecule tag.</p></li>
 </ul>
 </div>
-<div class="section" id="id8">
-<h3>Tests added<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id9">
+<h3>Tests added<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/48">PR #48</a>: Adds tests to validate the assignment of the default output paths.</p></li>
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/52">PR #52</a>: Adds tests to validate the initialization using a connectivity template.</p></li>
@@ -267,8 +268,8 @@
 <div class="section" id="rotamers-opls2005-smiles-and-stability-improvements">
 <h2>0.3.0 - Rotamers, OPLS2005, SMILES and stability improvements<a class="headerlink" href="#rotamers-opls2005-smiles-and-stability-improvements" title="Permalink to this headline">¶</a></h2>
 <p>This is a minor release that includes a refactoring of the classes and methods that involve the rotamer library builder. Besides, now it is possible to combine parameters from OPLS2005 and OFF. This release also contains a new method to define a molecule through a SMILES tag. It is still a preliminary version of the Open Force Field to PELE package which is under development.</p>
-<div class="section" id="id14">
-<h3>New features<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id15">
+<h3>New features<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/28">PR #28</a>: Adds a new method to define a <cite>Molecule</cite> object through a SMILES tag. This molecule can be written as a PDB file later for PELE.</p></li>
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/31">PR #31</a>: Adds the possibility to combine nonbonding and solvent parameters from OPLS2005 with bonding parameters from OFF.</p></li>
@@ -278,8 +279,8 @@
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/46">PR #46</a>: Adds a tag to Molecule class. Besides, the handling of Molecule names is improved. Both attributes can be set when initiating the molecule.</p></li>
 </ul>
 </div>
-<div class="section" id="id15">
-<h3>Bugfixes<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id16">
+<h3>Bugfixes<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/22">PR #22</a>: Fixes many bugs. For example, the default output name of the solvent parameters template is changed to <cite>ligandParams.txt</cite>, which is the name that PELE expects.</p></li>
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/32">PR #32</a>: Minor fixes in ToolkitWrapper classes.</p></li>
@@ -287,8 +288,8 @@
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/46">PR #46</a>: Prevents molecule to be untagged when loading it from a SMILES tag.</p></li>
 </ul>
 </div>
-<div class="section" id="id17">
-<h3>Tests added<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id18">
+<h3>Tests added<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/31">PR #31</a>: Adds tests to validate some functions of the new SchrodingerToolkitWrapper.</p></li>
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/34">PR #34</a>: Adds tests to further validate the assignment of parameters from the Open Force Field Toolkit.</p></li>
@@ -297,38 +298,38 @@
 </ul>
 </div>
 </div>
-<div class="section" id="id22">
-<h2>0.2.1<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id23">
+<h2>0.2.1<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h2>
 <p>This is a micro release that includes new features and parameters to configurate the behaviour of the program.
 It is designed to be employed to run the first benchmarks of the implementation in PELE.
 It also includes many stability improvements and an extended test coverage.</p>
-<div class="section" id="id23">
-<h3>New features<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id24">
+<h3>New features<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/15">PR #15</a>: Adds a new method (Antechamber’s gasteiger) to calculate partial charges.</p></li>
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/19">PR #19</a>: Adds a new option to ignore terminal rotatable bonds of each rotamer’s branch.</p></li>
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/17">PR #17</a>: Adds and updates the documentation. However, it is still not completed.</p></li>
 </ul>
 </div>
-<div class="section" id="id24">
-<h3>Bugfixes<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id25">
+<h3>Bugfixes<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/18">PR #18</a>: Fixes some problems with proper and improper constructors.</p></li>
 </ul>
 </div>
-<div class="section" id="id25">
-<h3>Tests added<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id26">
+<h3>Tests added<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/15">PR #15</a>: Adds tests ensuring that the run_offpele call from main and the partial charge calculators work as expected.</p></li>
 <li><p><a class="reference external" href="https://github.com/martimunicoy/offpele/pull/19">PR #19</a>: Adds tests to validate the construction of the <cite>RotamerLibrary</cite> class and the filtering of terminal rotatable bonds.</p></li>
 </ul>
 </div>
 </div>
-<div class="section" id="id28">
-<h2>0.2.0<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h2>
-<p>This is a preliminary version of the Open Force Field to PELE package.</p>
 <div class="section" id="id29">
-<h3>New features<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h3>
+<h2>0.2.0<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h2>
+<p>This is a preliminary version of the Open Force Field to PELE package.</p>
+<div class="section" id="id30">
+<h3>New features<a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
 <p>A first implementation of the package that allows to:</p>
 <ul class="simple">
 <li><p>Build a rotamer library for a small molecule using RDKit’s API</p></li>
