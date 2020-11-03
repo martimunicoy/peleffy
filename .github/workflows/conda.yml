@@ -1,8 +1,11 @@
 name: Conda deployment
 
 on:
-  release:
-    types: [created]
+  #release:
+  #  types: [created]
+  # remove below line
+  push:
+    branches: [ master ]
 
 jobs:
   build:
@@ -26,11 +29,9 @@ jobs:
         run: conda install anaconda-client
       - name: Configurate conda-build
         run: conda config --set anaconda_upload yes
-      # logout to prevent anaconda complaints
       - name: Configurate conda-client from anaconda
         run: |
-          #anaconda logout
-          anaconda login --username ${{ secrets.ANACONDA_USER }} --password ${{ secrets.ANACONDA_PASSWD }} --hostname host${{ matrix.python-version }}${{ matrix.os }}
+          anaconda login --hostname host${{ matrix.python-version }}${{ matrix.os }} --username ${{ secrets.ANACONDA_USER }} --password ${{ secrets.ANACONDA_PASSWD }}
       - name: Deploy package to conda
         run: conda build -c rdkit -c omnia 'devtools/conda'
       - name: Logout from anaconda
