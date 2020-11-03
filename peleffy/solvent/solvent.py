@@ -15,6 +15,7 @@ class _SolventWrapper(object):
     """
     _ff_file = None
     _name = None
+    _compatibility = None
 
     def __init__(self, molecule):
         """
@@ -23,96 +24,22 @@ class _SolventWrapper(object):
         Parameters
         ----------
         molecule : An peleffy.topology.Molecule
-            A Molecule object to be written as an Impact file
+            A Molecule object whose solvent template will be generated.
+            Molecule must be previously parameterized
         """
-        self._molecule = molecule
-        self._radii = dict.fromkeys([tuple((idx, ))
-                                     for idx in range(0, len(molecule.atoms))],
-                                    unit.Quantity())
-        self._scales = dict.fromkeys([tuple((idx, ))
-                                      for idx in range(0, len(molecule.atoms))],
-                                     unit.Quantity())
-        self._solvent_dielectric = float(0)
-        self._solute_dielectric = float(0)
-        self._surface_area_penalty = float(0)
-        self._solvent_radius = float(0)
-        self._initialize_from_molecule()
+        # Check that input molecule is parameterized
+        molecule.assert_parameterized()
 
-    def _initialize_from_molecule(self):
-        """
-        Initializes a SolventWrapper object using an peleffy's Molecule.
-        """
         logger = Logger()
         logger.info(' - Loading solvent parameters')
 
-        from peleffy.utils.toolkits import OpenForceFieldToolkitWrapper
-
-        off_toolkit = OpenForceFieldToolkitWrapper()
-        GBSA_handler = off_toolkit.get_parameter_handler_from_forcefield(
-            'GBSA', self._ff_file)
-
-        self._solvent_dielectric = GBSA_handler.solvent_dielectric
-        self._solute_dielectric = GBSA_handler.solute_dielectric
-        self._surface_area_penalty = GBSA_handler.surface_area_penalty
-        self._solvent_radius = GBSA_handler.solvent_radius
-
-        from peleffy.forcefield import OpenForceField
-
-        forcefield = OpenForceField(self._ff_file)
-        parameters = forcefield.parameterize(self.molecule)
-
-        self._radii = parameters['GBSA_radii']
-        self._scales = parameters['GBSA_scales']
-
-    def to_dict(self):
-        """
-        Returns this SolventWrapper object as a dictionary.
-
-        Returns
-        -------
-        data : dict
-            A dictionary containing the data of this SolventWrapper object
-        """
-        data = dict()
-        data['SolventParameters'] = dict()
-        data['SolventParameters']['Name'] = self.name
-        data['SolventParameters']['General'] = dict()
-        data['SolventParameters']['General']['solvent_dielectric'] = \
-            round(self.solvent_dielectric, 5)
-        data['SolventParameters']['General']['solute_dielectric'] = \
-            round(self.solute_dielectric, 5)
-        data['SolventParameters']['General']['solvent_radius'] = \
-            round(self.solvent_radius.value_in_unit(unit.angstrom), 5)
-        data['SolventParameters']['General']['surface_area_penalty'] = \
-            round(self.surface_area_penalty.value_in_unit(
-                unit.kilocalorie / (unit.angstrom**2 * unit.mole)), 8)
-        data['SolventParameters'][self.molecule.tag] = dict()
-
-        atom_names = self.molecule.get_pdb_atom_names()
-
-        for atom, name in zip(self.molecule.rdkit_molecule.GetAtoms(),
-                              atom_names):
-            name = name.replace(' ', '_')
-            index = atom.GetIdx()
-            data['SolventParameters'][self.molecule.tag][name] = \
-                {'radius': round(self.radii[tuple((index, ))].value_in_unit(
-                                 unit.angstrom), 5),
-                 'scale': round(self.scales[tuple((index, ))], 5)}
-
-        return data
-
-    def to_json_file(self, path):
-        """
-        Writes this SolventWrapper object to a json file.
-
-        Parameters
-        ----------
-        path : str
-            Path to save the json file to
-        """
-        import json
-        with open(path, 'w') as file:
-            json.dump(self.to_dict(), file, indent=4)
+        self._molecule = molecule
+        self._radii = dict.fromkeys(
+            [tuple((idx, )) for idx in range(0, len(molecule.atoms))],
+            unit.Quantity())
+        self._scales = dict.fromkeys(
+            [tuple((idx, )) for idx in range(0, len(molecule.atoms))],
+            unit.Quantity())
 
     @property
     def name(self):
@@ -161,6 +88,103 @@ class _SolventWrapper(object):
             The scale assigned to each atom of the molecule
         """
         return self._scales
+
+
+class _OpenFFCompatibleSolvent(_SolventWrapper):
+    """
+    Implementation of a solvent-template generator compatible with
+    PELE's OpenFF implementation.
+    """
+
+    _compatibility = 'openff'
+
+    def __init__(self, molecule):
+        """
+        It initializes an OpenFFCompatibleSolvent.
+
+        Parameters
+        ----------
+        molecule : An peleffy.topology.Molecule
+            A Molecule object whose solvent template will be generated
+        """
+        super().__init__(molecule)
+
+        from peleffy.utils.toolkits import OpenForceFieldToolkitWrapper
+
+        off_toolkit = OpenForceFieldToolkitWrapper()
+        GBSA_handler = off_toolkit.get_parameter_handler_from_forcefield(
+            'GBSA', self._ff_file)
+
+        self._solvent_dielectric = GBSA_handler.solvent_dielectric
+        self._solute_dielectric = GBSA_handler.solute_dielectric
+        self._surface_area_penalty = GBSA_handler.surface_area_penalty
+        self._solvent_radius = GBSA_handler.solvent_radius
+
+        self._initialize_from_molecule()
+
+    def _initialize_from_molecule(self):
+        """
+        Initializes a OpenFFCompatibleSolvent object using an peleffy's
+        Molecule.
+        """
+
+        from peleffy.forcefield import OpenForceField
+
+        forcefield = OpenForceField(self._ff_file)
+        parameters = forcefield.parameterize(self.molecule)
+
+        self._radii = parameters['GBSA_radii']
+        self._scales = parameters['GBSA_scales']
+
+    def to_dict(self):
+        """
+        Returns this OpenFFCompatibleSolvent object as a dictionary.
+
+        Returns
+        -------
+        data : dict
+            A dictionary containing the data of this SolventWrapper object
+        """
+        data = dict()
+        data['SolventParameters'] = dict()
+        data['SolventParameters']['Name'] = self.name
+        data['SolventParameters']['General'] = dict()
+        data['SolventParameters']['General']['solvent_dielectric'] = \
+            round(self.solvent_dielectric, 5)
+        data['SolventParameters']['General']['solute_dielectric'] = \
+            round(self.solute_dielectric, 5)
+        data['SolventParameters']['General']['solvent_radius'] = \
+            round(self.solvent_radius.value_in_unit(unit.angstrom), 5)
+        data['SolventParameters']['General']['surface_area_penalty'] = \
+            round(self.surface_area_penalty.value_in_unit(
+                unit.kilocalorie / (unit.angstrom**2 * unit.mole)), 8)
+        data['SolventParameters'][self.molecule.tag] = dict()
+
+        atom_names = self.molecule.get_pdb_atom_names()
+
+        for atom, name in zip(self.molecule.rdkit_molecule.GetAtoms(),
+                              atom_names):
+            name = name.replace(' ', '_')
+            index = atom.GetIdx()
+            data['SolventParameters'][self.molecule.tag][name] = \
+                {'radius': round(self.radii[tuple((index, ))].value_in_unit(
+                                 unit.angstrom), 5),
+                 'scale': round(self.scales[tuple((index, ))], 5)}
+
+        return data
+
+    def to_file(self, path):
+        """
+        Writes this OpenFFCompatibleSolvent object to a file.
+
+        Parameters
+        ----------
+        path : str
+            Path to save the output file to
+        """
+        import json
+        with open(path, 'w') as file:
+            json.dump(self.to_dict(), file, indent=4)
 
     @property
     def solvent_dielectric(self):
@@ -211,7 +235,44 @@ class _SolventWrapper(object):
         return self._solvent_radius
 
 
-class OBC1(_SolventWrapper):
+class _OPLS2005CompatibleSolvent(_SolventWrapper):
+    """
+    Implementation of a solvent-template generator compatible with
+    PELE's OPLS2005 implementation.
+    """
+
+    _compatibility = 'opls2005'
+
+    def __init__(self, molecule):
+        """
+        It initializes an OPLS2005CompatibleSolvent.
+
+        Parameters
+        ----------
+        molecule : An peleffy.topology.Molecule
+            A Molecule object whose solvent template will be generated
+        """
+        super().__init__(molecule)
+
+        self._radii = molecule.parameters['GBSA_radii']
+        self._scales = molecule.parameters['GBSA_scales']
+
+    def to_file(self, path):
+        """
+        Writes this OPLS2005CompatibleSolvent object to a file.
+
+        Parameters
+        ----------
+        path : str
+            Path to save the output file to
+        """
+
+        raise NotImplementedError('A solvent template compatible with '
+                                  + 'PELE\'s OPLS2005 force field cannot '
+                                  + 'be generated yet')
+
+
+class OBC1(_OpenFFCompatibleSolvent):
     """
     Implementation of the OBC1 solvent.
     """
@@ -226,12 +287,11 @@ class OBC1(_SolventWrapper):
         Parameters
         ----------
         molecule : An peleffy.topology.Molecule
-            A Molecule object to be written as an Impact file
+            A Molecule object whose solvent template will be generated
         """
         # Not implemented in PELE
-        import warnings
-        warnings.formatwarning = warning_on_one_line
-        warnings.warn("OBC1 is not implemented in PELE", Warning)
+        logger = Logger()
+        logger.warning('OBC1 is not implemented in PELE')
 
         super().__init__(molecule)
 
@@ -242,7 +302,7 @@ class OBC1(_SolventWrapper):
         super()._initialize_from_molecule()
 
 
-class OBC2(_SolventWrapper):
+class OBC2(_OpenFFCompatibleSolvent):
     """
     Implementation of the OBC2 solvent.
     """
@@ -257,7 +317,7 @@ class OBC2(_SolventWrapper):
         Parameters
         ----------
         molecule : An peleffy.topology.Molecule
-            A Molecule object to be written as an Impact file
+            A Molecule object whose solvent template will be generated
 
         Examples
         --------
@@ -269,7 +329,7 @@ class OBC2(_SolventWrapper):
 
         >>> molecule = Molecule('molecule.pdb')
         >>> solvent = OBC2(molecule)
-        >>> solvent.to_json_file('molecule_solv.json')
+        >>> solvent.to_file('OBC_parameters.txt')
 
         """
         super().__init__(molecule)
@@ -277,5 +337,43 @@ class OBC2(_SolventWrapper):
     def _initialize_from_molecule(self):
         """
         Initializes the OBC2 solvent using an peleffy's Molecule.
+        """
+        super()._initialize_from_molecule()
+
+
+class OPLSOBC(_OPLS2005CompatibleSolvent):
+    """
+    It defines a template generator for OBC compatible with the OPLS2005
+    force field implemented in PELE.
+    """
+    _name = 'OBC'
+
+    def __init__(self, molecule):
+        """
+        Initializes an OPLSOBC object.
+
+        Parameters
+        ----------
+        molecule : An peleffy.topology.Molecule
+            A Molecule object whose solvent template will be generated
+
+        Examples
+        --------
+
+        Generate the solvent parameters of a molecule
+
+        >>> from peleffy.topology import Molecule
+        >>> from peleffy.solvent import OPLSOBC
+
+        >>> molecule = Molecule('molecule.pdb')
+        >>> solvent = OPLSOBC(molecule)
+        >>> solvent.to_file('OBC_parameters.txt')
+
+        """
+        super().__init__(molecule)
+
+    def _initialize_from_molecule(self):
+        """
+        Initializes the OPLSOBC solvent using an peleffy's Molecule.
         """
         super()._initialize_from_molecule()

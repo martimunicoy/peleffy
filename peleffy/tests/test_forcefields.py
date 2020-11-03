@@ -241,9 +241,9 @@ class TestOPLS2005ForceField(object):
                          expected_propers=expected_propers,
                          expected_impropers=expected_impropers)
 
-    def test_add_solvent_parameters(self):
+    def test_add_SGBNP_solvent_parameters(self):
         """
-        It tests the function that adds the solvent parameters to
+        It tests the function that adds the SGBNP solvent parameters to
         the OPLSParameters collection.
         """
 
@@ -274,9 +274,9 @@ class TestOPLS2005ForceField(object):
              'sigmas': [3.5, 2.5, 2.5, 2.5, 2.5],
              'epsilons': [0.066, 0.03, 0.03, 0.03, 0.03]})
 
-        OPLS2005ParameterWrapper._add_solvent_parameters(params1)
-        OPLS2005ParameterWrapper._add_solvent_parameters(params2)
-        OPLS2005ParameterWrapper._add_solvent_parameters(params3)
+        OPLS2005ParameterWrapper._add_SGBNP_solvent_parameters(params1)
+        OPLS2005ParameterWrapper._add_SGBNP_solvent_parameters(params2)
+        OPLS2005ParameterWrapper._add_SGBNP_solvent_parameters(params3)
 
         assert params1['SGB_radii'][0] == \
             unit.Quantity(1.975, unit.angstrom), 'Unexpected SGB radius'

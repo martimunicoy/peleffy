@@ -648,7 +648,9 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                      })
 
         opls_parameters_wrapper = OPLS2005ParameterWrapper(params)
-        OPLS2005ParameterWrapper._add_solvent_parameters(
+        OPLS2005ParameterWrapper._add_SGBNP_solvent_parameters(
+            opls_parameters_wrapper)
+        OPLS2005ParameterWrapper._add_GBSA_solvent_parameters(
             opls_parameters_wrapper)
 
         return opls_parameters_wrapper
@@ -701,9 +703,11 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
         return new_atom_type
 
     @staticmethod
-    def _add_solvent_parameters(OPLS_params):
+    def _add_SGBNP_solvent_parameters(OPLS_params):
         """
-        It add the solvent parameters to the OPLS parameters collection.
+        It adds the SGBNP solvent parameters (used in the SGBNP solvent
+        implemented in the OPLS2005 of PELE) to the OPLS parameters
+        collection.
 
         Parameters
         ----------
@@ -762,6 +766,36 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
 
         for label, params in parameters_to_add.items():
             OPLS_params.add_parameters(label, params)
+
+    @staticmethod
+    def _add_GBSA_solvent_parameters(OPLS_params):
+        """
+        It adds the GBSA solvent parameters (used in the OBC solvent
+        implemented in the OPLS2005 of PELE) to the OPLS parameters
+        collection.
+
+        Parameters
+        ----------
+        OPLS_params : an OPLS2005ParameterWrapper object
+            The set of lists of parameters grouped by parameter type.
+            Thus, the dictionary has the following keys: atom_names,
+            atom_types, charges, sigmas, and epsilons. The following
+            solvent parameters will be added to the collection: SGB_radii,
+            vdW_radii, gammas, alphas
+        """
+        return
+
+        raise NotImplementedError()
+
+        # radii = list()
+        # scales = list()
+        # Here we can loop over atom types and names:
+        # for atom_name, atom_type in zip(OPLS_params['atom_names'], OPLS_params['atom_types']):
+        #     radius, scale = find_GBSA_parameters_according_to(atom_name, atom_type)
+        #     radii.append(radius)
+        #     scales.append(scale)
+        # OPLS_params['GBSA_radii'] = radii
+        # OPLS_params['GBSA_scales'] = scales
 
 
 class OpenFFOPLS2005ParameterWrapper(BaseParameterWrapper):
