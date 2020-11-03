@@ -571,6 +571,36 @@ class Molecule(object):
         from peleffy.forcefield.parameters import BaseParameterWrapper
         self._parameters = BaseParameterWrapper()
 
+    def _PDB_checkup(self, path):
+        """
+        Safety check for PDB files in order to properly handle exceptions 
+        related with its format prior running the parameterization.
+
+        Parameters
+        ----------
+        path : str
+            The path to a PDB with the molecule structure
+        """ 
+        # Parse PDB file
+        atom_id, res_name, res_id = ([] for i in range(3)) 
+        for line in open(path):
+            if not len(line.strip()) == 0:
+                list = line.split()
+                id = list[0]
+                if id == 'HETATM':
+                    atom_id.append(list[2])
+                    res_name.append(list[3])
+                    res_id.append(list[4])
+
+        # Handle exceptions related with the PDB file format
+        assert res_id[:-1] == res_id[1:], \
+                'A single ligand with immutable residue ids is expected' 
+        assert res_name[:-1] == res_name[1:], \
+                'A single ligand with immutable residue names is expected'
+        assert len(atom_id) == len(set(atom_id)), \
+                'Ligand in input PDB has no unique atom names'
+
+
     def _initialize_from_pdb(self, path):
         """
         It initializes a molecule with the molecule structure read from
@@ -584,6 +614,9 @@ class Molecule(object):
         logger = Logger()
         logger.info(' - Initializing molecule from PDB')
         self._initialize()
+
+        #Validate PDB
+        self._PDB_checkup(path)
 
         logger.info('   - Loading molecule from RDKit')
         rdkit_toolkit = RDKitToolkitWrapper()
