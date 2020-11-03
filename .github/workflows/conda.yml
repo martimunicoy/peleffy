@@ -1,11 +1,8 @@
 name: Conda deployment
 
 on:
-  #release:
-  #  types: [created]
-  # remove below line
-  push:
-    branches: [ master ]
+  release:
+    types: [created]
 
 jobs:
   build:
