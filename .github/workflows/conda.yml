@@ -29,7 +29,7 @@ jobs:
       # logout to prevent anaconda complaints
       - name: Configurate conda-client from anaconda
         run: |
-          anaconda logout
+          #anaconda logout
           anaconda login --username ${{ secrets.ANACONDA_USER }} --password ${{ secrets.ANACONDA_PASSWD }} --hostname host${{ matrix.python-version }}${{ matrix.os }}
       - name: Deploy package to conda
         run: conda build -c rdkit -c omnia 'devtools/conda'
