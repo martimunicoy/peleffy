@@ -4,10 +4,6 @@ from setuptools import setup
 import versioneer
 
 
-def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
-
-
 def find_package_data(data_root, package_root):
     files = []
     for root, dirnames, filenames in os.walk(data_root):
@@ -17,24 +13,27 @@ def find_package_data(data_root, package_root):
 
 
 setup(
-    name="offpele",
+    name="peleffy",
     author="Martí Municoy",
     author_email="martimunicoy@gmail.com",
-    description=("Open Force Field to PELE"),
+    description=("PELE Force Field Yielder"),
     license="MIT",
     keywords="molecular mechanics, forcefield, potential energy",
-    url="http://github.com/martimunicoy/offpele",
+    url="http://github.com/martimunicoy/peleffy",
     packages=[
-        'offpele',
-        'offpele/tests',
-        'offpele/data',
-        'offpele/template',
-        'offpele/solvent',
-        'offpele/topology',
-        'offpele/forcefield',
-        'offpele/utils',
+        'peleffy',
+        'peleffy/tests',
+        'peleffy/data',
+        'peleffy/template',
+        'peleffy/solvent',
+        'peleffy/topology',
+        'peleffy/forcefield',
+        'peleffy/utils',
+        'peleffy/charge',
     ],
-    long_description=read('README.md'),
+    long_description='The offpele (Open Force Field to PELE) is ' \
+        + 'a Python package that builds PELE-compatible force ' \
+        + 'field templates.',
     classifiers=[
         "Development Status :: 1 - Planning",
         "Natural Language :: English",
@@ -47,6 +46,6 @@ setup(
     ],
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
-    package_data={'offpele': find_package_data(
-        'offpele/data', 'offpele')},
+    package_data={'peleffy': find_package_data(
+        'peleffy/data', 'peleffy')},
 )

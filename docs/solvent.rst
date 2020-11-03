@@ -6,7 +6,7 @@ Solvent models
 This module provides different methods to parameterize solvent models
 for PELE.
 
-.. currentmodule:: offpele.solvent
+.. currentmodule:: peleffy.solvent
 
 Primary objects
 ---------------
