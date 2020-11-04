@@ -584,13 +584,10 @@ class Molecule(object):
         # Parse PDB file
         atom_id, res_name, res_id = ([] for i in range(3)) 
         for line in open(path):
-            if not len(line.strip()) == 0:
-                list = line.split()
-                id = list[0]
-                if id == 'HETATM':
-                    atom_id.append(list[2])
-                    res_name.append(list[3])
-                    res_id.append(list[4])
+            if not len(line.strip()) == 0 and line.startswith('HETATM'):
+                atom_id.append(line[13:16])
+                res_name.append(line[18:20])
+                res_id.append(line[23:26])
 
         # Handle exceptions related with the PDB file format
         assert res_id[:-1] == res_id[1:], \
