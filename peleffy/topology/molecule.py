@@ -601,8 +601,8 @@ class Molecule(object):
         if not len(atom_id) == len(set(atom_id)): raise Exception( \
             'Ligand in input PDB has no unique atom names')
         if not connectivity: 
-            import logging
-            logging.warning( \
+            log = Logger()
+            log.warning( \
                 "Input PDB has no information about the connectivity and"
                 + " this could result in an unexpected bond assignment"
                 )
