@@ -1,0 +1,117 @@
+REMARK   4      COMPLIES WITH FORMAT V. 3.0, 1-DEC-2006
+REMARK 888
+REMARK 888 WRITTEN BY MAESTRO (A PRODUCT OF SCHRODINGER, LLC)
+TITLE     MRO_oleic - preprocessed
+MODEL        1
+HETATM    1  C2  OLC L   1       4.148   7.353 -18.237  1.00  0.00           C  
+HETATM    2  C1  OLC L   1       2.819   7.913 -18.760  1.00  0.00           C  
+HETATM    3  C3  OLC L   1       4.336   5.840 -18.529  1.00  0.00           C  
+HETATM    4  O1  OLC L   1       1.997   8.332 -17.914  1.00  0.00           O  
+HETATM    5  O2  OLC L   1       2.619   7.886 -19.995  1.00  0.00           O1-
+HETATM    6  C4  OLC L   1       3.226   4.913 -17.967  1.00  0.00           C  
+HETATM    7  C5  OLC L   1       3.428   3.426 -18.324  1.00  0.00           C  
+HETATM    8  C6  OLC L   1       2.293   2.492 -17.836  1.00  0.00           C  
+HETATM    9  C7  OLC L   1       2.536   1.015 -18.229  1.00  0.00           C  
+HETATM   10  C8  OLC L   1       1.783  -0.056 -17.392  1.00  0.00           C  
+HETATM   11  C9  OLC L   1       2.501  -1.407 -17.407  1.00  0.00           C  
+HETATM   12  C10 OLC L   1       2.074  -2.659 -17.133  1.00  0.00           C  
+HETATM   13  C11 OLC L   1       0.708  -3.141 -16.670  1.00  0.00           C  
+HETATM   14  C12 OLC L   1      -0.251  -3.573 -17.803  1.00  0.00           C  
+HETATM   15  C13 OLC L   1      -0.435  -2.432 -18.806  1.00  0.00           C  
+HETATM   16  C14 OLC L   1      -1.522  -2.562 -19.874  1.00  0.00           C  
+HETATM   17  C15 OLC L   1      -1.587  -1.234 -20.659  1.00  0.00           C  
+HETATM   18  C16 OLC L   1      -2.964  -0.881 -21.233  1.00  0.00           C  
+HETATM   19  C17 OLC L   1      -2.994   0.581 -21.715  1.00  0.00           C  
+HETATM   20  C18 OLC L   1      -4.370   1.021 -22.222  1.00  0.00           C  
+HETATM   21  H1  OLC L   1       4.953   7.921 -18.708  1.00  0.00           H  
+HETATM   22  H2  OLC L   1       4.242   7.560 -17.172  1.00  0.00           H  
+HETATM   23  H3  OLC L   1       4.417   5.705 -19.610  1.00  0.00           H  
+HETATM   24  H4  OLC L   1       5.305   5.541 -18.122  1.00  0.00           H  
+HETATM   25  H5  OLC L   1       3.168   5.041 -16.885  1.00  0.00           H  
+HETATM   26  H6  OLC L   1       2.260   5.241 -18.354  1.00  0.00           H  
+HETATM   27  H7  OLC L   1       3.528   3.341 -19.407  1.00  0.00           H  
+HETATM   28  H8  OLC L   1       4.382   3.100 -17.908  1.00  0.00           H  
+HETATM   29  H9  OLC L   1       2.207   2.594 -16.755  1.00  0.00           H  
+HETATM   30  H10 OLC L   1       1.338   2.828 -18.243  1.00  0.00           H  
+HETATM   31  H11 OLC L   1       2.303   0.878 -19.287  1.00  0.00           H  
+HETATM   32  H12 OLC L   1       3.609   0.837 -18.162  1.00  0.00           H  
+HETATM   33  H13 OLC L   1       1.694   0.260 -16.354  1.00  0.00           H  
+HETATM   34  H14 OLC L   1       0.765  -0.137 -17.754  1.00  0.00           H  
+HETATM   35  H15 OLC L   1       3.532  -1.332 -17.691  1.00  0.00           H  
+HETATM   36  H16 OLC L   1       2.801  -3.444 -17.245  1.00  0.00           H  
+HETATM   37  H17 OLC L   1       0.860  -3.979 -15.988  1.00  0.00           H  
+HETATM   38  H18 OLC L   1       0.249  -2.379 -16.052  1.00  0.00           H  
+HETATM   39  H19 OLC L   1       0.119  -4.466 -18.306  1.00  0.00           H  
+HETATM   40  H20 OLC L   1      -0.682  -1.556 -18.213  1.00  0.00           H  
+HETATM   41  H21 OLC L   1      -1.314  -3.400 -20.542  1.00  0.00           H  
+HETATM   42  H22 OLC L   1      -2.477  -2.781 -19.397  1.00  0.00           H  
+HETATM   43  H23 OLC L   1      -1.295  -0.409 -20.004  1.00  0.00           H  
+HETATM   44  H24 OLC L   1      -0.835  -1.239 -21.451  1.00  0.00           H  
+HETATM   45  H25 OLC L   1      -3.211  -1.562 -22.049  1.00  0.00           H  
+HETATM   46  H26 OLC L   1      -3.725  -1.022 -20.464  1.00  0.00           H  
+HETATM   47  H27 OLC L   1      -2.697   1.242 -20.897  1.00  0.00           H  
+HETATM   48  H28 OLC L   1      -2.249   0.727 -22.499  1.00  0.00           H  
+HETATM   49  H29 OLC L   1      -4.348   2.068 -22.528  1.00  0.00           H  
+HETATM   50  H30 OLC L   1      -4.680   0.430 -23.084  1.00  0.00           H  
+HETATM   51  H31 OLC L   1      -5.129   0.919 -21.446  1.00  0.00           H  
+HETATM   52  H32 OLC L   1      -1.213  -3.839 -17.365  1.00  0.00           H  
+HETATM   53  H33 OLC L   1       0.515  -2.220 -19.298  1.00  0.00           H  
+CONECT    1    2    3   21   22
+CONECT    2    1    4    5
+CONECT    2    4
+CONECT    3    1    6   23   24
+CONECT    4    2
+CONECT    4    2
+CONECT    5    2
+CONECT    6    3    7   25   26
+CONECT    7    6    8   27   28
+CONECT    8    7    9   29   30
+CONECT    9    8   10   31   32
+CONECT   10    9   11   33   34
+CONECT   11   10   12   35
+CONECT   11   12
+CONECT   12   11   13   36
+CONECT   12   11
+CONECT   13   12   14   37   38
+CONECT   14   13   15   39   52
+CONECT   15   14   16   40   53
+CONECT   16   15   17   41   42
+CONECT   17   16   18   43   44
+CONECT   18   17   19   45   46
+CONECT   19   18   20   47   48
+CONECT   20   19   49   50   51
+CONECT   21    1
+CONECT   22    1
+CONECT   23    3
+CONECT   24    3
+CONECT   25    6
+CONECT   26    6
+CONECT   27    7
+CONECT   28    7
+CONECT   29    8
+CONECT   30    8
+CONECT   31    9
+CONECT   32    9
+CONECT   33   10
+CONECT   34   10
+CONECT   35   11
+CONECT   36   12
+CONECT   37   13
+CONECT   38   13
+CONECT   39   14
+CONECT   40   15
+CONECT   41   16
+CONECT   42   16
+CONECT   43   17
+CONECT   44   17
+CONECT   45   18
+CONECT   46   18
+CONECT   47   19
+CONECT   48   19
+CONECT   49   20
+CONECT   50   20
+CONECT   51   20
+CONECT   52   14
+CONECT   53   15
+ENDMDL
+END   
