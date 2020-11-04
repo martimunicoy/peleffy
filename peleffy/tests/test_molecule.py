@@ -238,3 +238,24 @@ class TestMolecule(object):
                 assert molecule.tag == 'BNZ', 'Unexpected molecule tag'
                 molecule.to_pdb_file('molecule.pdb')
                 check_residue_name('BNZ')
+
+    def test_PDB_checkup(self): 
+        """
+        It tests the safety check function for PDB files.
+        """
+
+        LIGAND_ERROR1 = get_data_file_path('tests/ethylene_error1.pdb')
+        LIGAND_ERROR2 = get_data_file_path('tests/ethylene_error2.pdb')
+        LIGAND_ERROR3 = get_data_file_path('tests/ethylene_error3.pdb')
+
+        # All atom names need to be unique
+        with pytest.raises(Exception):
+            _ = Molecule(LIGAND_ERROR1)
+
+        # All residue ids must match
+        with pytest.raises(Exception):
+            _ = Molecule(LIGAND_ERROR2)
+
+        # All residue names must match
+        with pytest.raises(Exception):
+            _ = Molecule(LIGAND_ERROR3)
