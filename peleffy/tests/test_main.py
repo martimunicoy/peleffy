@@ -261,26 +261,28 @@ class TestMain(object):
 
         ligand_path = get_data_file_path('ligands/benzene.pdb')
 
-        # Test default settings
-        args = parse_args([ligand_path])
-        main(args)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                # Test default settings
+                args = parse_args([ligand_path])
+                main(args)
 
-        logger = Logger()
-        for handler in logger._logger.handlers:
-            assert handler.level == logging.INFO
+                logger = Logger()
+                for handler in logger._logger.handlers:
+                    assert handler.level == logging.INFO
 
-        # Test silent settings
-        args = parse_args([ligand_path, '--silent'])
-        main(args)
+                # Test silent settings
+                args = parse_args([ligand_path, '--silent'])
+                main(args)
 
-        logger = Logger()
-        for handler in logger._logger.handlers:
-            assert handler.level == logging.CRITICAL
+                logger = Logger()
+                for handler in logger._logger.handlers:
+                    assert handler.level == logging.CRITICAL
 
-        # Test silent settings
-        args = parse_args([ligand_path, '--debug'])
-        main(args)
+                # Test silent settings
+                args = parse_args([ligand_path, '--debug'])
+                main(args)
 
-        logger = Logger()
-        for handler in logger._logger.handlers:
-            assert handler.level == logging.DEBUG
+                logger = Logger()
+                for handler in logger._logger.handlers:
+                    assert handler.level == logging.DEBUG
