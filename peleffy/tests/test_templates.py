@@ -19,7 +19,7 @@ class TestImpactTemplate(object):
         format, peleffy.topology.Molecule and it has been parameterized
         with a forcefield.
         """
-        LIGAND_PATH = 'ligands/BNZ.pdb'
+        LIGAND_PATH = 'ligands/benzene.pdb'
 
         ligand_path = get_data_file_path(LIGAND_PATH)
         molecule = Molecule(ligand_path)
@@ -92,7 +92,7 @@ class TestImpactTemplate(object):
         m = Molecule(pdb_path)
         m.parameterize('openff_unconstrained-1.2.1.offxml')
         impact = Impact(m)
-        impact.write('metz')
+        impact.to_file('metz')
 
         # Compare the reference template and the generated template
         compare_files(file1=TEMPLATE_METZ, file2='metz')
@@ -102,7 +102,7 @@ class TestImpactTemplate(object):
         m = Molecule(pdb_path)
         m.parameterize('openff_unconstrained-1.2.1.offxml')
         impact = Impact(m)
-        impact.write('malz')
+        impact.to_file('malz')
 
         # Compare the reference template and the generated template
         compare_files(file1=TEMPLATE_MATZ, file2='malz')
@@ -112,7 +112,7 @@ class TestImpactTemplate(object):
         m = Molecule(pdb_path, tag='ETL')  # Note that in this case we are assigning a tag to the molecule which will be used in the Impact template
         m.parameterize('openff_unconstrained-1.2.1.offxml')
         impact = Impact(m)
-        impact.write('etlz')
+        impact.to_file('etlz')
 
         # Compare the reference template and the generated template
         compare_files(file1=TEMPLATE_ETLZ, file2='etlz')
@@ -129,7 +129,7 @@ class TestImpactTemplate(object):
         m = self._prepare_molecule_OPLS(pdb_name='ligands/methane.pdb',
                                         ffld_name='tests/MET_ffld_output.txt')
         impact = Impact(m)
-        impact.write('metz')
+        impact.to_file('metz')
 
         # Compare the reference template and the generated template
         compare_files(file1=TEMPLATE_METZ_OPLS, file2='metz')
@@ -138,7 +138,7 @@ class TestImpactTemplate(object):
         m = self._prepare_molecule_OPLS(pdb_name='ligands/malonate.pdb',
                                         ffld_name='tests/MAL_ffld_output.txt')
         impact = Impact(m)
-        impact.write('malz')
+        impact.to_file('malz')
 
         # Compare the reference template and the generated template
         compare_files(file1=TEMPLATE_MALZ_OPLS, file2='malz')
@@ -148,7 +148,7 @@ class TestImpactTemplate(object):
                                         ffld_name='tests/ETL_ffld_output.txt',
                                         molecule_tag='ETL')
         impact = Impact(m)
-        impact.write('etlz')
+        impact.to_file('etlz')
 
         # Compare the reference template and the generated template
         compare_files(file1=TEMPLATE_ETLZ_OPLS, file2='etlz')

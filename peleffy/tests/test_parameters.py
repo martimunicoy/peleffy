@@ -559,7 +559,8 @@ class TestDihedrals(object):
         from peleffy.forcefield import OPLS2005ParameterWrapper
 
         # Load molecule
-        molecule = Molecule(get_data_file_path('ligands/CO1.pdb'))
+        molecule = Molecule(
+            get_data_file_path('ligands/octafluorocyclobutane.pdb'))
         oplsff = OPLS2005ForceField('OPLS2005')
 
         # Set force field and obtain parameters
@@ -583,7 +584,7 @@ class TestCharges(object):
     """
     It wraps all tests that involve charge parameters.
     """
-    LIGAND_PATH = 'ligands/OLC.pdb'
+    LIGAND_PATH = 'ligands/oleic_acid.pdb'
 
     def test_am1bcc_method(self):
         """It tests the am1bcc method"""
