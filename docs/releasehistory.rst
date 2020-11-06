@@ -7,6 +7,21 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``minor`` increments add features but do not break API compatibility
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
+1.1.0 - Compatibility with OBC for PELE's OPLS2005 - Current development
+------------------------------------------------------------------------
+
+This minor release integrates the parameterization of OBC charges and scale factors required by the OPLS2005 implementation of PELE.
+
+New features
+""""""""""""
+- `PR #88 <https://github.com/martimunicoy/peleffy/pull/88>`_: New method to retrieve atom degrees with RDKit.
+- `PR #86 <https://github.com/martimunicoy/peleffy/pull/86>`_: New method to check the input PDB prior building the molecule.
+
+Tests added
+"""""""""""
+- `PR #88 <https://github.com/martimunicoy/peleffy/pull/88>`_: Adds tests to validate the atom degrees getter.
+- `PR #86 <https://github.com/martimunicoy/peleffy/pull/86>`_: Adds tests to validate the PDB check up.
+
 
 1.0.0 - Full compatibility for OPLS2005 and OpenFF dihedrals and rotamer library improvements
 ---------------------------------------------------------------------------------------------
