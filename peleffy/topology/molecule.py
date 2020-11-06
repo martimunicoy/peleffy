@@ -571,6 +571,44 @@ class Molecule(object):
         from peleffy.forcefield.parameters import BaseParameterWrapper
         self._parameters = BaseParameterWrapper()
 
+    def _PDB_checkup(self, path):
+        """
+        Safety check for PDB files in order to properly handle exceptions
+        related with its format prior running the parameterization.
+
+        Parameters
+        ----------
+        path : str
+            The path to a PDB with the molecule structure
+        """
+
+        # Parse PDB file
+        atom_id, res_name, res_id = ([] for i in range(3))
+        connectivity = False
+        for line in open(path):
+            if line.startswith('HETATM'):
+                atom_id.append(line[13:16])
+                res_name.append(line[18:20])
+                res_id.append(line[23:26])
+            if line.startswith('CONECT'):
+                connectivity = True
+
+        # Handle exceptions related with the PDB file format
+        if not res_id[:-1] == res_id[1:]:
+            raise Exception(
+                'A single ligand with immutable residue ids is expected')
+        if not res_name[:-1] == res_name[1:]:
+            raise Exception(
+                'A single ligand with immutable residue names is expected')
+        if not len(atom_id) == len(set(atom_id)):
+            raise Exception(
+                'Ligand in input PDB has no unique atom names')
+        if not connectivity:
+            log = Logger()
+            log.warning(
+                "Input PDB has no information about the connectivity and"
+                + " this could result in an unexpected bond assignment")
+
     def _initialize_from_pdb(self, path):
         """
         It initializes a molecule with the molecule structure read from
@@ -584,6 +622,9 @@ class Molecule(object):
         logger = Logger()
         logger.info(' - Initializing molecule from PDB')
         self._initialize()
+
+        # Validate PDB
+        self._PDB_checkup(path)
 
         logger.info('   - Loading molecule from RDKit')
         rdkit_toolkit = RDKitToolkitWrapper()
