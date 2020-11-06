@@ -448,7 +448,8 @@ class Molecule(object):
 
     def __init__(self, path=None, smiles=None, rotamer_resolution=30,
                  exclude_terminal_rotamers=True, name='', tag='UNK',
-                 connectivity_template=None, core_constraints=[]):
+                 connectivity_template=None, core_constraints=[],
+                 allow_undefined_stereo=False):
         """
         It initializes a Molecule object through a PDB file or a SMILES
         tag.
@@ -477,6 +478,10 @@ class Molecule(object):
             the core will be forced to contain them. Atoms can be specified
             through integers that match the atom index or strings that
             match with the atom PDB name
+        allow_undefined_stereo : bool
+            Whether to allow a molecule with undefined stereochemistry
+            to be defined or try to assign the stereochemistry and
+            raise a complaint if not possible. Default is False
 
         Examples
         --------
@@ -535,6 +540,7 @@ class Molecule(object):
         self._exclude_terminal_rotamers = exclude_terminal_rotamers
         self._connectivity_template = connectivity_template
         self._core_constraints = core_constraints
+        self._allow_undefined_stereo = allow_undefined_stereo
 
         if isinstance(path, str):
             from pathlib import Path
@@ -636,9 +642,10 @@ class Molecule(object):
             logger.info('   - Assigning connectivity from template')
             rdkit_toolkit.assign_connectivity_from_template(self)
 
-        # RDKit must generate stereochemistry specifically from 3D coords
-        logger.info('   - Assigning stereochemistry from 3D coordinates')
-        rdkit_toolkit.assign_stereochemistry_from_3D(self)
+        if not self.allow_undefined_stereo:
+            # RDKit must generate stereochemistry specifically from 3D coords
+            logger.info('   - Assigning stereochemistry from 3D coordinates')
+            rdkit_toolkit.assign_stereochemistry_from_3D(self)
 
         # Set molecule name according to PDB name
         if self.name == '':
@@ -1201,6 +1208,21 @@ class Molecule(object):
             connectivity of this Molecule object
         """
         return self._connectivity_template
+
+    @property
+    def allow_undefined_stereo(self):
+        """
+        Whether to allow a molecule with undefined stereochemistry
+        to be defined or try to assign the stereochemistry and
+        raise a complaint if not possible
+
+        Returns
+        -------
+        allow_undefined_stereo : bool
+            The current configuration towards the stereochemistry
+            behaviour of this molecule
+        """
+        return self._allow_undefined_stereo
 
     @property
     def core_constraints(self):
