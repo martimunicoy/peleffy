@@ -239,14 +239,17 @@ class TestMolecule(object):
                 molecule.to_pdb_file('molecule.pdb')
                 check_residue_name('BNZ')
 
-    def test_PDB_checkup(self): 
-        """
-        It tests the safety check function for PDB files.
-        """
+    def test_PDB_checkup(self):
+        """It tests the safety check function for PDB files."""
 
+        LIGAND_GOOD = get_data_file_path('ligands/ethylene.pdb')
         LIGAND_ERROR1 = get_data_file_path('tests/ethylene_error1.pdb')
         LIGAND_ERROR2 = get_data_file_path('tests/ethylene_error2.pdb')
         LIGAND_ERROR3 = get_data_file_path('tests/ethylene_error3.pdb')
+        LIGAND_ERROR4 = get_data_file_path('tests/ethylene_error4.pdb')
+
+        # This should work without any complain
+        _ = Molecule(LIGAND_GOOD)
 
         # All atom names need to be unique
         with pytest.raises(Exception):
@@ -259,3 +262,28 @@ class TestMolecule(object):
         # All residue names must match
         with pytest.raises(Exception):
             _ = Molecule(LIGAND_ERROR3)
+
+        # Check warning message in the logger when connectivity is missing
+        import io
+        from peleffy.utils import Logger
+        import logging
+        from importlib import reload
+        logging.shutdown()
+        reload(logging)
+
+        log = Logger()
+        log.set_level('WARNING')
+
+        # Catch logger messages to string buffer
+        with io.StringIO() as buf:
+            log_handler = logging.StreamHandler(buf)
+            log._logger.handlers = list()
+            log._logger.addHandler(log_handler)
+
+            _ = Molecule(LIGAND_ERROR4)
+
+            output = buf.getvalue()
+
+            assert output == "Input PDB has no information about the " \
+                + "connectivity and this could result in an unexpected " \
+                + "bond assignment\n"
