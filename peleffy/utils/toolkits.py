@@ -618,7 +618,9 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
         from openforcefield.topology.molecule import Molecule
 
         rdkit_molecule = molecule.rdkit_molecule
-        return Molecule.from_rdkit(rdkit_molecule)
+        return Molecule.from_rdkit(
+            rdkit_molecule,
+            allow_undefined_stereo=molecule.allow_undefined_stereo)
 
     def get_forcefield(self, forcefield_name):
         """

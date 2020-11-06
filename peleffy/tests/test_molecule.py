@@ -287,3 +287,27 @@ class TestMolecule(object):
             assert output == "Input PDB has no information about the " \
                 + "connectivity and this could result in an unexpected " \
                 + "bond assignment\n"
+
+    def test_undefined_stereo(self):
+        """
+        It checks the behaviour when ignoring the stereochemistry
+        in the Molecule initialization.
+        """
+        from openforcefield.utils.toolkits import UndefinedStereochemistryError
+
+        # This should crash due to an undefined stereochemistry error
+        with pytest.raises(UndefinedStereochemistryError):
+            mol = Molecule(smiles='CN(C)CCC=C1c2ccccc2CCc3c1cccc3')
+
+        # This now should work
+        mol = Molecule(smiles='CN(C)CCC=C1c2ccccc2CCc3c1cccc3',
+                       allow_undefined_stereo=True)
+
+        # And we can parameterize it
+        mol.parameterize('openff_unconstrained-1.2.1.offxml',
+                         charge_method='gasteiger')
+
+        # Save it
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                mol.to_pdb_file('molecule.pdb')
