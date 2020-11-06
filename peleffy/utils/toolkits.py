@@ -264,6 +264,31 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         return atom_names
 
+    def get_atom_degrees(self, molecule):
+        """
+        It returns the ordered list of atom degrees. The degree of an atom
+        is defined as the number of directly-bonded neighbors. Note that
+        the degree is independent of bond orders.
+
+        Parameters
+        ----------
+        molecule : an peleffy.topology.Molecule
+            The peleffy's Molecule object
+
+        Returns
+        -------
+        atom_degrees : list[int]
+            The list of atom degrees
+        """
+        rdkit_molecule = molecule.rdkit_molecule
+
+        atom_degrees = list()
+
+        for atom in rdkit_molecule.GetAtoms():
+            atom_degrees.append(atom.GetDegree())
+
+        return atom_degrees
+
     def to_pdb_file(self, molecule, path):
         """
         It writes the RDKit molecule to a PDB file.
