@@ -289,6 +289,37 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         return atom_degrees
 
+    def get_atomH_parent(self, molecule):
+        """
+        It returns the ordered list of atom parents for the H atoms of the
+        molecule.
+
+        Parameters
+        ----------
+        molecule : an peleffy.topology.Molecule
+            The peleffy's Molecule object
+
+        Returns
+        -------
+        atom_parents : list[int]
+            The list of atom parents if the atom is an H.
+        """
+        rdkit_molecule = molecule.rdkit_molecule
+
+        atom_parents = list()
+
+        for atom in rdkit_molecule.GetAtoms():
+            if atom.GetSymbol() == 'H':
+                for bond in atom.GetBonds():
+                    if bond.GetBeginAtom().GetSymbol() == 'H':
+                        atom_parents.append(bond.GetEndAtom().GetSymbol())
+                    if bond.GetEndAtom().GetSymbol() == 'H':
+                        atom_parents.append(bond.GetBeginAtom().GetSymbol())
+            else:
+                atom_parents.append('')
+        return atom_parents
+
+
     def to_pdb_file(self, molecule, path):
         """
         It writes the RDKit molecule to a PDB file.

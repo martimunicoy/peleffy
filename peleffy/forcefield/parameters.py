@@ -491,6 +491,7 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
         """
 
         from simtk import unit
+        from peleffy.utils.toolkits import RDKitToolkitWrapper
 
         params = defaultdict(list)
 
@@ -650,8 +651,14 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
         opls_parameters_wrapper = OPLS2005ParameterWrapper(params)
         OPLS2005ParameterWrapper._add_SGBNP_solvent_parameters(
             opls_parameters_wrapper)
+
+        wrapper = RDKitToolkitWrapper()
+        degree_by_name = dict(zip(wrapper.get_atom_names(molecule),
+                                  wrapper.get_atom_degrees(molecule)))
+        parentType_by_name = dict(zip(wrapper.get_atom_names(molecule),
+                                  wrapper.get_atomH_parent(molecule)))
         OPLS2005ParameterWrapper._add_GBSA_solvent_parameters(
-            opls_parameters_wrapper)
+            opls_parameters_wrapper, degree_by_name, parentType_by_name)
 
         return opls_parameters_wrapper
 
@@ -768,7 +775,8 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
             OPLS_params.add_parameters(label, params)
 
     @staticmethod
-    def _add_GBSA_solvent_parameters(OPLS_params):
+    def _add_GBSA_solvent_parameters(OPLS_params,degree_by_name,
+                                     parentType_by_name):
         """
         It adds the GBSA solvent parameters (used in the OBC solvent
         implemented in the OPLS2005 of PELE) to the OPLS parameters
@@ -783,19 +791,21 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
             solvent parameters will be added to the collection: SGB_radii,
             vdW_radii, gammas, alphas
         """
-        return
+        from peleffy.forcefield.utils import find_GBSA_parameters_according_to
 
-        raise NotImplementedError()
-
-        # radii = list()
-        # scales = list()
-        # Here we can loop over atom types and names:
-        # for atom_name, atom_type in zip(OPLS_params['atom_names'], OPLS_params['atom_types']):
-        #     radius, scale = find_GBSA_parameters_according_to(atom_name, atom_type)
-        #     radii.append(radius)
-        #     scales.append(scale)
-        # OPLS_params['GBSA_radii'] = radii
-        # OPLS_params['GBSA_scales'] = scales
+        #Loop over atom types and names:
+        radii = list()
+        scales = list()
+        for atom_name, atom_type in zip(OPLS_params['atom_names'],
+                                        OPLS_params['atom_types']):
+            radius, scale = find_GBSA_parameters_according_to(
+                                            atom_name, atom_type,
+                                            degree_by_name.get(atom_name),
+                                            parentType_by_name.get(atom_name))
+            radii.append(radius)
+            scales.append(scale)
+        OPLS_params['GBSA_radii'] = radii
+        OPLS_params['GBSA_scales'] = scales
 
 
 class OpenFFOPLS2005ParameterWrapper(BaseParameterWrapper):
