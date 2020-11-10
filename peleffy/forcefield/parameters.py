@@ -184,6 +184,27 @@ class BaseParameterWrapper(dict):
         """
         return self._name
 
+    @staticmethod
+    def from_impact_template(molecule, impact_template_path):
+        """
+        It returns a parameter wrapper out of an impact template.
+
+        Parameters
+        ----------
+        molecule : a peleffy.topology.Molecule
+            The peleffy's Molecule object
+        impact_template_path : str
+            The path to the impact template from where the parameters
+            will be fetched
+
+        Returns
+        -------
+        parameters : a BaseParameterWrapper object
+            The resulting parameters wrapper
+        """
+
+        raise NotImplementedError()
+
 
 class OpenForceFieldParameterWrapper(BaseParameterWrapper):
     """
