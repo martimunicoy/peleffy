@@ -651,7 +651,6 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
         opls_parameters_wrapper = OPLS2005ParameterWrapper(params)
         OPLS2005ParameterWrapper._add_SGBNP_solvent_parameters(
             opls_parameters_wrapper)
-
         wrapper = RDKitToolkitWrapper()
         degree_by_name = dict(zip(wrapper.get_atom_names(molecule),
                                   wrapper.get_atom_degrees(molecule)))
@@ -790,15 +789,121 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
             atom_types, charges, sigmas, and epsilons. The following
             solvent parameters will be added to the collection: SGB_radii,
             vdW_radii, gammas, alphas
+        degree_by_name : dict
+            dictionary containing the number of bonds for each atom_name
+        parentType_by_name : dict
+            dictionary containing the parent for hydrogen atoms linked to
+            each atom_name
         """
-        from peleffy.forcefield.utils import find_GBSA_parameters_according_to
+        import re
+        import json
+
+        def _find_GBSA_parameters_according_to( atom_name, atom_type,
+                                               degree, parentH):
+            """
+            It computes the HTC radii and the Overlap factor for Heteroatoms.
+            The parameters have been extracted from Tinker Molecular package. If
+            one parameter has not been defined in the OBC templates it puts the
+            default parameter and raises a warning.
+
+            Parameters
+            ----------
+            atom_name : str
+                Atom name
+            atom_type : str
+                Atom type
+            degree : str
+                Number of bonds
+            parentH : str
+                Atom type of the parent (if the atom is an H)
+
+            Returns
+            -------
+            radius : str
+                HCT radii
+            scale : str
+                Overlap factor
+            """
+
+            OBCPARAM_PATH = get_data_file_path('parameters/OBCparam.json')
+
+            # Load the dictioaries with the OBC parameters
+            with open(OBCPARAM_PATH, 'r') as fd:
+                paramtersLst, atomTypesOverlapFactors, atomTypesHCTradii = \
+                                                                json.load(fd)
+
+            # Assign overlapFactors and HCT radii using the atom type
+            for k,params in paramtersLst.items():
+                type_aux = ''
+                if any(chr.isdigit() for chr in atom_type):
+                    type_aux =''.join([i for i in atom_type if not i.isdigit()])
+                if atom_type.strip() == k or ''.join([type_aux.strip(), '*']) == k:
+                    scale, radius= params[0], params[1]
+                    break
+
+            # Assign overlapFactors and HCT radii using the atom name
+            else:
+                found = False
+                # Define element name
+                elementName = \
+                    ''.join([i for i in atom_name.strip() if not i.isdigit()])
+
+                # Assign overlapFractor
+                for k, OverlapFactor in atomTypesOverlapFactors.items():
+                    if elementName == k.upper():
+                        scale, found = OverlapFactor, True
+                        scale = _checkBonds(scale,elementName,degree,parentH)
+                        break
+                else:
+                    if len(elementName) > 1:
+                        for k, OverlapFactor in atomTypesOverlapFactors.items():
+                            if elementName[0] == k.upper():
+                                scale, found = OverlapFactor, True
+                                scale =_checkBonds(scale,elementName,
+                                                        degree,parentH)
+                                elementName = elementName[0]
+                                break
+
+                # Assign HCT radii
+                for k,HCTradii in atomTypesHCTradii.items():
+                    if elementName == k.upper():
+                        radius, found = HCTradii, (found and True)
+                        break
+                else: found = False
+
+            # Retuns overlapFractor and HCT radii if found otherwise it raises a
+            # warining and returns the default parameters
+                if not found:
+                    from peleffy.utils import Logger
+                    log = Logger()
+                    log.warning('Parameter for {} {} NOT found in the template '
+                                .format(atom_name,atom_type)
+                                + 'database... using default parameters')
+                    radius, scale = '0.80','2.0'
+            return radius, scale
+
+        def _checkBonds(scale, atom_type, degree, parentH):
+            """
+            It checks the number of bonds and the parent atom for terminal H and
+            in some especified cases it updates the overlap factor.
+            """
+            if atom_type == 'H' and parentH == 'O': scale = '1.05'
+            if atom_type == 'H' and parentH == 'N': scale = '1.15'
+            if atom_type == 'C' and degree == 3: scale= '1.875'
+            if atom_type == 'C' and degree == 2: scale = '1.825'
+            if atom_type == 'N' and degree == 4: scale = '1.625'
+            if atom_type == 'N' and degree == 1: scale = '1.60'
+            if atom_type == 'O' and degree == 1: scale = '1.48'
+            return scale
+
 
         #Loop over atom types and names:
         radii = list()
         scales = list()
         for atom_name, atom_type in zip(OPLS_params['atom_names'],
                                         OPLS_params['atom_types']):
-            radius, scale = find_GBSA_parameters_according_to(
+            atom_name = re.sub('_', ' ', atom_name)
+            radius, scale = _find_GBSA_parameters_according_to(
                                             atom_name, atom_type,
                                             degree_by_name.get(atom_name),
                                             parentType_by_name.get(atom_name))
