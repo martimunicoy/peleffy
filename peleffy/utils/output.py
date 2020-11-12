@@ -116,6 +116,12 @@ class OutputPathHandler(object):
                 else:
                     path = os.path.join(self.output_path,
                                         self.OPLS_IMPACT_TEMPLATE_PATH)
+            else:
+                raise Exception('DataLocal output path for the impact '
+                                + 'template cannot be inferred because '
+                                + 'the forcefield for molecule '
+                                + '\'{}\' '.format(self.molecule)
+                                + 'has not been set yet')
         else:
             path = self.output_path
 
