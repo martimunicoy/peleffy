@@ -3,7 +3,8 @@ This module provides classes to define force field parameters.
 """
 
 
-__all__ = ["OpenForceFieldParameterWrapper",
+__all__ = ["ParameterWrapper",
+           "OpenForceFieldParameterWrapper",
            "OPLS2005ParameterWrapper",
            "OpenFFOPLS2005ParameterWrapper"]
 
@@ -13,7 +14,7 @@ from collections import defaultdict
 from peleffy.utils import get_data_file_path
 
 
-class BaseParameterWrapper(dict):
+class ParameterWrapper(dict):
     """
     It defines the base class of a parameter wrapper that inherits from
     dict.
@@ -185,28 +186,212 @@ class BaseParameterWrapper(dict):
         return self._name
 
     @staticmethod
-    def from_impact_template(molecule, impact_template_path):
+    def from_impact_template(impact_template_path):
         """
         It returns a parameter wrapper out of an impact template.
 
         Parameters
         ----------
-        molecule : a peleffy.topology.Molecule
-            The peleffy's Molecule object
         impact_template_path : str
             The path to the impact template from where the parameters
             will be fetched
 
         Returns
         -------
-        parameters : a BaseParameterWrapper object
+        parameters : a ParameterWrapper object
             The resulting parameters wrapper
         """
+        def parse_resx_line():
+            """It parses the RESX section of the Impact file."""
 
-        raise NotImplementedError()
+            # In case this is the first line of the section
+            if len(line) < 41:
+                return
+
+            # Get lines values by index
+            atom_index = int(line[0:5])
+            _ = int(line[6:11])  # No need to store the parent atom index
+            _ = str(line[12])  # No need to store the atom location
+            atom_type = str(line[15:19])
+            atom_name = str(line[21:25])
+            _ = int(line[26:31])  # No need to store unknown int
+            _ = float(line[32:43])  # No need to store z matrix
+            _ = float(line[44:55])  # No need to store z matrix
+            _ = float(line[56:67])  # No need to store z matrix
+
+            # Insert parameters following the atom_index
+            params['atom_names'].insert(atom_index - 1, atom_name)
+            params['atom_types'].insert(atom_index - 1, atom_type)
+
+        def parse_nbon_line():
+            """It parses the NBON section of the Impact file."""
+
+            # Get line values by index
+            atom_index = int(line[1:6])
+            atom_sigma = float(line[7:15])
+            atom_epsilon = float(line[16:24])
+            atom_charge = float(line[25:35])
+            atom_born_radius = float(line[36:44])
+            atom_sasa_radius = float(line[45:53])
+            atom_nonpolar_gamma = float(line[54:67])
+            atom_nonpolar_alpha = float(line[68:81])
+
+            # Insert parameters following the atom_index
+            params['sigmas'].insert(atom_index - 1, atom_sigma)
+            params['epsilons'].insert(atom_index - 1, atom_epsilon)
+            params['charges'].insert(atom_index - 1, atom_charge)
+            params['SGB_radii'].insert(atom_index - 1, atom_born_radius)
+            params['vdW_radii'].insert(atom_index - 1, atom_sasa_radius)
+            params['gammas'].insert(atom_index - 1, atom_nonpolar_gamma)
+            params['alphas'].insert(atom_index - 1, atom_nonpolar_alpha)
+
+        def parse_bond_line():
+            """It parses the BOND section of the Impact file."""
+
+            # Get line values by index
+            atom1_index = int(line[1:6])
+            atom2_index = int(line[7:12])
+            spring_constant = float(line[13:22])
+            eq_dist = float(line[23:])
+
+            # Insert bond parameters
+            params['bonds'].append({'atom1_idx': atom1_index,
+                                    'atom2_idx': atom2_index,
+                                    'spring_constant': spring_constant,
+                                    'eq_dist': eq_dist
+                                    })
+
+        def parse_thet_line():
+            """It parses the THET section of the Impact file."""
+
+            # Get line values by index
+            atom1_index = int(line[1:6])
+            atom2_index = int(line[7:12])
+            atom3_index = int(line[13:18])
+            spring_constant = float(line[19:30])
+            eq_dist = float(line[30:41])
+
+            # Insert angle parameters
+            params['angles'].append({'atom1_idx': atom1_index,
+                                     'atom2_idx': atom2_index,
+                                     'atom3_idx': atom3_index,
+                                     'spring_constant': spring_constant,
+                                     'eq_angle': eq_dist
+                                     })
+
+        def parse_phi_line():
+            """It parses the PHI section of the Impact file."""
+
+            # Get line values by index
+            atom1_index = int(line[0:5])
+            atom2_index = int(line[6:11])
+            atom3_index = int(line[12:17])
+            atom4_index = int(line[18:23])
+            constant = float(line[24:33])
+            prefactor = int(float(line[34:38]))
+            periodicity = int(float(line[39:42]))
+            if len(line) > 47:
+                phase = float(line[43:48])
+            else:
+                phase = 0.0
+
+            # Apply the effect of the prefactor on the phase term
+            if prefactor == -1:
+                if phase > 180.0:
+                    phase -= 180.0
+                else:
+                    phase += 180.0
+
+            # Insert proper parameters
+            params['propers'].append({'atom1_idx': atom1_index,
+                                      'atom2_idx': atom2_index,
+                                      'atom3_idx': atom3_index,
+                                      'atom4_idx': atom4_index,
+                                      'periodicity': periodicity,
+                                      'phase': phase,
+                                      'k': constant,
+                                      'idivf': 1
+                                      })
+
+        def parse_iphi_line():
+            """It parses the IPHI section of the Impact file."""
+            # Get line values by index
+            atom1_index = int(line[1:6])
+            atom2_index = int(line[7:12])
+            atom3_index = int(line[13:18])
+            atom4_index = int(line[19:24])
+            constant = float(line[25:34])
+            prefactor = int(line[35:39])
+            periodicity = int(line[40:43])
+
+            # Apply the effect of the prefactor on the phase term
+            if prefactor == -1:
+                phase = 180.0
+            else:
+                phase = 0.0
+
+            # Insert proper parameters
+            params['propers'].append({'atom1_idx': atom1_index,
+                                      'atom2_idx': atom2_index,
+                                      'atom3_idx': atom3_index,
+                                      'atom4_idx': atom4_index,
+                                      'periodicity': periodicity,
+                                      'phase': phase,
+                                      'k': constant,
+                                      'idivf': 1
+                                      })
+
+        from peleffy.utils import Logger
+        logger = Logger()
+
+        # This will be the dictionary that will contain the parsed data
+        params = defaultdict(list)
+
+        with open(impact_template_path) as f:
+            parse_line = parse_resx_line
+            for line_number, line in enumerate(f, start=1):
+                # Skip header lines
+                if line.startswith('*'):
+                    continue
+
+                # Skip empty lines
+                if line == '\n':
+                    continue
+
+                if line.startswith('NBON'):
+                    parse_line = parse_nbon_line
+                    continue
+
+                if line.startswith('BOND'):
+                    parse_line = parse_bond_line
+                    continue
+
+                if line.startswith('THET'):
+                    parse_line = parse_thet_line
+                    continue
+
+                if line.startswith('PHI'):
+                    parse_line = parse_phi_line
+                    continue
+
+                if line.startswith('IPHI'):
+                    parse_line = parse_iphi_line
+                    continue
+
+                if line.startswith('END'):
+                    break
+
+                parse_line()
+
+            else:
+                logger.warning('Warning: no \'END\' line found in the '
+                               + 'supplied Impact template '
+                               + '\'{}\''.format(impact_template_path))
+
+        return ParameterWrapper(params)
 
 
-class OpenForceFieldParameterWrapper(BaseParameterWrapper):
+class OpenForceFieldParameterWrapper(ParameterWrapper):
     """
     It defines a parameters wrapper for an OpenFF force field.
     """
@@ -485,7 +670,7 @@ class OpenForceFieldParameterWrapper(BaseParameterWrapper):
         return OpenForceFieldParameterWrapper(params)
 
 
-class OPLS2005ParameterWrapper(BaseParameterWrapper):
+class OPLS2005ParameterWrapper(ParameterWrapper):
     """
     It defines a parameters wrapper for OPLS2005 force field.
     """
@@ -785,7 +970,7 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
             OPLS_params.add_parameters(label, params)
 
 
-class OpenFFOPLS2005ParameterWrapper(BaseParameterWrapper):
+class OpenFFOPLS2005ParameterWrapper(ParameterWrapper):
     """
     It defines a parameters wrapper for an hybrid OpenFF-OPLS2005 force
     field.

@@ -574,8 +574,8 @@ class Molecule(object):
         self._rotamers = None
         self._graph = None
 
-        from peleffy.forcefield.parameters import BaseParameterWrapper
-        self._parameters = BaseParameterWrapper()
+        from peleffy.forcefield.parameters import ParameterWrapper
+        self._parameters = ParameterWrapper()
 
     def _PDB_checkup(self, path):
         """
