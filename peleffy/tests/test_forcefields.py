@@ -306,7 +306,7 @@ class TestOPLS2005ForceField(object):
         """
 
         from peleffy.forcefield import OPLS2005ParameterWrapper
-        from pelffy.topology import Molecule
+        from peleffy.topology import Molecule
         from peleffy.utils import get_data_file_path
 
         def test_add_GBSA_solvent_parameters_ligand(pdb_file, ffld_file, reference_txt):
