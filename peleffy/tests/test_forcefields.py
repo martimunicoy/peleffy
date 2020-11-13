@@ -299,6 +299,73 @@ class TestOPLS2005ForceField(object):
         assert params3['gammas'][0] == 0.005000000, 'Unexpected gamma'
         assert params3['alphas'][0] == 0.000000000, 'Unexpected alpha'
 
+    def test_add_GBSA_solvent_parameters(self):
+        """
+        It tests the function that adds the GBSA solvent parameters to
+        the OPLSParameters collection.
+        """
+
+        from peleffy.forcefield import OPLS2005ParameterWrapper
+        from pelffy.topology import Molecule
+        from peleffy.utils import get_data_file_path
+
+        def test_add_GBSA_solvent_parameters_ligand(pdb_file, ffld_file, reference_txt):
+            """
+            It tests for a ligand that the HTC radii and the Overlap factor for Heteroatoms computed with the function _add_GBSA_solvent_parameters correspond to the obtained with the solventOBCParamsGenerator.py script.
+
+            Parameters
+            ----------
+            pdb_file : str
+                The path to the PDB of the ligand to test
+            ffld_file : str
+                The path to the ffld_server's output file
+            reference_txt : str
+                The path to reference TXT file obtained from solventOBCParamsGenerator.py
+            """
+
+            # Load the molecule
+            molecule = Molecule(pdb_file)
+
+            # Set force field and obtain parameters
+            with open(ffld_file) as f:
+                ffld_output = f.read()
+
+            #Initializate wrapper for OPLS2005 parameters
+            wrapperOPLS = OPLS2005ParameterWrapper()
+            parameters = wrapperOPLS.from_ffld_output(molecule, ffld_output)
+
+            # Get the radi and scale parameters for each atom name
+            atom_names = [param.replace('_', '') for param in parameters['atom_names']]
+            d_radii = dict(zip(atom_names,parameters['GBSA_radii']))
+            d_scale = dict(zip(atom_names,parameters['GBSA_scales']))
+
+            # Load the reference file obtained from solventOBCParamsGenerator.py
+            data = open(reference_txt, 'r').readlines()
+
+            # Check that the parameters correspond
+            for line in data:
+                params = line.split()
+                assert params[3] == d_scale.get(params[1]), 'Unexpected GBSA Overlap factor'
+                assert params[4] == d_radii.get(params[1]), 'Unexpected GBSA radius'
+
+        # For malonate
+        ffld_file = get_data_file_path('tests/MAL_ffld_output.txt')
+        pdb_file = get_data_file_path('ligands/malonate.pdb')
+        reference_txt = get_data_file_path('tests/malz_OBCParams.txt')
+        test_add_GBSA_solvent_parameters_ligand(pdb_file, ffld_file, reference_txt)
+
+        # For methane
+        ffld_file = get_data_file_path('tests/MET_ffld_output.txt')
+        pdb_file = get_data_file_path('ligands/methane.pdb')
+        reference_txt = get_data_file_path('tests/metz_OBCParams.txt')
+        test_add_GBSA_solvent_parameters_ligand(pdb_file, ffld_file, reference_txt)
+
+        # For ethylene
+        ffld_file = get_data_file_path('tests/ETL_ffld_output.txt')
+        pdb_file = get_data_file_path('ligands/ethylene.pdb')
+        reference_txt = get_data_file_path('tests/etlz_OBCParams.txt')
+        test_add_GBSA_solvent_parameters_ligand(pdb_file, ffld_file, reference_txt)
+
 
 class TestOpenFFOPLS2005ForceField(object):
     """
