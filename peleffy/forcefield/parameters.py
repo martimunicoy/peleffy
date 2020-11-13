@@ -798,6 +798,20 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
         import re
         import json
 
+        def _checkBonds(scale, atom_type, degree, parentH):
+            """
+            It checks the number of bonds and the parent atom for terminal H and
+            in some especified cases it updates the overlap factor.
+            """
+            if atom_type == 'H' and parentH == 'O': scale = '1.05'
+            if atom_type == 'H' and parentH == 'N': scale = '1.15'
+            if atom_type == 'C' and degree == 3: scale= '1.875'
+            if atom_type == 'C' and degree == 2: scale = '1.825'
+            if atom_type == 'N' and degree == 4: scale = '1.625'
+            if atom_type == 'N' and degree == 1: scale = '1.60'
+            if atom_type == 'O' and degree == 1: scale = '1.48'
+            return scale
+
         def _find_GBSA_parameters_according_to( atom_name, atom_type,
                                                degree, parentH):
             """
@@ -834,11 +848,8 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
 
             # Assign overlapFactors and HCT radii using the atom type
             for k,params in paramtersLst.items():
-                type_aux = ''
-                if any(chr.isdigit() for chr in atom_type):
-                    type_aux =''.join([i for i in atom_type if not i.isdigit()])
-                if atom_type.strip() == k or ''.join([type_aux.strip(), '*']) == k:
-                    scale, radius= params[0], params[1]
+                if atom_type.strip() == k:
+                    scale, radius = params[0], params[1]
                     break
 
             # Assign overlapFactors and HCT radii using the atom name
@@ -881,20 +892,6 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                                 + 'database... using default parameters')
                     radius, scale = '0.80','2.0'
             return radius, scale
-
-        def _checkBonds(scale, atom_type, degree, parentH):
-            """
-            It checks the number of bonds and the parent atom for terminal H and
-            in some especified cases it updates the overlap factor.
-            """
-            if atom_type == 'H' and parentH == 'O': scale = '1.05'
-            if atom_type == 'H' and parentH == 'N': scale = '1.15'
-            if atom_type == 'C' and degree == 3: scale= '1.875'
-            if atom_type == 'C' and degree == 2: scale = '1.825'
-            if atom_type == 'N' and degree == 4: scale = '1.625'
-            if atom_type == 'N' and degree == 1: scale = '1.60'
-            if atom_type == 'O' and degree == 1: scale = '1.48'
-            return scale
 
 
         #Loop over atom types and names:
