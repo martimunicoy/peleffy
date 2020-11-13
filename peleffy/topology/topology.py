@@ -2,808 +2,377 @@
 This module handles the topological elements of force fields.
 """
 
-from simtk import unit
+
+from peleffy.topology.elements import (Atom, Bond, Angle,
+                                       OFFProper, OFFImproper)
+from peleffy.utils.toolkits import RDKitToolkitWrapper
 
 
-class TopologyElement(object):
+class Topology(object):
     """
-    A wrapper for any topological element.
+    It represents the topology of a molecule.
     """
 
-    _name = None
-    _writable_attrs = []
-
-    class TopologyIterator(object):
+    def __init__(self, molecule, parameters):
         """
-        An iterator for topological elements that iterates over their
-        attributes in an ordered way.
+        It initializes a molecular topology representation, given a
+        molecule and its parameters.
 
-        It is useful when writing topological elements to file.
+        Parameters
+        ----------
+        molecule : a peleffy.topology.Molecule
+            The peleffy's Molecule object whose topology will be built
+        parameters : a BaseParameterWrapper
+            The parameter wrapper belonging to the molecule
         """
 
-        def __init__(self, top_el):
-            """
-            It initiates a TopologyIterator object.
+        # Set topology attributes
+        self._molecule = molecule
+        self._parameters = parameters
 
-            Parameters
-            ----------
-            top_el : a TopologyElement object
-                The topology element to iterate on.
-            """
-            self._index = int(0)
-            self._top_el = top_el
+        # Initialize and build the topology
+        self._initialize()
+        self._build()
 
-        def __next__(self):
-            """
-            It returns the next item for the iteration.
+    def _initialize(self):
+        """It initializes all the lists before building the topology."""
+        self._atoms = list()
+        self._bonds = list()
+        self._angles = list()
+        self._propers = list()
+        self._OFF_propers = list()
+        self._impropers = list()
+        self._OFF_impropers = list()
 
-            Returns
-            -------
-            attr_name : str
-                The name of the attribute
-            attr_value : float
-                The value of the attribute
-            """
-            if self._index == len(self._top_el._writable_attrs):
-                raise StopIteration
+    def _build(self):
+        """The topology builder."""
 
-            attr_name = self._top_el._writable_attrs[self._index]
-            attr_value = getattr(self._top_el, attr_name)
-            self._index += 1
+        self._build_atoms()
+        self._build_bonds()
+        self._build_angles()
+        self._build_propers()
+        self._build_impropers()
 
-            return attr_name, attr_value
+    def _build_atoms(self):
+        """It builds the atoms of the molecule."""
+
+        from peleffy.utils import Logger
+        logger = Logger()
+
+        coords = RDKitToolkitWrapper().get_coordinates(self.molecule)
+
+        for index, (atom_name, atom_type, sigma, epsilon, charge,
+                    SGB_radius, vdW_radius, gamma, alpha) \
+                in enumerate(self.parameters.atom_iterator):
+            atom = Atom(index=index,
+                        PDB_name=atom_name,
+                        OPLS_type=atom_type,
+                        x=coords[index][0],
+                        y=coords[index][1],
+                        z=coords[index][2],
+                        sigma=sigma,
+                        epsilon=epsilon,
+                        charge=charge,
+                        born_radius=SGB_radius,
+                        SASA_radius=vdW_radius,
+                        nonpolar_gamma=gamma,
+                        nonpolar_alpha=alpha)
+            self.add_atom(atom)
+
+        for atom in self.atoms:
+            if atom.index in self.molecule.graph.core_nodes:
+                atom.set_as_core()
+            else:
+                atom.set_as_branch()
+
+        # Start from an atom from the core
+        absolute_parent = None
+        for atom in self.atoms:
+            if atom.core:
+                absolute_parent = atom.index
+                break
+        else:
+            logger.error('Error: no core atom found in molecule '
+                         + '{}'.format(self.molecule.name))
+
+        # Get parent indexes from the molecular graph
+        parent_idxs = self.molecule.graph.get_parents(absolute_parent)
+
+        # Assert parent_idxs has right length
+        if len(parent_idxs) != len(self.atoms):
+            logger.error('Error: no core atom found in molecule '
+                         + '{}'.format(self.molecule.name))
+
+        for atom in self.atoms:
+            parent_idx = parent_idxs[atom.index]
+            if parent_idx is not None:
+                atom.set_parent(self.atoms[parent_idx])
+
+    def _build_bonds(self):
+        """It builds the bonds of the molecule."""
+        for index, bond in enumerate(self.parameters['bonds']):
+            bond = Bond(index=index,
+                        atom1_idx=bond['atom1_idx'],
+                        atom2_idx=bond['atom2_idx'],
+                        spring_constant=bond['spring_constant'],
+                        eq_dist=bond['eq_dist'])
+            self.add_bond(bond)
+
+    def _build_angles(self):
+        """It builds the angles of the molecule."""
+        for index, angle in enumerate(self.parameters['angles']):
+            angle = Angle(index=index,
+                          atom1_idx=angle['atom1_idx'],
+                          atom2_idx=angle['atom2_idx'],
+                          atom3_idx=angle['atom3_idx'],
+                          spring_constant=angle['spring_constant'],
+                          eq_angle=angle['eq_angle'])
+            self.add_angle(angle)
+
+    def _build_propers(self):
+        """It builds the propers of the molecule."""
+        for index, proper in enumerate(self.parameters['propers']):
+            off_proper = OFFProper(atom1_idx=proper['atom1_idx'],
+                                   atom2_idx=proper['atom2_idx'],
+                                   atom3_idx=proper['atom3_idx'],
+                                   atom4_idx=proper['atom4_idx'],
+                                   periodicity=proper['periodicity'],
+                                   phase=proper['phase'],
+                                   k=proper['k'],
+                                   idivf=proper['idivf'])
+
+            PELE_proper = off_proper.to_PELE()
+            self.add_proper(PELE_proper)
+            self.add_OFF_proper(off_proper)
+
+        self._handle_excluded_propers()
+
+    def _handle_excluded_propers(self):
+        """
+        It looks for those propers that define duplicated 1-4 relations
+        and sets them to be ignored in PELE's 1-4 list.
+        """
+        for i, proper in enumerate(self.propers):
+            atom1_idx = proper.atom1_idx
+            atom4_idx = proper.atom4_idx
+            for proper_to_compare in self.propers[0:i]:
+                if proper == proper_to_compare:
+                    continue
+
+                if proper_to_compare.atom3_idx < 0:
+                    continue
+
+                # PELE already ignores 1-4 pair when the proper is exactly
+                # the same
+                if (proper.atom1_idx == proper_to_compare.atom1_idx
+                        and proper.atom2_idx == proper_to_compare.atom2_idx
+                        and proper.atom3_idx == proper_to_compare.atom3_idx
+                        and proper.atom4_idx == proper_to_compare.atom4_idx):
+                    continue
+
+                atom1_idx_to_compare = proper_to_compare.atom1_idx
+                atom4_idx_to_compare = proper_to_compare.atom4_idx
+                if (atom1_idx == atom1_idx_to_compare
+                        and atom4_idx == atom4_idx_to_compare):
+                    proper.exclude_from_14_list()
+                elif (atom1_idx == atom4_idx_to_compare
+                        and atom4_idx == atom1_idx_to_compare):
+                    proper.exclude_from_14_list()
+
+            for angle_to_compare in self.angles:
+                atom1_idx_to_compare = angle_to_compare.atom1_idx
+                atom4_idx_to_compare = angle_to_compare.atom3_idx
+                if (atom1_idx == atom1_idx_to_compare
+                        and atom4_idx == atom4_idx_to_compare):
+                    proper.exclude_from_14_list()
+                elif (atom1_idx == atom4_idx_to_compare
+                        and atom4_idx == atom1_idx_to_compare):
+                    proper.exclude_from_14_list()
+
+            for bond_to_compare in self.bonds:
+                atom1_idx_to_compare = bond_to_compare.atom1_idx
+                atom4_idx_to_compare = bond_to_compare.atom2_idx
+                if (atom1_idx == atom1_idx_to_compare
+                        and atom4_idx == atom4_idx_to_compare):
+                    proper.exclude_from_14_list()
+                elif (atom1_idx == atom4_idx_to_compare
+                        and atom4_idx == atom1_idx_to_compare):
+                    proper.exclude_from_14_list()
+
+    def _build_impropers(self):
+        """It builds the impropers of the molecule."""
+        for index, improper in enumerate(self.parameters['impropers']):
+            off_improper = OFFImproper(atom1_idx=improper['atom1_idx'],
+                                       atom2_idx=improper['atom2_idx'],
+                                       atom3_idx=improper['atom3_idx'],
+                                       atom4_idx=improper['atom4_idx'],
+                                       periodicity=improper['periodicity'],
+                                       phase=improper['phase'],
+                                       k=improper['k'],
+                                       idivf=improper['idivf'])
+
+            PELE_improper = off_improper.to_PELE()
+            self.add_improper(PELE_improper)
+            self.add_OFF_improper(off_improper)
+
+    def add_atom(self, atom):
+        """
+        It adds an atom to the molecule's list of atoms.
+
+        Parameters
+        ----------
+        atom : an peleffy.topology.Atom
+            The Atom to add
+        """
+        self._atoms.append(atom)
+
+    def add_bond(self, bond):
+        """
+        It adds a bond to the molecule's list of bonds.
+
+        Parameters
+        ----------
+        bond : an peleffy.topology.Bond
+            The Bond to add
+        """
+        self._bonds.append(bond)
+
+    def add_angle(self, angle):
+        """
+        It adds an angle to the molecule's list of angles.
+
+        Parameters
+        ----------
+        angle : an peleffy.topology.Angle
+            The Angle to add
+        """
+        self._angles.append(angle)
+
+    def add_proper(self, proper):
+        """
+        It adds a proper dihedral to the molecule's list of propers.
+
+        Parameters
+        ----------
+        proper : an peleffy.topology.Proper
+            The Proper to add
+        """
+        self._propers.append(proper)
+
+    def add_OFF_proper(self, proper):
+        """
+        It adds a proper dihedral to the molecule's list of OFF propers.
+
+        Parameters
+        ----------
+        proper : an peleffy.topology.OFFProper
+            The OFFProper to add
+        """
+        self._OFF_propers.append(proper)
+
+    def add_improper(self, improper):
+        """
+        It adds an improper dihedral to the molecule's list of impropers.
+
+        Parameters
+        ----------
+        improper : an peleffy.topology.Improper
+            The Improper to add
+        """
+        self._impropers.append(improper)
+
+    def add_OFF_improper(self, improper):
+        """
+        It adds an improper dihedral to the molecule's list of OFF impropers.
+
+        Parameters
+        ----------
+        improper : an peleffy.topology.OFFImproper
+            The OFFImproper to add
+        """
+        self._OFF_impropers.append(improper)
 
     @property
-    def name(self):
+    def molecule(self):
         """
-        The name that this topological element has.
+        It returns the molecule that belongs to this topology element.
 
         Returns
         -------
-        name : str
-            The name of the topological element
+        molecule : a peleffy.topology.Molecule
+            The peleffy's Molecule object belonging to the topology
         """
-        return self._name
+        return self._molecule
 
     @property
-    def n_writable_attrs(self):
+    def parameters(self):
         """
-        The number of writable attributes this topological element has.
-
-        Returns
-        -------
-        n_writable_attrs : int
-            The number of writable attributes
-        """
-        return len(self._writable_attrs)
-
-    def __iter__(self):
-        """
-        It returns an instance of the TopologyIterator.
-
-        Returns
-        -------
-        iterator : a TopologyIterator
-            The TopologyIterator object
-        """
-        return self.TopologyIterator(self)
-
-    def __repr__(self):
-        """
-        It returns the representation string of this topological element.
-
-        Returns
-        -------
-        repr_string : str
-            The representation string
-        """
-        repr_string = '{}('.format(self._name)
-        attrs = [attr for attr in self]
-        for attr_name, value in attrs[:-1]:
-            repr_string += '{}={}, '.format(attr_name, value)
-        repr_string += '{}={})'.format(*attrs[-1])
-
-        return repr_string
-
-    def __str__(self):
-        """
-        It returns the readable representation string of this topological
+        It returns the parameter wrapper that belongs to this topology
         element.
 
         Returns
         -------
-        str_string : str
-            The readable representation string
+        parameters : a BaseParameterWrapper
+            The parameter wrapper belonging to the topology
         """
-        return self.__repr__()
-
-
-class Bond(TopologyElement):
-    """
-    It represents a bond in the topology.
-    """
-
-    _name = 'Bond'
-    _writable_attrs = ['atom1_idx', 'atom2_idx', 'spring_constant', 'eq_dist']
-
-    def __init__(self, index=-1, atom1_idx=None, atom2_idx=None,
-                 spring_constant=None, eq_dist=None):
-        """
-        It initiates a Bond object.
-
-        Parameters
-        ----------
-        index : int
-            The index of this Bond object
-        atom1_idx : int
-            The index of the first atom involved in this Bond
-        atom2_idx : int
-            The index of the second atom involved in this Bond
-        spring_constant : simtk.unit.Quantity
-            The spring constant of this Bond
-        eq_dist : simtk.unit.Quantity
-            The equilibrium distance of this Bond
-        """
-        self._index = index
-        self._atom1_idx = atom1_idx
-        self._atom2_idx = atom2_idx
-        self._spring_constant = spring_constant
-        self._eq_dist = eq_dist
-
-    def set_atom1_idx(self, index):
-        """
-        It sets atom1's index.
-
-        Parameters
-        ----------
-        index : int
-            The index of the first atom involved in this Bond
-        """
-        self._atom1_idx = index
-
-    def set_atom2_idx(self, index):
-        """
-        It sets atom2's index.
-
-        Parameters
-        ----------
-        index : int
-            The index of the second atom involved in this Bond
-        """
-        self._atom2_idx = index
+        return self._parameters
 
     @property
-    def index(self):
+    def atoms(self):
         """
-        Bond's index.
+        The list of atoms in the topology.
 
         Returns
         -------
-        index : int
-            The index of this Bond object
+        atoms : list[peleffy.topology.molecule.Atom]
+            The list of atoms of this Topology object.
         """
-        return self._index
+        return self._atoms
 
     @property
-    def atom1_idx(self):
+    def bonds(self):
         """
-        Bond's atom1 index.
+        The list of bonds in the topology.
 
         Returns
         -------
-        atom1_idx : int
-            The index of the first atom involved in this Bond object
+        bonds : list[peleffy.topology.Bond]
+            The list of bonds of this Topology object.
         """
-        return self._atom1_idx
+        return self._bonds
 
     @property
-    def atom2_idx(self):
+    def angles(self):
         """
-        Bond's atom2 index.
+        The list of angles in the topology.
 
         Returns
         -------
-        atom2_idx : int
-            The index of the second atom involved in this Bond object
+        angles : list[peleffy.topology.Angle]
+            The list of angles of this Topology object.
         """
-        return self._atom2_idx
+        return self._angles
 
     @property
-    def spring_constant(self):
+    def propers(self):
         """
-        Bond's spring constant.
+        The list of propers in the topology.
 
         Returns
         -------
-        spring_constant : simtk.unit.Quantity
-            The spring constant of this Bond object
+        propers : list[peleffy.topology.Proper]
+            The list of propers of this Topology object.
         """
-        return self._spring_constant
+        return self._propers
 
     @property
-    def eq_dist(self):
+    def impropers(self):
         """
-        Bond's equilibrium distance.
+        The list of impropers in the topology.
 
         Returns
         -------
-        eq_dist : simtk.unit.Quantity
-            The equilibrium distance of this Bond object
+        impropers : list[peleffy.topology.Improper]
+            The list of impropers of this Topology object.
         """
-        return self._eq_dist
-
-
-class Angle(TopologyElement):
-    """
-    It represents an angle in the topology.
-    """
-
-    _name = 'Angle'
-    _writable_attrs = ['atom1_idx', 'atom2_idx', 'atom3_idx',
-                       'spring_constant', 'eq_angle']
-
-    def __init__(self, index=-1, atom1_idx=None, atom2_idx=None,
-                 atom3_idx=None, spring_constant=None, eq_angle=None):
-        """
-        It initiates an Angle object.
-
-        Parameters
-        ----------
-        index : int
-            The index of this Angle object
-        atom1_idx : int
-            The index of the first atom involved in this Angle
-        atom2_idx : int
-            The index of the second atom involved in this Angle
-        atom3_idx : int
-            The index of the third atom involved in this Angle
-        spring_constant : simtk.unit.Quantity
-            The spring constant of this Angle
-        eq_angle : simtk.unit.Quantity
-            The equilibrium angle of this Angle
-        """
-        self._index = index
-        self._atom1_idx = atom1_idx
-        self._atom2_idx = atom2_idx
-        self._atom3_idx = atom3_idx
-        self._spring_constant = spring_constant
-        self._eq_angle = eq_angle
-
-    def set_atom1_idx(self, index):
-        """
-        It sets atom1's index.
-
-        Parameters
-        ----------
-        index : int
-            The index of the first atom involved in this Angle
-        """
-        self._atom1_idx = index
-
-    def set_atom2_idx(self, index):
-        """
-        It sets atom2's index.
-
-        Parameters
-        ----------
-        index : int
-            The index of the second atom involved in this Angle
-        """
-        self._atom2_idx = index
-
-    def set_atom3_idx(self, index):
-        """
-        It sets atom3's index.
-
-        Parameters
-        ----------
-        index : int
-            The index of the third atom involved in this Angle
-        """
-        self._atom3_idx = index
-
-    @property
-    def index(self):
-        """
-        Angle's index.
-
-        Returns
-        -------
-        index : int
-            The index of this Angle object
-        """
-        return self._index
-
-    @property
-    def atom1_idx(self):
-        """
-        Angle's atom1 index.
-
-        Returns
-        -------
-        atom1_idx : int
-            The index of the first atom involved in this Angle object
-        """
-        return self._atom1_idx
-
-    @property
-    def atom2_idx(self):
-        """
-        Angle's atom2 index.
-
-        Returns
-        -------
-        atom1_idx : int
-            The index of the second atom involved in this Angle object
-        """
-        return self._atom2_idx
-
-    @property
-    def atom3_idx(self):
-        """
-        Angle's atom3 index.
-
-        Returns
-        -------
-        atom1_idx : int
-            The index of the third atom involved in this Angle object
-        """
-        return self._atom3_idx
-
-    @property
-    def spring_constant(self):
-        """
-        Angle's spring constant.
-
-        Returns
-        -------
-        spring_constant : simtk.unit.Quantity
-            The spring constant of this Angle object
-        """
-        return self._spring_constant
-
-    @property
-    def eq_angle(self):
-        """
-        Angle's equilibrium angle.
-
-        Returns
-        -------
-        eq_angle : simtk.unit.Quantity
-            The equilibrium angle of this Angle object
-        """
-        return self._eq_angle
-
-
-class Dihedral(TopologyElement):
-    """
-    It represents a dihedral in the topology.
-
-    It can be a proper or an improper dihedral.
-    """
-
-    _name = 'Dihedral'
-
-    def __init__(self, index=-1, atom1_idx=None, atom2_idx=None,
-                 atom3_idx=None, atom4_idx=None, periodicity=None,
-                 prefactor=None, constant=None, phase=None):
-        """
-        It initiates an Dihedral object.
-
-        Parameters
-        ----------
-        index : int
-            The index of this Dihedral object
-        atom1_idx : int
-            The index of the first atom involved in this Dihedral
-        atom2_idx : int
-            The index of the second atom involved in this Dihedral
-        atom3_idx : int
-            The index of the third atom involved in this Dihedral
-        atom4_idx : int
-            The index of the fourth atom involved in this Dihedral
-        periodicity : int
-            The periodicity of this Dihedral
-        prefactor : int
-            The prefactor of this Dihedral
-        constant : simtk.unit.Quantity
-            The constant of this Dihedral
-        phase : simtk.unit.Quantity
-            The phase constant of this Dihedral
-        """
-        self._index = index
-        self._atom1_idx = atom1_idx
-        self._atom2_idx = atom2_idx
-        self._atom3_idx = atom3_idx
-        self._atom4_idx = atom4_idx
-        self._periodicity = periodicity
-        self._prefactor = prefactor
-        self._constant = constant
-        self._phase = phase
-
-    def set_atom1_idx(self, index):
-        """
-        It sets atom1's index.
-
-        Parameters
-        ----------
-        index : int
-            The index of the first atom involved in this Dihedral
-        """
-        self._atom1_idx = index
-
-    def set_atom2_idx(self, index):
-        """
-        It sets atom2's index.
-
-        Parameters
-        ----------
-        index : int
-            The index of the second atom involved in this Dihedral
-        """
-        self._atom2_idx = index
-
-    def set_atom3_idx(self, index):
-        """
-        It sets atom3's index.
-
-        Parameters
-        ----------
-        index : int
-            The index of the third atom involved in this Dihedral
-        """
-        self._atom3_idx = index
-
-    def set_atom4_idx(self, index):
-        """
-        It sets atom4's index.
-
-        Parameters
-        ----------
-        index : int
-            The index of the fourth atom involved in this Dihedral
-        """
-        self._atom4_idx = index
-
-    def plot(self):
-        """
-        It plots this Dihedral as a function of phi angle.
-        """
-        from matplotlib import pyplot
-        import numpy as np
-
-        x = unit.Quantity(np.arange(0, np.pi, 0.1), unit=unit.radians)
-        pyplot.plot(x, self.constant * (1 + self.prefactor
-                                        * np.cos(self.periodicity * x
-                                                 + self.phase)),
-                    'r--')
-
-        pyplot.show()
-
-    @property
-    def index(self):
-        """
-        Dihedral's index.
-
-        Returns
-        -------
-        index : int
-            The index of this Dihedral object
-        """
-        return self._index
-
-    @property
-    def atom1_idx(self):
-        """
-        Dihedral's atom1 index.
-
-        Returns
-        -------
-        atom1_idx : int
-            The index of the first atom involved in this Dihedral object
-        """
-        return self._atom1_idx
-
-    @property
-    def atom2_idx(self):
-        """
-        Dihedral's atom2 index.
-
-        Returns
-        -------
-        atom1_idx : int
-            The index of the second atom involved in this Dihedral object
-        """
-        return self._atom2_idx
-
-    @property
-    def atom3_idx(self):
-        """
-        Dihedral's atom3 index.
-
-        Returns
-        -------
-        atom1_idx : int
-            The index of the third atom involved in this Dihedral object
-        """
-        return self._atom3_idx
-
-    @property
-    def atom4_idx(self):
-        """
-        Dihedral's atom4 index.
-
-        Returns
-        -------
-        atom1_idx : int
-            The index of the fourth atom involved in this Dihedral object
-        """
-        return self._atom4_idx
-
-    @property
-    def periodicity(self):
-        """
-        Dihedral's periodicity.
-
-        Returns
-        -------
-        periodicity : int
-            The periodicity this Dihedral object
-        """
-        return self._periodicity
-
-    @property
-    def prefactor(self):
-        """
-        Dihedral's prefactor.
-
-        Returns
-        -------
-        prefactor : int
-            The prefactor this Dihedral object
-        """
-        return self._prefactor
-
-    @property
-    def constant(self):
-        """
-        Dihedral's constant.
-
-        Returns
-        -------
-        constant : unit.simtk.Quantity
-            The constant of this Dihedral object
-        """
-        return self._constant
-
-    @property
-    def phase(self):
-        """
-        Dihedral's phase constant.
-
-        Returns
-        -------
-        phase : unit.simtk.Quantity
-            The phase constant of this Dihedral object
-        """
-        return self._phase
-
-
-class Proper(Dihedral):
-    """
-    It represents a proper dihedral in the topology.
-    """
-
-    _name = 'Proper'
-    exclude = False
-    _writable_attrs = ['atom1_idx', 'atom2_idx', 'atom3_idx', 'atom4_idx',
-                       'constant', 'prefactor', 'periodicity', 'phase']
-
-    def exclude_from_14_list(self):
-        """
-        It excludes this proper dihedral from PELE's 1-4 list by
-        setting the index of the third atom to negative.
-        """
-        self.exclude = True
-
-
-class Improper(Dihedral):
-    """
-    It represents an improper dihedral in the topology.
-    """
-
-    _name = 'Improper'
-    _writable_attrs = ['atom1_idx', 'atom2_idx', 'atom3_idx', 'atom4_idx',
-                       'constant', 'prefactor', 'periodicity']
-
-
-class OFFDihedral(TopologyElement):
-    """
-    It represents a dihedral in the Open Force Field's topology.
-    """
-
-    _name = 'OFFDihedral'
-    _writable_attrs = ['atom1_idx', 'atom2_idx', 'atom3_idx', 'atom4_idx',
-                       'periodicity', 'phase', 'k', 'idivf']
-    _to_PELE_class = Dihedral
-
-    def __init__(self, index=-1, atom1_idx=None, atom2_idx=None,
-                 atom3_idx=None, atom4_idx=None, periodicity=None,
-                 phase=None, k=None, idivf=None):
-        """
-        It initiates an Dihedral object.
-
-        Parameters
-        ----------
-        index : int
-            The index of this Dihedral object
-        atom1_idx : int
-            The index of the first atom involved in this Dihedral
-        atom2_idx : int
-            The index of the second atom involved in this Dihedral
-        atom3_idx : int
-            The index of the third atom involved in this Dihedral
-        atom4_idx : int
-            The index of the fourth atom involved in this Dihedral
-        periodicity : int
-            The periodicity of this Dihedral
-        phase : simtk.unit.Quantity
-            The phase of this Dihedral
-        k : simtk.unit.Quantity
-            The constant of this Dihedral
-        idivf : int
-            The idivf of this Dihedral
-        """
-        self.index = index
-        self.atom1_idx = atom1_idx
-        self.atom2_idx = atom2_idx
-        self.atom3_idx = atom3_idx
-        self.atom4_idx = atom4_idx
-        self.periodicity = periodicity
-        self.phase = phase
-        self.k = k
-        self.idivf = idivf
-
-    def _check_up(self):
-        """
-        It performs some parameter check ups.
-
-        Raises
-        ------
-        AssertionError
-            If any unexpected value is found
-        """
-        pass
-
-    def to_PELE(self):
-        """
-        It converts this Open Force Field Dihedral object into a
-        PELE-compatible one.
-
-        .. todo ::
-
-           * Fully cover all OpenFF dihedral parameters
-
-        Returns
-        -------
-        PELE_dihedral : a Dihedral
-            The PELE-compatible Dihedral object
-        """
-        if (self.periodicity is None or self.phase is None
-                or self.k is None or self.idivf is None):
-            return None
-
-        try:
-            self._check_up()
-        except AssertionError as e:
-            raise ValueError('Invalid value found: {}'.format(e))
-
-        PELE_phase = self.phase
-
-        if self.phase.value_in_unit(unit.degree) == 180:
-            PELE_prefactor = -1
-            PELE_phase = unit.Quantity(value=0.0, unit=unit.degree)
-        else:
-            PELE_prefactor = 1
-
-        PELE_constant = self.k / self.idivf
-
-        PELE_dihedral_kwargs = {'index': self.index,
-                                'atom1_idx': self.atom1_idx,
-                                'atom2_idx': self.atom2_idx,
-                                'atom3_idx': self.atom3_idx,
-                                'atom4_idx': self.atom4_idx,
-                                'periodicity': self.periodicity,
-                                'prefactor': PELE_prefactor,
-                                'constant': PELE_constant,
-                                'phase': PELE_phase}
-
-        return self._to_PELE_class(**PELE_dihedral_kwargs)
-
-    def plot(self):
-        """
-        It plots this Dihedral as a function of phi angle.
-        """
-        from matplotlib import pyplot
-        import numpy as np
-
-        x = unit.Quantity(np.arange(0, np.pi, 0.1), unit=unit.radians)
-        pyplot.plot(x,
-                    self.k * (1 + np.cos(self.periodicity * x - self.phase)),
-                    'r--')
-
-        pyplot.show()
-
-
-class OFFProper(OFFDihedral):
-    """
-    It represents a proper dihedral in the Open Force Field's topology.
-    """
-
-    _name = 'OFFProper'
-    _to_PELE_class = Proper
-
-    def _check_up(self):
-        """
-        It performs some parameter check ups.
-
-        .. todo ::
-
-            * Periodicity can also equal 5 and currently it is not supported
-             by PELE
-
-        Raises
-        ------
-        AssertionError
-            If any unexpected value is found
-        """
-        assert self.periodicity in (1, 2, 3, 4, 5, 6), 'Expected values ' \
-            'for periodicity are 1, 2, 3, 4, 5 or 6, obtained ' \
-            '{}'.format(self.periodicity)
-
-        # proper's idivfs must always be 1 --> Apparently not: COC(O)OC, t84, t86
-        # assert self.idivf == 1, 'The expected value for idivf is 1 ' \
-        #     'for propers, obtained {}'.format(self.idivf)
-
-        # The next version of PELE will be compatible with phase values
-        # other than 0 and 180 degrees to fully cover all OpenFF dihedrals
-        # assert self.phase.value_in_unit(unit.degree) in (0, 180), \
-        #     'Expected values for phase are 0 or 180, obtained ' \
-        #     '{}'.format(self.phase)
-
-
-class OFFImproper(OFFDihedral):
-    """
-    It represents an improper dihedral in the Open Force Field's topology.
-    """
-
-    _name = 'OFFImproper'
-    _to_PELE_class = Improper
-
-    def _check_up(self):
-        """
-        It performs some parameter check ups.
-
-        .. todo ::
-
-            * Periodicity can also equal 5 and currently it is not supported
-             by PELE
-
-        Raises
-        ------
-        AssertionError
-            If any unexpected value is found
-        """
-        assert self.periodicity in (1, 2, 3, 4, 5, 6), 'Expected values ' \
-            'for periodicity are 1, 2, 3, 4, 5 or 6, obtained ' \
-            '{}'.format(self.periodicity)
-
-        assert self.phase.value_in_unit(unit.degree) in (0, 180), \
-            'Expected values for phase are 0 or 180 in impropers, ' \
-            'obtained {}'.format(self.phase)
-
-        # The next version of PELE will be compatible with phase values
-        # other than 0 and 180 degrees to fully cover all OpenFF dihedrals
-        # assert self.phase.value_in_unit(unit.degree) in (0, 180), \
-        #     'Expected values for phase are 0 or 180, obtained ' \
-        #     '{}'.format(self.phase)
+        return self._impropers

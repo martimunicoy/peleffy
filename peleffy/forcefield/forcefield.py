@@ -7,14 +7,18 @@ __all__ = ["OpenForceField", "OPLS2005ForceField",
            "OpenFFOPLS2005ForceField"]
 
 
+from peleffy.charge import ChargeCalculatorSelector
+
+
 class _BaseForceField(object):
     """
     It is the force field base class.
     """
 
     _type = ''
+    _default_charge_method = 'am1bcc'
 
-    def __init__(self, forcefield_name):
+    def __init__(self, forcefield_name, charge_method=None):
         """
         It initializes the base force field class.
 
@@ -22,34 +26,62 @@ class _BaseForceField(object):
         ----------
         forcefield_name : str
             The name of the forcefield
+        charge_method : str
+            The name of the charge method to employ
         """
         self._name = forcefield_name
-        self._parameters = None
+        self._charge_calculator = self._get_charge_calculator(charge_method)
 
-    def parameterize(self, molecule, force_parameterization=False):
+    def _get_charge_calculator(self, charge_method):
+        """
+        Given a charge method name, it returns the corresponding
+        charge calculator class.
+
+        Parameters
+        ----------
+        charge_method : str
+            The name of the requested charge calculator
+
+        Returns
+        -------
+        charge_calculator : a PartialChargesCalculator object
+            The charge calculation method that will be employed to calculate
+            partial charges
+        """
+
+        # If charge method is not supplied, use force field's default
+        if charge_method is None:
+            charge_method = self._default_charge_method
+
+        selector = ChargeCalculatorSelector()
+        return selector.get_by_name(charge_method)
+
+    def parameterize(self, molecule):
         """
         It parameterizes the supplied molecule.
 
         Parameters
         ----------
-        molecule : an peleffy.topology.Molecule
+        molecule : a peleffy.topology.Molecule
             The peleffy's Molecule object to parameterize
-        force_parameterization : bool
-            Whether to force a new parameterization instead of attempting
-            to reuse parameters obtained in a previous parameterization,
-            or not
 
         Returns
         -------
-        parameters : an peleffy.forcefield.parameters.BaseParameterWrapper object
+        parameters : a peleffy.forcefield.parameters.BaseParameterWrapper object
             The parameter wrapper containing the parameters generated
             with the current force field
 
         """
-        if self.parameters is None or force_parameterization:
-            self._parameters = self._get_parameters(molecule)
 
-        return self.parameters
+        # Assign parameters
+        parameters = self._get_parameters(molecule)
+
+        # Assign partial charges using the charge calculator object
+        charge_calculator = self.charge_calculator(molecule)
+        charges = charge_calculator.get_partial_charges()
+        parameters['charges'] = charges
+
+        return parameters
 
     @property
     def type(self):
@@ -87,6 +119,20 @@ class _BaseForceField(object):
         """
         return self._parameters
 
+    @property
+    def charge_calculator(self):
+        """
+        It returns the charge calculator method linked with the force
+        field.
+
+        Returns
+        -------
+        charge_calculator : a PartialChargesCalculator object
+            The charge calculation method that will be employed to calculate
+            partial charges
+        """
+        return self._charge_calculator
+
 
 class OpenForceField(_BaseForceField):
     """
@@ -94,6 +140,7 @@ class OpenForceField(_BaseForceField):
     """
 
     _type = 'OpenFF'
+    _default_charge_method = 'am1bcc'
 
     def _get_parameters(self, molecule):
         """
@@ -101,7 +148,7 @@ class OpenForceField(_BaseForceField):
 
         Parameters
         ----------
-        molecule : an peleffy.topology.Molecule
+        molecule : a peleffy.topology.Molecule
             The peleffy's Molecule object to parameterize
 
         Returns
@@ -116,10 +163,11 @@ class OpenForceField(_BaseForceField):
         parameters = openforcefield_toolkit.get_parameters_from_forcefield(
             self.name, molecule)
 
-        from peleffy.forcefield import OpenForceFieldParameterWrapper
+        from peleffy.forcefield.parameters \
+            import OpenForceFieldParameterWrapper
 
         return OpenForceFieldParameterWrapper.from_label_molecules(
-            molecule, parameters)
+            molecule, parameters, self.name)
 
 
 class OPLS2005ForceField(_BaseForceField):
@@ -128,6 +176,7 @@ class OPLS2005ForceField(_BaseForceField):
     """
 
     _type = 'OPLS2005'
+    _default_charge_method = 'opls2005'
 
     def _get_parameters(self, molecule):
         """
@@ -135,7 +184,7 @@ class OPLS2005ForceField(_BaseForceField):
 
         Parameters
         ----------
-        molecule : an peleffy.topology.Molecule
+        molecule : a peleffy.topology.Molecule
             The peleffy's Molecule object to parameterize
 
         Returns
@@ -149,7 +198,8 @@ class OPLS2005ForceField(_BaseForceField):
         schrodinger_toolkit = SchrodingerToolkitWrapper()
         ffld_output = schrodinger_toolkit.run_ffld_server(molecule)
 
-        from peleffy.forcefield import OPLS2005ParameterWrapper
+        from peleffy.forcefield.parameters \
+            import OPLS2005ParameterWrapper
 
         return OPLS2005ParameterWrapper.from_ffld_output(molecule,
                                                          ffld_output)
@@ -163,6 +213,7 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
 
     _type = 'OpenFF + OPLS2005'
     _selections = ('openff', 'opls2005')
+    _default_charge_method = 'am1bcc'
 
     def __init__(self, forcefield_name):
         """
@@ -257,7 +308,7 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
 
         Parameters
         ----------
-        molecule : an peleffy.topology.Molecule
+        molecule : a peleffy.topology.Molecule
             The peleffy's Molecule object to parameterize
 
         Returns
@@ -266,9 +317,12 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
             The parameter wrapper containing the parameters generated
             with the current force field
         """
-        from peleffy.forcefield import OpenFFOPLS2005ParameterWrapper
+        from peleffy.forcefield.parameters \
+            import OpenFFOPLS2005ParameterWrapper
 
-        hybrid_parameters = OpenFFOPLS2005ParameterWrapper()
+        hybrid_parameters = OpenFFOPLS2005ParameterWrapper(
+            forcefield_name='{} + {}'.format(self._openff.forcefield_name,
+                                             self._oplsff.forcefield_name))
 
         openff_parameters = self._openff.parameterize(molecule)
         oplsff_parameters = self._oplsff.parameterize(molecule)

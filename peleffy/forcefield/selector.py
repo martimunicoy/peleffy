@@ -27,7 +27,7 @@ class ForceFieldSelector(object):
 
         Returns
         -------
-        forcefield : an peleffy.forcefield.forcefield.ForceField object
+        forcefield : a peleffy.forcefield.forcefield.ForceField object
             The force field object that corresponds to the supplied name
 
         Raises

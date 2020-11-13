@@ -22,7 +22,7 @@ class _PartialChargeCalculator(object):
 
         Parameters
         ----------
-        molecule : An peleffy.topology.Molecule
+        molecule : a peleffy.topology.Molecule
             The partial charges of this Molecule object will be calculated
         """
         self._molecule = molecule
@@ -34,7 +34,7 @@ class _PartialChargeCalculator(object):
 
         Returns
         -------
-        molecule : an peleffy.topology.Molecule
+        molecule : a peleffy.topology.Molecule
             The peleffy's Molecule object
         """
         return self._molecule
@@ -81,7 +81,7 @@ class OPLSChargeCalculator(_PartialChargeCalculator):
     Schrodinger's ffld_server)
     """
 
-    _name = 'OPLS'
+    _name = 'OPLS2005'
 
     def get_partial_charges(self):
         """

@@ -39,7 +39,7 @@ class BaseParameterWrapper(dict):
                                              'k', 'idivf')}
     _keys = _fixed_keys + _unfixed_keys
 
-    def __init__(self, parameters_dict=dict()):
+    def __init__(self, parameters_dict=dict(), forcefield_name=None):
         """
         It initializes a parameter wrapper object.
 
@@ -48,12 +48,19 @@ class BaseParameterWrapper(dict):
         parameters_dict : dict
              A dictionary keyed by parameter type that contains the
              parameters to store. Default is an empty dict
+        forcefield_name : str
+            The name of the force field the parameters belong to
         """
         for key in self._keys:
             self[key] = list()
 
         for key, value in parameters_dict.items():
             self[key] = value
+
+        if forcefield_name is None:
+            self._forcefield_name = self._name
+        else:
+            self._forcefield_name = forcefield_name
 
     def __setitem__(self, key, val):
         """
@@ -205,6 +212,10 @@ class BaseParameterWrapper(dict):
 
         raise NotImplementedError()
 
+    @property
+    def forcefield_name(self):
+        return self._forcefield_name
+
 
 class OpenForceFieldParameterWrapper(BaseParameterWrapper):
     """
@@ -214,7 +225,7 @@ class OpenForceFieldParameterWrapper(BaseParameterWrapper):
     _name = 'OpenFF'
 
     @staticmethod
-    def from_label_molecules(molecule, parameters):
+    def from_label_molecules(molecule, parameters, openff_version):
         """
         It parses the parameters coming from the label_molecules()
         method from OpenFF toolkit.
@@ -226,6 +237,8 @@ class OpenForceFieldParameterWrapper(BaseParameterWrapper):
         parameters_dict : dict
              A dictionary keyed by parameter type that contains the
              parameters to store
+        openff_version : str
+            The version of the OpenFF force field the parameters belong to
 
         Returns
         -------
@@ -482,7 +495,7 @@ class OpenForceFieldParameterWrapper(BaseParameterWrapper):
             params['GBSA_radii'] = build_dict(gbsa_parameters, 'radius')
             params['GBSA_scales'] = build_dict(gbsa_parameters, 'scale')
 
-        return OpenForceFieldParameterWrapper(params)
+        return OpenForceFieldParameterWrapper(params, openff_version)
 
 
 class OPLS2005ParameterWrapper(BaseParameterWrapper):

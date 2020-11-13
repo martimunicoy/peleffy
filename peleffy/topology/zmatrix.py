@@ -7,7 +7,7 @@ from copy import deepcopy
 
 import numpy as np
 
-from peleffy.topology.molecule import DummyAtom
+from peleffy.topology.elements import DummyAtom
 
 
 class ZMatrix(np.ndarray):
@@ -17,43 +17,46 @@ class ZMatrix(np.ndarray):
     Inspired by the PlopRotTemp algorithm.
     """
 
-    def __init__(self, molecule):
+    def __init__(self, topology):
         """
         It initializes a ZMatrix object.
 
         Parameters
         ----------
-        molecule : An peleffy.topology.Molecule
-            A Molecule object to be written as an Impact file
+        topology : a peleffy.topology.Topology
+            The molecular topology representation to generate the
+            zmatrix with
         """
-        # We will work on a copy of the molecule's object to modify it freely
-        self._molecule = deepcopy(molecule)
+        # We will work on a copy of the topology's object to modify it freely
+        self._topology = deepcopy(topology)
 
-    def __new__(cls, molecule):
+    def __new__(cls, topology):
         """
         It customizes the creation of the numpy.array.
 
         Parameters
         ----------
-        molecule : An peleffy.topology.Molecule
-            A Molecule object to be written as an Impact file
+        topology : a peleffy.topology.Topology
+            The molecular topology representation to generate the
+            zmatrix with
         """
-        molecule = deepcopy(molecule)
-        obj = np.zeros((len(molecule.atoms), 3)).view(cls)
-        coords = cls._extract_coords(molecule)
-        obj = cls._build_zmatrix(cls, obj, coords, molecule)
+        topology = deepcopy(topology)
+        obj = np.zeros((len(topology.atoms), 3)).view(cls)
+        coords = cls._extract_coords(topology)
+        obj = cls._build_zmatrix(cls, obj, coords, topology)
 
         return obj
 
     @staticmethod
-    def _extract_coords(molecule):
+    def _extract_coords(topology):
         """
         It extracts the coordinates of the molecule's atoms.
 
         Parameters
         ----------
-        molecule : An peleffy.topology.Molecule
-            A Molecule object to be written as an Impact file
+        topology : a peleffy.topology.Topology
+            The molecular topology representation to generate the
+            zmatrix with
 
         Returns
         -------
@@ -61,20 +64,21 @@ class ZMatrix(np.ndarray):
             The coordinates of the molecule
         """
         coords = list()
-        for atom in molecule.atoms:
+        for atom in topology.atoms:
             coords.append((atom.x, atom.y, atom.z))
 
         return coords
 
     @staticmethod
-    def _get_absolute_parent(molecule):
+    def _get_absolute_parent(topology):
         """
         It returns the absolute parent in the topology of the molecule.
 
         Parameters
         ----------
-        molecule : An peleffy.topology.Molecule
-            A Molecule object to be written as an Impact file
+        topology : a peleffy.topology.Topology
+            The molecular topology representation to generate the
+            zmatrix with
 
         Returns
         -------
@@ -82,7 +86,7 @@ class ZMatrix(np.ndarray):
             The absolute parent of the molecule
         """
         absolute_parent = list()
-        for atom in molecule.atoms:
+        for atom in topology.atoms:
             if atom.parent is None:
                 absolute_parent.append(atom)
 
@@ -252,7 +256,7 @@ class ZMatrix(np.ndarray):
         return phi * 180.0 / np.pi
 
     @staticmethod
-    def _build_zmatrix(cls, obj, coords, molecule):
+    def _build_zmatrix(cls, obj, coords, topology):
         """
         It buils the zmatrix.
 
@@ -264,8 +268,9 @@ class ZMatrix(np.ndarray):
             The ZMatrix object
         coords : list[tuple[float]]
             The coordinates of the molecule
-        molecule : An peleffy.topology.Molecule
-            A Molecule object to be written as an Impact file
+        topology : a peleffy.topology.Topology
+            The molecular topology representation to generate the
+            zmatrix with
 
         Returns
         -------
@@ -276,14 +281,14 @@ class ZMatrix(np.ndarray):
         dummy1 = DummyAtom(index=-3, PDB_name='DUM1', parent=None)
         dummy2 = DummyAtom(index=-2, PDB_name='DUM2', parent=dummy1)
         dummy3 = DummyAtom(index=-1, PDB_name='DUM3', parent=dummy2)
-        absolute_parent = cls._get_absolute_parent(molecule)
+        absolute_parent = cls._get_absolute_parent(topology)
         absolute_parent.set_parent(dummy3)
 
         dummy1.set_coords([0.0, 0.0, 0.0])  # at origin
         dummy2.set_coords([0.0, 0.0, 1.0])  # at z axis
         dummy3.set_coords([1.0, 0.0, 0.0])  # at x axis
 
-        for i, atom in enumerate(molecule.atoms):
+        for i, atom in enumerate(topology.atoms):
             atom1 = atom
             atom2 = atom1.parent
             atom3 = atom2.parent
