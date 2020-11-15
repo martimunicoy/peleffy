@@ -125,6 +125,17 @@ class BaseParameterWrapper(dict):
 
         dict.__setitem__(self, key, val)
 
+    def __str__(self):
+        """
+        It returns the string representation of this parameter wrapper.
+
+        Returns
+        -------
+        string_representation : str
+            The string representation
+        """
+        return self.to_string()
+
     def add_parameters(self, label, parameters):
         """
         It adds a list of parameters of the same type to the collection.
@@ -137,6 +148,35 @@ class BaseParameterWrapper(dict):
             The list of parameters to include to the collection
         """
         self[label] = parameters
+
+    def to_string(self):
+        """
+        It returns a string representation of the parameters stored in
+        the wrapper.
+
+        Returns
+        -------
+        string_representation : str
+            The string representation
+        """
+
+        from peleffy.utils import convert_all_quantities_to_string
+        return convert_all_quantities_to_string(self)
+
+    def to_json(self, output_path):
+        """
+        It saves this parameter wrapper as a json file.
+
+        Parameters
+        ----------
+        output_path : str
+            The path to save the output json file
+        """
+
+        import json
+
+        with open(output_path, 'w') as f:
+            json.dump(self.to_string(), f, indent=4, sort_keys=True)
 
     @property
     def atom_iterator(self):
