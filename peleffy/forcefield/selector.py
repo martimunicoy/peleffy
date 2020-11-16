@@ -28,8 +28,9 @@ class ForceFieldSelector(object):
 
         Returns
         -------
-        forcefield : a peleffy.forcefield.forcefield.ForceField object
-            The force field object that corresponds to the supplied name
+        forcefield : a peleffy.forcefield.forcefield.ForceField
+            The reference to the force field that corresponds to the
+            supplied name
 
         Raises
         ------
@@ -40,9 +41,9 @@ class ForceFieldSelector(object):
         from .forcefield import (OpenForceField, OPLS2005ForceField)
 
         if forcefield_name.upper() in self._FF_TYPES['OPLS2005']:
-            return OPLS2005ForceField(forcefield_name)
+            return OPLS2005ForceField
         elif forcefield_name in self._FF_TYPES['OpenFF']:
-            return OpenForceField(forcefield_name)
+            return OpenForceField
         else:
             raise ValueError('Invalid force field name')
 
@@ -85,9 +86,9 @@ class ChargeCalculatorSelector(object):
 
         Returns
         -------
-        charge_calculator : a PartialChargesCalculator object
-            The charge calculation method that will be employed to calculate
-            partial charges
+        charge_calculator : a PartialChargesCalculator
+            The reference to the charge calculation method that will be
+            employed to calculate partial charges
 
         Raises
         ------

@@ -16,31 +16,33 @@ class _SolventWrapper(object):
     _ff_file = None
     _name = None
 
-    def __init__(self, molecule):
+    def __init__(self, topology):
         """
         Initializes a SolventWrapper object.
 
         Parameters
         ----------
-        molecule : An peleffy.topology.Molecule
-            A Molecule object to be written as an Impact file
+        topology : a Topology object
+            The molecular topology representation to write as a
+            Impact template
         """
-        self._molecule = molecule
+        self._topology = topology
         self._radii = dict.fromkeys([tuple((idx, ))
-                                     for idx in range(0, len(molecule.atoms))],
+                                     for idx in range(0, len(topology.atoms))],
                                     unit.Quantity())
         self._scales = dict.fromkeys([tuple((idx, ))
-                                      for idx in range(0, len(molecule.atoms))],
+                                      for idx in range(0, len(topology.atoms))],
                                      unit.Quantity())
         self._solvent_dielectric = float(0)
         self._solute_dielectric = float(0)
         self._surface_area_penalty = float(0)
         self._solvent_radius = float(0)
-        self._initialize_from_molecule()
+        self._initialize_from_topology()
 
-    def _initialize_from_molecule(self):
+    def _initialize_from_topology(self):
         """
-        Initializes a SolventWrapper object using an peleffy's Molecule.
+        Initializes a SolventWrapper object using a peleffy's
+        molecular Topology.
         """
         logger = Logger()
         logger.info(' - Loading solvent parameters')
@@ -59,7 +61,7 @@ class _SolventWrapper(object):
         from peleffy.forcefield import OpenForceField
 
         forcefield = OpenForceField(self._ff_file)
-        parameters = forcefield.parameterize(self.molecule)
+        parameters = forcefield.parameterize(self.topology.molecule)
 
         self._radii = parameters['GBSA_radii']
         self._scales = parameters['GBSA_scales']
@@ -86,15 +88,15 @@ class _SolventWrapper(object):
         data['SolventParameters']['General']['surface_area_penalty'] = \
             round(self.surface_area_penalty.value_in_unit(
                 unit.kilocalorie / (unit.angstrom**2 * unit.mole)), 8)
-        data['SolventParameters'][self.molecule.tag] = dict()
+        data['SolventParameters'][self.topology.molecule.tag] = dict()
 
-        atom_names = self.molecule.get_pdb_atom_names()
+        atom_names = self.topology.molecule.get_pdb_atom_names()
 
-        for atom, name in zip(self.molecule.rdkit_molecule.GetAtoms(),
+        for atom, name in zip(self.topology.molecule.rdkit_molecule.GetAtoms(),
                               atom_names):
             name = name.replace(' ', '_')
             index = atom.GetIdx()
-            data['SolventParameters'][self.molecule.tag][name] = \
+            data['SolventParameters'][self.topology.molecule.tag][name] = \
                 {'radius': round(self.radii[tuple((index, ))].value_in_unit(
                                  unit.angstrom), 5),
                  'scale': round(self.scales[tuple((index, ))], 5)}
@@ -115,6 +117,19 @@ class _SolventWrapper(object):
             json.dump(self.to_dict(), file, indent=4)
 
     @property
+    def topology(self):
+        """
+        The peleffy's Topology.
+
+        Returns
+        -------
+        topology : a peleffy.topology.Topology
+            The molecular topology representation to write as a
+            Impact template
+        """
+        return self._topology
+
+    @property
     def name(self):
         """
         The name of the solvent.
@@ -125,18 +140,6 @@ class _SolventWrapper(object):
             The name of this solvent object.
         """
         return self._name
-
-    @property
-    def molecule(self):
-        """
-        The peleffy's Molecule to parameterize.
-
-        Returns
-        -------
-        molecule : an peleffy.topology.Molecule
-            The peleffy's Molecule object
-        """
-        return self._molecule
 
     @property
     def radii(self):
@@ -219,27 +222,29 @@ class OBC1(_SolventWrapper):
     _ff_file = get_data_file_path('forcefields/GBSA_OBC1-1.0.offxml')
     _name = 'OBC1'
 
-    def __init__(self, molecule):
+    def __init__(self, topology):
         """
         Initializes an OBC1 object.
 
         Parameters
         ----------
-        molecule : An peleffy.topology.Molecule
-            A Molecule object to be written as an Impact file
+        topology : a Topology object
+            The molecular topology representation to write as a
+            Impact template
         """
         # Not implemented in PELE
         import warnings
         warnings.formatwarning = warning_on_one_line
         warnings.warn("OBC1 is not implemented in PELE", Warning)
 
-        super().__init__(molecule)
+        super().__init__(topology)
 
-    def _initialize_from_molecule(self):
+    def _initialize_from_topology(self):
         """
-        Initializes the OBC1 solvent using an peleffy's Molecule.
+        Initializes the OBC1 solvent using a peleffy's molecular
+        Topology.
         """
-        super()._initialize_from_molecule()
+        super()._initialize_from_topology()
 
 
 class OBC2(_SolventWrapper):
@@ -250,14 +255,15 @@ class OBC2(_SolventWrapper):
     _ff_file = get_data_file_path('forcefields/GBSA_OBC2-1.0.offxml')
     _name = 'OBC2'
 
-    def __init__(self, molecule):
+    def __init__(self, topology):
         """
         Initializes an OBC2 object.
 
         Parameters
         ----------
-        molecule : An peleffy.topology.Molecule
-            A Molecule object to be written as an Impact file
+        topology : a Topology object
+            The molecular topology representation to write as a
+            Impact template
 
         Examples
         --------
@@ -272,10 +278,11 @@ class OBC2(_SolventWrapper):
         >>> solvent.to_json_file('molecule_solv.json')
 
         """
-        super().__init__(molecule)
+        super().__init__(topology)
 
-    def _initialize_from_molecule(self):
+    def _initialize_from_topology(self):
         """
-        Initializes the OBC2 solvent using an peleffy's Molecule.
+        Initializes the OBC2 solvent using a peleffy's molecular
+        Topology.
         """
-        super()._initialize_from_molecule()
+        super()._initialize_from_topology()

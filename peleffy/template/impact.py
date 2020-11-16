@@ -373,7 +373,7 @@ class Impact(object):
 
         Returns
         -------
-        molecule : an peleffy.topology.Molecule
+        molecule : a peleffy.topology.Molecule
             The peleffy's Molecule object
         """
         return self._molecule
@@ -385,7 +385,7 @@ class Impact(object):
 
         Returns
         -------
-        topology : an peleffy.topology.Topology
+        topology : a peleffy.topology.Topology
             The peleffy's Topology object
         """
         return self._topology
@@ -621,7 +621,7 @@ class WritableAtom(peleffy.topology.Atom, WritableWrapper):
 
         Returns
         -------
-        parent : an peleffy.topology.molecule.Atom
+        parent : a peleffy.topology.molecule.Atom
             The parent of this Atom object
         """
         return super().parent
@@ -794,7 +794,7 @@ class WritableBond(peleffy.topology.Bond, WritableWrapper):
 
         Parameters
         ----------
-        bond : an peleffy.topology.Bond
+        bond : a peleffy.topology.Bond
             The Bond to create the WritableBond with
         """
         # We do not want to modify the original object
@@ -871,7 +871,7 @@ class WritableAngle(peleffy.topology.Angle, WritableWrapper):
 
         Parameters
         ----------
-        angle : an peleffy.topology.Angle
+        angle : a peleffy.topology.Angle
             The Angle to create the WritableAngle with
         """
         # We do not want to modify the original object
@@ -960,7 +960,7 @@ class WritableProper(peleffy.topology.Proper, WritableWrapper):
 
         Parameters
         ----------
-        proper : an peleffy.topology.Proper
+        proper : a peleffy.topology.Proper
             The Proper to create the WritableProper with
         """
         # We do not want to modify the original object
@@ -1071,7 +1071,7 @@ class WritableImproper(peleffy.topology.Improper, WritableWrapper):
 
         Parameters
         ----------
-        improper : an peleffy.topology.Improper
+        improper : a peleffy.topology.Improper
             The Improper to create the WritableImproper with
         """
         # We do not want to modify the original object

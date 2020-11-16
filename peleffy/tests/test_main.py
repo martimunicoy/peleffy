@@ -8,9 +8,6 @@ import tempfile
 from peleffy.utils import get_data_file_path, temporary_cd
 
 
-FORCEFIELD_NAME = 'openff_unconstrained-1.2.0.offxml'
-
-
 class TestMain(object):
     """
     It wraps all tests that involve the Molecule class.
@@ -36,12 +33,13 @@ class TestMain(object):
         from peleffy.main import run_peleffy
 
         LIGAND_PATH = 'ligands/BNZ.pdb'
+        CUSTOM_FORCEFIELD_NAME = 'openff_unconstrained-1.2.0.offxml'
         ligand_path = get_data_file_path(LIGAND_PATH)
 
         with tempfile.TemporaryDirectory() as tmpdir:
             with temporary_cd(tmpdir):
                 run_peleffy(ligand_path,
-                            forcefield=FORCEFIELD_NAME,
+                            forcefield_name=CUSTOM_FORCEFIELD_NAME,
                             resolution=10,
                             charge_method='gasteiger',
                             output=tmpdir,
@@ -68,7 +66,7 @@ class TestMain(object):
             'Unexpected charge_method settings were parsed'
         assert parsed_args.debug is False, \
             'Unexpected debug settings were parsed'
-        assert parsed_args.forcefield == 'openff_unconstrained-1.2.0.offxml', \
+        assert parsed_args.forcefield == 'openff_unconstrained-1.2.1.offxml', \
             'Unexpected forcefield settings were parsed'
         assert parsed_args.include_terminal_rotamers is False, \
             'Unexpected include_terminal_rotamers settings were parsed'
@@ -157,7 +155,7 @@ class TestMain(object):
             'Unexpected charge_method settings were parsed'
         assert parsed_args.debug is False, \
             'Unexpected debug settings were parsed'
-        assert parsed_args.forcefield == 'openff_unconstrained-1.2.0.offxml', \
+        assert parsed_args.forcefield == 'openff_unconstrained-1.2.1.offxml', \
             'Unexpected forcefield settings were parsed'
         assert parsed_args.include_terminal_rotamers is False, \
             'Unexpected include_terminal_rotamers settings were parsed'
@@ -182,7 +180,7 @@ class TestMain(object):
             'Unexpected charge_method settings were parsed'
         assert parsed_args.debug is False, \
             'Unexpected debug settings were parsed'
-        assert parsed_args.forcefield == 'openff_unconstrained-1.2.0.offxml', \
+        assert parsed_args.forcefield == 'openff_unconstrained-1.2.1.offxml', \
             'Unexpected forcefield settings were parsed'
         assert parsed_args.include_terminal_rotamers is True, \
             'Unexpected include_terminal_rotamers settings were parsed'
@@ -207,7 +205,7 @@ class TestMain(object):
             'Unexpected charge_method settings were parsed'
         assert parsed_args.debug is False, \
             'Unexpected debug settings were parsed'
-        assert parsed_args.forcefield == 'openff_unconstrained-1.2.0.offxml', \
+        assert parsed_args.forcefield == 'openff_unconstrained-1.2.1.offxml', \
             'Unexpected forcefield settings were parsed'
         assert parsed_args.include_terminal_rotamers is False, \
             'Unexpected include_terminal_rotamers settings were parsed'
@@ -234,7 +232,7 @@ class TestMain(object):
             'Unexpected charge_method settings were parsed'
         assert parsed_args.debug is True, \
             'Unexpected debug settings were parsed'
-        assert parsed_args.forcefield == 'openff_unconstrained-1.2.0.offxml', \
+        assert parsed_args.forcefield == 'openff_unconstrained-1.2.1.offxml', \
             'Unexpected forcefield settings were parsed'
         assert parsed_args.include_terminal_rotamers is False, \
             'Unexpected include_terminal_rotamers settings were parsed'
