@@ -4,7 +4,7 @@ This module contains the tests to check the peleffy's toolkits.
 
 import pytest
 
-from peleffy.forcefield import OPLS2005ParameterWrapper
+from peleffy.forcefield.parameters import OPLS2005ParameterWrapper
 from simtk import unit
 
 
@@ -94,151 +94,151 @@ METHANE_OPLS_PARAMETERS = OPLS2005ParameterWrapper({
 
 
 class TestSchrodingerToolkitWrapper(object):
+  """
+  It wraps all tests that check the SchrodingerToolkitWrapperMolecularGraph
+  class.
+  """
+
+  def test_get_Schrodinger_parameters(self):
     """
-    It wraps all tests that check the SchrodingerToolkitWrapperMolecularGraph
-    class.
+    It tests the standard methods to obtain Schrodinger parameters
+    from an peleffy's Molecule.
     """
+    from peleffy.topology import Molecule
+    from peleffy.utils.toolkits import ToolkitUnavailableException
 
-    def test_get_Schrodinger_parameters(self):
-        """
-        It tests the standard methods to obtain Schrodinger parameters
-        from an peleffy's Molecule.
-        """
-        from peleffy.topology import Molecule
-        from peleffy.utils.toolkits import ToolkitUnavailableException
+    # Load benzene ring
+    molecule = Molecule(smiles='c1ccccc1')
 
-        # Load benzene ring
-        molecule = Molecule(smiles='c1ccccc1')
-
-        with pytest.raises(ToolkitUnavailableException):
-            molecule.parameterize('OPLS2005', charge_method='gasteiger')
+    with pytest.raises(ToolkitUnavailableException):
+      molecule.parameterize('OPLS2005', charge_method='gasteiger')
 
 
 class TestRDKitToolkitWrapper(object):
-    """
-    It wraps all tests that check the RDKitToolkitWrapper class.
-    """
+  """
+  It wraps all tests that check the RDKitToolkitWrapper class.
+  """
 
-    def test_conformer_setter(self):
-        """It checks the conformer setter of the RDKit toolkit"""
-        from peleffy.topology import Molecule
-        from rdkit import Chem
-        from copy import deepcopy
+  def test_conformer_setter(self):
+    """It checks the conformer setter of the RDKit toolkit"""
+    from peleffy.topology import Molecule
+    from rdkit import Chem
+    from copy import deepcopy
 
-        from peleffy.utils import get_data_file_path
+    from peleffy.utils import get_data_file_path
 
-        # Load molecule
-        mol = Molecule(get_data_file_path('ligands/propionic_acid.pdb'))
-        mol.parameterize('openff_unconstrained-1.2.1.offxml',
-                         charge_method='gasteiger')
+    # Load molecule
+    mol = Molecule(get_data_file_path('ligands/propionic_acid.pdb'))
+    mol.parameterize('openff_unconstrained-1.2.1.offxml',
+                     charge_method='gasteiger')
 
-        # Choose a dihedral to track
-        dihedral = (0, 1, 2, 3)
+    # Choose a dihedral to track
+    dihedral = (0, 1, 2, 3)
 
-        # Get initial dihedral's theta
-        conformer = mol.rdkit_molecule.GetConformer()
-        initial_theta = Chem.rdMolTransforms.GetDihedralDeg(conformer,
-                                                            *dihedral)
-
-        if initial_theta < -179:
-            initial_theta += 180.0
-        elif initial_theta > 179:
-            initial_theta -= 180.0
-
-        assert abs(initial_theta - -0.002) < 10e-3, \
-            'Unexpected initial theta value'
-
-        # Get a copy of the rdkit's molecule representation
-        rdkit_mol = deepcopy(mol.rdkit_molecule)
-
-        # Modify its conformer
-        conformer = rdkit_mol.GetConformer()
-        Chem.rdMolTransforms.SetDihedralDeg(conformer, *dihedral, 90)
-        new_theta = Chem.rdMolTransforms.GetDihedralDeg(conformer,
+    # Get initial dihedral's theta
+    conformer = mol.rdkit_molecule.GetConformer()
+    initial_theta = Chem.rdMolTransforms.GetDihedralDeg(conformer,
                                                         *dihedral)
 
-        assert abs(new_theta - 89.999) < 10e-3, \
-            'Unexpected new theta value'
+    if initial_theta < -179:
+      initial_theta += 180.0
+    elif initial_theta > 179:
+      initial_theta -= 180.0
 
-        # Set new conformer to peleffy molecule
-        mol.set_conformer(conformer)
+    assert abs(initial_theta - -0.002) < 10e-3, \
+        'Unexpected initial theta value'
 
-        # Check new set theta value
-        conformer = mol.rdkit_molecule.GetConformer()
-        new_set_theta = Chem.rdMolTransforms.GetDihedralDeg(conformer,
-                                                            *dihedral)
+    # Get a copy of the rdkit's molecule representation
+    rdkit_mol = deepcopy(mol.rdkit_molecule)
 
-        assert abs(new_set_theta - 89.999) < 10e-3, \
-            'Unexpected new set theta value'
+    # Modify its conformer
+    conformer = rdkit_mol.GetConformer()
+    Chem.rdMolTransforms.SetDihedralDeg(conformer, *dihedral, 90)
+    new_theta = Chem.rdMolTransforms.GetDihedralDeg(conformer,
+                                                    *dihedral)
 
-    def test_atom_degrees(self):
-        """It checks that the atom degree getter works well."""
+    assert abs(new_theta - 89.999) < 10e-3, \
+        'Unexpected new theta value'
 
-        from peleffy.topology import Molecule
-        from peleffy.utils.toolkits import RDKitToolkitWrapper
-        from peleffy.utils import get_data_file_path
+    # Set new conformer to peleffy molecule
+    mol.set_conformer(conformer)
 
-        wrapper = RDKitToolkitWrapper()
+    # Check new set theta value
+    conformer = mol.rdkit_molecule.GetConformer()
+    new_set_theta = Chem.rdMolTransforms.GetDihedralDeg(conformer,
+                                                        *dihedral)
 
-        pdb_path = get_data_file_path('ligands/methane.pdb')
-        m = Molecule(pdb_path)
-        degree_by_name = dict(zip(wrapper.get_atom_names(m),
-                                  wrapper.get_atom_degrees(m)))
+    assert abs(new_set_theta - 89.999) < 10e-3, \
+        'Unexpected new set theta value'
 
-        assert degree_by_name == {' C1 ': 4, ' H1 ': 1, ' H2 ': 1,
-                                  ' H3 ': 1, ' H4 ': 1}, \
-            'Unexpected pairing between atom names and degrees'
+  def test_atom_degrees(self):
+    """It checks that the atom degree getter works well."""
 
-        pdb_path = get_data_file_path('ligands/ethylene.pdb')
-        m = Molecule(pdb_path)
-        degree_by_name = dict(zip(wrapper.get_atom_names(m),
-                                  wrapper.get_atom_degrees(m)))
+    from peleffy.topology import Molecule
+    from peleffy.utils.toolkits import RDKitToolkitWrapper
+    from peleffy.utils import get_data_file_path
 
-        assert degree_by_name == {' C1 ': 3, ' C2 ': 3, ' H1 ': 1,
-                                  ' H2 ': 1, ' H3 ': 1, ' H4 ': 1}, \
-            'Unexpected pairing between atom names and degrees'
+    wrapper = RDKitToolkitWrapper()
 
-        pdb_path = get_data_file_path('ligands/acetylene.pdb')
-        m = Molecule(pdb_path)
-        degree_by_name = dict(zip(wrapper.get_atom_names(m),
-                                  wrapper.get_atom_degrees(m)))
+    pdb_path = get_data_file_path('ligands/methane.pdb')
+    m = Molecule(pdb_path)
+    degree_by_name = dict(zip(wrapper.get_atom_names(m),
+                              wrapper.get_atom_degrees(m)))
 
-        assert degree_by_name == {' C1 ': 2, ' C2 ': 2, ' H1 ': 1,
-                                  ' H2 ': 1}, \
-            'Unexpected pairing between atom names and degrees'
+    assert degree_by_name == {' C1 ': 4, ' H1 ': 1, ' H2 ': 1,
+                              ' H3 ': 1, ' H4 ': 1}, \
+        'Unexpected pairing between atom names and degrees'
 
-        pdb_path = get_data_file_path('ligands/propionic_acid.pdb')
-        m = Molecule(pdb_path)
-        degree_by_name = dict(zip(wrapper.get_atom_names(m),
-                                  wrapper.get_atom_degrees(m)))
+    pdb_path = get_data_file_path('ligands/ethylene.pdb')
+    m = Molecule(pdb_path)
+    degree_by_name = dict(zip(wrapper.get_atom_names(m),
+                              wrapper.get_atom_degrees(m)))
 
-        assert degree_by_name == {' C1 ': 4, ' C2 ': 4, ' C3 ': 3,
-                                  ' O1 ': 1, ' O2 ': 2, ' H1 ': 1,
-                                  ' H2 ': 1, ' H3 ': 1, ' H4 ': 1,
-                                  ' H5 ': 1, ' H6 ': 1}, \
-            'Unexpected pairing between atom names and degrees'
+    assert degree_by_name == {' C1 ': 3, ' C2 ': 3, ' H1 ': 1,
+                              ' H2 ': 1, ' H3 ': 1, ' H4 ': 1}, \
+        'Unexpected pairing between atom names and degrees'
 
-        pdb_path = get_data_file_path('ligands/trimethylglycine.pdb')
-        m = Molecule(pdb_path)
-        degree_by_name = dict(zip(wrapper.get_atom_names(m),
-                                  wrapper.get_atom_degrees(m)))
+    pdb_path = get_data_file_path('ligands/acetylene.pdb')
+    m = Molecule(pdb_path)
+    degree_by_name = dict(zip(wrapper.get_atom_names(m),
+                              wrapper.get_atom_degrees(m)))
 
-        assert degree_by_name == {' C1 ': 4, ' N1 ': 4, ' C2 ': 4,
-                                  ' C3 ': 4, ' C4 ': 4, ' C5 ': 3,
-                                  ' O1 ': 1, ' O2 ': 1, ' H1 ': 1,
-                                  ' H2 ': 1, ' H3 ': 1, ' H4 ': 1,
-                                  ' H5 ': 1, ' H6 ': 1, ' H7 ': 1,
-                                  ' H8 ': 1, ' H9 ': 1, ' H10': 1,
-                                  ' H11': 1}, \
-            'Unexpected pairing between atom names and degrees'
+    assert degree_by_name == {' C1 ': 2, ' C2 ': 2, ' H1 ': 1,
+                              ' H2 ': 1}, \
+        'Unexpected pairing between atom names and degrees'
 
-        pdb_path = get_data_file_path('ligands/malonate.pdb')
-        m = Molecule(pdb_path)
-        degree_by_name = dict(zip(wrapper.get_atom_names(m),
-                                  wrapper.get_atom_degrees(m)))
+    pdb_path = get_data_file_path('ligands/propionic_acid.pdb')
+    m = Molecule(pdb_path)
+    degree_by_name = dict(zip(wrapper.get_atom_names(m),
+                              wrapper.get_atom_degrees(m)))
 
-        assert degree_by_name == {' O1 ': 1, ' C1 ': 3, ' O2 ': 1,
-                                  ' C2 ': 4, ' C3 ': 3, ' O3 ': 2,
-                                  ' O4 ': 1, ' H1 ': 1, ' H2 ': 1,
-                                  ' H3 ': 1}, \
-            'Unexpected pairing between atom names and degrees'
+    assert degree_by_name == {' C1 ': 4, ' C2 ': 4, ' C3 ': 3,
+                              ' O1 ': 1, ' O2 ': 2, ' H1 ': 1,
+                              ' H2 ': 1, ' H3 ': 1, ' H4 ': 1,
+                              ' H5 ': 1, ' H6 ': 1}, \
+        'Unexpected pairing between atom names and degrees'
+
+    pdb_path = get_data_file_path('ligands/trimethylglycine.pdb')
+    m = Molecule(pdb_path)
+    degree_by_name = dict(zip(wrapper.get_atom_names(m),
+                              wrapper.get_atom_degrees(m)))
+
+    assert degree_by_name == {' C1 ': 4, ' N1 ': 4, ' C2 ': 4,
+                              ' C3 ': 4, ' C4 ': 4, ' C5 ': 3,
+                              ' O1 ': 1, ' O2 ': 1, ' H1 ': 1,
+                              ' H2 ': 1, ' H3 ': 1, ' H4 ': 1,
+                              ' H5 ': 1, ' H6 ': 1, ' H7 ': 1,
+                              ' H8 ': 1, ' H9 ': 1, ' H10': 1,
+                              ' H11': 1}, \
+        'Unexpected pairing between atom names and degrees'
+
+    pdb_path = get_data_file_path('ligands/malonate.pdb')
+    m = Molecule(pdb_path)
+    degree_by_name = dict(zip(wrapper.get_atom_names(m),
+                              wrapper.get_atom_degrees(m)))
+
+    assert degree_by_name == {' O1 ': 1, ' C1 ': 3, ' O2 ': 1,
+                              ' C2 ': 4, ' C3 ': 3, ' O3 ': 2,
+                              ' O4 ': 1, ' H1 ': 1, ' H2 ': 1,
+                              ' H3 ': 1}, \
+        'Unexpected pairing between atom names and degrees'

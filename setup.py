@@ -28,12 +28,11 @@ setup(
         'peleffy/solvent',
         'peleffy/topology',
         'peleffy/forcefield',
-        'peleffy/utils',
-        'peleffy/charge',
+        'peleffy/utils'
     ],
-    long_description='The offpele (Open Force Field to PELE) is ' \
-        + 'a Python package that builds PELE-compatible force ' \
-        + 'field templates.',
+    long_description='The peleffy (PELE Force Field Yielder) is '
+    + 'a Python package that builds PELE-compatible force '
+    + 'field templates.',
     classifiers=[
         "Development Status :: 1 - Planning",
         "Natural Language :: English",

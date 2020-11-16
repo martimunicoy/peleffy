@@ -7,7 +7,7 @@ __all__ = ["OpenForceField", "OPLS2005ForceField",
            "OpenFFOPLS2005ForceField"]
 
 
-from peleffy.charge import ChargeCalculatorSelector
+from peleffy.forcefield.selector import ChargeCalculatorSelector
 
 
 class _BaseForceField(object):
@@ -70,7 +70,6 @@ class _BaseForceField(object):
         parameters : a peleffy.forcefield.parameters.BaseParameterWrapper object
             The parameter wrapper containing the parameters generated
             with the current force field
-
         """
 
         # Assign parameters
@@ -78,8 +77,7 @@ class _BaseForceField(object):
 
         # Assign partial charges using the charge calculator object
         charge_calculator = self.charge_calculator(molecule)
-        charges = charge_calculator.get_partial_charges()
-        parameters['charges'] = charges
+        charge_calculator.assign_partial_charges(parameters)
 
         return parameters
 
@@ -178,6 +176,17 @@ class OPLS2005ForceField(_BaseForceField):
     _type = 'OPLS2005'
     _default_charge_method = 'opls2005'
 
+    def __init__(self, charge_method=None):
+        """
+        It initializes the OPLS2005 force field class.
+
+        Parameters
+        ----------
+        charge_method : str
+            The name of the charge method to employ
+        """
+        super().__init__(self._type, charge_method)
+
     def _get_parameters(self, molecule):
         """
         It parameterizes the supplied molecule with Schrodinger toolkit.
@@ -234,6 +243,24 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
         self._angles = 'openff'
         self._torsions = 'openff'
 
+    def _check_selection(self, selection):
+        """
+        It performs a safety check on the parameter selection.
+
+        Parameters
+        ----------
+        selection : str
+            The force field to employ. One of ('OpenFF', 'OPLS2005')
+
+        Raises
+        ------
+        ValueError if the selection string is unknown
+        """
+        if selection.lower() not in self._selections:
+            raise ValueError('Invalid selection: \'{}\'. '.format(selection)
+                             + 'Valid selections are '
+                             + '{}'.format(self._selections))
+
     def set_nonbonding_parameters(self, selection):
         """
         It sets which force field to use to assign nonbonding parameters.
@@ -246,10 +273,7 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
         selection : str
             The force field to employ. One of ('OpenFF', 'OPLS2005')
         """
-        if selection.lower() not in self._selections:
-            raise ValueError('Invalid selection: \'{}\'. '.format(selection)
-                             + 'Valid selections are '
-                             + '{}'.format(self._selections))
+        self._check_selection(selection)
 
         self._nonbonding = selection.lower()
 
@@ -262,10 +286,7 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
         selection : str
             The force field to employ. One of ('OpenFF', 'OPLS2005')
         """
-        if selection.lower() not in self._selections:
-            raise ValueError('Invalid selection: \'{}\'. '.format(selection)
-                             + 'Valid selections are '
-                             + '{}'.format(self._selections))
+        self._check_selection(selection)
 
         self._bonds = selection.lower()
 
@@ -278,10 +299,7 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
         selection : str
             The force field to employ. One of ('OpenFF', 'OPLS2005')
         """
-        if selection.lower() not in self._selections:
-            raise ValueError('Invalid selection: \'{}\'. '.format(selection)
-                             + 'Valid selections are '
-                             + '{}'.format(self._selections))
+        self._check_selection(selection)
 
         self._angles = selection.lower()
 
@@ -294,10 +312,7 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
         selection : str
             The force field to employ. One of ('OpenFF', 'OPLS2005')
         """
-        if selection.lower() not in self._selections:
-            raise ValueError('Invalid selection: \'{}\'. '.format(selection)
-                             + 'Valid selections are '
-                             + '{}'.format(self._selections))
+        self._check_selection(selection)
 
         self._torsions = selection.lower()
 
@@ -321,8 +336,8 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
             import OpenFFOPLS2005ParameterWrapper
 
         hybrid_parameters = OpenFFOPLS2005ParameterWrapper(
-            forcefield_name='{} + {}'.format(self._openff.forcefield_name,
-                                             self._oplsff.forcefield_name))
+            forcefield_name='{} + {}'.format(self._openff.name,
+                                             self._oplsff.name))
 
         openff_parameters = self._openff.parameterize(molecule)
         oplsff_parameters = self._oplsff.parameterize(molecule)

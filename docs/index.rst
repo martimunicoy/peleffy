@@ -29,5 +29,4 @@ API documentation
   topology
   template
   solvent
-  charge
   forcefield

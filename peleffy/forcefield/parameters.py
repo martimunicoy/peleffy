@@ -1,5 +1,6 @@
 """
-This module provides classes to define force field parameters.
+This module provides classes to define and construct force field
+parameters.
 """
 
 

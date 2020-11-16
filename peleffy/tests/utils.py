@@ -2,8 +2,11 @@
 This module contains a variety of helpful tools for tests.
 """
 
+
 import numpy as np
 from simtk import unit
+
+from peleffy.forcefield import OPLS2005ForceField
 
 
 SET_OF_LIGAND_PATHS = ['ligands/BNZ.pdb', 'ligands/TOL.pdb', 'ligands/MDB.pdb',
@@ -16,7 +19,7 @@ def apply_PELE_dihedral_equation(proper, x):
 
     Parameters
     ----------
-    proper : an peleffy.topology.Proper
+    proper : a peleffy.topology.Proper
         The proper whose parameters will be applied to equation
     x : float
         Equation's x value
@@ -32,7 +35,7 @@ def apply_OFF_dihedral_equation(proper, x):
 
     Parameters
     ----------
-    proper : an peleffy.topology.Proper
+    proper : a peleffy.topology.Proper
         The proper whose parameters will be applied to equation
     x : float
         Equation's x value
@@ -47,7 +50,7 @@ def check_CHO_charges_in_molecule(molecule):
 
     Parameters
     ----------
-        molecule : an peleffy.topology.Molecule
+        molecule : a peleffy.topology.Molecule
             The peleffy's Molecule object to check
 
     Raises
@@ -75,6 +78,41 @@ def check_CHO_charges_in_molecule(molecule):
             raise ValueError('Unknown atom name')
 
 
+def compare_dicts(dict1, dict2):
+    """
+    Given two dictionaries, it compares them and complains about any
+    disagreement.
+
+    Parameters
+    ----------
+    dict1 : str
+        First dictionary to compare
+    dict2 : str
+        Second dictionary to compare
+
+    Raises
+    ------
+        AssertionError
+            If any difference is found between dictionaries
+    """
+
+    assert len(dict1) == len(dict2), 'Number of keys does not match, ' \
+        + 'dictionary1: {}, dictionary2: {}'.format(len(dict1), len(dict2))
+
+    for key in dict1.keys():
+        assert key in dict2.keys(), 'Key \'{}\' from '.format(key) \
+            + 'directory1 not found in dictionary2'
+
+    for key in dict2.keys():
+        assert key in dict1.keys(), 'Key \'{}\' from '.format(key) \
+            + 'dictionary2 not found in dictionary1'
+
+    for key, value in dict1.items():
+        assert value == dict2[key], 'Value for key \'{}\' '.format(key) \
+            + 'does not match between dictionaries, ' \
+            + 'dictionary1: {}, dictionary2: {}'.format(value, dict2[key])
+
+
 def check_parameters(molecule, expected_nonbonding=None,
                      expected_bonds=None, expected_angles=None,
                      expected_propers=None, expected_impropers=None):
@@ -83,7 +121,7 @@ def check_parameters(molecule, expected_nonbonding=None,
 
     Parameters
     ----------
-    molecule : an peleffy.topology.Molecule
+    molecule : a peleffy.topology.Molecule
         The peleffy's Molecule object
     expected_nonbonding : list[list]
         The list of expected nonbonding parameters
@@ -189,3 +227,105 @@ def compare_files(file1, file2):
     for i, (line1, line2) in enumerate(zip(lines1, lines2)):
         assert line1 == line2, \
             'Found different lines at line {}:'.format(i) + '\n' + line1 + line2
+
+
+def parameterize_opls2005(opls2005, molecule, ffld_file):
+    """
+    This is a workaround to parameterize an OPLS2005 force field
+    using a precomputed ffld_file. Thus, we do not require the
+    Schrodinger dependency.
+
+    Parameters
+    ----------
+    opls2005 : an OPLS2005ForceField object
+        The OPLS2005 force field to parameterize with the ffld_file
+    molecule : a peleffy.topology.Molecule
+        The peleffy's Molecule object to parameterize with the ffld file
+    ffld_file : str
+        The path to the precomputed ffld file from where the parameters
+        will be extracted
+
+    Returns
+    -------
+    parameters : a peleffy.forcefield.parameters.BaseParameterWrapper object
+        The parameter wrapper containing the parameters generated
+        with the precomputed ffld_file
+    """
+
+    from peleffy.forcefield.parameters import OPLS2005ParameterWrapper
+
+    with open(ffld_file) as f:
+        ffld_output = f.read()
+
+    parameters = OPLS2005ParameterWrapper.from_ffld_output(molecule,
+                                                           ffld_output)
+    # Assign partial charges using the charge calculator object
+    charge_calculator = opls2005.charge_calculator(molecule)
+    charge_calculator.assign_partial_charges(parameters)
+
+    return parameters
+
+
+def parameterize_openffopls2005(openffopls2005, molecule, ffld_file):
+    """
+    This is a workaround to parameterize an OpenFFOPLS2005 force field
+    using a precomputed ffld_file. Thus, we do not require the
+    Schrodinger dependency.
+
+    Parameters
+    ----------
+    openffopls2005 : an OpenFFOPLS2005ForceField object
+        The OPLS2005 force field to parameterize with the ffld_file
+    molecule : a peleffy.topology.Molecule
+        The peleffy's Molecule object to parameterize with the ffld file
+    ffld_file : str
+        The path to the precomputed ffld file from where the parameters
+        will be extracted
+
+    Returns
+    -------
+    parameters : a peleffy.forcefield.parameters.BaseParameterWrapper object
+        The parameter wrapper containing the parameters generated
+        with the precomputed ffld_file
+    """
+
+    parameters = parameterize_opls2005(openffopls2005._oplsff,
+                                       molecule,
+                                       ffld_file)
+
+    # Initialize mock class
+    oplsff = MockOPLS2005ForceField()
+    oplsff.set_preloaded_parameters(parameters)
+
+    # Set mock class to the OpenFFOPLS2005ForceField class
+    openffopls2005._oplsff = oplsff
+
+    return openffopls2005.parameterize(molecule)
+
+
+class MockOPLS2005ForceField(OPLS2005ForceField):
+    """
+    It is a mock class of OPLS2005ForceField to skip Schrodinger
+    dependency.
+    """
+
+    _preloaded_parameters = None
+
+    def _get_parameters(self, molecule):
+        """
+        Instead of computing the parameters and returning
+        """
+        return self._preloaded_parameters
+
+    def set_preloaded_parameters(self, parameters):
+        """
+        It loads parameters to the mock class of OPLS2005ForceField.
+
+        Parameters
+        ----------
+        parameters : a peleffy.forcefield.parameters.BaseParameterWrapper object
+            The parameter wrapper containing the preloaded parameters
+            for this mock class
+        """
+
+        self._preloaded_parameters = parameters
