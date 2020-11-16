@@ -107,6 +107,28 @@ class TestOpenForceField(object):
         with open(reference_file) as f:
             compare_dicts(writable_parameters, json.load(f))
 
+    def test_OPLS_method_with_openff(self):
+        """
+        It tests the obtaining of OPLS2005 charges using the OpenFF
+        force field.
+        """
+        import peleffy
+        from peleffy.topology import Molecule
+        from peleffy.forcefield import OpenForceField
+        from peleffy.utils import get_data_file_path
+
+        # Load molecule
+        molecule = Molecule(get_data_file_path('ligands/ethylene.pdb'))
+
+        # Load OpenFF force field with the OPLS2005 charge method
+        openff = OpenForceField(self.FORCE_FIELD_NAME,
+                                charge_method='OPLS2005')
+
+        assert isinstance(
+            openff._charge_calculator(molecule),
+            peleffy.forcefield.calculators.OPLSChargeCalculator), \
+            'Unexpected charge calculator method'
+
 
 class TestOPLS2005ForceField(object):
     """

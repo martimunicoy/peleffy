@@ -7,6 +7,8 @@ import numpy as np
 from simtk import unit
 
 from peleffy.forcefield import OPLS2005ForceField
+from peleffy.forcefield.calculators import OPLSChargeCalculator
+from peleffy.forcefield.forcefield import _BaseForceField
 
 
 SET_OF_LIGAND_PATHS = ['ligands/BNZ.pdb', 'ligands/TOL.pdb', 'ligands/MDB.pdb',
@@ -43,24 +45,25 @@ def apply_OFF_dihedral_equation(proper, x):
     return proper.k * (1 + np.cos(proper.periodicity * x - proper.phase))
 
 
-def check_CHO_charges_in_molecule(molecule):
+def check_CHO_charges(parameters):
     """
     It checks whether C, H and O atoms in a molecule have reasonable
     partial charges assigned.
 
     Parameters
     ----------
-        molecule : a peleffy.topology.Molecule
-            The peleffy's Molecule object to check
+    parameters : a peleffy.forcefield.parameters.BaseParameterWrapper object
+        The parameter wrapper containing the generated parameters
+        along with the partial charges to check
 
     Raises
     ------
     AssertionError in case that the checking fails
     ValueError if an unexpected element is found in the molecule
     """
-    for atom in molecule.atoms:
-        name = atom.PDB_name
-        charge = atom.charge.value_in_unit(unit.elementary_charge)
+
+    for name, charge in zip(parameters['atom_names'], parameters['charges']):
+        charge = charge.value_in_unit(unit.elementary_charge)
 
         if 'C' in name:
             assert charge < 1.0 and charge > -0.23, \
@@ -303,13 +306,67 @@ def parameterize_openffopls2005(openffopls2005, molecule, ffld_file):
     return openffopls2005.parameterize(molecule)
 
 
-class MockOPLS2005ForceField(OPLS2005ForceField):
+class MockBaseForceField(_BaseForceField):
+    """
+    It is a mock class of _BaseForceField to skip Schrodinger
+    dependency.
+    """
+
+    _preloaded_parameters = None
+
+    def parameterize(self, molecule):
+        """
+        It parameterizes the supplied molecule.
+
+        Parameters
+        ----------
+        molecule : a peleffy.topology.Molecule
+            The peleffy's Molecule object to parameterize
+
+        Returns
+        -------
+        parameters : a peleffy.forcefield.parameters.BaseParameterWrapper object
+            The parameter wrapper containing the parameters generated
+            with the current force field
+        """
+
+        # Assign parameters
+        parameters = self._preloaded_parameters
+
+        return parameters
+
+    def set_preloaded_parameters(self, parameters):
+        """
+        It loads parameters to the mock class of BaseForceField.
+
+        Parameters
+        ----------
+        parameters : a peleffy.forcefield.parameters.BaseParameterWrapper object
+            The parameter wrapper containing the preloaded parameters
+            for this mock class
+        """
+
+        self._preloaded_parameters = parameters
+
+
+class MockOPLS2005ForceField(MockBaseForceField):
     """
     It is a mock class of OPLS2005ForceField to skip Schrodinger
     dependency.
     """
 
     _preloaded_parameters = None
+
+    def __init__(self, charge_method=None):
+        """
+        It initializes the OPLS2005 force field class.
+
+        Parameters
+        ----------
+        charge_method : str
+            The name of the charge method to employ
+        """
+        super().__init__(self._type, charge_method)
 
     def _get_parameters(self, molecule):
         """

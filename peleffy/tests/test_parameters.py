@@ -9,10 +9,13 @@ import numpy as np
 
 from peleffy.utils import get_data_file_path
 from .utils import (SET_OF_LIGAND_PATHS, apply_PELE_dihedral_equation,
-                    apply_OFF_dihedral_equation, check_CHO_charges_in_molecule)
+                    apply_OFF_dihedral_equation, check_CHO_charges)
 from peleffy.topology import Molecule, Bond, Angle, Proper
 from peleffy.template.impact import (WritableBond, WritableAngle,
                                      WritableProper, WritableImproper)
+from peleffy.forcefield import OpenForceField, OPLS2005ForceField
+from peleffy.forcefield.parameters import BaseParameterWrapper
+from peleffy.topology import Topology
 
 
 FORCEFIELD_NAME = 'openff_unconstrained-1.2.0.offxml'
@@ -35,8 +38,8 @@ class TestBonds(object):
         molecule = Molecule(smiles='c1ccccc1')
 
         # Parameterize
-        molecule.parameterize('openff_unconstrained-1.2.0.offxml',
-                              charge_method='gasteiger')
+        ff = OpenForceField(FORCEFIELD_NAME, charge_method='gasteiger')
+        parameters = ff.parameterize(molecule)
 
         # Check resulting parameters
         expected_lengths = {(0, 1): 1.389761064076,
@@ -65,7 +68,7 @@ class TestBonds(object):
                        (4, 10): 808.4160937,
                        (5, 11): 808.4160937}
 
-        for bond in molecule.parameters['bonds']:
+        for bond in parameters['bonds']:
             indexes = (bond['atom1_idx'], bond['atom2_idx'])
             expected_length = unit.Quantity(expected_lengths[indexes],
                                             unit.angstrom)
@@ -90,8 +93,11 @@ class TestBonds(object):
         molecule = Molecule(smiles='CC=O')
 
         # Parameterize
-        molecule.parameterize('openff_unconstrained-1.2.0.offxml',
-                              charge_method='gasteiger')
+        ff = OpenForceField(FORCEFIELD_NAME, charge_method='gasteiger')
+        parameters = ff.parameterize(molecule)
+
+        # Generate topology
+        topology = Topology(molecule, parameters)
 
         expected_parameters = list([[1, 2, 332.5750972667, 1.523640340452],
                                     [1, 4, 376.8940758588, 1.094223427522],
@@ -101,7 +107,7 @@ class TestBonds(object):
                                     [2, 7, 404.20804685, 1.085503378387]])
 
         # Check resulting parameters
-        for bond in molecule.bonds:
+        for bond in topology.bonds:
             w_bond = WritableBond(bond)
             w_parameters = [attr[1] for attr in list(w_bond)]
             assert w_parameters in expected_parameters, \
@@ -125,8 +131,8 @@ class TestAngles(object):
         molecule = Molecule(smiles='c1ccccc1')
 
         # Parameterize
-        molecule.parameterize('openff_unconstrained-1.2.0.offxml',
-                              charge_method='gasteiger')
+        ff = OpenForceField(FORCEFIELD_NAME, charge_method='gasteiger')
+        parameters = ff.parameterize(molecule)
 
         # Check resulting parameters
         expected_angles = {(0, 1, 2): 128.2771922378,
@@ -167,7 +173,7 @@ class TestAngles(object):
                        (5, 0, 6): 68.40592742547,
                        (5, 4, 10): 68.40592742547}
 
-        for angle in molecule.parameters['angles']:
+        for angle in parameters['angles']:
             indexes = (angle['atom1_idx'], angle['atom2_idx'],
                        angle['atom3_idx'])
             expected_angle = unit.Quantity(expected_angles[indexes],
@@ -193,8 +199,11 @@ class TestAngles(object):
         molecule = Molecule(smiles='CC=O')
 
         # Parameterize
-        molecule.parameterize('openff_unconstrained-1.2.0.offxml',
-                              charge_method='gasteiger')
+        ff = OpenForceField(FORCEFIELD_NAME, charge_method='gasteiger')
+        parameters = ff.parameterize(molecule)
+
+        # Generate topology
+        topology = Topology(molecule, parameters)
 
         expected_parameters = list(
             [[1, 2, 3, 78.67881492645, 128.2771922378],
@@ -208,7 +217,7 @@ class TestAngles(object):
              [5, 1, 6, 33.78875634641, 110.2468561538]])
 
         # Check resulting parameters
-        for angle in molecule.angles:
+        for angle in topology.angles:
             w_angle = WritableAngle(angle)
             w_parameters = [attr[1] for attr in list(w_angle)]
             assert w_parameters in expected_parameters, \
@@ -226,14 +235,12 @@ class TestDihedrals(object):
         dihedrals.
         """
 
-        MAX_THRESHOLD = 1e-3
-
         # Load molecule
         molecule = Molecule(smiles='C=CC(=O)O')
 
         # Parameterize
-        molecule.parameterize('openff_unconstrained-1.2.0.offxml',
-                              charge_method='gasteiger')
+        ff = OpenForceField(FORCEFIELD_NAME, charge_method='gasteiger')
+        parameters = ff.parameterize(molecule)
 
         # Check resulting parameters for proper torsions
         expected_propers = [(0, 1, 2, 3,
@@ -297,10 +304,10 @@ class TestDihedrals(object):
                              unit.Quantity(180.0, unit.degree),
                              2, 1.0)]
 
-        assert len(expected_propers) == len(molecule.parameters['propers']), \
+        assert len(expected_propers) == len(parameters['propers']), \
             'Unexpected number of proper torsions'
 
-        for proper in molecule.parameters['propers']:
+        for proper in parameters['propers']:
             proper_parameters = (proper['atom1_idx'], proper['atom2_idx'],
                                  proper['atom3_idx'], proper['atom4_idx'],
                                  proper['k'], proper['phase'],
@@ -327,10 +334,10 @@ class TestDihedrals(object):
                                2, 1)]
 
         assert len(expected_impropers) == \
-            len(molecule.parameters['impropers']), \
+            len(parameters['impropers']), \
             'Unexpected number of improper torsions'
 
-        for improper in molecule.parameters['impropers']:
+        for improper in parameters['impropers']:
             improper_parameters = (improper['atom1_idx'],
                                    improper['atom2_idx'],
                                    improper['atom3_idx'],
@@ -352,8 +359,11 @@ class TestDihedrals(object):
         molecule = Molecule(smiles='CC=O')
 
         # Parameterize
-        molecule.parameterize('openff_unconstrained-1.2.0.offxml',
-                              charge_method='gasteiger')
+        ff = OpenForceField(FORCEFIELD_NAME, charge_method='gasteiger')
+        parameters = ff.parameterize(molecule)
+
+        # Generate topology
+        topology = Topology(molecule, parameters)
 
         expected_parameters = list(
             [[3, 2, 1, 4, 0.5107183999341, 1, 1, 0.0],
@@ -370,7 +380,7 @@ class TestDihedrals(object):
              [3, 2, 1, 6, -0.1057540923121, -1, 3, 0.0]])
 
         # Check resulting parameters
-        for proper in molecule.propers:
+        for proper in topology.propers:
             w_proper = WritableProper(proper)
             w_parameters = [attr[1] for attr in list(w_proper)]
             assert w_parameters in expected_parameters, \
@@ -379,7 +389,7 @@ class TestDihedrals(object):
         expected_parameters = list([[1, 2, 3, 7, 1.1, -1, 2]])
 
         # Check resulting parameters
-        for improper in molecule.impropers:
+        for improper in topology.impropers:
             w_improper = WritableImproper(improper)
             w_parameters = [attr[1] for attr in list(w_improper)]
             assert w_parameters in expected_parameters, \
@@ -395,13 +405,21 @@ class TestDihedrals(object):
 
         for ligand_path in SET_OF_LIGAND_PATHS:
             ligand_path = get_data_file_path(ligand_path)
+
+            # Load molecule
             molecule = Molecule(ligand_path)
-            molecule.parameterize(FORCEFIELD_NAME, charge_method='gasteiger')
+
+            # Parameterize
+            ff = OpenForceField(FORCEFIELD_NAME, charge_method='gasteiger')
+            parameters = ff.parameterize(molecule)
+
+            # Generate topology
+            topology = Topology(molecule, parameters)
 
             x = unit.Quantity(np.arange(0, np.pi, 0.1), unit=unit.radians)
 
-            for PELE_proper, OFF_proper in zip(molecule.propers,
-                                               molecule._OFF_propers):
+            for PELE_proper, OFF_proper in zip(topology.propers,
+                                               topology._OFF_propers):
                 PELE_y = apply_PELE_dihedral_equation(PELE_proper, x)
                 OFF_y = apply_OFF_dihedral_equation(OFF_proper, x)
 
@@ -416,36 +434,44 @@ class TestDihedrals(object):
         need to mark previously those dihedrals to exclude from 1-4
         lists.
         """
+
+        # Load molecule
         molecule = Molecule()
 
+        # Parameterize
+        parameters = BaseParameterWrapper()
+
+        # Generate topology
+        topology = Topology(molecule, parameters)
+
         # Add several dummy propers
-        molecule._add_proper(
+        topology.add_proper(
             Proper(atom1_idx=0, atom2_idx=1, atom3_idx=2, atom4_idx=3,
                    periodicity=1, prefactor=1, index=0,
                    constant=unit.Quantity(1.0, unit.kilocalorie / unit.mole)))
-        molecule._add_proper(
+        topology.add_proper(
             Proper(atom1_idx=0, atom2_idx=1, atom3_idx=2, atom4_idx=3,
                    periodicity=2, prefactor=1, index=1,
                    constant=unit.Quantity(1.0, unit.kilocalorie / unit.mole)))
-        molecule._add_proper(
+        topology.add_proper(
             Proper(atom1_idx=0, atom2_idx=1, atom3_idx=5, atom4_idx=3,
                    periodicity=2, prefactor=1, index=2,
                    constant=unit.Quantity(1.0, unit.kilocalorie / unit.mole)))
-        molecule._add_proper(
+        topology.add_proper(
             Proper(atom1_idx=0, atom2_idx=1, atom3_idx=2, atom4_idx=4,
                    periodicity=1, prefactor=1, index=3,
                    constant=unit.Quantity(1.0, unit.kilocalorie / unit.mole)))
-        molecule._add_proper(
+        topology.add_proper(
             Proper(atom1_idx=0, atom2_idx=1, atom3_idx=2, atom4_idx=5,
                    periodicity=1, prefactor=1, index=4,
                    constant=unit.Quantity(1.0, unit.kilocalorie / unit.mole)))
-        molecule._add_proper(
+        topology.add_proper(
             Proper(atom1_idx=0, atom2_idx=1, atom3_idx=2, atom4_idx=6,
                    periodicity=1, prefactor=1, index=5,
                    constant=unit.Quantity(1.0, unit.kilocalorie / unit.mole)))
 
         # Add one bond
-        molecule._add_bond(
+        topology.add_bond(
             Bond(atom1_idx=0, atom2_idx=4,
                  spring_constant=unit.Quantity(1.0, unit.kilocalorie
                                                / (unit.angstrom ** 2
@@ -453,17 +479,17 @@ class TestDihedrals(object):
                  eq_dist=unit.Quantity(1.0, unit.angstrom)))
 
         # Add one angle
-        molecule._add_angle(
+        topology.add_angle(
             Angle(atom1_idx=0, atom2_idx=1, atom3_idx=5,
                   spring_constant=unit.Quantity(1.0, unit.kilocalorie
                                                 / (unit.radian ** 2
                                                    * unit.mole)),
                   eq_angle=unit.Quantity(1.0, unit.degrees)))
 
-        molecule._handle_excluded_propers()
+        topology._handle_excluded_propers()
 
         # Assertions
-        for proper in molecule.propers:
+        for proper in topology.propers:
             if proper.index == 0:
                 assert proper.exclude is False, \
                     'Proper 0 must be INCLUDED in 1-4 list'
@@ -487,10 +513,15 @@ class TestDihedrals(object):
         """
         It checks the writable representation of non standard dihedrals.
         """
+        # Load molecule
         molecule = Molecule(smiles='c1c(c(n(n1)S(=O)(=O)C))O')
 
-        molecule.parameterize('openff_unconstrained-1.2.0.offxml',
-                              charge_method='gasteiger')
+        # Parameterize
+        ff = OpenForceField(FORCEFIELD_NAME, charge_method='gasteiger')
+        parameters = ff.parameterize(molecule)
+
+        # Generate topology
+        topology = Topology(molecule, parameters)
 
         expected_parameters = [[1, 2, -3, 4, 5.376019778605, -1, 2, 0.0],
                                [1, 2, 3, 12, 5.376019778605, -1, 2, 0.0],
@@ -530,7 +561,7 @@ class TestDihedrals(object):
                                [3, 4, 6, 9, 0.3649469393198, 1, 2, 0.0]]
 
         # Check resulting parameters
-        for proper in molecule.propers:
+        for proper in topology.propers:
             w_proper = WritableProper(proper)
             w_parameters = [attr[1] for attr in list(w_proper)]
             assert w_parameters in expected_parameters, \
@@ -542,7 +573,7 @@ class TestDihedrals(object):
                                [3, 4, 5, 6, 10.5, -1, 2]]
 
         # Check resulting parameters
-        for improper in molecule.impropers:
+        for improper in topology.impropers:
             w_improper = WritableImproper(improper)
             w_parameters = [attr[1] for attr in list(w_improper)]
             assert w_parameters in expected_parameters, \
@@ -555,12 +586,10 @@ class TestDihedrals(object):
         force constant whose definitions are only used in the 1-4 lists
         of PELE) are present in the parameterized proper list.
         """
-        from peleffy.forcefield import OPLS2005ForceField
-        from peleffy.forcefield import OPLS2005ParameterWrapper
+        from peleffy.forcefield.parameters import OPLS2005ParameterWrapper
 
         # Load molecule
         molecule = Molecule(get_data_file_path('ligands/CO1.pdb'))
-        oplsff = OPLS2005ForceField('OPLS2005')
 
         # Set force field and obtain parameters
         ffld_file = get_data_file_path('tests/CO1_ffld_output.txt')
@@ -569,13 +598,12 @@ class TestDihedrals(object):
 
         parameters = OPLS2005ParameterWrapper.from_ffld_output(molecule,
                                                                ffld_output)
-        oplsff._parameters = parameters
 
-        molecule.set_forcefield(oplsff)
-        molecule.parameterize(charge_method='gasteiger')
+        # Generate topology
+        topology = Topology(molecule, parameters)
 
         # Validate number of propers
-        assert len(molecule.propers) == 100, \
+        assert len(topology.propers) == 100, \
             'Unexpected number of proper torsions'
 
 
@@ -587,24 +615,38 @@ class TestCharges(object):
 
     def test_am1bcc_method(self):
         """It tests the am1bcc method"""
-
         ligand_path = get_data_file_path(self.LIGAND_PATH)
+
+        # Load molecule
         molecule = Molecule(ligand_path)
-        molecule.parameterize(FORCEFIELD_NAME, charge_method='am1bcc')
-        check_CHO_charges_in_molecule(molecule)
+
+        # Parameterize
+        ff = OpenForceField(FORCEFIELD_NAME, charge_method='am1bcc')
+        parameters = ff.parameterize(molecule)
+
+        # Check charges
+        check_CHO_charges(parameters)
 
     def test_gasteiger_method(self):
         """It tests the gasteiger method"""
-
         ligand_path = get_data_file_path(self.LIGAND_PATH)
+
+        # Load molecule
         molecule = Molecule(ligand_path)
-        molecule.parameterize(FORCEFIELD_NAME, charge_method='gasteiger')
-        check_CHO_charges_in_molecule(molecule)
+
+        # Parameterize
+        ff = OpenForceField(FORCEFIELD_NAME, charge_method='gasteiger')
+        parameters = ff.parameterize(molecule)
+
+        # Check charges
+        check_CHO_charges(parameters)
 
     def test_OPLS_method(self):
         """It tests the OPLS method"""
 
         ligand_path = get_data_file_path(self.LIGAND_PATH)
+
+        # Load molecule
         molecule = Molecule(ligand_path)
 
         expected_charges = [-0.22, 0.7, -0.12, -0.8, -0.8, -0.12, -0.12,
@@ -617,19 +659,16 @@ class TestCharges(object):
                             0.06, 0.06, 0.06, 0.06, 0.06, 0.06]
 
         # Workaround to avoid the use of the Schrodinger Toolkit
-        from peleffy.forcefield import OPLS2005ParameterWrapper
+        from .utils import parameterize_opls2005
 
+        # Load OPLS2005 force field and locate ffld_file
+        oplsff = OPLS2005ForceField()
         ffld_file = get_data_file_path('tests/OLC_ffld_output.txt')
-        with open(ffld_file) as f:
-            ffld_output = f.read()
-        molecule._parameters = \
-            OPLS2005ParameterWrapper.from_ffld_output(molecule,
-                                                      ffld_output)
 
-        # Run charge calculator
-        from peleffy.charge import OPLSChargeCalculator
-        charge_calculator = OPLSChargeCalculator(molecule)
-        partial_charges = charge_calculator.get_partial_charges()
+        # Parameterize
+        parameters = parameterize_opls2005(oplsff, molecule, ffld_file)
+
+        partial_charges = parameters['charges']
 
         assert len(partial_charges) == len(expected_charges), \
             'Size of Molecule\'s partial charges is expected to match ' \

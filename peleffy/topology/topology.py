@@ -6,6 +6,7 @@ This module handles the topological elements of force fields.
 from peleffy.topology.elements import (Atom, Bond, Angle,
                                        OFFProper, OFFImproper)
 from peleffy.utils.toolkits import RDKitToolkitWrapper
+from peleffy.utils import Logger
 
 
 class Topology(object):
@@ -46,6 +47,13 @@ class Topology(object):
 
     def _build(self):
         """The topology builder."""
+
+        # In case the molecule has not been initialized
+        if self.molecule.rdkit_molecule is None:
+            logger = Logger()
+            logger.warning('Warning: the input molecule has not been '
+                           + ' initialized and its topology will be empty')
+            return
 
         self._build_atoms()
         self._build_bonds()
