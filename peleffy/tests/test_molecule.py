@@ -5,11 +5,9 @@ This module contains the tests to check peleffy's molecular representations.
 import pytest
 
 import tempfile
+
 from peleffy.topology import Molecule
-from peleffy.utils.toolkits import (RDKitToolkitWrapper,
-                                    OpenForceFieldToolkitWrapper)
 from peleffy.utils import get_data_file_path, temporary_cd
-from .utils import SET_OF_LIGAND_PATHS
 
 
 class TestMolecule(object):
@@ -17,44 +15,29 @@ class TestMolecule(object):
     It wraps all tests that involve the Molecule class.
     """
 
-    def test_bad_init_parameterization(self):
+    def test_pdb_initialization(self):
         """
-        It checks that a call to the parameterize function with a Molecule
-        unsuccessfully initialized raises an Exception.
+        It checks the initialization from a PDB file.
         """
-        FORCEFIELD_NAME = 'openff_unconstrained-1.1.1.offxml'
-        LIGAND_PATH = SET_OF_LIGAND_PATHS[0]
-        ligand_path = get_data_file_path(LIGAND_PATH)
-
-        molecule = Molecule()
-        with pytest.raises(Exception):
-            molecule.parameterize(FORCEFIELD_NAME)
-
-        rdkit_toolkit = RDKitToolkitWrapper()
-        molecule._rdkit_molecule = rdkit_toolkit.from_pdb(ligand_path)
-        molecule._off_molecule = None
-
-        with pytest.raises(Exception):
-            molecule.parameterize(FORCEFIELD_NAME)
-
-        openforcefield_toolkit = OpenForceFieldToolkitWrapper()
-        molecule._off_molecule = openforcefield_toolkit.from_rdkit(molecule)
-        molecule._rdkit_molecule = None
-
-        with pytest.raises(Exception):
-            molecule.parameterize(FORCEFIELD_NAME)
-
-    def test_good_init_parameterization(self):
-        """
-        It checks that a call to the parameterize function with a Molecule
-        successfully initialized does not raise any Exception.
-        """
-        FORCEFIELD_NAME = 'openff_unconstrained-1.1.1.offxml'
-        LIGAND_PATH = SET_OF_LIGAND_PATHS[0]
-        ligand_path = get_data_file_path(LIGAND_PATH)
+        ligand_path = get_data_file_path('ligands/ethylene.pdb')
 
         molecule = Molecule(ligand_path)
-        molecule.parameterize(FORCEFIELD_NAME)
+
+        # Save it
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                molecule.to_pdb_file('molecule.pdb')
+
+    def test_smiles_initialization(self):
+        """
+        It checks the initialization from a SMILES tag.
+        """
+        molecule = Molecule(smiles='c1ccccc1')
+
+        # Save it
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                molecule.to_pdb_file('molecule.pdb')
 
     def test_molecule_name_assignment(self):
         """
@@ -294,6 +277,7 @@ class TestMolecule(object):
         in the Molecule initialization.
         """
         from openforcefield.utils.toolkits import UndefinedStereochemistryError
+        from peleffy.forcefield import OpenForceField
 
         # This should crash due to an undefined stereochemistry error
         with pytest.raises(UndefinedStereochemistryError):
@@ -304,8 +288,9 @@ class TestMolecule(object):
                        allow_undefined_stereo=True)
 
         # And we can parameterize it
-        mol.parameterize('openff_unconstrained-1.2.1.offxml',
-                         charge_method='gasteiger')
+        ff = OpenForceField('openff_unconstrained-1.2.1.offxml',
+                            charge_method='gasteiger')
+        ff.parameterize(mol)
 
         # Save it
         with tempfile.TemporaryDirectory() as tmpdir:
