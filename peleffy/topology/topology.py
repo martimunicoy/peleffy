@@ -49,7 +49,8 @@ class Topology(object):
         """The topology builder."""
 
         # In case the molecule has not been initialized
-        if self.molecule.rdkit_molecule is None:
+        if (self.molecule.rdkit_molecule is None
+                or len(list(self.parameters.atom_iterator)) == 0):
             logger = Logger()
             logger.warning('Warning: the input molecule has not been '
                            + ' initialized and its topology will be empty')

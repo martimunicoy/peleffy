@@ -8,6 +8,8 @@ from peleffy.utils import get_data_file_path
 from peleffy.topology import Molecule
 from peleffy.template import Impact
 from peleffy.tests.utils import compare_files
+from peleffy.forcefield.parameters import BaseParameterWrapper
+from peleffy.topology import Topology
 
 
 class TestImpactTemplate(object):
@@ -15,26 +17,28 @@ class TestImpactTemplate(object):
 
     def test_input(self):
         """
-        It tests that the molecule given to Impact() is of the correct
-        format, peleffy.topology.Molecule and it has been parameterized
-        with a forcefield.
+        It tests that the topology given to Impact() is of the correct
+        format, peleffy.topology.Topology.
         """
         LIGAND_PATH = 'ligands/BNZ.pdb'
 
         ligand_path = get_data_file_path(LIGAND_PATH)
         molecule = Molecule(ligand_path)
 
+        parameters = BaseParameterWrapper()
+
+        topology = Topology(molecule, parameters)
+
         # Impact() gets nothing as argument
         with pytest.raises(TypeError):
             _ = Impact()
 
-        # Impact() gets a non topology.Molecule object
+        # Impact() gets a non Topology object
         with pytest.raises(TypeError):
-            _ = Impact('passing a str instead of a Molecule')
+            _ = Impact('passing a str instead of a Topology')
 
-        # The molecule is not parameterized
-        with pytest.raises(Exception):
-            _ = Impact(molecule)
+        # This should work
+        _ = Impact(topology)
 
     def _prepare_molecule_OPLS(self, pdb_name, ffld_name,
                                molecule_tag=None):
