@@ -1,0 +1,10 @@
+UNLZ   H1   HC    1.25   0.85
+UNLZ   C2   CT    1.9   0.72
+UNLZ   H2   HC    1.25   0.85
+UNLZ   C1   CO3    1.875   0.72
+UNLZ   O1   O2Z    1.48   0.85
+UNLZ   O2   O2Z    1.48   0.85
+UNLZ   C3   C    1.875   0.72
+UNLZ   O3   OH    1.535   0.85
+UNLZ   O4   O    1.48   0.85
+UNLZ   H3   HO    1.05   0.85

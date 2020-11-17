@@ -175,7 +175,7 @@ def run_peleffy(pdb_file,
     # Generate the solvent template
     if with_solvent:
         solvent = OBC2(topology)
-        solvent.to_json_file(output_handler.get_solvent_template_path())
+        solvent.to_file(output_handler.get_solvent_template_path())
 
     log.info(' - All files were generated successfully')
     log.info('-' * 60)

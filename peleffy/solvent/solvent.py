@@ -5,7 +5,7 @@ PELE's solvent templates.
 
 from simtk import unit
 
-from peleffy.utils import get_data_file_path, warning_on_one_line
+from peleffy.utils import get_data_file_path
 from peleffy.utils import Logger
 
 
@@ -15,6 +15,7 @@ class _SolventWrapper(object):
     """
     _ff_file = None
     _name = None
+    _compatibility = None
 
     def __init__(self, topology):
         """
@@ -33,10 +34,77 @@ class _SolventWrapper(object):
         self._scales = dict.fromkeys([tuple((idx, ))
                                       for idx in range(0, len(topology.atoms))],
                                      unit.Quantity())
-        self._solvent_dielectric = float(0)
-        self._solute_dielectric = float(0)
-        self._surface_area_penalty = float(0)
-        self._solvent_radius = float(0)
+
+    @property
+    def name(self):
+        """
+        The name of the solvent.
+
+        Returns
+        -------
+        name : str
+            The name of this solvent object.
+        """
+        return self._name
+
+    @property
+    def topology(self):
+        """
+        The peleffy's Topology.
+
+        Returns
+        -------
+        topology : a peleffy.topology.Topology
+            The molecular topology representation to write as a
+            Impact template
+        """
+        return self._topology
+
+    @property
+    def radii(self):
+        """
+        The dict of radii of the parameterized molecule.
+
+        Returns
+        -------
+        radii : dict[atom indexes: simtk.unit.Quantity]
+            The radius assigned to each atom of the molecule
+        """
+        return self._radii
+
+    @property
+    def scales(self):
+        """
+        The dict of scales of the parameterized molecule.
+
+        Returns
+        -------
+        scales : dict[atom indexes: simtk.unit.Quantity]
+            The scale assigned to each atom of the molecule
+        """
+        return self._scales
+
+
+class _OpenFFCompatibleSolvent(_SolventWrapper):
+    """
+    Implementation of a solvent-template generator compatible with
+    PELE's OpenFF implementation.
+    """
+
+    _compatibility = 'openff'
+
+    def __init__(self, topology):
+        """
+        It initializes an OpenFFCompatibleSolvent.
+
+        Parameters
+        ----------
+        topology : a Topology object
+            The molecular topology representation to write as a
+            Impact template
+        """
+        super().__init__(topology)
+
         self._initialize_from_topology()
 
     def _initialize_from_topology(self):
@@ -68,7 +136,7 @@ class _SolventWrapper(object):
 
     def to_dict(self):
         """
-        Returns this SolventWrapper object as a dictionary.
+        Returns this OpenFFCompatibleSolvent object as a dictionary.
 
         Returns
         -------
@@ -103,67 +171,18 @@ class _SolventWrapper(object):
 
         return data
 
-    def to_json_file(self, path):
+    def to_file(self, path):
         """
-        Writes this SolventWrapper object to a json file.
+        Writes this OpenFFCompatibleSolvent object to a file.
 
         Parameters
         ----------
         path : str
-            Path to save the json file to
+            Path to save the output file to
         """
         import json
         with open(path, 'w') as file:
             json.dump(self.to_dict(), file, indent=4)
-
-    @property
-    def topology(self):
-        """
-        The peleffy's Topology.
-
-        Returns
-        -------
-        topology : a peleffy.topology.Topology
-            The molecular topology representation to write as a
-            Impact template
-        """
-        return self._topology
-
-    @property
-    def name(self):
-        """
-        The name of the solvent.
-
-        Returns
-        -------
-        name : str
-            The name of this solvent object.
-        """
-        return self._name
-
-    @property
-    def radii(self):
-        """
-        The dict of radii of the parameterized molecule.
-
-        Returns
-        -------
-        radii : dict[atom indexes: simtk.unit.Quantity]
-            The radius assigned to each atom of the molecule
-        """
-        return self._radii
-
-    @property
-    def scales(self):
-        """
-        The dict of scales of the parameterized molecule.
-
-        Returns
-        -------
-        scales : dict[atom indexes: simtk.unit.Quantity]
-            The scale assigned to each atom of the molecule
-        """
-        return self._scales
 
     @property
     def solvent_dielectric(self):
@@ -214,7 +233,45 @@ class _SolventWrapper(object):
         return self._solvent_radius
 
 
-class OBC1(_SolventWrapper):
+class _OPLS2005CompatibleSolvent(_SolventWrapper):
+    """
+    Implementation of a solvent-template generator compatible with
+    PELE's OPLS2005 implementation.
+    """
+
+    _compatibility = 'opls2005'
+
+    def __init__(self, topology):
+        """
+        It initializes an OPLS2005CompatibleSolvent.
+
+        Parameters
+        ----------
+        topology : a Topology object
+            The molecular topology representation to write as a
+            Impact template
+        """
+        super().__init__(topology)
+
+        self._radii = topology.parameters['GBSA_radii']
+        self._scales = topology.parameters['GBSA_scales']
+
+    def to_file(self, path):
+        """
+        Writes this OPLS2005CompatibleSolvent object to a file.
+
+        Parameters
+        ----------
+        path : str
+            Path to save the output file to
+        """
+
+        raise NotImplementedError('A solvent template compatible with '
+                                  + 'PELE\'s OPLS2005 force field cannot '
+                                  + 'be generated yet')
+
+
+class OBC1(_OpenFFCompatibleSolvent):
     """
     Implementation of the OBC1 solvent.
     """
@@ -233,21 +290,13 @@ class OBC1(_SolventWrapper):
             Impact template
         """
         # Not implemented in PELE
-        import warnings
-        warnings.formatwarning = warning_on_one_line
-        warnings.warn("OBC1 is not implemented in PELE", Warning)
+        logger = Logger()
+        logger.warning('OBC1 is not implemented in PELE')
 
         super().__init__(topology)
 
-    def _initialize_from_topology(self):
-        """
-        Initializes the OBC1 solvent using a peleffy's molecular
-        Topology.
-        """
-        super()._initialize_from_topology()
 
-
-class OBC2(_SolventWrapper):
+class OBC2(_OpenFFCompatibleSolvent):
     """
     Implementation of the OBC2 solvent.
     """
@@ -275,14 +324,40 @@ class OBC2(_SolventWrapper):
 
         >>> molecule = Molecule('molecule.pdb')
         >>> solvent = OBC2(molecule)
-        >>> solvent.to_json_file('molecule_solv.json')
+        >>> solvent.to_file('OBC_parameters.txt')
 
         """
         super().__init__(topology)
 
-    def _initialize_from_topology(self):
+
+class OPLSOBC(_OPLS2005CompatibleSolvent):
+    """
+    It defines a template generator for OBC compatible with the OPLS2005
+    force field implemented in PELE.
+    """
+    _name = 'OBC'
+
+    def __init__(self, topology):
         """
-        Initializes the OBC2 solvent using a peleffy's molecular
-        Topology.
+        Initializes an OPLSOBC object.
+
+        Parameters
+        ----------
+        topology : a Topology object
+            The molecular topology representation to write as a
+            Impact template
+
+        Examples
+        --------
+
+        Generate the solvent parameters of a molecule
+
+        >>> from peleffy.topology import Molecule
+        >>> from peleffy.solvent import OPLSOBC
+
+        >>> molecule = Molecule('molecule.pdb')
+        >>> solvent = OPLSOBC(molecule)
+        >>> solvent.to_file('OBC_parameters.txt')
+
         """
-        super()._initialize_from_topology()
+        super().__init__(topology)

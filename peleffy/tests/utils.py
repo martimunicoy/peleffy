@@ -11,8 +11,9 @@ from peleffy.forcefield.calculators import OPLSChargeCalculator
 from peleffy.forcefield.forcefield import _BaseForceField
 
 
-SET_OF_LIGAND_PATHS = ['ligands/BNZ.pdb', 'ligands/TOL.pdb', 'ligands/MDB.pdb',
-                       'ligands/BIA.pdb', 'ligands/SBN.pdb', 'ligands/OLC.pdb']
+SET_OF_LIGAND_PATHS = ['ligands/benzene.pdb', 'ligands/toluene.pdb',
+                       'ligands/oleic_acid.pdb', 'ligands/propionic_acid.pdb',
+                       'ligands/trimethylglycine.pdb', 'ligands/ethylene.pdb']
 
 
 def apply_PELE_dihedral_equation(proper, x):

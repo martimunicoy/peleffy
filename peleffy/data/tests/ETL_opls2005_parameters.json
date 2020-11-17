@@ -1,6 +1,20 @@
 {
-    "GBSA_radii": [],
-    "GBSA_scales": [],
+    "GBSA_radii": [
+        "0.72 * angstrom",
+        "0.72 * angstrom",
+        "0.85 * angstrom",
+        "0.85 * angstrom",
+        "0.85 * angstrom",
+        "0.85 * angstrom"
+    ],
+    "GBSA_scales": [
+        1.875,
+        1.875,
+        1.25,
+        1.25,
+        1.25,
+        1.25
+    ],
     "SGB_radii": [
         "2.002 * angstrom",
         "2.002 * angstrom",

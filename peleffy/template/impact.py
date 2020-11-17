@@ -91,7 +91,7 @@ class Impact(object):
             improper.set_atom3_idx(reindexer[improper.atom3_idx])
             improper.set_atom4_idx(reindexer[improper.atom4_idx])
 
-    def write(self, path):
+    def to_file(self, path):
         """
         It writes the Impact template to a file.
 
