@@ -852,19 +852,19 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
             """
 
             if atom_type == 'H' and parent == 'O':
-                scale = '1.05'
+                scale = float(1.05)
             if atom_type == 'H' and parent == 'N':
-                scale = '1.15'
+                scale = float(1.15)
             if atom_type == 'C' and degree == 3:
-                scale = '1.875'
+                scale = float(1.875)
             if atom_type == 'C' and degree == 2:
-                scale = '1.825'
+                scale = float(1.825)
             if atom_type == 'N' and degree == 4:
-                scale = '1.625'
+                scale = float(1.625)
             if atom_type == 'N' and degree == 1:
-                scale = '1.60'
+                scale = float(1.60)
             if atom_type == 'O' and degree == 1:
-                scale = '1.48'
+                scale = float(1.48)
 
             return scale
 
@@ -938,7 +938,7 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                                 + '{} {} '.format(atom_name, atom_type)
                                 + 'NOT found in the template '
                                 + 'database. Using default parameters')
-                    radius, scale = '0.80', '2.0'
+                    radius, scale = float(0.80), float(2.0)
 
             return radius, scale
 

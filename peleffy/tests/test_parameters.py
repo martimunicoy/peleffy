@@ -729,9 +729,9 @@ class TestSolventParameters(object):
                                                               parent_by_name,
                                                               element_by_name)
 
-        assert OPLS_params['GBSA_radii'] == ['0.72'], \
+        assert OPLS_params['GBSA_radii'] == [0.72], \
             'Unexpected GBSA radii'
-        assert OPLS_params['GBSA_scales'] == ['1.9'], \
+        assert OPLS_params['GBSA_scales'] == [1.9], \
             'Unexpected GBSA scale'
 
         # 2nd test
@@ -749,9 +749,9 @@ class TestSolventParameters(object):
                                                               parent_by_name,
                                                               element_by_name)
 
-        assert OPLS_params['GBSA_radii'] == ['0.72'], \
+        assert OPLS_params['GBSA_radii'] == [0.72], \
             'Unexpected GBSA radii'
-        assert OPLS_params['GBSA_scales'] == ['1.875'], \
+        assert OPLS_params['GBSA_scales'] == [1.875], \
             'Unexpected GBSA scale'
 
         # 3rd test
@@ -769,9 +769,9 @@ class TestSolventParameters(object):
                                                               parent_by_name,
                                                               element_by_name)
 
-        assert OPLS_params['GBSA_radii'] == ['0.85'], \
+        assert OPLS_params['GBSA_radii'] == [0.85], \
             'Unexpected GBSA radii'
-        assert OPLS_params['GBSA_scales'] == ['1.48'], \
+        assert OPLS_params['GBSA_scales'] == [1.48], \
             'Unexpected GBSA scale'
 
         # 4th test
@@ -789,9 +789,9 @@ class TestSolventParameters(object):
                                                               parent_by_name,
                                                               element_by_name)
 
-        assert OPLS_params['GBSA_radii'] == ['0.85'], \
+        assert OPLS_params['GBSA_radii'] == [0.85], \
             'Unexpected GBSA radii'
-        assert OPLS_params['GBSA_scales'] == ['1.25'], \
+        assert OPLS_params['GBSA_scales'] == [1.25], \
             'Unexpected GBSA scale'
 
     def test_GBSA_params_by_element(self):
@@ -817,9 +817,9 @@ class TestSolventParameters(object):
                                                               parent_by_name,
                                                               element_by_name)
 
-        assert OPLS_params['GBSA_radii'] == ['0.72'], \
+        assert OPLS_params['GBSA_radii'] == [0.72], \
             'Unexpected GBSA radii'
-        assert OPLS_params['GBSA_scales'] == ['1.875'], \
+        assert OPLS_params['GBSA_scales'] == [1.875], \
             'Unexpected GBSA scale'
 
         # 2nd test
@@ -837,9 +837,9 @@ class TestSolventParameters(object):
                                                               parent_by_name,
                                                               element_by_name)
 
-        assert OPLS_params['GBSA_radii'] == ['0.85'], \
+        assert OPLS_params['GBSA_radii'] == [0.85], \
             'Unexpected GBSA radii'
-        assert OPLS_params['GBSA_scales'] == ['1.535'], \
+        assert OPLS_params['GBSA_scales'] == [1.535], \
             'Unexpected GBSA scale'
 
         # 3rd test
@@ -857,9 +857,9 @@ class TestSolventParameters(object):
                                                               parent_by_name,
                                                               element_by_name)
 
-        assert OPLS_params['GBSA_radii'] == ['0.85'], \
+        assert OPLS_params['GBSA_radii'] == [0.85], \
             'Unexpected GBSA radii'
-        assert OPLS_params['GBSA_scales'] == ['1.48'], \
+        assert OPLS_params['GBSA_scales'] == [1.48], \
             'Unexpected GBSA scale'
 
         # 4th test
@@ -877,9 +877,9 @@ class TestSolventParameters(object):
                                                               parent_by_name,
                                                               element_by_name)
 
-        assert OPLS_params['GBSA_radii'] == ['0.85'], \
+        assert OPLS_params['GBSA_radii'] == [0.85], \
             'Unexpected GBSA radii'
-        assert OPLS_params['GBSA_scales'] == ['1.25'], \
+        assert OPLS_params['GBSA_scales'] == [1.25], \
             'Unexpected GBSA scale'
 
         # 5th test
@@ -897,9 +897,9 @@ class TestSolventParameters(object):
                                                               parent_by_name,
                                                               element_by_name)
 
-        assert OPLS_params['GBSA_radii'] == ['0.85'], \
+        assert OPLS_params['GBSA_radii'] == [0.85], \
             'Unexpected GBSA radii'
-        assert OPLS_params['GBSA_scales'] == ['1.15'], \
+        assert OPLS_params['GBSA_scales'] == [1.15], \
             'Unexpected GBSA scale'
 
         # 6th test
@@ -917,9 +917,9 @@ class TestSolventParameters(object):
                                                               parent_by_name,
                                                               element_by_name)
 
-        assert OPLS_params['GBSA_radii'] == ['0.85'], \
+        assert OPLS_params['GBSA_radii'] == [0.85], \
             'Unexpected GBSA radii'
-        assert OPLS_params['GBSA_scales'] == ['1.05'], \
+        assert OPLS_params['GBSA_scales'] == [1.05], \
             'Unexpected GBSA scale'
 
         # 7th test
@@ -937,9 +937,9 @@ class TestSolventParameters(object):
                                                               parent_by_name,
                                                               element_by_name)
 
-        assert OPLS_params['GBSA_radii'] == ['0.72'], \
+        assert OPLS_params['GBSA_radii'] == [0.72], \
             'Unexpected GBSA radii'
-        assert OPLS_params['GBSA_scales'] == ['1.825'], \
+        assert OPLS_params['GBSA_scales'] == [1.825], \
             'Unexpected GBSA scale'
 
     def test_GBSA_default_params(self):
@@ -987,9 +987,9 @@ class TestSolventParameters(object):
                 + 'C1 C?! NOT found in the template database. ' \
                 + 'Using default parameters\n'
 
-        assert OPLS_params['GBSA_radii'] == ['0.80'], \
+        assert OPLS_params['GBSA_radii'] == [0.80], \
             'Unexpected GBSA radii'
-        assert OPLS_params['GBSA_scales'] == ['2.0'], \
+        assert OPLS_params['GBSA_scales'] == [2.0], \
             'Unexpected GBSA scale'
 
     def test_add_GBSA_solvent_parameters(self):
@@ -1045,9 +1045,9 @@ class TestSolventParameters(object):
             # Check that the parameters correspond
             for line in data:
                 params = line.split()
-                assert params[3] == d_scale.get(params[1]), \
+                assert float(params[3]) == d_scale.get(params[1]), \
                     'Unexpected GBSA Overlap factor'
-                assert params[4] == d_radii.get(params[1]), \
+                assert float(params[4]) == d_radii.get(params[1]), \
                     'Unexpected GBSA radius'
 
         # For malonate
