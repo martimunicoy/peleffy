@@ -170,7 +170,7 @@ def run_peleffy(pdb_file,
 
     # Generate the impact template
     impact = Impact(topology)
-    impact.write(output_handler.get_impact_template_path())
+    impact.to_file(output_handler.get_impact_template_path())
 
     # Generate the solvent template
     if with_solvent:
