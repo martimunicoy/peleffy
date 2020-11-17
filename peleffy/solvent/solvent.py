@@ -295,12 +295,6 @@ class OBC1(_OpenFFCompatibleSolvent):
 
         super().__init__(molecule)
 
-    def _initialize_from_molecule(self):
-        """
-        Initializes the OBC1 solvent using an peleffy's Molecule.
-        """
-        super()._initialize_from_molecule()
-
 
 class OBC2(_OpenFFCompatibleSolvent):
     """
@@ -333,12 +327,6 @@ class OBC2(_OpenFFCompatibleSolvent):
 
         """
         super().__init__(molecule)
-
-    def _initialize_from_molecule(self):
-        """
-        Initializes the OBC2 solvent using an peleffy's Molecule.
-        """
-        super()._initialize_from_molecule()
 
 
 class OPLSOBC(_OPLS2005CompatibleSolvent):
