@@ -65,13 +65,13 @@ class TestMolecule(object):
         assert molecule.name == '', 'Unexpected atom name'
 
         # Look for the PDB name when a Molecule is loaded from a PDB file
-        ligand_path = get_data_file_path('ligands/BNZ.pdb')
+        ligand_path = get_data_file_path('ligands/benzene.pdb')
         molecule = Molecule(ligand_path)
-        assert molecule.name == 'BNZ', 'Unexpected atom name'
+        assert molecule.name == 'benzene', 'Unexpected atom name'
 
         # Look for benzene name when a Molecule is loaded from a PDB file
         # with a custom name
-        ligand_path = get_data_file_path('ligands/BNZ.pdb')
+        ligand_path = get_data_file_path('ligands/benzene.pdb')
         molecule = Molecule(ligand_path, name='benzene')
         assert molecule.name == 'benzene', 'Unexpected atom name'
 
@@ -94,13 +94,13 @@ class TestMolecule(object):
 
         # Look for the PDB residue name as a tag when a Molecule is loaded
         # from a PDB file
-        ligand_path = get_data_file_path('ligands/BNZ.pdb')
+        ligand_path = get_data_file_path('ligands/benzene.pdb')
         molecule = Molecule(ligand_path)
         assert molecule.tag == 'BNZ', 'Unexpected atom tag'
 
         # Look for BEN tag when a Molecule is loaded from a PDB file with
         # a custom name
-        ligand_path = get_data_file_path('ligands/BNZ.pdb')
+        ligand_path = get_data_file_path('ligands/benzene.pdb')
         molecule = Molecule(ligand_path, tag='BEN')
         assert molecule.tag == 'BEN', 'Unexpected atom tag'
 
@@ -126,7 +126,7 @@ class TestMolecule(object):
         # Initialize a Molecule from a PDB without connectivity and
         # without a connectivity template
         ligand_path = get_data_file_path(
-            'ligands/BNZ_without_connectivity.pdb')
+            'ligands/benzene_without_connectivity.pdb')
         molecule = Molecule(ligand_path)
 
         expected_bond_ids = [(1, 0, False), (2, 1, False), (3, 2, False),
@@ -143,10 +143,10 @@ class TestMolecule(object):
         # Initialize a Molecule from a PDB without connectivity but with
         # a connectivity template
         template_path = get_data_file_path(
-            'ligands/BNZ.pdb')
+            'ligands/benzene.pdb')
         template = Molecule(template_path)
         ligand_path = get_data_file_path(
-            'ligands/BNZ_without_connectivity.pdb')
+            'ligands/benzene_without_connectivity.pdb')
         molecule = Molecule(ligand_path,
                             connectivity_template=template.rdkit_molecule)
 
@@ -164,10 +164,10 @@ class TestMolecule(object):
         # Initialize a Molecule from a PDB with connectivity and with
         # a connectivity template
         template_path = get_data_file_path(
-            'ligands/BNZ.pdb')
+            'ligands/benzene.pdb')
         template = Molecule(template_path)
         ligand_path = get_data_file_path(
-            'ligands/BNZ.pdb')
+            'ligands/benzene.pdb')
         molecule = Molecule(ligand_path,
                             connectivity_template=template.rdkit_molecule)
 
@@ -195,7 +195,7 @@ class TestMolecule(object):
                     if line.startswith('HETATM'):
                         assert line[17:20] == name, 'Unexpected residue name'
 
-        ligand_path = get_data_file_path('ligands/BNZ.pdb')
+        ligand_path = get_data_file_path('ligands/benzene.pdb')
 
         # Checking tag assignation from PDB
         molecule = Molecule(ligand_path)

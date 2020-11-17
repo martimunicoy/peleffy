@@ -559,7 +559,8 @@ class TestDihedrals(object):
         from peleffy.forcefield import OPLS2005ParameterWrapper
 
         # Load molecule
-        molecule = Molecule(get_data_file_path('ligands/CO1.pdb'))
+        molecule = Molecule(
+            get_data_file_path('ligands/octafluorocyclobutane.pdb'))
         oplsff = OPLS2005ForceField('OPLS2005')
 
         # Set force field and obtain parameters
@@ -583,7 +584,7 @@ class TestCharges(object):
     """
     It wraps all tests that involve charge parameters.
     """
-    LIGAND_PATH = 'ligands/OLC.pdb'
+    LIGAND_PATH = 'ligands/oleic_acid.pdb'
 
     def test_am1bcc_method(self):
         """It tests the am1bcc method"""
@@ -640,3 +641,435 @@ class TestCharges(object):
             assert partial_charges == unit.Quantity(expected_charge,
                                                     unit.elementary_charge), \
                 'Unexpected partial charge {}'.format(partial_charges)
+
+
+class TestSolventParameters(object):
+    """
+    It holds tests to validate the assignment of solvent parameters.
+    """
+
+    def test_add_SGBNP_solvent_parameters(self):
+        """
+        It tests the function that adds the SGBNP solvent parameters to
+        the OPLSParameters collection.
+        """
+
+        from simtk import unit
+        from peleffy.forcefield import OPLS2005ParameterWrapper
+
+        # Using a standard atom type
+        params1 = OPLS2005ParameterWrapper(
+            {'atom_names': [' C1 ', ' H1 ', ' H2 ', ' H3 ', ' H4 '],
+             'atom_types': ['CT', 'HC', 'HC', 'HC', 'HC'],
+             'charges': [-0.24, 0.06, 0.06, 0.06, 0.06],
+             'sigmas': [3.5, 2.5, 2.5, 2.5, 2.5],
+             'epsilons': [0.066, 0.03, 0.03, 0.03, 0.03]})
+
+        # Using a similar atom type
+        params2 = OPLS2005ParameterWrapper(
+            {'atom_names': [' C1 ', ' H1 ', ' H2 ', ' H3 ', ' H4 '],
+             'atom_types': ['C3M', 'HC', 'HC', 'HC', 'HC'],
+             'charges': [-0.24, 0.06, 0.06, 0.06, 0.06],
+             'sigmas': [3.5, 2.5, 2.5, 2.5, 2.5],
+             'epsilons': [0.066, 0.03, 0.03, 0.03, 0.03]})
+
+        # Using a default atom type
+        params3 = OPLS2005ParameterWrapper(
+            {'atom_names': [' C1 ', ' H1 ', ' H2 ', ' H3 ', ' H4 '],
+             'atom_types': ['XX', 'HC', 'HC', 'HC', 'HC'],
+             'charges': [-0.24, 0.06, 0.06, 0.06, 0.06],
+             'sigmas': [3.5, 2.5, 2.5, 2.5, 2.5],
+             'epsilons': [0.066, 0.03, 0.03, 0.03, 0.03]})
+
+        OPLS2005ParameterWrapper._add_SGBNP_solvent_parameters(params1)
+        OPLS2005ParameterWrapper._add_SGBNP_solvent_parameters(params2)
+        OPLS2005ParameterWrapper._add_SGBNP_solvent_parameters(params3)
+
+        assert params1['SGB_radii'][0] == \
+            unit.Quantity(1.975, unit.angstrom), 'Unexpected SGB radius'
+        assert params1['vdW_radii'][0] == \
+            unit.Quantity(1.750, unit.angstrom), 'Unexpected vdW radius'
+        assert params1['gammas'][0] == 0.005000000, 'Unexpected gamma'
+        assert params1['alphas'][0] == -0.741685710, 'Unexpected alpha'
+
+        assert params2['SGB_radii'][0] == \
+            unit.Quantity(2.002, unit.angstrom), 'Unexpected SGB radius'
+        assert params2['vdW_radii'][0] == \
+            unit.Quantity(1.775, unit.angstrom), 'Unexpected vdW radius'
+        assert params2['gammas'][0] == 0.023028004, 'Unexpected gamma'
+        assert params2['alphas'][0] == -0.852763146, 'Unexpected alpha'
+
+        assert params3['SGB_radii'][0] == \
+            unit.Quantity(1.500, unit.angstrom), 'Unexpected SGB radius'
+        assert params3['vdW_radii'][0] == \
+            unit.Quantity(1.250, unit.angstrom), 'Unexpected vdW radius'
+        assert params3['gammas'][0] == 0.005000000, 'Unexpected gamma'
+        assert params3['alphas'][0] == 0.000000000, 'Unexpected alpha'
+
+    def test_GBSA_params_by_type(self):
+        """
+        It tests the params_by_type dictionary in the assignment of the
+        GBSA parameters.
+        """
+
+        from peleffy.forcefield.parameters import OPLS2005ParameterWrapper
+
+        # 1st test
+        OPLS_params = OPLS2005ParameterWrapper()
+
+        # Create mock molecule containing just one customized atom
+        OPLS_params['atom_names'] = [' C1 ']
+        OPLS_params['atom_types'] = [' CT']
+        degree_by_name = dict(((' C1 ', 4), ))
+        parent_by_name = dict(((' C1 ', None), ))
+        element_by_name = dict(((' C1 ', 'C'), ))
+
+        OPLS2005ParameterWrapper._add_GBSA_solvent_parameters(OPLS_params,
+                                                              degree_by_name,
+                                                              parent_by_name,
+                                                              element_by_name)
+
+        assert OPLS_params['GBSA_radii'] == [0.72], \
+            'Unexpected GBSA radii'
+        assert OPLS_params['GBSA_scales'] == [1.9], \
+            'Unexpected GBSA scale'
+
+        # 2nd test
+        OPLS_params = OPLS2005ParameterWrapper()
+
+        # Create mock molecule containing just one customized atom
+        OPLS_params['atom_names'] = [' C1 ']
+        OPLS_params['atom_types'] = [' CW']
+        degree_by_name = dict(((' C1 ', 3), ))
+        parent_by_name = dict(((' C1 ', None), ))
+        element_by_name = dict(((' C1 ', 'C'), ))
+
+        OPLS2005ParameterWrapper._add_GBSA_solvent_parameters(OPLS_params,
+                                                              degree_by_name,
+                                                              parent_by_name,
+                                                              element_by_name)
+
+        assert OPLS_params['GBSA_radii'] == [0.72], \
+            'Unexpected GBSA radii'
+        assert OPLS_params['GBSA_scales'] == [1.875], \
+            'Unexpected GBSA scale'
+
+        # 3rd test
+        OPLS_params = OPLS2005ParameterWrapper()
+
+        # Create mock molecule containing just one customized atom
+        OPLS_params['atom_names'] = [' O1 ']
+        OPLS_params['atom_types'] = [' O ']
+        degree_by_name = dict(((' O1 ', 1), ))
+        parent_by_name = dict(((' O1 ', None), ))
+        element_by_name = dict(((' O1 ', 'O'), ))
+
+        OPLS2005ParameterWrapper._add_GBSA_solvent_parameters(OPLS_params,
+                                                              degree_by_name,
+                                                              parent_by_name,
+                                                              element_by_name)
+
+        assert OPLS_params['GBSA_radii'] == [0.85], \
+            'Unexpected GBSA radii'
+        assert OPLS_params['GBSA_scales'] == [1.48], \
+            'Unexpected GBSA scale'
+
+        # 4th test
+        OPLS_params = OPLS2005ParameterWrapper()
+
+        # Create mock molecule containing just one customized atom
+        OPLS_params['atom_names'] = [' H10']
+        OPLS_params['atom_types'] = [' H2']
+        degree_by_name = dict(((' H10', 1), ))
+        parent_by_name = dict(((' H10', 'C'), ))
+        element_by_name = dict(((' H10', 'H'), ))
+
+        OPLS2005ParameterWrapper._add_GBSA_solvent_parameters(OPLS_params,
+                                                              degree_by_name,
+                                                              parent_by_name,
+                                                              element_by_name)
+
+        assert OPLS_params['GBSA_radii'] == [0.85], \
+            'Unexpected GBSA radii'
+        assert OPLS_params['GBSA_scales'] == [1.25], \
+            'Unexpected GBSA scale'
+
+    def test_GBSA_params_by_element(self):
+        """
+        It tests the scale_by_element and radius_by_element dictionaries
+        in the assignment of the GBSA parameters.
+        """
+
+        from peleffy.forcefield.parameters import OPLS2005ParameterWrapper
+
+        # 1st test
+        OPLS_params = OPLS2005ParameterWrapper()
+
+        # Create mock molecule containing just one customized atom
+        OPLS_params['atom_names'] = [' C1 ']
+        OPLS_params['atom_types'] = [' C?!']
+        degree_by_name = dict(((' C1 ', 3), ))
+        parent_by_name = dict(((' C1 ', None), ))
+        element_by_name = dict(((' C1 ', 'C'), ))
+
+        OPLS2005ParameterWrapper._add_GBSA_solvent_parameters(OPLS_params,
+                                                              degree_by_name,
+                                                              parent_by_name,
+                                                              element_by_name)
+
+        assert OPLS_params['GBSA_radii'] == [0.72], \
+            'Unexpected GBSA radii'
+        assert OPLS_params['GBSA_scales'] == [1.875], \
+            'Unexpected GBSA scale'
+
+        # 2nd test
+        OPLS_params = OPLS2005ParameterWrapper()
+
+        # Create mock molecule containing just one customized atom
+        OPLS_params['atom_names'] = [' O1 ']
+        OPLS_params['atom_types'] = ['O?!']
+        degree_by_name = dict(((' O1 ', 2), ))
+        parent_by_name = dict(((' O1 ', None), ))
+        element_by_name = dict(((' O1 ', 'O'), ))
+
+        OPLS2005ParameterWrapper._add_GBSA_solvent_parameters(OPLS_params,
+                                                              degree_by_name,
+                                                              parent_by_name,
+                                                              element_by_name)
+
+        assert OPLS_params['GBSA_radii'] == [0.85], \
+            'Unexpected GBSA radii'
+        assert OPLS_params['GBSA_scales'] == [1.535], \
+            'Unexpected GBSA scale'
+
+        # 3rd test
+        OPLS_params = OPLS2005ParameterWrapper()
+
+        # Create mock molecule containing just one customized atom
+        OPLS_params['atom_names'] = [' O1 ']
+        OPLS_params['atom_types'] = ['O?!']
+        degree_by_name = dict(((' O1 ', 1), ))
+        parent_by_name = dict(((' O1 ', None), ))
+        element_by_name = dict(((' O1 ', 'O'), ))
+
+        OPLS2005ParameterWrapper._add_GBSA_solvent_parameters(OPLS_params,
+                                                              degree_by_name,
+                                                              parent_by_name,
+                                                              element_by_name)
+
+        assert OPLS_params['GBSA_radii'] == [0.85], \
+            'Unexpected GBSA radii'
+        assert OPLS_params['GBSA_scales'] == [1.48], \
+            'Unexpected GBSA scale'
+
+        # 4th test
+        OPLS_params = OPLS2005ParameterWrapper()
+
+        # Create mock molecule containing just one customized atom
+        OPLS_params['atom_names'] = [' H10']
+        OPLS_params['atom_types'] = ['H?!']
+        degree_by_name = dict(((' H10', 1), ))
+        parent_by_name = dict(((' H10', 'C'), ))
+        element_by_name = dict(((' H10', 'H'), ))
+
+        OPLS2005ParameterWrapper._add_GBSA_solvent_parameters(OPLS_params,
+                                                              degree_by_name,
+                                                              parent_by_name,
+                                                              element_by_name)
+
+        assert OPLS_params['GBSA_radii'] == [0.85], \
+            'Unexpected GBSA radii'
+        assert OPLS_params['GBSA_scales'] == [1.25], \
+            'Unexpected GBSA scale'
+
+        # 5th test
+        OPLS_params = OPLS2005ParameterWrapper()
+
+        # Create mock molecule containing just one customized atom
+        OPLS_params['atom_names'] = [' H10']
+        OPLS_params['atom_types'] = ['H?!']
+        degree_by_name = dict(((' H10', 1), ))
+        parent_by_name = dict(((' H10', 'N'), ))
+        element_by_name = dict(((' H10', 'H'), ))
+
+        OPLS2005ParameterWrapper._add_GBSA_solvent_parameters(OPLS_params,
+                                                              degree_by_name,
+                                                              parent_by_name,
+                                                              element_by_name)
+
+        assert OPLS_params['GBSA_radii'] == [0.85], \
+            'Unexpected GBSA radii'
+        assert OPLS_params['GBSA_scales'] == [1.15], \
+            'Unexpected GBSA scale'
+
+        # 6th test
+        OPLS_params = OPLS2005ParameterWrapper()
+
+        # Create mock molecule containing just one customized atom
+        OPLS_params['atom_names'] = [' H10']
+        OPLS_params['atom_types'] = ['H?!']
+        degree_by_name = dict(((' H10', 1), ))
+        parent_by_name = dict(((' H10', 'O'), ))
+        element_by_name = dict(((' H10', 'H'), ))
+
+        OPLS2005ParameterWrapper._add_GBSA_solvent_parameters(OPLS_params,
+                                                              degree_by_name,
+                                                              parent_by_name,
+                                                              element_by_name)
+
+        assert OPLS_params['GBSA_radii'] == [0.85], \
+            'Unexpected GBSA radii'
+        assert OPLS_params['GBSA_scales'] == [1.05], \
+            'Unexpected GBSA scale'
+
+        # 7th test
+        OPLS_params = OPLS2005ParameterWrapper()
+
+        # Create mock molecule containing just one customized atom
+        OPLS_params['atom_names'] = [' C1 ']
+        OPLS_params['atom_types'] = [' C?!']
+        degree_by_name = dict(((' C1 ', 2), ))
+        parent_by_name = dict(((' C1 ', None), ))
+        element_by_name = dict(((' C1 ', 'C'), ))
+
+        OPLS2005ParameterWrapper._add_GBSA_solvent_parameters(OPLS_params,
+                                                              degree_by_name,
+                                                              parent_by_name,
+                                                              element_by_name)
+
+        assert OPLS_params['GBSA_radii'] == [0.72], \
+            'Unexpected GBSA radii'
+        assert OPLS_params['GBSA_scales'] == [1.825], \
+            'Unexpected GBSA scale'
+
+    def test_GBSA_default_params(self):
+        """
+        It tests the default parameters of the GBSA implementation.
+        """
+        import io
+        from peleffy.forcefield.parameters import OPLS2005ParameterWrapper
+        from peleffy.utils import Logger
+
+        OPLS_params = OPLS2005ParameterWrapper()
+
+        # Create mock molecule containing just one customized atom
+        OPLS_params['atom_names'] = [' C1 ']
+        OPLS_params['atom_types'] = [' C?!']
+        degree_by_name = dict(((' C1 ', 2), ))
+        parent_by_name = dict(((' C1 ', None), ))
+        element_by_name = dict(((' C1 ', '?'), ))
+
+        import logging
+
+        # Force a hard reset of logging library and the logger it manages
+        from importlib import reload
+        logging.shutdown()
+        reload(logging)
+
+        # Initiate logger
+        log = Logger()
+
+        # Try the default level (INFO)
+        # Catch logger messages to string buffer
+        with io.StringIO() as buf:
+            # Add custom handler to logger
+            log_handler = logging.StreamHandler(buf)
+            log._logger.handlers = list()
+            log._logger.addHandler(log_handler)
+
+            OPLS2005ParameterWrapper._add_GBSA_solvent_parameters(
+                OPLS_params, degree_by_name, parent_by_name, element_by_name)
+
+            # Get string from buffer
+            output = buf.getvalue()
+
+            assert output == 'Warning: OBC parameters for ' \
+                + 'C1 C?! NOT found in the template database. ' \
+                + 'Using default parameters\n'
+
+        assert OPLS_params['GBSA_radii'] == [0.80], \
+            'Unexpected GBSA radii'
+        assert OPLS_params['GBSA_scales'] == [2.0], \
+            'Unexpected GBSA scale'
+
+    def test_add_GBSA_solvent_parameters(self):
+        """
+        It tests the function that adds the GBSA solvent parameters to
+        the OPLSParameters collection.
+        """
+
+        from peleffy.forcefield import OPLS2005ParameterWrapper
+        from peleffy.topology import Molecule
+        from peleffy.utils import get_data_file_path
+
+        def generate_and_compare_GBSA_solvent_parameters(pdb_file,
+                                                         ffld_file,
+                                                         reference_txt):
+            """
+            Given a ligand, it tests that the HTC radii and the scale factor
+            for heteroatoms computed with the function
+            _add_GBSA_solvent_parameters correspond to the ones
+            obtained with the original solventOBCParamsGenerator.py script.
+
+            Parameters
+            ----------
+            pdb_file : str
+                The path to the PDB of the ligand to test
+            ffld_file : str
+                The path to the ffld_server's output file
+            reference_txt : str
+                The path to reference TXT file obtained
+                from solventOBCParamsGenerator.py
+            """
+
+            # Load the molecule
+            molecule = Molecule(pdb_file)
+
+            # Set force field and obtain parameters
+            with open(ffld_file) as f:
+                ffld_output = f.read()
+
+            # Initializate wrapper for OPLS2005 parameters
+            wrapper_opls = OPLS2005ParameterWrapper()
+            parameters = wrapper_opls.from_ffld_output(molecule, ffld_output)
+
+            # Get the radi and scale parameters for each atom name
+            atom_names = [param.replace('_', '')
+                          for param in parameters['atom_names']]
+            d_radii = dict(zip(atom_names, parameters['GBSA_radii']))
+            d_scale = dict(zip(atom_names, parameters['GBSA_scales']))
+
+            # Load the reference file obtained from solventOBCParamsGenerator.py
+            data = open(reference_txt, 'r').readlines()
+
+            # Check that the parameters correspond
+            for line in data:
+                params = line.split()
+                assert float(params[3]) == d_scale.get(params[1]), \
+                    'Unexpected GBSA Overlap factor'
+                assert float(params[4]) == d_radii.get(params[1]), \
+                    'Unexpected GBSA radius'
+
+        # For malonate
+        ffld_file = get_data_file_path('tests/MAL_ffld_output.txt')
+        pdb_file = get_data_file_path('ligands/malonate.pdb')
+        reference_txt = get_data_file_path('tests/malz_OBCParams.txt')
+        generate_and_compare_GBSA_solvent_parameters(pdb_file,
+                                                     ffld_file,
+                                                     reference_txt)
+
+        # For methane
+        ffld_file = get_data_file_path('tests/MET_ffld_output.txt')
+        pdb_file = get_data_file_path('ligands/methane.pdb')
+        reference_txt = get_data_file_path('tests/metz_OBCParams.txt')
+        generate_and_compare_GBSA_solvent_parameters(pdb_file,
+                                                     ffld_file,
+                                                     reference_txt)
+
+        # For ethylene
+        ffld_file = get_data_file_path('tests/ETL_ffld_output.txt')
+        pdb_file = get_data_file_path('ligands/ethylene.pdb')
+        reference_txt = get_data_file_path('tests/etlz_OBCParams.txt')
+        generate_and_compare_GBSA_solvent_parameters(pdb_file,
+                                                     ffld_file,
+                                                     reference_txt)

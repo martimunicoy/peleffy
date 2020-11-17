@@ -11,6 +11,7 @@ __all__ = ["OpenForceFieldParameterWrapper",
 from collections import defaultdict
 
 from peleffy.utils import get_data_file_path
+from peleffy.utils import Logger
 
 
 class BaseParameterWrapper(dict):
@@ -512,6 +513,7 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
         """
 
         from simtk import unit
+        from peleffy.utils.toolkits import RDKitToolkitWrapper
 
         params = defaultdict(list)
 
@@ -669,8 +671,22 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                      })
 
         opls_parameters_wrapper = OPLS2005ParameterWrapper(params)
-        OPLS2005ParameterWrapper._add_solvent_parameters(
+        OPLS2005ParameterWrapper._add_SGBNP_solvent_parameters(
             opls_parameters_wrapper)
+
+        # Employ RDKit to extract atom degree and parent type lists
+        wrapper = RDKitToolkitWrapper()
+        atom_names = wrapper.get_atom_names(molecule)
+        degree_by_name = dict(zip(atom_names,
+                                  wrapper.get_atom_degrees(molecule)))
+        parent_by_name = dict(zip(atom_names,
+                                  wrapper.get_hydrogen_parents(molecule)))
+        element_by_name = dict(zip(atom_names,
+                                   wrapper.get_elements(molecule)))
+
+        OPLS2005ParameterWrapper._add_GBSA_solvent_parameters(
+            opls_parameters_wrapper, degree_by_name,
+            parent_by_name, element_by_name)
 
         return opls_parameters_wrapper
 
@@ -722,9 +738,11 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
         return new_atom_type
 
     @staticmethod
-    def _add_solvent_parameters(OPLS_params):
+    def _add_SGBNP_solvent_parameters(OPLS_params):
         """
-        It add the solvent parameters to the OPLS parameters collection.
+        It adds the SGBNP solvent parameters (used in the SGBNP solvent
+        implemented in the OPLS2005 of PELE) to the OPLS parameters
+        collection.
 
         Parameters
         ----------
@@ -783,6 +801,165 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
 
         for label, params in parameters_to_add.items():
             OPLS_params.add_parameters(label, params)
+
+    @staticmethod
+    def _add_GBSA_solvent_parameters(OPLS_params, degree_by_name,
+                                     parent_by_name,
+                                     element_by_name):
+        """
+        It adds the GBSA solvent parameters (used in the OBC solvent
+        implemented in the OPLS2005 of PELE) to the OPLS parameters
+        collection.
+
+        Parameters
+        ----------
+        OPLS_params : an OPLS2005ParameterWrapper object
+            The set of lists of parameters grouped by parameter type.
+            Thus, the dictionary has the following keys: atom_names,
+            atom_types, charges, sigmas, and epsilons. The following
+            solvent parameters will be added to the collection: SGB_radii,
+            vdW_radii, gammas, alphas
+        degree_by_name : dict
+            The dictionary containing the number of bonds for
+            each atom_name
+        parent_by_name : dict
+            The dictionary containing the element of the parent
+            for hydrogen atoms, keyed by atom name of the child
+        element_by_name : dict
+            The dictionary containing the atom elements keyed by
+            atom name
+        """
+        import re
+        import json
+
+        def _check_bonds(scale, atom_type, degree, parent):
+            """
+            It checks the number of bonds and the parent atom for
+            terminal H. Besides, in some especified cases it updates
+            the scale factor.
+
+            Parameters
+            ----------
+            scale : str
+                The scale factor of the current atom
+            atom_type : str
+                The atom type of the current atom
+            degree : int
+                The number of bonds of the current atom
+            parent : str
+                The element belonging to the parent atom, in case that the
+                current atom is a hydrogen atom
+            """
+
+            if atom_type == 'H' and parent == 'O':
+                scale = float(1.05)
+            if atom_type == 'H' and parent == 'N':
+                scale = float(1.15)
+            if atom_type == 'C' and degree == 3:
+                scale = float(1.875)
+            if atom_type == 'C' and degree == 2:
+                scale = float(1.825)
+            if atom_type == 'N' and degree == 4:
+                scale = float(1.625)
+            if atom_type == 'N' and degree == 1:
+                scale = float(1.60)
+            if atom_type == 'O' and degree == 1:
+                scale = float(1.48)
+
+            return scale
+
+        def _find_GBSA_parameters_according_to(atom_name, atom_type,
+                                               degree, element, parent):
+            """
+            It computes the HTC radii and the Overlap factor for Heteroatoms.
+            The parameters have been extracted from Tinker Molecular package. If
+            one parameter has not been defined in the OBC templates it puts the
+            default parameter and raises a warning.
+
+            Parameters
+            ----------
+            atom_name : str
+                Atom name
+            atom_type : str
+                Atom type
+            degree : str
+                Number of bonds
+            element : str
+                The element the atom belongs to
+            parent : str
+                The element of the atom's parent (if the atom is a hydrogen)
+
+            Returns
+            -------
+            radius : str
+                HCT radii
+            scale : str
+                Overlap factor
+            """
+
+            PARAMS_PATH = get_data_file_path('parameters/OBCparam.json')
+
+            # Get rid of terminal white spaces
+            atom_name = atom_name.strip()
+            atom_type = atom_type.strip()
+
+            # Load the dictioaries with the OBC parameters
+            with open(PARAMS_PATH) as fd:
+                params_by_type, scale_by_element, \
+                    radius_by_element = json.load(fd)
+
+            # Assign scale factor and HCT radius using the atom type
+            if atom_type in params_by_type:
+                scale, radius = params_by_type[atom_type]
+
+            # Assign scale factor and HCT radius using the atom element
+            else:
+                found = True
+
+                # Assign scale factor
+                if element.upper() in scale_by_element:
+                    scale = scale_by_element[element.upper()]
+                    scale = _check_bonds(scale, element.upper(),
+                                         degree, parent)
+                else:
+                    found = False
+
+                # Assign scale factor
+                if element.upper() in radius_by_element:
+                    radius = radius_by_element[element.upper()]
+                else:
+                    found = False
+
+                # Returns scale and HCT radius if found, otherwise it raises a
+                # warning and returns the default parameters
+                if not found:
+                    log = Logger()
+                    log.warning('Warning: OBC parameters for '
+                                + '{} {} '.format(atom_name, atom_type)
+                                + 'NOT found in the template '
+                                + 'database. Using default parameters')
+                    radius, scale = float(0.80), float(2.0)
+
+            return radius, scale
+
+        # Loop over atom types and names:
+        radii = list()
+        scales = list()
+        for atom_name, atom_type in zip(OPLS_params['atom_names'],
+                                        OPLS_params['atom_types']):
+            atom_name = re.sub('_', ' ', atom_name)
+            radius, scale = _find_GBSA_parameters_according_to(
+                atom_name, atom_type,
+                degree_by_name.get(atom_name),
+                element_by_name.get(atom_name),
+                parent_by_name.get(atom_name))
+
+            radii.append(radius)
+            scales.append(scale)
+
+        # Assign OBC parameters
+        OPLS_params['GBSA_radii'] = radii
+        OPLS_params['GBSA_scales'] = scales
 
 
 class OpenFFOPLS2005ParameterWrapper(BaseParameterWrapper):

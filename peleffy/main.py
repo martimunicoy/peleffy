@@ -154,11 +154,11 @@ def run_peleffy(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
 
     molecule.parameterize(forcefield, charge_method=charge_method)
     impact = Impact(molecule)
-    impact.write(output_handler.get_impact_template_path())
+    impact.to_file(output_handler.get_impact_template_path())
 
     if with_solvent:
         solvent = OBC2(molecule)
-        solvent.to_json_file(output_handler.get_solvent_template_path())
+        solvent.to_file(output_handler.get_solvent_template_path())
 
     log.info(' - All files were generated successfully')
     log.info('-' * 60)

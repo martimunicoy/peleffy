@@ -241,64 +241,6 @@ class TestOPLS2005ForceField(object):
                          expected_propers=expected_propers,
                          expected_impropers=expected_impropers)
 
-    def test_add_solvent_parameters(self):
-        """
-        It tests the function that adds the solvent parameters to
-        the OPLSParameters collection.
-        """
-
-        from simtk import unit
-        from peleffy.forcefield import OPLS2005ParameterWrapper
-
-        # Using a standard atom type
-        params1 = OPLS2005ParameterWrapper(
-            {'atom_names': [' C1 ', ' H1 ', ' H2 ', ' H3 ', ' H4 '],
-             'atom_types': ['CT', 'HC', 'HC', 'HC', 'HC'],
-             'charges': [-0.24, 0.06, 0.06, 0.06, 0.06],
-             'sigmas': [3.5, 2.5, 2.5, 2.5, 2.5],
-             'epsilons': [0.066, 0.03, 0.03, 0.03, 0.03]})
-
-        # Using a similar atom type
-        params2 = OPLS2005ParameterWrapper(
-            {'atom_names': [' C1 ', ' H1 ', ' H2 ', ' H3 ', ' H4 '],
-             'atom_types': ['C3M', 'HC', 'HC', 'HC', 'HC'],
-             'charges': [-0.24, 0.06, 0.06, 0.06, 0.06],
-             'sigmas': [3.5, 2.5, 2.5, 2.5, 2.5],
-             'epsilons': [0.066, 0.03, 0.03, 0.03, 0.03]})
-
-        # Using a default atom type
-        params3 = OPLS2005ParameterWrapper(
-            {'atom_names': [' C1 ', ' H1 ', ' H2 ', ' H3 ', ' H4 '],
-             'atom_types': ['XX', 'HC', 'HC', 'HC', 'HC'],
-             'charges': [-0.24, 0.06, 0.06, 0.06, 0.06],
-             'sigmas': [3.5, 2.5, 2.5, 2.5, 2.5],
-             'epsilons': [0.066, 0.03, 0.03, 0.03, 0.03]})
-
-        OPLS2005ParameterWrapper._add_solvent_parameters(params1)
-        OPLS2005ParameterWrapper._add_solvent_parameters(params2)
-        OPLS2005ParameterWrapper._add_solvent_parameters(params3)
-
-        assert params1['SGB_radii'][0] == \
-            unit.Quantity(1.975, unit.angstrom), 'Unexpected SGB radius'
-        assert params1['vdW_radii'][0] == \
-            unit.Quantity(1.750, unit.angstrom), 'Unexpected vdW radius'
-        assert params1['gammas'][0] == 0.005000000, 'Unexpected gamma'
-        assert params1['alphas'][0] == -0.741685710, 'Unexpected alpha'
-
-        assert params2['SGB_radii'][0] == \
-            unit.Quantity(2.002, unit.angstrom), 'Unexpected SGB radius'
-        assert params2['vdW_radii'][0] == \
-            unit.Quantity(1.775, unit.angstrom), 'Unexpected vdW radius'
-        assert params2['gammas'][0] == 0.023028004, 'Unexpected gamma'
-        assert params2['alphas'][0] == -0.852763146, 'Unexpected alpha'
-
-        assert params3['SGB_radii'][0] == \
-            unit.Quantity(1.500, unit.angstrom), 'Unexpected SGB radius'
-        assert params3['vdW_radii'][0] == \
-            unit.Quantity(1.250, unit.angstrom), 'Unexpected vdW radius'
-        assert params3['gammas'][0] == 0.005000000, 'Unexpected gamma'
-        assert params3['alphas'][0] == 0.000000000, 'Unexpected alpha'
-
 
 class TestOpenFFOPLS2005ForceField(object):
     """
