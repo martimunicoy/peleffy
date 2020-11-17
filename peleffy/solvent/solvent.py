@@ -5,7 +5,7 @@ PELE's solvent templates.
 
 from simtk import unit
 
-from peleffy.utils import get_data_file_path, warning_on_one_line
+from peleffy.utils import get_data_file_path
 from peleffy.utils import Logger
 
 

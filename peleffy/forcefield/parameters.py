@@ -11,6 +11,7 @@ __all__ = ["OpenForceFieldParameterWrapper",
 from collections import defaultdict
 
 from peleffy.utils import get_data_file_path
+from peleffy.utils import Logger
 
 
 class BaseParameterWrapper(dict):
@@ -672,13 +673,20 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
         opls_parameters_wrapper = OPLS2005ParameterWrapper(params)
         OPLS2005ParameterWrapper._add_SGBNP_solvent_parameters(
             opls_parameters_wrapper)
+
+        # Employ RDKit to extract atom degree and parent type lists
         wrapper = RDKitToolkitWrapper()
-        degree_by_name = dict(zip(wrapper.get_atom_names(molecule),
+        atom_names = wrapper.get_atom_names(molecule)
+        degree_by_name = dict(zip(atom_names,
                                   wrapper.get_atom_degrees(molecule)))
-        parentType_by_name = dict(zip(wrapper.get_atom_names(molecule),
-                                  wrapper.get_atomH_parent(molecule)))
+        parent_by_name = dict(zip(atom_names,
+                                  wrapper.get_hydrogen_parents(molecule)))
+        element_by_name = dict(zip(atom_names,
+                                   wrapper.get_elements(molecule)))
+
         OPLS2005ParameterWrapper._add_GBSA_solvent_parameters(
-            opls_parameters_wrapper, degree_by_name, parentType_by_name)
+            opls_parameters_wrapper, degree_by_name,
+            parent_by_name, element_by_name)
 
         return opls_parameters_wrapper
 
@@ -795,8 +803,9 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
             OPLS_params.add_parameters(label, params)
 
     @staticmethod
-    def _add_GBSA_solvent_parameters(OPLS_params,degree_by_name,
-                                     parentType_by_name):
+    def _add_GBSA_solvent_parameters(OPLS_params, degree_by_name,
+                                     parent_by_name,
+                                     element_by_name):
         """
         It adds the GBSA solvent parameters (used in the OBC solvent
         implemented in the OPLS2005 of PELE) to the OPLS parameters
@@ -811,30 +820,56 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
             solvent parameters will be added to the collection: SGB_radii,
             vdW_radii, gammas, alphas
         degree_by_name : dict
-            dictionary containing the number of bonds for each atom_name
-        parentType_by_name : dict
-            dictionary containing the parent for hydrogen atoms linked to
+            The dictionary containing the number of bonds for
             each atom_name
+        parent_by_name : dict
+            The dictionary containing the element of the parent
+            for hydrogen atoms, keyed by atom name of the child
+        element_by_name : dict
+            The dictionary containing the atom elements keyed by
+            atom name
         """
         import re
         import json
 
-        def _checkBonds(scale, atom_type, degree, parentH):
+        def _check_bonds(scale, atom_type, degree, parent):
             """
-            It checks the number of bonds and the parent atom for terminal H and
-            in some especified cases it updates the overlap factor.
+            It checks the number of bonds and the parent atom for
+            terminal H. Besides, in some especified cases it updates
+            the scale factor.
+
+            Parameters
+            ----------
+            scale : str
+                The scale factor of the current atom
+            atom_type : str
+                The atom type of the current atom
+            degree : int
+                The number of bonds of the current atom
+            parent : str
+                The element belonging to the parent atom, in case that the
+                current atom is a hydrogen atom
             """
-            if atom_type == 'H' and parentH == 'O': scale = '1.05'
-            if atom_type == 'H' and parentH == 'N': scale = '1.15'
-            if atom_type == 'C' and degree == 3: scale= '1.875'
-            if atom_type == 'C' and degree == 2: scale = '1.825'
-            if atom_type == 'N' and degree == 4: scale = '1.625'
-            if atom_type == 'N' and degree == 1: scale = '1.60'
-            if atom_type == 'O' and degree == 1: scale = '1.48'
+
+            if atom_type == 'H' and parent == 'O':
+                scale = '1.05'
+            if atom_type == 'H' and parent == 'N':
+                scale = '1.15'
+            if atom_type == 'C' and degree == 3:
+                scale = '1.875'
+            if atom_type == 'C' and degree == 2:
+                scale = '1.825'
+            if atom_type == 'N' and degree == 4:
+                scale = '1.625'
+            if atom_type == 'N' and degree == 1:
+                scale = '1.60'
+            if atom_type == 'O' and degree == 1:
+                scale = '1.48'
+
             return scale
 
-        def _find_GBSA_parameters_according_to( atom_name, atom_type,
-                                               degree, parentH):
+        def _find_GBSA_parameters_according_to(atom_name, atom_type,
+                                               degree, element, parent):
             """
             It computes the HTC radii and the Overlap factor for Heteroatoms.
             The parameters have been extracted from Tinker Molecular package. If
@@ -849,8 +884,10 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                 Atom type
             degree : str
                 Number of bonds
-            parentH : str
-                Atom type of the parent (if the atom is an H)
+            element : str
+                The element the atom belongs to
+            parent : str
+                The element of the atom's parent (if the atom is a hydrogen)
 
             Returns
             -------
@@ -860,73 +897,67 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                 Overlap factor
             """
 
-            OBCPARAM_PATH = get_data_file_path('parameters/OBCparam.json')
+            PARAMS_PATH = get_data_file_path('parameters/OBCparam.json')
+
+            # Get rid of terminal white spaces
+            atom_name = atom_name.strip()
+            atom_type = atom_type.strip()
 
             # Load the dictioaries with the OBC parameters
-            with open(OBCPARAM_PATH, 'r') as fd:
-                paramtersLst, atomTypesOverlapFactors, atomTypesHCTradii = \
-                                                                json.load(fd)
+            with open(PARAMS_PATH) as fd:
+                params_by_type, scale_by_element, \
+                    radius_by_element = json.load(fd)
 
-            # Assign overlapFactors and HCT radii using the atom type
-            for k,params in paramtersLst.items():
-                if atom_type.strip() == k:
-                    scale, radius = params[0], params[1]
-                    break
+            # Assign scale factor and HCT radius using the atom type
+            if atom_type in params_by_type:
+                scale, radius = params_by_type[atom_type]
 
-            # Assign overlapFactors and HCT radii using the atom name
+            # Assign scale factor and HCT radius using the atom element
             else:
-                found = False
-                # Define element name
-                elementName = \
-                    ''.join([i for i in atom_name.strip() if not i.isdigit()])
+                found = True
 
-                # Assign overlapFractor
-                for k, OverlapFactor in atomTypesOverlapFactors.items():
-                    if elementName == k.upper():
-                        scale, found = OverlapFactor, True
-                        scale = _checkBonds(scale,elementName,degree,parentH)
-                        break
+                # Assign scale factor
+                if element.upper() in scale_by_element:
+                    scale = scale_by_element[element.upper()]
+                    scale = _check_bonds(scale, element.upper(),
+                                         degree, parent)
                 else:
-                    if len(elementName) > 1:
-                        for k, OverlapFactor in atomTypesOverlapFactors.items():
-                            if elementName[0] == k.upper():
-                                scale, found = OverlapFactor, True
-                                scale =_checkBonds(scale,elementName,
-                                                        degree,parentH)
-                                elementName = elementName[0]
-                                break
+                    found = False
 
-                # Assign HCT radii
-                for k,HCTradii in atomTypesHCTradii.items():
-                    if elementName == k.upper():
-                        radius, found = HCTradii, (found and True)
-                        break
-                else: found = False
+                # Assign scale factor
+                if element.upper() in radius_by_element:
+                    radius = radius_by_element[element.upper()]
+                else:
+                    found = False
 
-            # Retuns overlapFractor and HCT radii if found otherwise it raises a
-            # warining and returns the default parameters
+                # Returns scale and HCT radius if found, otherwise it raises a
+                # warning and returns the default parameters
                 if not found:
-                    from peleffy.utils import Logger
                     log = Logger()
-                    log.warning('Parameter for {} {} NOT found in the template '
-                                .format(atom_name,atom_type)
-                                + 'database... using default parameters')
-                    radius, scale = '0.80','2.0'
+                    log.warning('Warning: OBC parameters for '
+                                + '{} {} '.format(atom_name, atom_type)
+                                + 'NOT found in the template '
+                                + 'database. Using default parameters')
+                    radius, scale = '0.80', '2.0'
+
             return radius, scale
 
-
-        #Loop over atom types and names:
+        # Loop over atom types and names:
         radii = list()
         scales = list()
         for atom_name, atom_type in zip(OPLS_params['atom_names'],
                                         OPLS_params['atom_types']):
             atom_name = re.sub('_', ' ', atom_name)
             radius, scale = _find_GBSA_parameters_according_to(
-                                            atom_name, atom_type,
-                                            degree_by_name.get(atom_name),
-                                            parentType_by_name.get(atom_name))
+                atom_name, atom_type,
+                degree_by_name.get(atom_name),
+                element_by_name.get(atom_name),
+                parent_by_name.get(atom_name))
+
             radii.append(radius)
             scales.append(scale)
+
+        # Assign OBC parameters
         OPLS_params['GBSA_radii'] = radii
         OPLS_params['GBSA_scales'] = scales
 
