@@ -254,8 +254,13 @@ class _OPLS2005CompatibleSolvent(_SolventWrapper):
         """
         super().__init__(molecule)
 
-        self._radii = molecule.parameters['GBSA_radii']
-        self._scales = molecule.parameters['GBSA_scales']
+        from peleffy.forcefield import OPLS2005ForceField
+
+        forcefield = OPLS2005ForceField(self._ff_file)
+        parameters = forcefield.parameterize(self.molecule)
+
+        self._parameters = parameters
+
 
     def to_file(self, path):
         """
@@ -267,9 +272,26 @@ class _OPLS2005CompatibleSolvent(_SolventWrapper):
             Path to save the output file to
         """
 
-        raise NotImplementedError('A solvent template compatible with '
-                                  + 'PELE\'s OPLS2005 force field cannot '
-                                  + 'be generated yet')
+        # Load parameters for standard residues
+        PARAMS_PATH = get_data_file_path('parameters/solventParamsHCTOBC.txt')
+        params = open(PARAMS_PATH, 'r').readlines()
+
+        # Add parameters for non standard residue
+        atom_names = [param.replace('_', '')
+            for param in self.parameters['atom_names']]
+
+        for atom_name, atom_type, scale, radii \
+            in zip(atom_names, self.parameters['atom_types'],
+                self.parameters['GBSA_scales'], self.parameters['GBSA_radii']):
+            atom_line = (self.molecule.tag + 'Z').upper() + '   ' \
+                + atom_name + '    ' \
+                + atom_type + '   '  \
+                + str(scale) + '    ' \
+                + str(radii) + '\n'
+            params.append(atom_line)
+
+        with open(path, 'w') as file:
+            file.writelines(params)
 
 
 class OBC1(_OpenFFCompatibleSolvent):
