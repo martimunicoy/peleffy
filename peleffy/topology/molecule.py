@@ -356,7 +356,7 @@ class Molecule(object):
         """
         rdkit_toolkit = RDKitToolkitWrapper()
 
-        return rdkit_toolkit.get_coordinates()
+        return rdkit_toolkit.get_coordinates(self)
 
     @property
     def rotamer_resolution(self):
