@@ -117,7 +117,7 @@ def compare_dicts(dict1, dict2):
             + 'dictionary1: {}, dictionary2: {}'.format(value, dict2[key])
 
 
-def check_parameters(molecule, expected_nonbonding=None,
+def check_parameters(topology, expected_nonbonding=None,
                      expected_bonds=None, expected_angles=None,
                      expected_propers=None, expected_impropers=None):
     """
@@ -125,8 +125,8 @@ def check_parameters(molecule, expected_nonbonding=None,
 
     Parameters
     ----------
-    molecule : a peleffy.topology.Molecule
-        The peleffy's Molecule object
+    topology : a Topology object
+        The molecular topology representation to check
     expected_nonbonding : list[list]
         The list of expected nonbonding parameters
     expected_bonds : list[list]
@@ -146,10 +146,10 @@ def check_parameters(molecule, expected_nonbonding=None,
                                          WritableImproper)
 
     if expected_nonbonding is not None:
-        assert len(molecule.atoms) == len(expected_nonbonding), \
+        assert len(topology.atoms) == len(expected_nonbonding), \
             'Invalid number of nonbonding terms'
 
-        for atom in molecule.atoms:
+        for atom in topology.atoms:
             w_atom = WritableAtom(atom)
             w_parameters = [w_atom.index, w_atom.parent.index, w_atom.core,
                             w_atom.OPLS_type, w_atom.PDB_name,
@@ -162,40 +162,40 @@ def check_parameters(molecule, expected_nonbonding=None,
                 + '{}'.format(w_parameters)
 
     if expected_bonds is not None:
-        assert len(molecule.bonds) == len(expected_bonds), \
+        assert len(topology.bonds) == len(expected_bonds), \
             'Invalid number of bond terms'
 
-        for bond in molecule.bonds:
+        for bond in topology.bonds:
             w_bond = WritableBond(bond)
             w_parameters = [attr[1] for attr in list(w_bond)]
             assert w_parameters in expected_bonds, \
                 'Invalid writable bond parameters {}'.format(w_parameters)
 
     if expected_angles is not None:
-        assert len(molecule.angles) == len(expected_angles), \
+        assert len(topology.angles) == len(expected_angles), \
             'Invalid number of angle terms'
 
-        for angle in molecule.angles:
+        for angle in topology.angles:
             w_angle = WritableAngle(angle)
             w_parameters = [attr[1] for attr in list(w_angle)]
             assert w_parameters in expected_angles, \
                 'Invalid writable angle parameters {}'.format(w_parameters)
 
     if expected_propers is not None:
-        assert len(molecule.propers) == len(expected_propers), \
+        assert len(topology.propers) == len(expected_propers), \
             'Invalid number of proper terms'
 
-        for proper in molecule.propers:
+        for proper in topology.propers:
             w_proper = WritableProper(proper)
             w_parameters = [attr[1] for attr in list(w_proper)]
             assert w_parameters in expected_propers, \
                 'Invalid writable proper parameters {}'.format(w_parameters)
 
     if expected_impropers is not None:
-        assert len(molecule.impropers) == len(expected_impropers), \
+        assert len(topology.impropers) == len(expected_impropers), \
             'Invalid number of improper terms'
 
-        for improper in molecule.impropers:
+        for improper in topology.impropers:
             w_improper = WritableImproper(improper)
             w_parameters = [attr[1] for attr in list(w_improper)]
             assert w_parameters in expected_impropers, \
