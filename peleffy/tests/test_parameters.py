@@ -4,21 +4,135 @@ This module contains the tests to check peleffy's parameters.
 
 import pytest
 
+import tempfile
 from simtk import unit
 import numpy as np
 
-from peleffy.utils import get_data_file_path
 from .utils import (SET_OF_LIGAND_PATHS, apply_PELE_dihedral_equation,
-                    apply_OFF_dihedral_equation, check_CHO_charges)
+                    apply_OFF_dihedral_equation, check_CHO_charges,
+                    compare_files)
 from peleffy.topology import Molecule, Bond, Angle, Proper
 from peleffy.template.impact import (WritableBond, WritableAngle,
                                      WritableProper, WritableImproper)
 from peleffy.forcefield import OpenForceField, OPLS2005ForceField
 from peleffy.forcefield.parameters import BaseParameterWrapper
 from peleffy.topology import Topology
+from peleffy.utils import get_data_file_path, temporary_cd
 
 
 FORCEFIELD_NAME = 'openff_unconstrained-1.2.0.offxml'
+
+
+class TestWrapper(object):
+    """
+    It contains all the tests that validate the parameter wrapper class.
+    """
+
+    def test_forcefield_name_assignment(self):
+        """
+        It validates the force field name assignment of the parameter
+        wrapper.
+        """
+        from peleffy.forcefield.parameters \
+            import (BaseParameterWrapper, OpenForceFieldParameterWrapper,
+                    OPLS2005ParameterWrapper, OpenFFOPLS2005ParameterWrapper)
+
+        p = BaseParameterWrapper()
+
+        assert p.forcefield_name == '', \
+            'Unexpected force field name found in the parameters wrapper'
+
+        p = BaseParameterWrapper(
+            forcefield_name='openff_unconstrained-1.2.1.offxml')
+
+        assert p.forcefield_name == 'openff_unconstrained-1.2.1.offxml', \
+            'Unexpected force field name found in the parameters wrapper'
+
+        p = OpenForceFieldParameterWrapper()
+
+        assert p.forcefield_name == 'OpenFF', \
+            'Unexpected force field name found in the parameters wrapper'
+
+        p = OpenForceFieldParameterWrapper(
+            forcefield_name='openff_unconstrained-1.2.1.offxml')
+
+        assert p.forcefield_name == 'openff_unconstrained-1.2.1.offxml', \
+            'Unexpected force field name found in the parameters wrapper'
+
+        p = OPLS2005ParameterWrapper()
+
+        assert p.forcefield_name == 'OPLS2005', \
+            'Unexpected force field name found in the parameters wrapper'
+
+        p = OpenForceFieldParameterWrapper(forcefield_name='opls')
+
+        assert p.forcefield_name == 'opls', \
+            'Unexpected force field name found in the parameters wrapper'
+
+        p = OpenFFOPLS2005ParameterWrapper()
+
+        assert p.forcefield_name == 'Openff + OPLS2005', \
+            'Unexpected force field name found in the parameters wrapper'
+
+        p = OpenForceFieldParameterWrapper(
+            forcefield_name='openff_unconstrained-1.2.1.offxml')
+
+        assert p.forcefield_name == 'openff_unconstrained-1.2.1.offxml', \
+            'Unexpected force field name found in the parameters wrapper'
+
+    def test_comparison(self):
+        """It tests the comparison between parameter wrapper."""
+        from peleffy.forcefield.parameters import BaseParameterWrapper
+
+        p = BaseParameterWrapper()
+        p2 = BaseParameterWrapper()
+        p3 = BaseParameterWrapper(
+            forcefield_name='openff_unconstrained-1.2.1.offxml')
+        p4 = BaseParameterWrapper({'atom_names': ' C1 '})
+        p5 = BaseParameterWrapper({'atom_names': ' C1 '})
+        p6 = BaseParameterWrapper(
+            {'atom_names': ' C1 '},
+            forcefield_name='openff_unconstrained-1.2.1.offxml')
+
+        assert p == p2, 'Unexpected inequality between \'p\' and \'p2\''
+        assert p != p3, 'Unexpected equality between \'p\' and \'p3\''
+        assert p != p4, 'Unexpected equality between \'p\' and \'p4\''
+        assert p4 == p5, 'Unexpected inequality between \'p4\' and \'p5\''
+        assert p4 != p6, 'Unexpected equality between \'p4\' and \'p6\''
+
+    def test_to_string(self):
+        """It tests the string representation of the parameter wrapper."""
+
+        pdb_path = get_data_file_path('ligands/methane.pdb')
+        molecule = Molecule(pdb_path)
+        ff = OpenForceField('openff_unconstrained-1.2.1.offxml')
+        parameters = ff.parameterize(molecule,
+                                     charge_method='gasteiger')
+        p_string = parameters.to_string()
+
+        ref_string_file = get_data_file_path(
+            'tests/MET_parameters_to_string.txt')
+        with open(ref_string_file) as f:
+            ref_string = f.read().strip('\n')
+
+        assert str(p_string) == str(ref_string), \
+            'Unexpected string representation of the parameter wrapper'
+
+    def test_to_json(self):
+        """It tests the json representation of the parameter wrapper."""
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                pdb_path = get_data_file_path('ligands/methane.pdb')
+                molecule = Molecule(pdb_path)
+                ff = OpenForceField('openff_unconstrained-1.2.1.offxml')
+                parameters = ff.parameterize(molecule,
+                                             charge_method='gasteiger')
+                parameters.to_json('parameters_to_check.json')
+
+                ref_json_file = get_data_file_path(
+                    'tests/MET_parameters_to_json.json')
+                compare_files('parameters_to_check.json', ref_json_file)
 
 
 class TestBonds(object):

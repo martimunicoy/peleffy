@@ -64,6 +64,36 @@ class BaseParameterWrapper(dict):
         else:
             self._forcefield_name = forcefield_name
 
+    def __eq__(self, other):
+        """
+        It sets the equality operator for the BaseParameterWrapper class.
+
+        Parameters
+        ----------
+        other : a BaseParameterWrapper object
+            The other BaseParameterWrapper object to compare with the
+            current one
+        """
+        if not isinstance(other, BaseParameterWrapper):
+            return False
+
+        print(self.forcefield_name, other.forcefield_name)
+
+        return super().__eq__(other) and \
+            self.forcefield_name == other.forcefield_name
+
+    def __ne__(self, other):
+        """
+        It sets the inequality operator for the BaseParameterWrapper class.
+
+        Parameters
+        ----------
+        other : a BaseParameterWrapper object
+            The other BaseParameterWrapper object to compare with the
+            current one
+        """
+        return not self.__eq__(other)
+
     def __setitem__(self, key, val):
         """
         It sets an item in the dictionary, only if the key is an
