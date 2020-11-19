@@ -795,6 +795,32 @@ class TestCharges(object):
                                                     unit.elementary_charge), \
                 'Unexpected partial charge {}'.format(partial_charges)
 
+    def test_dummy_method(self):
+        """It tests the dummy charge calculator."""
+
+        ligand_path = get_data_file_path(self.LIGAND_PATH)
+
+        # Load molecule
+        molecule = Molecule(ligand_path)
+
+        expected_charges = [0.0, ] * 53
+
+        # Parameterize
+        ff = OpenForceField(FORCEFIELD_NAME)
+        parameters = ff.parameterize(molecule, charge_method='dummy')
+
+        partial_charges = parameters['charges']
+
+        assert len(partial_charges) == len(expected_charges), \
+            'Size of Molecule\'s partial charges is expected to match ' \
+            + 'with size of reference charges list'
+
+        for partial_charges, expected_charge in zip(partial_charges,
+                                                    expected_charges):
+            assert partial_charges == unit.Quantity(expected_charge,
+                                                    unit.elementary_charge), \
+                'Unexpected partial charge {}'.format(partial_charges)
+
 
 class TestSolventParameters(object):
     """

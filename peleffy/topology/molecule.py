@@ -112,6 +112,10 @@ class Molecule(object):
         self._core_constraints = core_constraints
         self._allow_undefined_stereo = allow_undefined_stereo
 
+        # Deactivate OpenForceField toolkit warnings
+        import logging
+        logging.getLogger().setLevel(logging.ERROR)
+
         if isinstance(path, str):
             from pathlib import Path
             extension = Path(path).suffix

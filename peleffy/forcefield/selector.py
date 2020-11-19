@@ -66,11 +66,13 @@ class ChargeCalculatorSelector(object):
 
     from peleffy.forcefield.calculators import (OPLSChargeCalculator,
                                                 Am1bccCalculator,
-                                                GasteigerCalculator)
+                                                GasteigerCalculator,
+                                                DummyChargeCalculator)
 
     _AVAILABLE_TYPES = {'opls2005': OPLSChargeCalculator,
                         'am1bcc': Am1bccCalculator,
-                        'gasteiger': GasteigerCalculator
+                        'gasteiger': GasteigerCalculator,
+                        'dummy': DummyChargeCalculator
                         }
 
     def get_by_name(self, charge_method, molecule):

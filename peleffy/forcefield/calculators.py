@@ -3,6 +3,8 @@ This module contains different parameter calculators for force fields.
 """
 
 
+from simtk import unit
+
 from peleffy.utils.toolkits import ToolkitUnavailableException
 
 
@@ -126,6 +128,51 @@ class OPLSChargeCalculator(_PartialChargeCalculator):
             self.molecule, ffld_output)
 
         return parameters['charges']
+
+    def assign_partial_charges(self, parameters):
+        """
+        Given a parameter wrapper, it computes the partial charges and
+        assigns them to it.
+
+        Parameters
+        ----------
+        parameters : a peleffy.forcefield.parameters.BaseParameterWrapper object
+            The parameter wrapper containing the parameters generated
+            with the current force field and where the partial charges
+            will be assigned
+        """
+        import peleffy
+
+        if not isinstance(
+                parameters,
+                peleffy.forcefield.parameters.OPLS2005ParameterWrapper):
+            partial_charges = self.get_partial_charges()
+            parameters['charges'] = partial_charges
+
+
+class DummyChargeCalculator(_PartialChargeCalculator):
+    """
+    Implementation of a dummy charge calculator that will not perform
+    any partial charge calculation.
+    """
+
+    _name = 'OPLS2005'
+
+    def get_partial_charges(self):
+        """
+        It returns the partial charges that correspond to the molecule's
+        atoms.
+
+        Returns
+        -------
+        partial_charges : simtk.unit.Quantity
+            The array of partial charges
+        """
+
+        # Extract number of atoms in molecule
+        n_atoms = len(self.molecule.get_pdb_atom_names())
+
+        return [unit.Quantity(0.0, unit.elementary_charge), ] * n_atoms
 
     def assign_partial_charges(self, parameters):
         """
