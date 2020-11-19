@@ -233,7 +233,8 @@ def compare_files(file1, file2):
             'Found different lines at line {}:'.format(i) + '\n' + line1 + line2
 
 
-def parameterize_opls2005(opls2005, molecule, ffld_file):
+def parameterize_opls2005(opls2005, molecule, ffld_file,
+                          charge_method='OPLS2005'):
     """
     This is a workaround to parameterize an OPLS2005 force field
     using a precomputed ffld_file. Thus, we do not require the
@@ -248,6 +249,9 @@ def parameterize_opls2005(opls2005, molecule, ffld_file):
     ffld_file : str
         The path to the precomputed ffld file from where the parameters
         will be extracted
+    charge_method : str
+        The charge method to employ to calculate partial charges.
+        Default is 'OPLS2005'
 
     Returns
     -------
@@ -264,7 +268,8 @@ def parameterize_opls2005(opls2005, molecule, ffld_file):
     parameters = OPLS2005ParameterWrapper.from_ffld_output(molecule,
                                                            ffld_output)
     # Assign partial charges using the charge calculator object
-    charge_calculator = opls2005.charge_calculator(molecule)
+    charge_calculator = opls2005._get_charge_calculator(charge_method,
+                                                        molecule)
     charge_calculator.assign_partial_charges(parameters)
 
     return parameters
@@ -358,16 +363,9 @@ class MockOPLS2005ForceField(MockBaseForceField):
 
     _preloaded_parameters = None
 
-    def __init__(self, charge_method=None):
-        """
-        It initializes the OPLS2005 force field class.
-
-        Parameters
-        ----------
-        charge_method : str
-            The name of the charge method to employ
-        """
-        super().__init__(self._type, charge_method)
+    def __init__(self):
+        """It initializes the OPLS2005 force field class."""
+        super().__init__(self._type)
 
     def _get_parameters(self, molecule):
         """

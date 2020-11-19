@@ -29,8 +29,7 @@ class ForceFieldSelector(object):
         Returns
         -------
         forcefield : a peleffy.forcefield.forcefield.ForceField
-            The reference to the force field that corresponds to the
-            supplied name
+            The force field that corresponds to the supplied name
 
         Raises
         ------
@@ -41,9 +40,9 @@ class ForceFieldSelector(object):
         from .forcefield import (OpenForceField, OPLS2005ForceField)
 
         if forcefield_name.upper() in self._FF_TYPES['OPLS2005']:
-            return OPLS2005ForceField
+            return OPLS2005ForceField()
         elif forcefield_name in self._FF_TYPES['OpenFF']:
-            return OpenForceField
+            return OpenForceField(forcefield_name=forcefield_name)
         else:
             raise ValueError('Invalid force field name')
 
@@ -74,7 +73,7 @@ class ChargeCalculatorSelector(object):
                         'gasteiger': GasteigerCalculator
                         }
 
-    def get_by_name(self, charge_method):
+    def get_by_name(self, charge_method, molecule):
         """
         Given a charge method name, it returns the corresponding
         charge calculator class.
@@ -83,12 +82,15 @@ class ChargeCalculatorSelector(object):
         ----------
         charge_method : str
             The name of the requested charge calculator
+        molecule : a peleffy.topology.Molecule
+            The peleffy's Molecule object whose partial charges will
+            be calculated
 
         Returns
         -------
         charge_calculator : a PartialChargesCalculator
-            The reference to the charge calculation method that will be
-            employed to calculate partial charges
+            The charge calculation method that will be employed to
+            calculate partial charges
 
         Raises
         ------
@@ -100,7 +102,9 @@ class ChargeCalculatorSelector(object):
             raise ValueError('Charge method \'{}\' '.format(charge_method)
                              + 'is unknown')
 
-        return self._AVAILABLE_TYPES[charge_method.lower()]
+        charge_method = self._AVAILABLE_TYPES[charge_method.lower()]
+
+        return charge_method(molecule)
 
     def get_list(self):
         """

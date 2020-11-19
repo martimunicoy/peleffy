@@ -288,9 +288,8 @@ class TestMolecule(object):
                        allow_undefined_stereo=True)
 
         # And we can parameterize it
-        ff = OpenForceField('openff_unconstrained-1.2.1.offxml',
-                            charge_method='gasteiger')
-        ff.parameterize(mol)
+        ff = OpenForceField('openff_unconstrained-1.2.1.offxml')
+        ff.parameterize(mol, charge_method='gasteiger')
 
         # Save it
         with tempfile.TemporaryDirectory() as tmpdir:

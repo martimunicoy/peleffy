@@ -41,7 +41,7 @@ class TestOpenForceField(object):
 
         # Check default selection
         openff = OpenForceField(self.FORCE_FIELD_NAME)
-        calculator = openff._get_charge_calculator(None)(dummy_mol)
+        calculator = openff._get_charge_calculator(None, dummy_mol)
 
         assert isinstance(
             calculator,
@@ -51,7 +51,7 @@ class TestOpenForceField(object):
 
         # Check custom selection 1
         openff = OpenForceField(self.FORCE_FIELD_NAME)
-        calculator = openff._get_charge_calculator('gasteiger')(dummy_mol)
+        calculator = openff._get_charge_calculator('gasteiger', dummy_mol)
 
         assert isinstance(
             calculator,
@@ -60,7 +60,7 @@ class TestOpenForceField(object):
 
         # Check custom selection 1
         openff = OpenForceField(self.FORCE_FIELD_NAME)
-        calculator = openff._get_charge_calculator('opls2005')(dummy_mol)
+        calculator = openff._get_charge_calculator('opls2005', dummy_mol)
 
         assert isinstance(
             calculator,
@@ -107,7 +107,7 @@ class TestOpenForceField(object):
         with open(reference_file) as f:
             compare_dicts(writable_parameters, json.load(f))
 
-    def test_OPLS_method_with_openff(self):
+    def test_OPLS_charge_method_with_openff(self):
         """
         It tests the obtaining of OPLS2005 charges using the OpenFF
         force field.
@@ -121,11 +121,14 @@ class TestOpenForceField(object):
         molecule = Molecule(get_data_file_path('ligands/ethylene.pdb'))
 
         # Load OpenFF force field with the OPLS2005 charge method
-        openff = OpenForceField(self.FORCE_FIELD_NAME,
-                                charge_method='OPLS2005')
+        openff = OpenForceField(self.FORCE_FIELD_NAME)
+
+        charge_calculator = openff._get_charge_calculator(
+            charge_method='OPLS2005',
+            molecule=molecule)
 
         assert isinstance(
-            openff._charge_calculator(molecule),
+            charge_calculator,
             peleffy.forcefield.calculators.OPLSChargeCalculator), \
             'Unexpected charge calculator method'
 
@@ -167,7 +170,7 @@ class TestOPLS2005ForceField(object):
 
         # Check default selection
         oplsff = OPLS2005ForceField()
-        calculator = oplsff._get_charge_calculator(None)(dummy_mol)
+        calculator = oplsff._get_charge_calculator(None, dummy_mol)
 
         assert isinstance(
             calculator,
@@ -177,7 +180,7 @@ class TestOPLS2005ForceField(object):
 
         # Check custom selection 1
         oplsff = OPLS2005ForceField()
-        calculator = oplsff._get_charge_calculator('gasteiger')(dummy_mol)
+        calculator = oplsff._get_charge_calculator('gasteiger', dummy_mol)
 
         assert isinstance(
             calculator,
@@ -186,7 +189,7 @@ class TestOPLS2005ForceField(object):
 
         # Check custom selection 1
         oplsff = OPLS2005ForceField()
-        calculator = oplsff._get_charge_calculator('am1bcc')(dummy_mol)
+        calculator = oplsff._get_charge_calculator('am1bcc', dummy_mol)
 
         assert isinstance(
             calculator,
@@ -271,7 +274,7 @@ class TestOpenFFOPLS2005ForceField(object):
 
         # Check default selection
         hybridff = OpenFFOPLS2005ForceField(self.FORCE_FIELD_NAME)
-        calculator = hybridff._get_charge_calculator(None)(dummy_mol)
+        calculator = hybridff._get_charge_calculator(None, dummy_mol)
 
         assert isinstance(
             calculator,
@@ -281,7 +284,7 @@ class TestOpenFFOPLS2005ForceField(object):
 
         # Check custom selection 1
         hybridff = OpenFFOPLS2005ForceField(self.FORCE_FIELD_NAME)
-        calculator = hybridff._get_charge_calculator('gasteiger')(dummy_mol)
+        calculator = hybridff._get_charge_calculator('gasteiger', dummy_mol)
 
         assert isinstance(
             calculator,
@@ -290,7 +293,7 @@ class TestOpenFFOPLS2005ForceField(object):
 
         # Check custom selection 1
         hybridff = OpenFFOPLS2005ForceField(self.FORCE_FIELD_NAME)
-        calculator = hybridff._get_charge_calculator('opls2005')(dummy_mol)
+        calculator = hybridff._get_charge_calculator('opls2005', dummy_mol)
 
         assert isinstance(
             calculator,

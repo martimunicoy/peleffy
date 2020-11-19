@@ -18,7 +18,7 @@ class _BaseForceField(object):
     _type = ''
     _default_charge_method = 'am1bcc'
 
-    def __init__(self, forcefield_name, charge_method=None):
+    def __init__(self, forcefield_name):
         """
         It initializes the base force field class.
 
@@ -26,13 +26,10 @@ class _BaseForceField(object):
         ----------
         forcefield_name : str
             The name of the forcefield
-        charge_method : str
-            The name of the charge method to employ
         """
         self._name = forcefield_name
-        self._charge_calculator = self._get_charge_calculator(charge_method)
 
-    def _get_charge_calculator(self, charge_method):
+    def _get_charge_calculator(self, charge_method, molecule):
         """
         Given a charge method name, it returns the corresponding
         charge calculator class.
@@ -41,6 +38,8 @@ class _BaseForceField(object):
         ----------
         charge_method : str
             The name of the requested charge calculator
+        molecule : a peleffy.topology.Molecule
+            The peleffy's Molecule object to parameterize
 
         Returns
         -------
@@ -54,9 +53,9 @@ class _BaseForceField(object):
             charge_method = self._default_charge_method
 
         selector = ChargeCalculatorSelector()
-        return selector.get_by_name(charge_method)
+        return selector.get_by_name(charge_method, molecule)
 
-    def parameterize(self, molecule):
+    def parameterize(self, molecule, charge_method=None):
         """
         It parameterizes the supplied molecule.
 
@@ -64,6 +63,8 @@ class _BaseForceField(object):
         ----------
         molecule : a peleffy.topology.Molecule
             The peleffy's Molecule object to parameterize
+        charge_method : str
+            The name of the charge method to employ
 
         Returns
         -------
@@ -76,7 +77,8 @@ class _BaseForceField(object):
         parameters = self._get_parameters(molecule)
 
         # Assign partial charges using the charge calculator object
-        charge_calculator = self.charge_calculator(molecule)
+        charge_calculator = self._get_charge_calculator(charge_method,
+                                                        molecule)
         charge_calculator.assign_partial_charges(parameters)
 
         return parameters
@@ -116,20 +118,6 @@ class _BaseForceField(object):
             The parameters obtained with the force field
         """
         return self._parameters
-
-    @property
-    def charge_calculator(self):
-        """
-        It returns the charge calculator method linked with the force
-        field.
-
-        Returns
-        -------
-        charge_calculator : a PartialChargesCalculator object
-            The charge calculation method that will be employed to calculate
-            partial charges
-        """
-        return self._charge_calculator
 
 
 class OpenForceField(_BaseForceField):
@@ -176,16 +164,9 @@ class OPLS2005ForceField(_BaseForceField):
     _type = 'OPLS2005'
     _default_charge_method = 'opls2005'
 
-    def __init__(self, charge_method=None):
-        """
-        It initializes the OPLS2005 force field class.
-
-        Parameters
-        ----------
-        charge_method : str
-            The name of the charge method to employ
-        """
-        super().__init__(self._type, charge_method)
+    def __init__(self):
+        """It initializes the OPLS2005 force field class."""
+        super().__init__(self._type)
 
     def _get_parameters(self, molecule):
         """
@@ -234,7 +215,7 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
             The name of the OpenFF forcefield to employ
         """
         self._openff = OpenForceField(forcefield_name)
-        self._oplsff = OPLS2005ForceField('OPLS2005')
+        self._oplsff = OPLS2005ForceField()
         super().__init__(self._openff.name + ' + ' + self._oplsff.name)
 
         # Set default selections

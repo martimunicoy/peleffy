@@ -38,8 +38,8 @@ class TestBonds(object):
         molecule = Molecule(smiles='c1ccccc1')
 
         # Parameterize
-        ff = OpenForceField(FORCEFIELD_NAME, charge_method='gasteiger')
-        parameters = ff.parameterize(molecule)
+        ff = OpenForceField(FORCEFIELD_NAME)
+        parameters = ff.parameterize(molecule, charge_method='gasteiger')
 
         # Check resulting parameters
         expected_lengths = {(0, 1): 1.389761064076,
@@ -93,8 +93,8 @@ class TestBonds(object):
         molecule = Molecule(smiles='CC=O')
 
         # Parameterize
-        ff = OpenForceField(FORCEFIELD_NAME, charge_method='gasteiger')
-        parameters = ff.parameterize(molecule)
+        ff = OpenForceField(FORCEFIELD_NAME)
+        parameters = ff.parameterize(molecule, charge_method='gasteiger')
 
         # Generate topology
         topology = Topology(molecule, parameters)
@@ -131,8 +131,8 @@ class TestAngles(object):
         molecule = Molecule(smiles='c1ccccc1')
 
         # Parameterize
-        ff = OpenForceField(FORCEFIELD_NAME, charge_method='gasteiger')
-        parameters = ff.parameterize(molecule)
+        ff = OpenForceField(FORCEFIELD_NAME)
+        parameters = ff.parameterize(molecule, charge_method='gasteiger')
 
         # Check resulting parameters
         expected_angles = {(0, 1, 2): 128.2771922378,
@@ -199,8 +199,8 @@ class TestAngles(object):
         molecule = Molecule(smiles='CC=O')
 
         # Parameterize
-        ff = OpenForceField(FORCEFIELD_NAME, charge_method='gasteiger')
-        parameters = ff.parameterize(molecule)
+        ff = OpenForceField(FORCEFIELD_NAME)
+        parameters = ff.parameterize(molecule, charge_method='gasteiger')
 
         # Generate topology
         topology = Topology(molecule, parameters)
@@ -239,8 +239,8 @@ class TestDihedrals(object):
         molecule = Molecule(smiles='C=CC(=O)O')
 
         # Parameterize
-        ff = OpenForceField(FORCEFIELD_NAME, charge_method='gasteiger')
-        parameters = ff.parameterize(molecule)
+        ff = OpenForceField(FORCEFIELD_NAME)
+        parameters = ff.parameterize(molecule, charge_method='gasteiger')
 
         # Check resulting parameters for proper torsions
         expected_propers = [(0, 1, 2, 3,
@@ -359,8 +359,8 @@ class TestDihedrals(object):
         molecule = Molecule(smiles='CC=O')
 
         # Parameterize
-        ff = OpenForceField(FORCEFIELD_NAME, charge_method='gasteiger')
-        parameters = ff.parameterize(molecule)
+        ff = OpenForceField(FORCEFIELD_NAME)
+        parameters = ff.parameterize(molecule, charge_method='gasteiger')
 
         # Generate topology
         topology = Topology(molecule, parameters)
@@ -410,8 +410,8 @@ class TestDihedrals(object):
             molecule = Molecule(ligand_path)
 
             # Parameterize
-            ff = OpenForceField(FORCEFIELD_NAME, charge_method='gasteiger')
-            parameters = ff.parameterize(molecule)
+            ff = OpenForceField(FORCEFIELD_NAME)
+            parameters = ff.parameterize(molecule, charge_method='gasteiger')
 
             # Generate topology
             topology = Topology(molecule, parameters)
@@ -517,8 +517,8 @@ class TestDihedrals(object):
         molecule = Molecule(smiles='c1c(c(n(n1)S(=O)(=O)C))O')
 
         # Parameterize
-        ff = OpenForceField(FORCEFIELD_NAME, charge_method='gasteiger')
-        parameters = ff.parameterize(molecule)
+        ff = OpenForceField(FORCEFIELD_NAME)
+        parameters = ff.parameterize(molecule, charge_method='gasteiger')
 
         # Generate topology
         topology = Topology(molecule, parameters)
@@ -622,8 +622,8 @@ class TestCharges(object):
         molecule = Molecule(ligand_path)
 
         # Parameterize
-        ff = OpenForceField(FORCEFIELD_NAME, charge_method='am1bcc')
-        parameters = ff.parameterize(molecule)
+        ff = OpenForceField(FORCEFIELD_NAME)
+        parameters = ff.parameterize(molecule, charge_method='am1bcc')
 
         # Check charges
         check_CHO_charges(parameters)
@@ -636,8 +636,8 @@ class TestCharges(object):
         molecule = Molecule(ligand_path)
 
         # Parameterize
-        ff = OpenForceField(FORCEFIELD_NAME, charge_method='gasteiger')
-        parameters = ff.parameterize(molecule)
+        ff = OpenForceField(FORCEFIELD_NAME)
+        parameters = ff.parameterize(molecule, charge_method='gasteiger')
 
         # Check charges
         check_CHO_charges(parameters)

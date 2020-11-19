@@ -112,10 +112,15 @@ class TestSchrodingerToolkitWrapper(object):
         molecule = Molecule(smiles='c1ccccc1')
 
         # Load OPLS2005 force field
-        opls2005 = OPLS2005ForceField(charge_method='gasteiger')
+        opls2005 = OPLS2005ForceField()
+
+        # Ensure SCHRODINGER is not in the environment
+        import os
+        if 'SCHRODINGER' in os.environ:
+            del(os.environ['SCHRODINGER'])
 
         with pytest.raises(ToolkitUnavailableException):
-            opls2005.parameterize(molecule)
+            opls2005.parameterize(molecule, charge_method='gasteiger')
 
 
 class TestRDKitToolkitWrapper(object):

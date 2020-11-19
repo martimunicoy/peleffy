@@ -152,8 +152,7 @@ def run_peleffy(pdb_file,
 
     # Initialize force field
     ff_selector = ForceFieldSelector()
-    ff_reference = ff_selector.get_by_name(forcefield_name)
-    forcefield = ff_reference(forcefield_name, charge_method=charge_method)
+    forcefield = ff_selector.get_by_name(forcefield_name)
 
     output_handler = OutputPathHandler(molecule, forcefield,
                                        output_path=output,
@@ -163,7 +162,8 @@ def run_peleffy(pdb_file,
     rotamer_library.to_file(output_handler.get_rotamer_library_path())
 
     # Parameterize molecule with the selected force field
-    parameters = forcefield.parameterize(molecule)
+    parameters = forcefield.parameterize(molecule,
+                                         charge_method=charge_method)
 
     # Generate the molecular topology
     topology = Topology(molecule, parameters)

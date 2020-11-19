@@ -175,8 +175,7 @@ class TestOutputPathHandler(object):
         molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ')
 
         # Load force field
-        openff = OpenForceField('openff_unconstrained-1.2.1.offxml',
-                                charge_method='gasteiger')
+        openff = OpenForceField('openff_unconstrained-1.2.1.offxml')
 
         # Molecule's tag
         tag = molecule.tag
@@ -222,8 +221,7 @@ class TestOutputPathHandler(object):
         molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ')
 
         # Load force field
-        openff = OpenForceField('openff_unconstrained-1.2.1.offxml',
-                                charge_method='gasteiger')
+        openff = OpenForceField('openff_unconstrained-1.2.1.offxml')
         # Molecule's tag
         tag = molecule.tag
 

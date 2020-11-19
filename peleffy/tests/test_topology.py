@@ -166,10 +166,8 @@ class TestTopology(object):
         from peleffy.utils import get_data_file_path
         from .utils import check_parameters, parameterize_opls2005
 
-        FORCE_FIELD_NAME = 'OPLS2005'
-
         # Load molecule
-        opls2005 = OPLS2005ForceField(FORCE_FIELD_NAME)
+        opls2005 = OPLS2005ForceField()
         molecule = Molecule(get_data_file_path('ligands/methane.pdb'))
         ffld_file = get_data_file_path('tests/MET_ffld_output.txt')
 
@@ -214,7 +212,7 @@ class TestTopology(object):
                          expected_angles=expected_angles)
 
         # Load molecule
-        opls2005 = OPLS2005ForceField(FORCE_FIELD_NAME)
+        opls2005 = OPLS2005ForceField()
         molecule = Molecule(get_data_file_path('ligands/ethylene.pdb'))
         ffld_file = get_data_file_path('tests/ETL_ffld_output.txt')
 
