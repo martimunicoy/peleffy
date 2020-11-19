@@ -129,7 +129,8 @@ class _OpenFFCompatibleSolvent(_SolventWrapper):
         from peleffy.forcefield import OpenForceField
 
         forcefield = OpenForceField(self._ff_file)
-        parameters = forcefield.parameterize(self.topology.molecule)
+        parameters = forcefield.parameterize(self.topology.molecule,
+                                             charge_method='dummy')
 
         self._radii = parameters['GBSA_radii']
         self._scales = parameters['GBSA_scales']
