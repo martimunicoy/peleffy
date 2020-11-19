@@ -320,7 +320,8 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
             forcefield_name='{} + {}'.format(self._openff.name,
                                              self._oplsff.name))
 
-        openff_parameters = self._openff.parameterize(molecule)
+        openff_parameters = self._openff.parameterize(molecule,
+                                                      charge_method='dummy')
         oplsff_parameters = self._oplsff.parameterize(molecule)
 
         if self._nonbonding == 'openff':

@@ -123,7 +123,7 @@ class OPLSChargeCalculator(_PartialChargeCalculator):
                 'OPLSChargeCalculator requires the Schrodinger '
                 + 'Toolkit to obtain partial charges')
 
-        from peleffy.forcefield import OPLS2005ParameterWrapper
+        from peleffy.forcefield.parameters import OPLS2005ParameterWrapper
         parameters = OPLS2005ParameterWrapper.from_ffld_output(
             self.molecule, ffld_output)
 
