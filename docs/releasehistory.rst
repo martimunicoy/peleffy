@@ -19,13 +19,17 @@ New features
 - `PR #94 <https://github.com/martimunicoy/peleffy/pull/94>`_: New method for the OPLS OBC parameters.
 - `PR #92 <https://github.com/martimunicoy/peleffy/pull/92>`_: New parameter to skip the stereochemistry assignment (and the checking from the OpenFF toolkit).
 
+API-breaking changes
+""""""""""""""""""""
+- `PR #97 <https://github.com/martimunicoy/peleffy/pull/97>`_: The parameterization API changes and a new Topology class is used as a container for all the topological elements.
+
 Tests added
 """""""""""
 - `PR #88 <https://github.com/martimunicoy/peleffy/pull/88>`_: Adds tests to validate the atom degrees getter.
 - `PR #86 <https://github.com/martimunicoy/peleffy/pull/86>`_: Adds tests to validate the PDB check up.
 - `PR #94 <https://github.com/martimunicoy/peleffy/pull/94>`_: Adds tests to validate the OPLS OBC parameters generator.
 - `PR #92 <https://github.com/martimunicoy/peleffy/pull/92>`_: New test to check the behaviour of the allow_undefined_stereo parameter.
-
+- `PR #97 <https://github.com/martimunicoy/peleffy/pull/97>`_: Includes tests for the new Topology container class.
 
 1.0.0 - Full compatibility for OPLS2005 and OpenFF dihedrals and rotamer library improvements
 ---------------------------------------------------------------------------------------------
