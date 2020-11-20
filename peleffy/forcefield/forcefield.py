@@ -286,6 +286,8 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
 
         >>> from peleffy.forcefield import OpenFFOPLS2005ForceField
 
+        >>> hybridff = OpenFFOPLS2005ForceField('openff_unconstrained-1.2.1.offxml')
+
         >>> hybridff.set_nonbonding_parameters('OPLS2005')
         >>> hybridff.set_bond_parameters('OPLS2005')
         >>> hybridff.set_angle_parameters('OPLS2005')
