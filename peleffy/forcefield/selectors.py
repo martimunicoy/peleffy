@@ -35,6 +35,17 @@ class ForceFieldSelector(object):
         ------
         ValueError
             If the supplied forcefield_name is unknown
+
+        Examples
+        --------
+
+        Use the force field selector to select a force field by name
+
+        >>> from peleffy.forcefield import ForceFieldSelector
+
+        >>> selector = ForceFieldSelector()
+        >>> openff = selector.get_by_name('openff_unconstrained-1.2.1.offxml')
+
         """
 
         from .forcefield import (OpenForceField, OPLS2005ForceField)

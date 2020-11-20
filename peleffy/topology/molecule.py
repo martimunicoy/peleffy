@@ -70,7 +70,6 @@ class Molecule(object):
         >>> from peleffy.topology import Molecule
 
         >>> molecule = Molecule(smiles='Cc1ccccc1')
-        >>> molecule.parameterize('openff_unconstrained-1.2.0.offxml')
 
         Load a molecule usign a PDB file (without connectivity) and assign
         the missing connectivity from an RDKit template (e.g. obtained
@@ -102,6 +101,22 @@ class Molecule(object):
 
         >>> rotamer_library = RotamerLibrary(mol)
         >>> rotamer_library.to_file('butz')
+
+        Deactivate OpenFF Toolkit's stereochemistry checking when
+        loading a molecule
+
+        >>> from peleffy.topology import Molecule
+
+        >>> molecule = Molecule('molecule_with_undefined_stereochemistry.pdb',
+                                allow_undefined_stereo=True)
+
+        Display the molecular representation in a Jupyter Notebook
+
+        >>> from peleffy.topology import Molecule
+
+        >>> molecule = Molecule(smiles='CCCC', name='butane', tag='BUT')
+
+        >>> display(molecule)
 
         """
         self._name = name

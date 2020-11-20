@@ -321,10 +321,21 @@ class OBC2(_OpenFFCompatibleSolvent):
         Generate the solvent parameters of a molecule
 
         >>> from peleffy.topology import Molecule
-        >>> from peleffy.solvent import OBC2
 
         >>> molecule = Molecule('molecule.pdb')
-        >>> solvent = OBC2(molecule)
+
+        >>> from peleffy.forcefield import OpenForceField
+
+        >>> openff = OpenForceField('openff_unconstrained-1.2.1.offxml')
+        >>> parameters = openff.parameterize(molecule)
+
+        >>> from peleffy.topology import Topology
+
+        >>> topology = Topology(molecule, parameters)
+
+        >>> from peleffy.solvent import OBC2
+
+        >>> solvent = OBC2(topology)
         >>> solvent.to_file('OBC_parameters.txt')
 
         """
@@ -347,18 +358,6 @@ class OPLSOBC(_OPLS2005CompatibleSolvent):
         topology : a Topology object
             The molecular topology representation to write as a
             Impact template
-
-        Examples
-        --------
-
-        Generate the solvent parameters of a molecule
-
-        >>> from peleffy.topology import Molecule
-        >>> from peleffy.solvent import OPLSOBC
-
-        >>> molecule = Molecule('molecule.pdb')
-        >>> solvent = OPLSOBC(molecule)
-        >>> solvent.to_file('OBC_parameters.txt')
 
         """
         super().__init__(topology)

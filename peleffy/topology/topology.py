@@ -25,6 +25,41 @@ class Topology(object):
             The peleffy's Molecule object whose topology will be built
         parameters : a BaseParameterWrapper
             The parameter wrapper belonging to the molecule
+
+        Examples
+        --------
+
+        Load a molecule from a PDB file, parameterize it with a force
+        field and generate its topology
+
+        >>> from peleffy.topology import Molecule
+
+        >>> molecule = Molecule('molecule.pdb')
+        >>> molecule.parameterize('openff_unconstrained-1.2.0.offxml')
+
+        >>> from peleffy.forcefield import OpenForceField
+
+        >>> openff = OpenForceField('openff_unconstrained-1.2.1.offxml')
+        >>> parameters = openff.parameterize(molecule)
+
+        >>> from peleffy.topology import Topology
+
+        >>> topology = Topology(molecule, parameters)
+
+        Once a topology has been built, topological elements such as
+        atoms, bonds, angles and dihedrals are easily accessible
+        through the attributes below
+
+        >>> topology.atoms
+
+        >>> topology.bonds
+
+        >>> topology.angles
+
+        >>> topology.propers
+
+        >>> topology.impropers
+
         """
 
         # Set topology attributes

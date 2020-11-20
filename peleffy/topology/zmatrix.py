@@ -26,6 +26,28 @@ class ZMatrix(np.ndarray):
         topology : a peleffy.topology.Topology
             The molecular topology representation to generate the
             zmatrix with
+
+        Examples
+        --------
+
+        Given a molecular topology, build its Z-matrix
+
+        >>> from peleffy.topology import Molecule
+
+        >>> molecule = Molecule(smiles='Cc1ccccc1')
+
+        >>> from peleffy.forcefield import OpenForceField
+
+        >>> openff = OpenForceField('openff_unconstrained-1.2.1.offxml')
+        >>> parameters = openff.parameterize(molecule)
+
+        >>> from peleffy.topology import Topology
+        >>> topology = Topology(molecule, parameters)
+
+        >>> from peleffy.topology import ZMatrix
+
+        >>> zmatrix = ZMatrix(topology)
+
         """
         # We will work on a copy of the topology's object to modify it freely
         self._topology = deepcopy(topology)

@@ -33,12 +33,22 @@ class Impact(object):
         Write the Impact template of a peleffy's molecule
 
         >>> from peleffy.topology import Molecule
-        >>> from peleffy.template import Impact
 
         >>> molecule = Molecule('molecule.pdb')
-        >>> molecule.parameterize('openff_unconstrained-1.1.1.offxml')
-        >>> impact = Impact(molecule)
-        >>> impact.write('molz')
+
+        >>> from peleffy.forcefield import OpenForceField
+
+        >>> openff = OpenForceField('openff_unconstrained-1.2.1.offxml')
+        >>> parameters = openff.parameterize(molecule)
+
+        >>> from peleffy.topology import Topology
+
+        >>> topology = Topology(molecule, parameters)
+
+        >>> from peleffy.template import Impact
+
+        >>> impact = Impact(topology)
+        >>> impact.to_file('molz')
 
         """
 
