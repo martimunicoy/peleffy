@@ -13,8 +13,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - uses: goanpeca/setup-miniconda@v2
-      name:  Conda setup
+    - uses: conda-incubator/setup-miniconda@v2
+      name: Conda setup
       with:
         python-version: 3.7
         activate-environment: standard
