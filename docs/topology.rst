@@ -18,6 +18,7 @@ Primary objects
     :template: class.rst
 
     Molecule
+    Topology
 
 
 Secondary objects
@@ -34,10 +35,10 @@ Secondary objects
     Dihedral
     Proper
     Improper
-    molecule.DummyAtom
-    topology.OFFDihedral
-    topology.OFFProper
-    topology.OFFImproper
+    elements.DummyAtom
+    elements.OFFDihedral
+    elements.OFFProper
+    elements.OFFImproper
     ZMatrix
     rotamer.Rotamer
     rotamer.RotamerLibrary

@@ -21,6 +21,7 @@ New features
 
 API-breaking changes
 """"""""""""""""""""
+- `PR #94 <https://github.com/martimunicoy/peleffy/pull/94>`_: Methods to write to a file are given a unique standard name, to_file(), to simplify the API.
 - `PR #97 <https://github.com/martimunicoy/peleffy/pull/97>`_: The parameterization API changes and a new Topology class is used as a container for all the topological elements.
 
 Tests added

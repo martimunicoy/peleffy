@@ -1,2 +1,2 @@
 from .forcefield import *
-from .selector import ForceFieldSelector
+from .selectors import ForceFieldSelector
