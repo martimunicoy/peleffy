@@ -460,7 +460,7 @@ class TestTopology(object):
 
         # Hybrid force field set up
         hybridff.set_nonbonding_parameters('OpenFF')
-        hybridff.set_torsion_parameters('OPLS2005')
+        hybridff.set_dihedral_parameters('OPLS2005')
 
         # Workaround to skip Schrodinger dependency
         parameters = parameterize_openffopls2005(hybridff, molecule,

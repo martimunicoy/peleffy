@@ -392,7 +392,7 @@ class TestOpenFFOPLS2005ForceField(object):
 
         # 2nd check
         hybridff.set_nonbonding_parameters('OpenFF')
-        hybridff.set_torsion_parameters('OPLS2005')
+        hybridff.set_dihedral_parameters('OPLS2005')
 
         check(hybridff, molecule, ffld_file,
               get_data_file_path(

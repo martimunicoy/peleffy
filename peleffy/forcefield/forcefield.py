@@ -26,6 +26,34 @@ class _BaseForceField(object):
         ----------
         forcefield_name : str
             The name of the forcefield
+
+        Examples
+        --------
+
+        Load a molecule and generate its parameters with an OpenFF
+        force field
+
+        >>> from peleffy.topology import Molecule
+
+        >>> molecule = Molecule('molecule.pdb')
+
+        >>> from peleffy.forcefield import OpenForceField
+
+        >>> openff = OpenForceField('openff_unconstrained-1.2.1.offxml')
+        >>> parameters = openff.parameterize(molecule)
+
+        Load a molecule and generate its parameters with an OpenFF
+        force field and 'gasteiger' partial charges
+
+        >>> from peleffy.topology import Molecule
+
+        >>> molecule = Molecule('molecule.pdb')
+
+        >>> from peleffy.forcefield import OpenForceField
+
+        >>> openff = OpenForceField('openff_unconstrained-1.2.1.offxml')
+        >>> parameters = openff.parameterize(molecule,
+                                             charge_method='gasteiger')
         """
         self._name = forcefield_name
 
@@ -165,7 +193,26 @@ class OPLS2005ForceField(_BaseForceField):
     _default_charge_method = 'opls2005'
 
     def __init__(self):
-        """It initializes the OPLS2005 force field class."""
+        """
+        It initializes the OPLS2005 force field class.
+
+        Examples
+        --------
+
+        Load a molecule and generate its parameters with the OPLS2005
+        force field
+
+        >>> from peleffy.topology import Molecule
+
+        >>> molecule = Molecule('molecule.pdb')
+
+        >>> from peleffy.forcefield import OPLS2005ForceField
+
+        >>> opls2005 = OPLS2005ForceField()
+        >>> parameters = opls2005.parameterize(molecule)
+
+        """
+
         super().__init__(self._type)
 
     def _get_parameters(self, molecule):
@@ -213,6 +260,39 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
         ----------
         openff_name : str
             The name of the OpenFF forcefield to employ
+
+        Examples
+        --------
+
+        Load a molecule and generate its parameters with an hybrid
+        OpenFF-OPLS2005 force field
+
+        >>> from peleffy.topology import Molecule
+
+        >>> molecule = Molecule('molecule.pdb')
+
+        >>> from peleffy.forcefield import OpenFFOPLS2005ForceField
+
+        >>> hybridff = OpenFFOPLS2005ForceField('openff_unconstrained-1.2.1.offxml')
+        >>> parameters = hybridff.parameterize(molecule)
+
+        We can customized it by selecting which force field employ for each
+        parameter type. For example, below we are parameterizing all
+        force field elements with OPLS2005 except for the dihedrals
+
+        >>> from peleffy.topology import Molecule
+
+        >>> molecule = Molecule('molecule.pdb')
+
+        >>> from peleffy.forcefield import OpenFFOPLS2005ForceField
+
+        >>> hybridff.set_nonbonding_parameters('OPLS2005')
+        >>> hybridff.set_bond_parameters('OPLS2005')
+        >>> hybridff.set_angle_parameters('OPLS2005')
+        >>> hybridff.set_dihedral_parameters('OpenFF')
+
+        >>> parameters = hybridff.parameterize(molecule)
+
         """
         self._openff = OpenForceField(forcefield_name)
         self._oplsff = OPLS2005ForceField()
@@ -222,7 +302,7 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
         self._nonbonding = 'openff'
         self._bonds = 'openff'
         self._angles = 'openff'
-        self._torsions = 'openff'
+        self._dihedrals = 'openff'
 
     def _check_selection(self, selection):
         """
@@ -284,9 +364,9 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
 
         self._angles = selection.lower()
 
-    def set_torsion_parameters(self, selection):
+    def set_dihedral_parameters(self, selection):
         """
-        It sets which force field to use to assign parameters to torsions.
+        It sets which force field to use to assign parameters to dihedrals.
 
         Parameters
         ----------
@@ -295,7 +375,7 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
         """
         self._check_selection(selection)
 
-        self._torsions = selection.lower()
+        self._dihedrals = selection.lower()
 
     def _get_parameters(self, molecule):
         """
@@ -374,15 +454,15 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
                              + 'Valid selections are '
                              + '{}'.format(self._selections))
 
-        if self._torsions == 'openff':
+        if self._dihedrals == 'openff':
             hybrid_parameters['propers'] = openff_parameters['propers']
             hybrid_parameters['impropers'] = openff_parameters['impropers']
-        elif self._torsions == 'opls2005':
+        elif self._dihedrals == 'opls2005':
             hybrid_parameters['propers'] = oplsff_parameters['propers']
             hybrid_parameters['impropers'] = oplsff_parameters['impropers']
         else:
             raise ValueError('Invalid selection: '
-                             + '\'{}\'. '.format(self._torsions)
+                             + '\'{}\'. '.format(self._dihedrals)
                              + 'Valid selections are '
                              + '{}'.format(self._selections))
 
