@@ -16,7 +16,7 @@ import peleffy
 from peleffy.utils import Logger, OutputPathHandler
 
 
-DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-1.2.0.offxml'
+DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-1.2.1.offxml'
 DEFAULT_RESOLUTION = int(30)
 DEFAULT_CHARGE_METHOD = 'am1bcc'
 AVAILABLE_CHARGE_METHODS = ['am1bcc', 'gasteiger', 'OPLS']
@@ -89,7 +89,8 @@ def parse_args(args):
     return parsed_args
 
 
-def run_peleffy(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
+def run_peleffy(pdb_file,
+                forcefield_name=DEFAULT_OFF_FORCEFIELD,
                 resolution=DEFAULT_RESOLUTION,
                 charge_method=DEFAULT_CHARGE_METHOD,
                 exclude_terminal_rotamers=True,
@@ -101,7 +102,7 @@ def run_peleffy(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     ----------
     pdb_file : str
         The path to the pdb_file to parameterize with peleffy
-    forcefield : str
+    forcefield_name : str
         The name of an OpenForceField's forcefield
     resolution : float
         The resolution in degrees for the rotamer library. Default is 30
@@ -129,7 +130,7 @@ def run_peleffy(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     log.info('   - Write solvent parameters:', with_solvent)
     log.info('   - DataLocal-like output:', as_datalocal)
     log.info(' - Parameterization:')
-    log.info('   - Force field:', forcefield)
+    log.info('   - Force field:', forcefield_name)
     log.info('   - Charge method:', charge_method)
     log.info(' - Rotamer library:')
     log.info('   - Resolution:', resolution)
@@ -139,25 +140,41 @@ def run_peleffy(pdb_file, forcefield=DEFAULT_OFF_FORCEFIELD,
     from peleffy.topology import Molecule
     from peleffy.template import Impact
     from peleffy.solvent import OBC2
+    from peleffy.forcefield import ForceFieldSelector
+    from peleffy.topology import Topology
 
     if not output:
         output = os.getcwd()
 
+    # Initialize molecule
     molecule = Molecule(pdb_file, rotamer_resolution=resolution,
                         exclude_terminal_rotamers=exclude_terminal_rotamers)
 
-    output_handler = OutputPathHandler(molecule, output_path=output,
+    # Initialize force field
+    ff_selector = ForceFieldSelector()
+    forcefield = ff_selector.get_by_name(forcefield_name)
+
+    output_handler = OutputPathHandler(molecule, forcefield,
+                                       output_path=output,
                                        as_datalocal=as_datalocal)
 
     rotamer_library = peleffy.topology.RotamerLibrary(molecule)
     rotamer_library.to_file(output_handler.get_rotamer_library_path())
 
-    molecule.parameterize(forcefield, charge_method=charge_method)
-    impact = Impact(molecule)
+    # Parameterize molecule with the selected force field
+    parameters = forcefield.parameterize(molecule,
+                                         charge_method=charge_method)
+
+    # Generate the molecular topology
+    topology = Topology(molecule, parameters)
+
+    # Generate the impact template
+    impact = Impact(topology)
     impact.to_file(output_handler.get_impact_template_path())
 
+    # Generate the solvent template
     if with_solvent:
-        solvent = OBC2(molecule)
+        solvent = OBC2(topology)
         solvent.to_file(output_handler.get_solvent_template_path())
 
     log.info(' - All files were generated successfully')
@@ -198,9 +215,14 @@ def main(args):
     else:
         logger.set_level('INFO')
 
-    run_peleffy(args.pdb_file, args.forcefield, args.resolution,
-                args.charge_method, exclude_terminal_rotamers,
-                args.output, args.with_solvent, args.as_datalocal)
+    run_peleffy(pdb_file=args.pdb_file,
+                forcefield_name=args.forcefield,
+                resolution=args.resolution,
+                charge_method=args.charge_method,
+                exclude_terminal_rotamers=exclude_terminal_rotamers,
+                output=args.output,
+                with_solvent=args.with_solvent,
+                as_datalocal=args.as_datalocal)
 
 
 if __name__ == '__main__':

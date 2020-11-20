@@ -1,0 +1,133 @@
+{
+    "GBSA_radii": [],
+    "GBSA_scales": [],
+    "SGB_radii": [
+        null,
+        null,
+        null,
+        null,
+        null
+    ],
+    "alphas": [
+        null,
+        null,
+        null,
+        null,
+        null
+    ],
+    "angles": [
+        {
+            "atom1_idx": 1,
+            "atom2_idx": 0,
+            "atom3_idx": 2,
+            "eq_angle": "107.8 * degree",
+            "spring_constant": "33.0 * mole**-1 * radian**-2 * kilocalorie"
+        },
+        {
+            "atom1_idx": 1,
+            "atom2_idx": 0,
+            "atom3_idx": 3,
+            "eq_angle": "107.8 * degree",
+            "spring_constant": "33.0 * mole**-1 * radian**-2 * kilocalorie"
+        },
+        {
+            "atom1_idx": 1,
+            "atom2_idx": 0,
+            "atom3_idx": 4,
+            "eq_angle": "107.8 * degree",
+            "spring_constant": "33.0 * mole**-1 * radian**-2 * kilocalorie"
+        },
+        {
+            "atom1_idx": 2,
+            "atom2_idx": 0,
+            "atom3_idx": 3,
+            "eq_angle": "107.8 * degree",
+            "spring_constant": "33.0 * mole**-1 * radian**-2 * kilocalorie"
+        },
+        {
+            "atom1_idx": 2,
+            "atom2_idx": 0,
+            "atom3_idx": 4,
+            "eq_angle": "107.8 * degree",
+            "spring_constant": "33.0 * mole**-1 * radian**-2 * kilocalorie"
+        },
+        {
+            "atom1_idx": 3,
+            "atom2_idx": 0,
+            "atom3_idx": 4,
+            "eq_angle": "107.8 * degree",
+            "spring_constant": "33.0 * mole**-1 * radian**-2 * kilocalorie"
+        }
+    ],
+    "atom_names": [
+        "_C1_",
+        "_H1_",
+        "_H2_",
+        "_H3_",
+        "_H4_"
+    ],
+    "atom_types": [
+        "OFFT",
+        "OFFT",
+        "OFFT",
+        "OFFT",
+        "OFFT"
+    ],
+    "bonds": [
+        {
+            "atom1_idx": 0,
+            "atom2_idx": 1,
+            "eq_dist": "1.094223427522 * angstrom",
+            "spring_constant": "376.8940758588 * angstrom**-2 * mole**-1 * kilocalorie"
+        },
+        {
+            "atom1_idx": 0,
+            "atom2_idx": 2,
+            "eq_dist": "1.094223427522 * angstrom",
+            "spring_constant": "376.8940758588 * angstrom**-2 * mole**-1 * kilocalorie"
+        },
+        {
+            "atom1_idx": 0,
+            "atom2_idx": 3,
+            "eq_dist": "1.094223427522 * angstrom",
+            "spring_constant": "376.8940758588 * angstrom**-2 * mole**-1 * kilocalorie"
+        },
+        {
+            "atom1_idx": 0,
+            "atom2_idx": 4,
+            "eq_dist": "1.094223427522 * angstrom",
+            "spring_constant": "376.8940758588 * angstrom**-2 * mole**-1 * kilocalorie"
+        }
+    ],
+    "charges": "[-0.1088, 0.0267, 0.0267, 0.0267, 0.0267] * elementary_charge",
+    "epsilons": [
+        "0.1094 * mole**-1 * kilocalorie",
+        "0.0157 * mole**-1 * kilocalorie",
+        "0.0157 * mole**-1 * kilocalorie",
+        "0.0157 * mole**-1 * kilocalorie",
+        "0.0157 * mole**-1 * kilocalorie"
+    ],
+    "gammas": [
+        null,
+        null,
+        null,
+        null,
+        null
+    ],
+    "impropers": [],
+    "propers": [],
+    "sigmas": [
+        "3.3996695084235347 * angstrom",
+        "2.649532787749369 * angstrom",
+        "2.649532787749369 * angstrom",
+        "2.649532787749369 * angstrom",
+        "2.649532787749369 * angstrom"
+    ],
+    "vdW_radii": [
+        "1.6998347542117673 * angstrom",
+        "1.3247663938746845 * angstrom",
+        "1.3247663938746845 * angstrom",
+        "1.3247663938746845 * angstrom",
+        "1.3247663938746845 * angstrom"
+    ]
+}

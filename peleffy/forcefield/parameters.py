@@ -1,5 +1,6 @@
 """
-This module provides classes to define force field parameters.
+This module provides classes to define and construct force field
+parameters.
 """
 
 
@@ -40,7 +41,7 @@ class BaseParameterWrapper(dict):
                                              'k', 'idivf')}
     _keys = _fixed_keys + _unfixed_keys
 
-    def __init__(self, parameters_dict=dict()):
+    def __init__(self, parameters_dict=dict(), forcefield_name=None):
         """
         It initializes a parameter wrapper object.
 
@@ -49,12 +50,49 @@ class BaseParameterWrapper(dict):
         parameters_dict : dict
              A dictionary keyed by parameter type that contains the
              parameters to store. Default is an empty dict
+        forcefield_name : str
+            The name of the force field the parameters belong to
         """
         for key in self._keys:
             self[key] = list()
 
         for key, value in parameters_dict.items():
             self[key] = value
+
+        if forcefield_name is None:
+            self._forcefield_name = self._name
+        else:
+            self._forcefield_name = forcefield_name
+
+    def __eq__(self, other):
+        """
+        It sets the equality operator for the BaseParameterWrapper class.
+
+        Parameters
+        ----------
+        other : a BaseParameterWrapper object
+            The other BaseParameterWrapper object to compare with the
+            current one
+        """
+        if not isinstance(other, BaseParameterWrapper):
+            return False
+
+        print(self.forcefield_name, other.forcefield_name)
+
+        return super().__eq__(other) and \
+            self.forcefield_name == other.forcefield_name
+
+    def __ne__(self, other):
+        """
+        It sets the inequality operator for the BaseParameterWrapper class.
+
+        Parameters
+        ----------
+        other : a BaseParameterWrapper object
+            The other BaseParameterWrapper object to compare with the
+            current one
+        """
+        return not self.__eq__(other)
 
     def __setitem__(self, key, val):
         """
@@ -119,6 +157,17 @@ class BaseParameterWrapper(dict):
 
         dict.__setitem__(self, key, val)
 
+    def __str__(self):
+        """
+        It returns the string representation of this parameter wrapper.
+
+        Returns
+        -------
+        string_representation : str
+            The string representation
+        """
+        return self.to_string()
+
     def add_parameters(self, label, parameters):
         """
         It adds a list of parameters of the same type to the collection.
@@ -131,6 +180,35 @@ class BaseParameterWrapper(dict):
             The list of parameters to include to the collection
         """
         self[label] = parameters
+
+    def to_string(self):
+        """
+        It returns a string representation of the parameters stored in
+        the wrapper.
+
+        Returns
+        -------
+        string_representation : str
+            The string representation
+        """
+
+        from peleffy.utils import convert_all_quantities_to_string
+        return convert_all_quantities_to_string(self)
+
+    def to_json(self, output_path):
+        """
+        It saves this parameter wrapper as a json file.
+
+        Parameters
+        ----------
+        output_path : str
+            The path to save the output json file
+        """
+
+        import json
+
+        with open(output_path, 'w') as f:
+            json.dump(self.to_string(), f, indent=4, sort_keys=True)
 
     @property
     def atom_iterator(self):
@@ -206,6 +284,10 @@ class BaseParameterWrapper(dict):
 
         raise NotImplementedError()
 
+    @property
+    def forcefield_name(self):
+        return self._forcefield_name
+
 
 class OpenForceFieldParameterWrapper(BaseParameterWrapper):
     """
@@ -215,7 +297,7 @@ class OpenForceFieldParameterWrapper(BaseParameterWrapper):
     _name = 'OpenFF'
 
     @staticmethod
-    def from_label_molecules(molecule, parameters):
+    def from_label_molecules(molecule, parameters, openff_version):
         """
         It parses the parameters coming from the label_molecules()
         method from OpenFF toolkit.
@@ -227,6 +309,8 @@ class OpenForceFieldParameterWrapper(BaseParameterWrapper):
         parameters_dict : dict
              A dictionary keyed by parameter type that contains the
              parameters to store
+        openff_version : str
+            The version of the OpenFF force field the parameters belong to
 
         Returns
         -------
@@ -483,7 +567,7 @@ class OpenForceFieldParameterWrapper(BaseParameterWrapper):
             params['GBSA_radii'] = build_dict(gbsa_parameters, 'radius')
             params['GBSA_scales'] = build_dict(gbsa_parameters, 'scale')
 
-        return OpenForceFieldParameterWrapper(params)
+        return OpenForceFieldParameterWrapper(params, openff_version)
 
 
 class OPLS2005ParameterWrapper(BaseParameterWrapper):
@@ -942,6 +1026,8 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
 
             return radius, scale
 
+        from simtk import unit
+
         # Loop over atom types and names:
         radii = list()
         scales = list()
@@ -954,7 +1040,7 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                 element_by_name.get(atom_name),
                 parent_by_name.get(atom_name))
 
-            radii.append(radius)
+            radii.append(unit.Quantity(float(radius), unit.angstrom),)
             scales.append(scale)
 
         # Assign OBC parameters

@@ -12,7 +12,6 @@ class TestIntegrity(object):
     def test_modules(self):
         try:
             import peleffy
-            from peleffy import charge
             from peleffy import forcefield
             from peleffy import solvent
             from peleffy import template
