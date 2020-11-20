@@ -4,7 +4,7 @@ This module contains the tests to check the peleffy's toolkits.
 
 import pytest
 
-from peleffy.forcefield import OPLS2005ParameterWrapper
+from peleffy.forcefield.parameters import OPLS2005ParameterWrapper
 from simtk import unit
 
 
@@ -105,13 +105,22 @@ class TestSchrodingerToolkitWrapper(object):
         from an peleffy's Molecule.
         """
         from peleffy.topology import Molecule
+        from peleffy.forcefield import OPLS2005ForceField
         from peleffy.utils.toolkits import ToolkitUnavailableException
 
         # Load benzene ring
         molecule = Molecule(smiles='c1ccccc1')
 
+        # Load OPLS2005 force field
+        opls2005 = OPLS2005ForceField()
+
+        # Ensure SCHRODINGER is not in the environment
+        import os
+        if 'SCHRODINGER' in os.environ:
+            del(os.environ['SCHRODINGER'])
+
         with pytest.raises(ToolkitUnavailableException):
-            molecule.parameterize('OPLS2005', charge_method='gasteiger')
+            opls2005.parameterize(molecule, charge_method='gasteiger')
 
 
 class TestRDKitToolkitWrapper(object):
@@ -129,8 +138,6 @@ class TestRDKitToolkitWrapper(object):
 
         # Load molecule
         mol = Molecule(get_data_file_path('ligands/propionic_acid.pdb'))
-        mol.parameterize('openff_unconstrained-1.2.1.offxml',
-                         charge_method='gasteiger')
 
         # Choose a dihedral to track
         dihedral = (0, 1, 2, 3)

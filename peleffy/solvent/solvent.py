@@ -17,29 +17,23 @@ class _SolventWrapper(object):
     _name = None
     _compatibility = None
 
-    def __init__(self, molecule):
+    def __init__(self, topology):
         """
         Initializes a SolventWrapper object.
 
         Parameters
         ----------
-        molecule : An peleffy.topology.Molecule
-            A Molecule object whose solvent template will be generated.
-            Molecule must be previously parameterized
+        topology : a Topology object
+            The molecular topology representation to write as a
+            Impact template
         """
-        # Check that input molecule is parameterized
-        molecule.assert_parameterized()
-
-        logger = Logger()
-        logger.info(' - Loading solvent parameters')
-
-        self._molecule = molecule
-        self._radii = dict.fromkeys(
-            [tuple((idx, )) for idx in range(0, len(molecule.atoms))],
-            unit.Quantity())
-        self._scales = dict.fromkeys(
-            [tuple((idx, )) for idx in range(0, len(molecule.atoms))],
-            unit.Quantity())
+        self._topology = topology
+        self._radii = dict.fromkeys([tuple((idx, ))
+                                     for idx in range(0, len(topology.atoms))],
+                                    unit.Quantity())
+        self._scales = dict.fromkeys([tuple((idx, ))
+                                      for idx in range(0, len(topology.atoms))],
+                                     unit.Quantity())
 
     @property
     def name(self):
@@ -54,16 +48,17 @@ class _SolventWrapper(object):
         return self._name
 
     @property
-    def molecule(self):
+    def topology(self):
         """
-        The peleffy's Molecule to parameterize.
+        The peleffy's Topology.
 
         Returns
         -------
-        molecule : an peleffy.topology.Molecule
-            The peleffy's Molecule object
+        topology : a peleffy.topology.Topology
+            The molecular topology representation to write as a
+            Impact template
         """
-        return self._molecule
+        return self._topology
 
     @property
     def radii(self):
@@ -98,16 +93,27 @@ class _OpenFFCompatibleSolvent(_SolventWrapper):
 
     _compatibility = 'openff'
 
-    def __init__(self, molecule):
+    def __init__(self, topology):
         """
         It initializes an OpenFFCompatibleSolvent.
 
         Parameters
         ----------
-        molecule : An peleffy.topology.Molecule
-            A Molecule object whose solvent template will be generated
+        topology : a Topology object
+            The molecular topology representation to write as a
+            Impact template
         """
-        super().__init__(molecule)
+        super().__init__(topology)
+
+        self._initialize_from_topology()
+
+    def _initialize_from_topology(self):
+        """
+        Initializes a SolventWrapper object using a peleffy's
+        molecular Topology.
+        """
+        logger = Logger()
+        logger.info(' - Loading solvent parameters')
 
         from peleffy.utils.toolkits import OpenForceFieldToolkitWrapper
 
@@ -120,18 +126,11 @@ class _OpenFFCompatibleSolvent(_SolventWrapper):
         self._surface_area_penalty = GBSA_handler.surface_area_penalty
         self._solvent_radius = GBSA_handler.solvent_radius
 
-        self._initialize_from_molecule()
-
-    def _initialize_from_molecule(self):
-        """
-        Initializes a OpenFFCompatibleSolvent object using an peleffy's
-        Molecule.
-        """
-
         from peleffy.forcefield import OpenForceField
 
         forcefield = OpenForceField(self._ff_file)
-        parameters = forcefield.parameterize(self.molecule)
+        parameters = forcefield.parameterize(self.topology.molecule,
+                                             charge_method='dummy')
 
         self._radii = parameters['GBSA_radii']
         self._scales = parameters['GBSA_scales']
@@ -158,15 +157,15 @@ class _OpenFFCompatibleSolvent(_SolventWrapper):
         data['SolventParameters']['General']['surface_area_penalty'] = \
             round(self.surface_area_penalty.value_in_unit(
                 unit.kilocalorie / (unit.angstrom**2 * unit.mole)), 8)
-        data['SolventParameters'][self.molecule.tag] = dict()
+        data['SolventParameters'][self.topology.molecule.tag] = dict()
 
-        atom_names = self.molecule.get_pdb_atom_names()
+        atom_names = self.topology.molecule.get_pdb_atom_names()
 
-        for atom, name in zip(self.molecule.rdkit_molecule.GetAtoms(),
+        for atom, name in zip(self.topology.molecule.rdkit_molecule.GetAtoms(),
                               atom_names):
             name = name.replace(' ', '_')
             index = atom.GetIdx()
-            data['SolventParameters'][self.molecule.tag][name] = \
+            data['SolventParameters'][self.topology.molecule.tag][name] = \
                 {'radius': round(self.radii[tuple((index, ))].value_in_unit(
                                  unit.angstrom), 5),
                  'scale': round(self.scales[tuple((index, ))], 5)}
@@ -242,29 +241,38 @@ class _OPLS2005CompatibleSolvent(_SolventWrapper):
     """
 
     _compatibility = 'opls2005'
+    _PARAMS_PATH = get_data_file_path('parameters/solventParamsHCTOBC.txt')
 
-    def __init__(self, molecule):
+    def __init__(self, topology):
         """
         It initializes an OPLS2005CompatibleSolvent.
 
         Parameters
         ----------
-        molecule : An peleffy.topology.Molecule
-            A Molecule object whose solvent template will be generated
+        topology : a Topology object
+            The molecular topology representation to write as a
+            Impact template
         """
-        super().__init__(molecule)
+        super().__init__(topology)
 
         from peleffy.forcefield import OPLS2005ForceField
+        from peleffy.forcefield.parameters import OPLS2005ParameterWrapper
 
-        forcefield = OPLS2005ForceField(self._ff_file)
-        parameters = forcefield.parameterize(self.molecule)
+        # Parameterize with OPLS2005 only is the parameters in topology
+        # are not obtained with OPLS2005
+        if isinstance(topology.parameters, OPLS2005ParameterWrapper):
+            parameters = topology.parameters
+        else:
+            forcefield = OPLS2005ForceField(self._ff_file)
+            parameters = forcefield.parameterize(self.molecule)
 
-        self._parameters = parameters
-
+        self._radii = parameters['GBSA_radii']
+        self._scales = parameters['GBSA_scales']
 
     def to_file(self, path):
         """
-        Writes this OPLS2005CompatibleSolvent object to a file.
+        Writes this OPLS2005CompatibleSolvent object to a file
+        compatible with PELE.
 
         Parameters
         ----------
@@ -273,25 +281,24 @@ class _OPLS2005CompatibleSolvent(_SolventWrapper):
         """
 
         # Load parameters for standard residues
-        PARAMS_PATH = get_data_file_path('parameters/solventParamsHCTOBC.txt')
-        params = open(PARAMS_PATH, 'r').readlines()
+        with open(self._PARAMS_PATH) as f:
+            standard_params = f.read()
 
-        # Add parameters for non standard residue
+        # Add parameters for non standard residues
         atom_names = [param.replace('_', '')
-            for param in self.parameters['atom_names']]
+                      for param in self.topology.parameters['atom_names']]
 
-        for atom_name, atom_type, scale, radii \
-            in zip(atom_names, self.parameters['atom_types'],
-                self.parameters['GBSA_scales'], self.parameters['GBSA_radii']):
-            atom_line = (self.molecule.tag + 'Z').upper() + '   ' \
-                + atom_name + '    ' \
-                + atom_type + '   '  \
-                + str(scale) + '    ' \
-                + str(radii) + '\n'
-            params.append(atom_line)
+        with open(path, 'w') as f:
+            f.write(standard_params)
 
-        with open(path, 'w') as file:
-            file.writelines(params)
+            for atom_name, atom_type, scale, radii in zip(
+                atom_names, self.topology.parameters['atom_types'],
+                    self.scales, self.radii):
+                f.write(self.topology.molecule.tag + 'Z'.upper() + '   '
+                        + atom_name + '    '
+                        + atom_type + '   '
+                        + str(scale) + '    '
+                        + str(radii) + '\n')
 
 
 class OBC1(_OpenFFCompatibleSolvent):
@@ -302,20 +309,21 @@ class OBC1(_OpenFFCompatibleSolvent):
     _ff_file = get_data_file_path('forcefields/GBSA_OBC1-1.0.offxml')
     _name = 'OBC1'
 
-    def __init__(self, molecule):
+    def __init__(self, topology):
         """
         Initializes an OBC1 object.
 
         Parameters
         ----------
-        molecule : An peleffy.topology.Molecule
-            A Molecule object whose solvent template will be generated
+        topology : a Topology object
+            The molecular topology representation to write as a
+            Impact template
         """
         # Not implemented in PELE
         logger = Logger()
         logger.warning('OBC1 is not implemented in PELE')
 
-        super().__init__(molecule)
+        super().__init__(topology)
 
 
 class OBC2(_OpenFFCompatibleSolvent):
@@ -326,14 +334,15 @@ class OBC2(_OpenFFCompatibleSolvent):
     _ff_file = get_data_file_path('forcefields/GBSA_OBC2-1.0.offxml')
     _name = 'OBC2'
 
-    def __init__(self, molecule):
+    def __init__(self, topology):
         """
         Initializes an OBC2 object.
 
         Parameters
         ----------
-        molecule : An peleffy.topology.Molecule
-            A Molecule object whose solvent template will be generated
+        topology : a Topology object
+            The molecular topology representation to write as a
+            Impact template
 
         Examples
         --------
@@ -341,14 +350,25 @@ class OBC2(_OpenFFCompatibleSolvent):
         Generate the solvent parameters of a molecule
 
         >>> from peleffy.topology import Molecule
-        >>> from peleffy.solvent import OBC2
 
         >>> molecule = Molecule('molecule.pdb')
-        >>> solvent = OBC2(molecule)
+
+        >>> from peleffy.forcefield import OpenForceField
+
+        >>> openff = OpenForceField('openff_unconstrained-1.2.1.offxml')
+        >>> parameters = openff.parameterize(molecule)
+
+        >>> from peleffy.topology import Topology
+
+        >>> topology = Topology(molecule, parameters)
+
+        >>> from peleffy.solvent import OBC2
+
+        >>> solvent = OBC2(topology)
         >>> solvent.to_file('OBC_parameters.txt')
 
         """
-        super().__init__(molecule)
+        super().__init__(topology)
 
 
 class OPLSOBC(_OPLS2005CompatibleSolvent):
@@ -358,14 +378,15 @@ class OPLSOBC(_OPLS2005CompatibleSolvent):
     """
     _name = 'OBC'
 
-    def __init__(self, molecule):
+    def __init__(self, topology):
         """
         Initializes an OPLSOBC object.
 
         Parameters
         ----------
-        molecule : An peleffy.topology.Molecule
-            A Molecule object whose solvent template will be generated
+        topology : a Topology object
+            The molecular topology representation to write as a
+            Impact template
 
         Examples
         --------
@@ -373,17 +394,22 @@ class OPLSOBC(_OPLS2005CompatibleSolvent):
         Generate the solvent parameters of a molecule
 
         >>> from peleffy.topology import Molecule
-        >>> from peleffy.solvent import OPLSOBC
 
         >>> molecule = Molecule('molecule.pdb')
-        >>> solvent = OPLSOBC(molecule)
+
+        >>> from peleffy.forcefield import OPLS2005ForceField
+
+        >>> opls2005 = OPLS2005ForceField()
+        >>> parameters = opls2005.parameterize(molecule)
+
+        >>> from peleffy.topology import Topology
+
+        >>> topology = Topology(molecule, parameters)
+
+        >>> from peleffy.solvent import OPLSOBC
+
+        >>> solvent = OPLSOBC(topology)
         >>> solvent.to_file('OBC_parameters.txt')
 
         """
-        super().__init__(molecule)
-
-    def _initialize_from_molecule(self):
-        """
-        Initializes the OPLSOBC solvent using an peleffy's Molecule.
-        """
-        super()._initialize_from_molecule()
+        super().__init__(topology)

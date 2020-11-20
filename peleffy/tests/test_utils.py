@@ -169,17 +169,20 @@ class TestOutputPathHandler(object):
         It tests the non-datalocal paths assignment.
         """
         from peleffy.utils import OutputPathHandler
+        from peleffy.forcefield import OpenForceField
 
         # Load benzene molecule
         molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ')
-        molecule.parameterize('openff_unconstrained-1.2.1.offxml',
-                              charge_method='gasteiger')
+
+        # Load force field
+        openff = OpenForceField('openff_unconstrained-1.2.1.offxml')
 
         # Molecule's tag
         tag = molecule.tag
 
         # Initialize output handler without output_path
-        output_handler = OutputPathHandler(molecule, as_datalocal=False)
+        output_handler = OutputPathHandler(molecule, openff,
+                                           as_datalocal=False)
 
         # Validate output paths
         assert output_handler.get_rotamer_library_path() == \
@@ -195,7 +198,7 @@ class TestOutputPathHandler(object):
         # Initialize output handler with an output_path set
         with tempfile.TemporaryDirectory() as tmpdir:
             output_handler = OutputPathHandler(
-                molecule, as_datalocal=False,
+                molecule, openff, as_datalocal=False,
                 output_path=os.path.join(tmpdir, 'output'))
 
             assert output_handler.get_rotamer_library_path() == \
@@ -212,17 +215,19 @@ class TestOutputPathHandler(object):
     def test_datalocal_paths_for_openff(self):
         """It tests the datalocal paths assignment for OpenFF."""
         from peleffy.utils import OutputPathHandler
+        from peleffy.forcefield import OpenForceField
 
         # Load benzene molecule
         molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ')
-        molecule.parameterize('openff_unconstrained-1.2.1.offxml',
-                              charge_method='gasteiger')
 
+        # Load force field
+        openff = OpenForceField('openff_unconstrained-1.2.1.offxml')
         # Molecule's tag
         tag = molecule.tag
 
         # Initialize output handler without output_path
-        output_handler = OutputPathHandler(molecule, as_datalocal=True)
+        output_handler = OutputPathHandler(molecule, openff,
+                                           as_datalocal=True)
 
         # Validate output paths
         assert output_handler.get_rotamer_library_path() == \
@@ -240,7 +245,7 @@ class TestOutputPathHandler(object):
         # Initialize output handler with an output_path set
         with tempfile.TemporaryDirectory() as tmpdir:
             output_handler = OutputPathHandler(
-                molecule, as_datalocal=True,
+                molecule, openff, as_datalocal=True,
                 output_path=os.path.join(tmpdir, 'output'))
 
             assert output_handler.get_rotamer_library_path() == \
@@ -263,13 +268,16 @@ class TestOutputPathHandler(object):
 
         # Load benzene molecule
         molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ')
-        molecule._forcefield = OPLS2005ForceField('OPLS2005')
+
+        # Load force field
+        opls2005 = OPLS2005ForceField()
 
         # Molecule's tag
         tag = molecule.tag
 
         # Initialize output handler without output_path
-        output_handler = OutputPathHandler(molecule, as_datalocal=True)
+        output_handler = OutputPathHandler(molecule, opls2005,
+                                           as_datalocal=True)
 
         # Validate output paths
         assert output_handler.get_rotamer_library_path() == \
@@ -287,7 +295,7 @@ class TestOutputPathHandler(object):
         # Initialize output handler with an output_path set
         with tempfile.TemporaryDirectory() as tmpdir:
             output_handler = OutputPathHandler(
-                molecule, as_datalocal=True,
+                molecule, opls2005, as_datalocal=True,
                 output_path=os.path.join(tmpdir, 'output'))
 
             assert output_handler.get_rotamer_library_path() == \
@@ -315,11 +323,16 @@ class TestOutputPathHandler(object):
         molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ')
         molecule._forcefield = OpenFFOPLS2005ForceField('OPLS2005')
 
+        # Load force field
+        hybridff = OpenFFOPLS2005ForceField(
+            'openff_unconstrained-1.2.1.offxml')
+
         # Molecule's tag
         tag = molecule.tag
 
         # Initialize output handler without output_path
-        output_handler = OutputPathHandler(molecule, as_datalocal=True)
+        output_handler = OutputPathHandler(molecule, hybridff,
+                                           as_datalocal=True)
 
         # Validate output paths
         assert output_handler.get_rotamer_library_path() == \
@@ -337,7 +350,7 @@ class TestOutputPathHandler(object):
         # Initialize output handler with an output_path set
         with tempfile.TemporaryDirectory() as tmpdir:
             output_handler = OutputPathHandler(
-                molecule, as_datalocal=True,
+                molecule, hybridff, as_datalocal=True,
                 output_path=os.path.join(tmpdir, 'output'))
 
             assert output_handler.get_rotamer_library_path() == \
@@ -354,10 +367,11 @@ class TestOutputPathHandler(object):
                 'Unexpected default solvent parameters path'
 
         # Initialize output handler without output_path
-        output_handler = OutputPathHandler(molecule, as_datalocal=True)
+        output_handler = OutputPathHandler(molecule, hybridff,
+                                           as_datalocal=True)
 
         # Set force field source for nonbonding parameters
-        molecule._forcefield.set_nonbonding_parameters('opls2005')
+        hybridff.set_nonbonding_parameters('opls2005')
 
         # Validate output paths
         assert output_handler.get_rotamer_library_path() == \
@@ -375,7 +389,7 @@ class TestOutputPathHandler(object):
         # Initialize output handler with an output_path set
         with tempfile.TemporaryDirectory() as tmpdir:
             output_handler = OutputPathHandler(
-                molecule, as_datalocal=True,
+                molecule, hybridff, as_datalocal=True,
                 output_path=os.path.join(tmpdir, 'output'))
 
             assert output_handler.get_rotamer_library_path() == \
@@ -396,17 +410,19 @@ class TestOutputPathHandler(object):
         It tests the folder creation of the OutputPathHandler class.
         """
         from peleffy.utils import OutputPathHandler
+        from peleffy.forcefield import OpenForceField
 
         # Load benzene molecule
         molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ')
-        molecule.parameterize('openff_unconstrained-1.2.1.offxml',
-                              charge_method='gasteiger')
+
+        # Load force field
+        openff = OpenForceField('openff_unconstrained-1.2.1.offxml')
 
         # Initialize output handler with an output_path set
         with tempfile.TemporaryDirectory() as tmpdir:
             # Initialize output handler without output_path
             output_handler = OutputPathHandler(
-                molecule, as_datalocal=True,
+                molecule, openff, as_datalocal=True,
                 output_path=os.path.join(tmpdir, 'output'))
 
             # Test path getter without folder creation
@@ -430,7 +446,7 @@ class TestOutputPathHandler(object):
         with tempfile.TemporaryDirectory() as tmpdir:
             # Initialize output handler without output_path
             output_handler = OutputPathHandler(
-                molecule, as_datalocal=True,
+                molecule, openff, as_datalocal=True,
                 output_path=os.path.join(tmpdir, 'output'))
 
             # Test path getter with folder creation
