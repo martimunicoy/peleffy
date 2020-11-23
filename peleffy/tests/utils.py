@@ -309,6 +309,8 @@ def parameterize_openffopls2005(openffopls2005, molecule, ffld_file):
     # Set mock class to the OpenFFOPLS2005ForceField class
     openffopls2005._oplsff = oplsff
 
+    print(parameters['sigmas'])
+
     return openffopls2005.parameterize(molecule)
 
 

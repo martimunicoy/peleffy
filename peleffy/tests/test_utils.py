@@ -235,7 +235,7 @@ class TestOutputPathHandler(object):
             + '{}.rot.assign'.format(tag.upper()), \
             'Unexpected default rotamer library path'
         assert output_handler.get_impact_template_path() == \
-            './DataLocal/Templates/OFF/Parsley/HeteroAtoms/' \
+            './DataLocal/Templates/OpenFF/Parsley/' \
             + '{}z'.format(tag.lower()), \
             'Unexpected default Impact template path'
         assert output_handler.get_solvent_template_path() == \
@@ -253,8 +253,8 @@ class TestOutputPathHandler(object):
                              + '{}.rot.assign'.format(tag.upper())), \
                 'Unexpected default rotamer library path'
             assert output_handler.get_impact_template_path() == \
-                os.path.join(tmpdir, 'output', 'DataLocal/Templates/OFF/Pars'
-                             + 'ley/HeteroAtoms/{}z'.format(tag.lower())), \
+                os.path.join(tmpdir, 'output', 'DataLocal/Templates/'
+                             + 'OpenFF/Parsley/{}z'.format(tag.lower())), \
                 'Unexpected default Impact template path'
             assert output_handler.get_solvent_template_path() == \
                 os.path.join(tmpdir, 'output',
@@ -340,7 +340,7 @@ class TestOutputPathHandler(object):
             + '{}.rot.assign'.format(tag.upper()), \
             'Unexpected default rotamer library path'
         assert output_handler.get_impact_template_path() == \
-            './DataLocal/Templates/OFF/Parsley/HeteroAtoms/' \
+            './DataLocal/Templates/OpenFF/Parsley/' \
             + '{}z'.format(tag.lower()), \
             'Unexpected default Impact template path'
         assert output_handler.get_solvent_template_path() == \
@@ -358,8 +358,8 @@ class TestOutputPathHandler(object):
                              + '{}.rot.assign'.format(tag.upper())), \
                 'Unexpected default rotamer library path'
             assert output_handler.get_impact_template_path() == \
-                os.path.join(tmpdir, 'output', 'DataLocal/Templates/OFF/Pars'
-                             + 'ley/HeteroAtoms/{}z'.format(tag.lower())), \
+                os.path.join(tmpdir, 'output', 'DataLocal/Templates/'
+                             + 'OpenFF/Parsley/{}z'.format(tag.lower())), \
                 'Unexpected default Impact template path'
             assert output_handler.get_solvent_template_path() == \
                 os.path.join(tmpdir, 'output',
