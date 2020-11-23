@@ -14,7 +14,7 @@ class OutputPathHandler(object):
     It handles the output paths of peleffy parameter files.
     """
 
-    OFF_IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OFF/Parsley/HeteroAtoms/'
+    OFF_IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OpenFF/Parsley/'
     OPLS_IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OPLS2005/HeteroAtoms/'
     ROTAMER_LIBRARY_PATH = 'DataLocal/LigandRotamerLibs/'
     SOLVENT_TEMPLATE_PATH = 'DataLocal/OBC/'

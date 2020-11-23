@@ -77,8 +77,6 @@ class BaseParameterWrapper(dict):
         if not isinstance(other, BaseParameterWrapper):
             return False
 
-        print(self.forcefield_name, other.forcefield_name)
-
         return super().__eq__(other) and \
             self.forcefield_name == other.forcefield_name
 
