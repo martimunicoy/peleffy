@@ -295,3 +295,19 @@ class TestMolecule(object):
         with tempfile.TemporaryDirectory() as tmpdir:
             with temporary_cd(tmpdir):
                 mol.to_pdb_file('molecule.pdb')
+
+    def test_from_rdkit(self):
+        """
+        It checks the initialization of a peleffy Molecule from an RDKit
+        molecular representation.
+        """
+        from rdkit import Chem
+
+        pdb_path = get_data_file_path('ligands/malonate.pdb')
+        rdkit_molecule = Chem.MolFromPDBFile(pdb_path)
+        molecule = Molecule.from_rdkit(rdkit_molecule)
+
+        assert molecule._rdkit_molecule is not None, \
+            'Unexpected molecule representation found, it is not initialized'
+        assert molecule._off_molecule is not None, \
+            'Unexpected molecule representation found, it is not initialized'

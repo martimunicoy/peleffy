@@ -377,6 +377,84 @@ class Molecule(object):
 
         return rdkit_toolkit.get_coordinates(self)
 
+    @staticmethod
+    def from_rdkit(rdkit_molecule, rotamer_resolution=30,
+                   exclude_terminal_rotamers=True, name='', tag='UNK',
+                   connectivity_template=None, core_constraints=[],
+                   allow_undefined_stereo=False):
+        """
+        It initializes and returns a peleffy Molecule representation
+        from an RDKit molecular representation.
+
+        Parameters
+        ----------
+        rdkit_molecule : an rdkit.Chem.rdchem.Mol object
+            The RDKit's Molecule object to use to initialize a peleffy
+            Molecule object
+        rotamer_resolution : float
+            The resolution in degrees to discretize the rotamer's
+            conformational space. Default is 30
+        exclude_terminal_rotamers : bool
+            Whether to exclude terminal rotamers when generating the
+            rotamers library  or not
+        name : str
+            The molecule name
+        tag : str
+            The molecule tag. It must be a 3-character string
+        connectivity_template : an rdkit.Chem.rdchem.Mol object
+            A molecule represented with RDKit to use when assigning the
+            connectivity of this Molecule object
+        core_constraints : list[int or str]
+            It defines the list of atoms to constrain in the core, thus,
+            the core will be forced to contain them. Atoms can be specified
+            through integers that match the atom index or strings that
+            match with the atom PDB name
+        allow_undefined_stereo : bool
+            Whether to allow a molecule with undefined stereochemistry
+            to be defined or try to assign the stereochemistry and
+            raise a complaint if not possible. Default is False
+
+        Returns
+        -------
+        molecule : an peleffy.topology.Molecule
+            The resulting peleffy's Molecule object
+
+        Examples
+        --------
+
+        Load a molecule from an RDKit molecular representation
+
+        >>> from rdkit import Chem
+
+        >>> rdkit_molecule = Chem.MolFromPDBFile(pdb_path)
+
+        >>> from peleffy.topology import Molecule
+
+        >>> molecule = Molecule.from_rdkit(rdkit_molecule)
+
+        """
+        molecule = Molecule(
+            rotamer_resolution=30,
+            exclude_terminal_rotamers=exclude_terminal_rotamers,
+            name=name, tag=tag,
+            connectivity_template=connectivity_template,
+            core_constraints=core_constraints,
+            allow_undefined_stereo=allow_undefined_stereo)
+
+        logger = Logger()
+
+        logger.info(' - Initializing molecule from an RDKit '
+                    + 'molecular representation')
+        molecule._initialize()
+        molecule._rdkit_molecule = rdkit_molecule
+
+        logger.info('   - Representing molecule with the Open Force Field '
+                    + 'Toolkit')
+        openforcefield_toolkit = OpenForceFieldToolkitWrapper()
+        molecule._off_molecule = openforcefield_toolkit.from_rdkit(molecule)
+
+        return molecule
+
     @property
     def rotamer_resolution(self):
         """
