@@ -233,6 +233,40 @@ def compare_files(file1, file2):
             'Found different lines at line {}:'.format(i) + '\n' + line1 + line2
 
 
+def compare_files_without_order(file1, file2):
+    """
+    It compares two files line by line and gives an AssertionError if there
+    is any difference. The order of the lines is not taken into account.
+
+    Parameters
+    ----------
+    file1 : str
+        Path to the first file to compare
+    file2 : str
+        Path to the second file to compare
+
+    Raises
+    ------
+        AssertionError
+            If any difference is found between files
+    """
+    with open(file1, 'r') as f1:
+        lines1 = [line for line in f1.readlines()
+                  if not line.startswith("*")]
+    with open(file2, 'r') as f2:
+        lines2 = [line for line in f2.readlines()
+                  if not line.startswith("*")]
+
+    assert len(lines1) == len(lines2), \
+        'Number of lines do not match: ' \
+        + str(len(lines1)) + ' and ' + str(len(lines2))
+
+    for i, (line1, line2) in enumerate(zip(lines1, lines2)):
+        assert line1 in lines2 , \
+            'Line not found in reference template {}:' \
+            .format(i) + '\n' + line1
+
+
 def parameterize_opls2005(opls2005, molecule, ffld_file,
                           charge_method='OPLS2005'):
     """

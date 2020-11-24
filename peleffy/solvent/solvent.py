@@ -294,11 +294,12 @@ class _OPLS2005CompatibleSolvent(_SolventWrapper):
             for atom_name, atom_type, scale, radii in zip(
                 atom_names, self.topology.parameters['atom_types'],
                     self.scales, self.radii):
+
                 f.write(self.topology.molecule.tag + 'Z'.upper() + '   '
-                        + atom_name + '    '
-                        + atom_type + '   '
-                        + str(scale) + '    '
-                        + str(radii) + '\n')
+                        + atom_name + '   '
+                        + atom_type + '    '
+                        + str(scale) + '   '
+                        + str(radii._value) + '\n')
 
 
 class OBC1(_OpenFFCompatibleSolvent):
