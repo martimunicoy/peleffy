@@ -19,7 +19,7 @@ class TestSolvent(object):
         It test the function that writes a OPLS2005CompatibleSolvent object to
         a file compatible with PELE.
         """
-        from utils import parameterize_opls2005, compare_files_without_order
+        from .utils import parameterize_opls2005, compare_files_without_order
 
         TEMPLATE_PARAMS_ETL = \
                 get_data_file_path('tests/ETL_solventParamsHCTOBC.txt')
@@ -79,7 +79,7 @@ class TestSolvent(object):
         # Test for methane
         test_OBCOPLS_writer_ligand( pdbfile = 'ligands/methane.pdb',
                                    tag_name = 'MET',
-                                   fld_name = 'tests/MET_ffld_output.txt',
+                                   ffld_name = 'tests/MET_ffld_output.txt',
                                    reference_file = TEMPLATE_PARAMS_MET)
 
 
