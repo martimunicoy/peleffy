@@ -18,7 +18,7 @@ New features
 - `PR #86 <https://github.com/martimunicoy/peleffy/pull/86>`_: New method to check the input PDB prior building the molecule.
 - `PR #94 <https://github.com/martimunicoy/peleffy/pull/94>`_: New method for the OPLS OBC parameters.
 - `PR #92 <https://github.com/martimunicoy/peleffy/pull/92>`_: New parameter to skip the stereochemistry assignment (and the checking from the OpenFF toolkit).
-- `PR #106 <https://github.com/martimunicoy/peleffy/pull/106>`_: New method to initialize a Molecule object directly from an RDKit molecular representation.
+- `PR #106 <https://github.com/martimunicoy/peleffy/pull/106>`_: New method to initialize a Molecule object directly from an RDKit and OpenFF molecular representations.
 
 API-breaking changes
 """"""""""""""""""""
@@ -32,6 +32,7 @@ Tests added
 - `PR #94 <https://github.com/martimunicoy/peleffy/pull/94>`_: Adds tests to validate the OPLS OBC parameters generator.
 - `PR #92 <https://github.com/martimunicoy/peleffy/pull/92>`_: New test to check the behaviour of the allow_undefined_stereo parameter.
 - `PR #97 <https://github.com/martimunicoy/peleffy/pull/97>`_: Includes tests for the new Topology container class.
+- `PR #106 <https://github.com/martimunicoy/peleffy/pull/106>`_: Adds tests to check the RDKit and OpenFF molecular initializers.
 
 1.0.0 - Full compatibility for OPLS2005 and OpenFF dihedrals and rotamer library improvements
 ---------------------------------------------------------------------------------------------
