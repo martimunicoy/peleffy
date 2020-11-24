@@ -18,6 +18,7 @@ New features
 - `PR #86 <https://github.com/martimunicoy/peleffy/pull/86>`_: New method to check the input PDB prior building the molecule.
 - `PR #94 <https://github.com/martimunicoy/peleffy/pull/94>`_: New method for the OPLS OBC parameters.
 - `PR #92 <https://github.com/martimunicoy/peleffy/pull/92>`_: New parameter to skip the stereochemistry assignment (and the checking from the OpenFF toolkit).
+- `PR #106 <https://github.com/martimunicoy/peleffy/pull/106>`_: New method to initialize a Molecule object directly from an RDKit molecular representation.
 
 API-breaking changes
 """"""""""""""""""""
