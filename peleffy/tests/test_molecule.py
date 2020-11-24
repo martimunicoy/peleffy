@@ -304,10 +304,42 @@ class TestMolecule(object):
         from rdkit import Chem
 
         pdb_path = get_data_file_path('ligands/malonate.pdb')
-        rdkit_molecule = Chem.MolFromPDBFile(pdb_path)
+        rdkit_molecule = Chem.MolFromPDBFile(pdb_path, removeHs=False)
         molecule = Molecule.from_rdkit(rdkit_molecule)
 
         assert molecule._rdkit_molecule is not None, \
             'Unexpected molecule representation found, it is not initialized'
         assert molecule._off_molecule is not None, \
             'Unexpected molecule representation found, it is not initialized'
+
+        ref_pdb_atom_names = [' O1 ', ' C1 ', ' O2 ', ' C2 ', ' C3 ',
+                              ' O3 ', ' O4 ', ' H1 ', ' H2 ', ' H3 ']
+        pdb_atom_names = molecule.get_pdb_atom_names()
+
+        assert pdb_atom_names == ref_pdb_atom_names, \
+            'Unexpected PDB atom names found in the resulting Molecule ' \
+            + 'representation'
+
+    def test_from_openff(self):
+        """
+        It checks the initialization of a peleffy Molecule from an OpenFF
+        molecular representation.
+        """
+        from openforcefield.topology import Molecule as OpenFFMolecule
+
+        openff_molecule = OpenFFMolecule.from_smiles('C(C(=O)[O-])C(=O)[OH]')
+
+        molecule = Molecule.from_openff(openff_molecule)
+
+        assert molecule._rdkit_molecule is not None, \
+            'Unexpected molecule representation found, it is not initialized'
+        assert molecule._off_molecule is not None, \
+            'Unexpected molecule representation found, it is not initialized'
+
+        ref_pdb_atom_names = [' C1 ', ' C2 ', ' O1 ', ' O2 ', ' C3 ',
+                              ' O3 ', ' O4 ', ' H1 ', ' H2 ', ' H3 ']
+        pdb_atom_names = molecule.get_pdb_atom_names()
+
+        assert pdb_atom_names == ref_pdb_atom_names, \
+            'Unexpected PDB atom names found in the resulting Molecule ' \
+            + 'representation'
