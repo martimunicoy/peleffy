@@ -511,6 +511,9 @@ class Molecule(object):
         >>> molecule = Molecule.from_rdkit(rdkit_molecule)
 
         """
+        if name is None:
+            name = openff_molecule.name
+
         molecule = Molecule(
             rotamer_resolution=30,
             exclude_terminal_rotamers=exclude_terminal_rotamers,
