@@ -62,15 +62,109 @@ class Impact(object):
         self._molecule = self._topology.molecule
         self._sort()
 
+    def _get_absolute_parent_atom(self):
+        """
+        It returns the absolute parent atom of the Topology.
+
+        Returns
+        -------
+        absolute_parent : a peleffy.topology.molecule.Atom
+            The absolute parent atom corresponding to the Topology
+        """
+        for atom in self.topology.atoms:
+            if atom.parent is None:
+                return atom
+
+        raise Exception('Topology has no absolut parent')
+
+    def _get_core_atoms(self):
+        """
+        It returns all core atoms of the Topology.
+
+        Returns
+        -------
+        core_atoms : list[Atom]
+            The list of core atoms corresponding to the Topology
+        """
+        core_atoms = list()
+
+        for atom in self.topology.atoms:
+            if atom.core:
+                core_atoms.append(atom)
+
+        return core_atoms
+
+    def _get_all_childs_of_atom(self, parent, child_location):
+        """
+        It returns all child atoms of the supplied Atom, if any.
+
+        Parameters
+        ----------
+        parent : a peleffy.topology.molecule.Atom
+            The Atom whose childs are requested
+        child_location : str
+            One of ['core', 'side chain']. Whether to look for childs
+            in the core or the side chain
+
+        Returns
+        -------
+        childs : list[Atom]
+            The list of childs corresponding to the supplied Atom
+        """
+        childs = list()
+
+        assert child_location in ['core', 'side chain'], \
+            'Unexpected supplied child location'
+
+        for atom in self.topology.atoms:
+            if atom.parent == parent:
+                if child_location == 'core' and atom.core:
+                    childs.append(atom)
+                elif child_location == 'side chain' and not atom.core:
+                    childs.append(atom)
+
+        return childs
+
     def _sort(self):
         """Sort and reindex atoms in a Molecule."""
+
+        # Do not sort an empty array of atoms
+        if len(self.topology.atoms) == 0:
+            return
+
         sorted_atoms = list()
 
-        # Sort by core attribute and parent index
-        for atom in sorted(self.topology.atoms,
-                           key=lambda a: (WritableAtom(a).core,
-                                          WritableAtom(a).parent.index)):
-            sorted_atoms.append(atom)
+        # Sort core atoms by parent index
+        absolute_parent = self._get_absolute_parent_atom()
+        sorted_atoms.append(absolute_parent)
+        added_new_child = True
+
+        while added_new_child:
+            added_new_child = False
+
+            for atom in sorted_atoms:
+                childs = self._get_all_childs_of_atom(
+                    atom, child_location='core')
+
+                for child in childs:
+                    if child not in sorted_atoms:
+                        sorted_atoms.append(child)
+                        added_new_child = True
+
+        # Sort non-core atoms by parent index
+        added_new_child = True
+
+        while added_new_child:
+            added_new_child = False
+
+            for atom in sorted_atoms:
+                childs = self._get_all_childs_of_atom(
+                    atom, child_location='side chain')
+
+                for child in childs:
+                    if child not in sorted_atoms:
+                        sorted_atoms.append(child)
+                        added_new_child = True
 
         # Define reindexer and reindex atoms
         reindexer = dict()
