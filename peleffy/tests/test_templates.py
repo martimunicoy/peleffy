@@ -208,17 +208,17 @@ class TestImpactTemplate(object):
 
         absolute_parent = impact._get_absolute_parent_atom()
 
-        childs = impact._get_all_childs_of_atom(absolute_parent, False)
+        childs = impact._get_all_childs_of_atom(absolute_parent, 'side chain')
 
         assert [a.PDB_name for a in childs] == \
-            ['_H1_', '_H2_', '_C1_', '_C3_'], \
-            'Unexpected child atoms: {}'.format(childs)
+            ['_C1_', '_C3_'], \
+            'Unexpected side-chain-child atoms: {}'.format(childs)
 
-        childs = impact._get_all_childs_of_atom(absolute_parent, True)
+        childs = impact._get_all_childs_of_atom(absolute_parent, 'core')
 
         assert [a.PDB_name for a in childs] == \
             ['_H1_', '_H2_'], \
-            'Unexpected child atoms: {}'.format(childs)
+            'Unexpected core-child atoms: {}'.format(childs)
 
     def test_get_core_atoms(self):
         """
