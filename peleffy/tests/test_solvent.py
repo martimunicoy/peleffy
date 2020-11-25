@@ -14,6 +14,7 @@ class TestSolvent(object):
     """
     It contains all the tests that validate the solvent-template generator.
     """
+
     def test_OBCOPLS_writer(self):
         """
         It test the function that writes a OPLS2005CompatibleSolvent object to
@@ -21,14 +22,14 @@ class TestSolvent(object):
         """
         from .utils import parameterize_opls2005, compare_files_without_order
 
-        TEMPLATE_PARAMS_ETL = \
-                get_data_file_path('tests/ETL_solventParamsHCTOBC.txt')
-        TEMPLATE_PARAMS_MAL = \
-                get_data_file_path('tests/MAL_solventParamsHCTOBC.txt')
-        TEMPLATE_PARAMS_MET = \
-                get_data_file_path('tests/MEt_solventParamsHCTOBC.txt')
+        TEMPLATE_PARAMS_ETL = get_data_file_path(
+            'tests/ETL_solventParamsHCTOBC.txt')
+        TEMPLATE_PARAMS_MAL = get_data_file_path(
+            'tests/MAL_solventParamsHCTOBC.txt')
+        TEMPLATE_PARAMS_MET = get_data_file_path(
+            'tests/MET_solventParamsHCTOBC.txt')
 
-        def test_OBCOPLS_writer_ligand(pdbfile,tag_name, ffld_name,
+        def test_OBCOPLS_writer_ligand(pdbfile, tag_name, ffld_name,
                                        reference_file):
             """
             Given a ligand, it tests that the output parameters file corresponds
@@ -49,7 +50,7 @@ class TestSolvent(object):
 
                     # Loads the  molecule
                     molecule = Molecule(get_data_file_path(pdbfile),
-                                        tag = tag_name)
+                                        tag=tag_name)
 
                     # Sets forcefield and parameterizes it
                     opls2005 = OPLS2005ForceField()
@@ -65,26 +66,24 @@ class TestSolvent(object):
                     solvent = OPLSOBC(topology)
                     solvent.to_file('OBC_parameters.txt')
 
-
                     # Compare the output file with the reference parameters file
                     compare_files_without_order('OBC_parameters.txt',
                                                 reference_file)
 
         # Test for ethlyne
-        test_OBCOPLS_writer_ligand( pdbfile = 'ligands/ethylene.pdb',
-                                   tag_name = 'ETL',
-                                   ffld_name = 'tests/ETL_ffld_output.txt',
-                                   reference_file = TEMPLATE_PARAMS_ETL)
+        test_OBCOPLS_writer_ligand(pdbfile='ligands/ethylene.pdb',
+                                   tag_name='ETL',
+                                   ffld_name='tests/ETL_ffld_output.txt',
+                                   reference_file=TEMPLATE_PARAMS_ETL)
 
         # Test for methane
-        test_OBCOPLS_writer_ligand( pdbfile = 'ligands/methane.pdb',
-                                   tag_name = 'MET',
-                                   ffld_name = 'tests/MET_ffld_output.txt',
-                                   reference_file = TEMPLATE_PARAMS_MET)
-
+        test_OBCOPLS_writer_ligand(pdbfile='ligands/methane.pdb',
+                                   tag_name='MET',
+                                   ffld_name='tests/MET_ffld_output.txt',
+                                   reference_file=TEMPLATE_PARAMS_MET)
 
         # Test for malonate
-        test_OBCOPLS_writer_ligand( pdbfile = 'ligands/malonate.pdb',
-                                   tag_name = 'MAL',
-                                   ffld_name = 'tests/MAL_ffld_output.txt',
-                                   reference_file = TEMPLATE_PARAMS_MAL)
+        test_OBCOPLS_writer_ligand(pdbfile='ligands/malonate.pdb',
+                                   tag_name='MAL',
+                                   ffld_name='tests/MAL_ffld_output.txt',
+                                   reference_file=TEMPLATE_PARAMS_MAL)
