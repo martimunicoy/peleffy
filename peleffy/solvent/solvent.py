@@ -263,7 +263,7 @@ class _OPLS2005CompatibleSolvent(_SolventWrapper):
         if isinstance(topology.parameters, OPLS2005ParameterWrapper):
             parameters = topology.parameters
         else:
-            forcefield = OPLS2005ForceField(self._ff_file)
+            forcefield = OPLS2005ForceField()
             parameters = forcefield.parameterize(self.molecule)
 
         self._radii = parameters['GBSA_radii']
