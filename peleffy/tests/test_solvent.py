@@ -32,12 +32,11 @@ class TestSolvent(object):
         def test_OBCOPLS_writer_ligand(pdbfile, tag_name, ffld_name,
                                        reference_file):
             """
-            Given a ligand, it tests that the output parameters file corresponds
-            to the refenrece file.
+            Given a ligand, it tests that the output parameters file
+            corresponds to the refenrece file.
 
             Parameters
             ----------
-
             pdbfile : str
                 The path to the PDB of the ligand to test
             ffld_name : str
@@ -70,7 +69,7 @@ class TestSolvent(object):
                     compare_files_without_order('OBC_parameters.txt',
                                                 reference_file)
 
-        # Test for ethlyne
+        # Test for ethylene
         test_OBCOPLS_writer_ligand(pdbfile='ligands/ethylene.pdb',
                                    tag_name='ETL',
                                    ffld_name='tests/ETL_ffld_output.txt',

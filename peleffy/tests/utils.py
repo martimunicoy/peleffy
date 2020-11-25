@@ -262,7 +262,7 @@ def compare_files_without_order(file1, file2):
         + str(len(lines1)) + ' and ' + str(len(lines2))
 
     for i, (line1, line2) in enumerate(zip(lines1, lines2)):
-        assert line1 in lines2 , \
+        assert line1 in lines2, \
             'Line not found in reference template {}:' \
             .format(i) + '\n' + line1
 
