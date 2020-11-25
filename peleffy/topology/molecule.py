@@ -511,7 +511,7 @@ class Molecule(object):
         >>> molecule = Molecule.from_rdkit(rdkit_molecule)
 
         """
-        if name is None:
+        if name == '':
             name = openff_molecule.name
 
         molecule = Molecule(

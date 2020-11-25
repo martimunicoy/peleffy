@@ -424,6 +424,9 @@ class OpenForceFieldParameterWrapper(BaseParameterWrapper):
                                 in pdb_atom_names]
         params['atom_types'] = ['OFFT', ] * n_atoms
 
+        # TODO: Safety check of the parameters, if any atom has no parameters
+        # it should complain here
+
         # van der Waals parameters
         if 'vdW' in parameters:
             vdW_parameters = parameters['vdW']
