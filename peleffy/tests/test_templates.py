@@ -162,3 +162,85 @@ class TestImpactTemplate(object):
 
                 # Compare the reference template and the generated template
                 compare_files(file1=TEMPLATE_ETLZ_OPLS, file2='etlz')
+
+    def test_get_absolute_parent_atom(self):
+        """
+        It tests the _get_absolute_parent_atom method used in the building
+        process of the Impact template.
+        """
+
+        LIGAND_PATH = get_data_file_path('ligands/malonate.pdb')
+        FORCEFIELD_NAME = 'openff_unconstrained-1.2.1.offxml'
+
+        molecule = Molecule(LIGAND_PATH)
+
+        openff = OpenForceField(FORCEFIELD_NAME)
+
+        parameters = openff.parameterize(molecule, charge_method='dummy')
+
+        topology = Topology(molecule, parameters)
+
+        impact = Impact(topology)
+
+        absolute_parent = impact._get_absolute_parent_atom()
+
+        assert absolute_parent.PDB_name == '_C2_', \
+            'Unexpected absolute parent atom: {}'.format(absolute_parent)
+
+    def test_get_all_childs_of_atom(self):
+        """
+        It tests the _get_all_childs_of_atom method used in the building
+        process of the Impact template.
+        """
+
+        LIGAND_PATH = get_data_file_path('ligands/malonate.pdb')
+        FORCEFIELD_NAME = 'openff_unconstrained-1.2.1.offxml'
+
+        molecule = Molecule(LIGAND_PATH)
+
+        openff = OpenForceField(FORCEFIELD_NAME)
+
+        parameters = openff.parameterize(molecule, charge_method='dummy')
+
+        topology = Topology(molecule, parameters)
+
+        impact = Impact(topology)
+
+        absolute_parent = impact._get_absolute_parent_atom()
+
+        childs = impact._get_all_childs_of_atom(absolute_parent, False)
+
+        assert [a.PDB_name for a in childs] == \
+            ['_H1_', '_H2_', '_C1_', '_C3_'], \
+            'Unexpected child atoms: {}'.format(childs)
+
+        childs = impact._get_all_childs_of_atom(absolute_parent, True)
+
+        assert [a.PDB_name for a in childs] == \
+            ['_H1_', '_H2_'], \
+            'Unexpected child atoms: {}'.format(childs)
+
+    def test_get_core_atoms(self):
+        """
+        It tests the _get_core_atoms method used in the building
+        process of the Impact template.
+        """
+
+        LIGAND_PATH = get_data_file_path('ligands/malonate.pdb')
+        FORCEFIELD_NAME = 'openff_unconstrained-1.2.1.offxml'
+
+        molecule = Molecule(LIGAND_PATH)
+
+        openff = OpenForceField(FORCEFIELD_NAME)
+
+        parameters = openff.parameterize(molecule, charge_method='dummy')
+
+        topology = Topology(molecule, parameters)
+
+        impact = Impact(topology)
+
+        core_atoms = impact._get_core_atoms()
+
+        assert [a.PDB_name for a in core_atoms] == \
+            ['_C2_', '_H1_', '_H2_'], \
+            'Unexpected core atoms: {}'.format(core_atoms)
