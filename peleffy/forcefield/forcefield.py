@@ -7,7 +7,6 @@ __all__ = ["OpenForceField", "OPLS2005ForceField",
            "OpenFFOPLS2005ForceField"]
 
 
-from peleffy.utils import Logger
 from peleffy.forcefield.selectors import ChargeCalculatorSelector
 
 
