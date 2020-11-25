@@ -13,4 +13,4 @@ dependencies:
   - coverage < 5.0
   - ambertools
   - rdkit
-  - openforcefield ==0.7.1
+  - openforcefield ==0.8.0

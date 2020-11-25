@@ -77,8 +77,6 @@ class BaseParameterWrapper(dict):
         if not isinstance(other, BaseParameterWrapper):
             return False
 
-        print(self.forcefield_name, other.forcefield_name)
-
         return super().__eq__(other) and \
             self.forcefield_name == other.forcefield_name
 
@@ -188,12 +186,16 @@ class BaseParameterWrapper(dict):
 
         Returns
         -------
-        string_representation : str
+        string_repr : str
             The string representation
         """
 
         from peleffy.utils import convert_all_quantities_to_string
-        return convert_all_quantities_to_string(self)
+        import pprint
+
+        string_repr = pprint.pformat(convert_all_quantities_to_string(self))
+
+        return string_repr
 
     def to_json(self, output_path):
         """
@@ -206,9 +208,11 @@ class BaseParameterWrapper(dict):
         """
 
         import json
+        from peleffy.utils import convert_all_quantities_to_string
 
         with open(output_path, 'w') as f:
-            json.dump(self.to_string(), f, indent=4, sort_keys=True)
+            json.dump(convert_all_quantities_to_string(self), f,
+                      indent=4, sort_keys=True)
 
     @property
     def atom_iterator(self):
@@ -419,6 +423,9 @@ class OpenForceFieldParameterWrapper(BaseParameterWrapper):
         params['atom_names'] = [name.replace(' ', '_') for name
                                 in pdb_atom_names]
         params['atom_types'] = ['OFFT', ] * n_atoms
+
+        # TODO: Safety check of the parameters, if any atom has no parameters
+        # it should complain here
 
         # van der Waals parameters
         if 'vdW' in parameters:

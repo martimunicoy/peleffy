@@ -115,8 +115,18 @@ class TestWrapper(object):
         with open(ref_string_file) as f:
             ref_string = f.read().strip('\n')
 
-        assert str(p_string) == str(ref_string), \
-            'Unexpected string representation of the parameter wrapper'
+        p_lines = p_string.split('\n')
+        ref_lines = ref_string.split('\n')
+
+        assert len(p_lines) == len(ref_lines), \
+            'Unexpected number of lines: ' \
+            + str(len(p_lines)) + ', expected ' + str(len(ref_lines))
+
+        for p_line, ref_line in zip(p_lines, ref_lines):
+            assert p_line == ref_line, \
+                'Unexpected string representation found in line: ' \
+                + '\'{}\' '.format(p_line) \
+                + 'which does not match with \'{}\''.format(ref_line)
 
     def test_to_json(self):
         """It tests the json representation of the parameter wrapper."""
