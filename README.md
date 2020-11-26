@@ -4,6 +4,11 @@
 | **Installation** | [![Conda](https://img.shields.io/conda/v/martimunicoy/peleffy.svg)](https://anaconda.org/martimunicoy/peleffy) [![PyPI](https://img.shields.io/pypi/v/peleffy)](https://pypi.org/project/peleffy/) |
 
 # PELE Force Field Yielder
+
+<p align="left">
+  <img src="docs/figures/logo.png" width="350" title="peleffy logo", alt="peleffy logo">
+</p>
+
 The `peleffy` (PELE Force Field Yielder) is a Python package that builds [PELE](https://pele.bsc.es/pele.wt)-compatible force field templates. The current supported force fields are:
 - Any force field from the [Open Force Field toolkit](https://github.com/openforcefield/openforcefield).
 - OPLS2005.
