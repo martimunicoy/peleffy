@@ -61,5 +61,11 @@ rotamer_library = RotamerLibrary(molecule)
 rotamer_library.to_file('ligand_rotamers.txt')
 ```
 
+### User-friendly CLI
+All the commands above can be run with a single CLI directive.
+```bash
+python -m peleffy.main path_to_pdb_file.pdb -f 'openff_unconstrained-1.3.0.offxml' --with_solvent
+```
+
 ## Contributors
 For a full list of contributors, see the [GitHub Contributors page](https://github.com/martimunicoy/peleffy/graphs/contributors).
