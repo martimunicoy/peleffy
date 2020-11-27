@@ -67,7 +67,7 @@ class BCEDihedrals(object):
         # clusters pdb and the input ligand are the same
         rename_dict = {i: x for i, x in enumerate(rdkit_wrapper.get_substruct_match(self._molecule, mol))}
         for dihedral in dihedral_list:
-            names = [self._molecule.atoms[rename_dict[atom]].PDB_name for atom in dihedral]
+            names = [self._molecule.get_pdb_atom_names()[rename_dict[atom]] for atom in dihedral]
             angle = rdkit_wrapper.get_dihedral(mol, *dihedral, units="radians")
             pdb_dihedrals.append(names+[angle])
         self.dihedral_library[cluster_pdb] = pdb_dihedrals
@@ -88,7 +88,7 @@ class BCEDihedrals(object):
                 fw.write("* File: {:s}\n".format(dihedral_file))
                 fw.write("{:s} {:d} {:d}\n".format(self._molecule.tag.upper(), len(dihedral_values), len(self.dihedral_library)))
                 for dihedral in dihedral_values:
-                    fw.write("{:s} {:s} {:s} {:s} {:5f}\n".format(*dihedral))
+                    fw.write("{:s}/{:s}/{:s}/{:s}/{:5f}\n".format(*dihedral))
                 fw.write("ENDDIHEDRALS\n")
             fw.write("END")
 
