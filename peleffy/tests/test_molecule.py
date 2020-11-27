@@ -267,9 +267,9 @@ class TestMolecule(object):
 
             output = buf.getvalue()
 
-            assert output == "Input PDB has no information about the " \
-                + "connectivity and this could result in an unexpected " \
-                + "bond assignment\n"
+            assert output == "Warning: input PDB has no information " \
+                + "about the connectivity and this could result in " \
+                + "an unexpected bond assignment\n"
 
     def test_undefined_stereo(self):
         """
