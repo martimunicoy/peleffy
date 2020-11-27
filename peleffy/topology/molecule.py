@@ -19,7 +19,7 @@ class Molecule(object):
     def __init__(self, path=None, smiles=None, rotamer_resolution=30,
                  exclude_terminal_rotamers=True, name='', tag='UNK',
                  connectivity_template=None, core_constraints=[],
-                 allow_undefined_stereo=False):
+                 allow_undefined_stereo=False, fix_pdb=True):
         """
         It initializes a Molecule object through a PDB file or a SMILES
         tag.
@@ -52,6 +52,9 @@ class Molecule(object):
             Whether to allow a molecule with undefined stereochemistry
             to be defined or try to assign the stereochemistry and
             raise a complaint if not possible. Default is False
+        fix_pdb : bool
+            Activates or deactivate the PDB fixer that is executed
+            prior parsing it
 
         Examples
         --------
@@ -126,6 +129,7 @@ class Molecule(object):
         self._connectivity_template = connectivity_template
         self._core_constraints = core_constraints
         self._allow_undefined_stereo = allow_undefined_stereo
+        self._fix_pdb = fix_pdb
 
         # Deactivate OpenForceField toolkit warnings
         import logging
@@ -158,7 +162,7 @@ class Molecule(object):
     def _pdb_checkup(self, path):
         """
         Safety check for PDB files in order to properly handle exceptions
-        related with its format prior running the parameterization.
+        related with its format prior running the parser.
 
         Parameters
         ----------
@@ -169,13 +173,14 @@ class Molecule(object):
         # Parse PDB file
         atom_id, res_name, res_id = ([] for i in range(3))
         connectivity = False
-        for line in open(path):
-            if line.startswith('HETATM'):
-                atom_id.append(line[13:16])
-                res_name.append(line[18:20])
-                res_id.append(line[23:26])
-            if line.startswith('CONECT'):
-                connectivity = True
+        with open(path) as pdb_file:
+            for line in pdb_file:
+                if line.startswith('ATOM') or line.startswith('HETATM'):
+                    atom_id.append(line[13:16])
+                    res_name.append(line[18:20])
+                    res_id.append(line[23:26])
+                if line.startswith('CONECT'):
+                    connectivity = True
 
         # Handle exceptions related with the PDB file format
         if not res_id[:-1] == res_id[1:]:
@@ -187,11 +192,90 @@ class Molecule(object):
         if not len(atom_id) == len(set(atom_id)):
             raise Exception(
                 'Ligand in input PDB has no unique atom names')
-        if not connectivity:
+        if not connectivity and self.connectivity_template is None:
             log = Logger()
             log.warning(
-                "Input PDB has no information about the connectivity and"
-                + " this could result in an unexpected bond assignment")
+                "Warning: input PDB has no information about the "
+                + "connectivity and this could result in an unexpected "
+                + "bond assignment")
+
+    def _read_and_fix_pdb(self, path):
+        """
+        It reads the input PDB file returns the corresponding PDB block.
+        It also applies some modifications, in case it requires some
+        fixing prior running the parser.
+
+        Parameters
+        ----------
+        path : str
+            The path to a PDB with the molecule structure
+
+        Returns
+        -------
+        pdb_block : str
+            The corresponding PDB block, with applied fixes if required
+        """
+        log = Logger()
+
+        # Skip PDB fixing if it has been deactivated
+        if not self.fix_pdb:
+            with open(path) as pdb_file:
+                pdb_block = pdb_file.read()
+
+            return pdb_block
+
+        # Fix PDB
+        missing_element = False
+        any_fail = False
+        pdb_block = ''
+        with open(path) as pdb_file:
+            for line in pdb_file:
+                if line.startswith('ATOM') or line.startswith('HETATM'):
+                    if len(line) < 78 or line[76:78] == '  ':
+                        missing_element = True
+                        atom_name = line[12:16]
+                        # Try to infer element from atom name
+                        inferred_element = ''.join([c for c in atom_name
+                                                    if not c.isdigit()
+                                                    and c != ' '])
+
+                        # Format properly the element identifier
+                        if len(inferred_element) == 1:
+                            inferred_element = inferred_element.upper()
+                        elif len(inferred_element) == 2:
+                            inferred_element = inferred_element[0].upper() + \
+                                inferred_element[1].lower()
+                        else:
+                            # We were expecting an element identifier of 1 or 2 chars
+                            any_fail = True
+                            break
+
+                        # Remove line breaks, if any
+                        line = line.strip()
+
+                        # Fill a short line with white spaces
+                        while(len(line) < 79):
+                            line += ' '
+
+                        # Add element to line (right-justified)
+                        line = line[:76] + '{:>2s}'.format(inferred_element) \
+                            + line[79:] + '\n'
+
+                pdb_block += line
+
+        if missing_element:
+            log.warning(
+                "Warning: input PDB has no information about atom "
+                + "elements and they were inferred from atom names. "
+                + "Please, verify that the resulting elements are "
+                + "correct")
+
+        if any_fail:
+            log.error("Error: PDB could not be fixed")
+            with open(path) as pdb_file:
+                pdb_block = pdb_file.read()
+
+        return pdb_block
 
     def _initialize_from_pdb(self, path):
         """
@@ -210,9 +294,12 @@ class Molecule(object):
         # Validate PDB
         self._pdb_checkup(path)
 
+        # Read and fix PDB
+        pdb_block = self._read_and_fix_pdb(path)
+
         logger.info('   - Loading molecule from RDKit')
         rdkit_toolkit = RDKitToolkitWrapper()
-        self._rdkit_molecule = rdkit_toolkit.from_pdb(path)
+        self._rdkit_molecule = rdkit_toolkit.from_pdb_block(pdb_block)
 
         # Use RDKit template, if any, to assign the connectivity to
         # the current Molecule object
@@ -590,6 +677,19 @@ class Molecule(object):
             behaviour of this molecule
         """
         return self._allow_undefined_stereo
+
+    @property
+    def fix_pdb(self):
+        """
+        It activates or deactivates the PDB fixer prior parsing the PDB
+        file.
+
+        Returns
+        -------
+        fix_pdb : bool
+            The current activation state of the PDB fixer
+        """
+        return self._fix_pdb
 
     @property
     def core_constraints(self):
