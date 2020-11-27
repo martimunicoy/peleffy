@@ -15,19 +15,20 @@ class BCEDihedrals(object):
     A class to produce a library of dihedral angles from the output
     of the BCE server
     """
-    def __init__(self, molecule_obj, bce_output_path):
+    def __init__(self, topology_obj, bce_output_path):
         """
         Initializes a BCEDihedrals object
 
         Parameters
         ----------
-        molecule_obj : An peleffy.topology.Molecule
-            A Molecule object that contains the ligand's information
+        molecule_obj : An peleffy.topology.Topology
+            A Topology object that contains the ligand's information
 
         bce_output_path: str
             Path where the output from the BCE server is stored
         """
-        self._molecule = molecule_obj
+        self._topology = topology_obj
+        self._molecule = topology_obj.molecule
         self.bce_path = bce_output_path
         self.dihedral_library = {}
 
@@ -67,7 +68,8 @@ class BCEDihedrals(object):
         # clusters pdb and the input ligand are the same
         rename_dict = {i: x for i, x in enumerate(rdkit_wrapper.get_substruct_match(self._molecule, mol))}
         for dihedral in dihedral_list:
-            names = [self._molecule.get_pdb_atom_names()[rename_dict[atom]] for atom in dihedral]
+            # names = [self._molecule.get_pdb_atom_names()[rename_dict[atom]] for atom in dihedral]
+            names = [self._topology.atoms[rename_dict[atom]].PDB_name for atom in dihedral]
             angle = rdkit_wrapper.get_dihedral(mol, *dihedral, units="radians")
             pdb_dihedrals.append(names+[angle])
         self.dihedral_library[cluster_pdb] = pdb_dihedrals
@@ -88,7 +90,7 @@ class BCEDihedrals(object):
                 fw.write("* File: {:s}\n".format(dihedral_file))
                 fw.write("{:s} {:d} {:d}\n".format(self._molecule.tag.upper(), len(dihedral_values), len(self.dihedral_library)))
                 for dihedral in dihedral_values:
-                    fw.write("{:s}/{:s}/{:s}/{:s}/{:5f}\n".format(*dihedral))
+                    fw.write("{:s} {:s} {:s} {:s} {:5f}\n".format(*dihedral))
                 fw.write("ENDDIHEDRALS\n")
             fw.write("END")
 

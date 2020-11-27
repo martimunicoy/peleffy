@@ -183,7 +183,7 @@ def run_peleffy(pdb_file,
         solvent.to_file(output_handler.get_solvent_template_path())
 
     if dihedral_path is not None:
-        dihedrals = BCEDihedrals(molecule, dihedral_path)
+        dihedrals = BCEDihedrals(topology, dihedral_path)
         dihedrals.calculate()
         dihedrals.save(output_handler.get_dihedral_library_path())
 
