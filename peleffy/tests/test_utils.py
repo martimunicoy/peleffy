@@ -230,35 +230,40 @@ class TestOutputPathHandler(object):
                                            as_datalocal=True)
 
         # Validate output paths
-        assert output_handler.get_rotamer_library_path() == \
+        assert output_handler.get_rotamer_library_path(
+            create_missing_folders=False) == \
             './DataLocal/LigandRotamerLibs/' \
             + '{}.rot.assign'.format(tag.upper()), \
             'Unexpected default rotamer library path'
-        assert output_handler.get_impact_template_path() == \
+        assert output_handler.get_impact_template_path(
+            create_missing_folders=False) == \
             './DataLocal/Templates/OpenFF/Parsley/' \
             + '{}z'.format(tag.lower()), \
             'Unexpected default Impact template path'
-        assert output_handler.get_solvent_template_path() == \
+        assert output_handler.get_solvent_template_path(
+            create_missing_folders=False) == \
             './DataLocal/OBC/ligandParams.txt', \
             'Unexpected default solvent parameters path'
 
-        # Initialize output handler with an output_path set
         with tempfile.TemporaryDirectory() as tmpdir:
             output_handler = OutputPathHandler(
                 molecule, openff, as_datalocal=True,
                 output_path=os.path.join(tmpdir, 'output'))
 
-            assert output_handler.get_rotamer_library_path() == \
-                os.path.join(tmpdir, 'output', 'DataLocal/LigandRotamerLibs/'
-                             + '{}.rot.assign'.format(tag.upper())), \
+            # Validate output paths
+            assert output_handler.get_rotamer_library_path(
+                create_missing_folders=False) == \
+                tmpdir + '/output/DataLocal/LigandRotamerLibs/' \
+                + '{}.rot.assign'.format(tag.upper()), \
                 'Unexpected default rotamer library path'
-            assert output_handler.get_impact_template_path() == \
-                os.path.join(tmpdir, 'output', 'DataLocal/Templates/'
-                             + 'OpenFF/Parsley/{}z'.format(tag.lower())), \
+            assert output_handler.get_impact_template_path(
+                create_missing_folders=False) == \
+                tmpdir + '/output/DataLocal/Templates/OpenFF/Parsley/' \
+                + '{}z'.format(tag.lower()), \
                 'Unexpected default Impact template path'
-            assert output_handler.get_solvent_template_path() == \
-                os.path.join(tmpdir, 'output',
-                             'DataLocal/OBC/ligandParams.txt'), \
+            assert output_handler.get_solvent_template_path(
+                create_missing_folders=False) == \
+                tmpdir + '/output/DataLocal/OBC/ligandParams.txt', \
                 'Unexpected default solvent parameters path'
 
     def test_datalocal_paths_for_opls(self):
@@ -280,15 +285,18 @@ class TestOutputPathHandler(object):
                                            as_datalocal=True)
 
         # Validate output paths
-        assert output_handler.get_rotamer_library_path() == \
+        assert output_handler.get_rotamer_library_path(
+            create_missing_folders=False) == \
             './DataLocal/LigandRotamerLibs/' \
             + '{}.rot.assign'.format(tag.upper()), \
             'Unexpected default rotamer library path'
-        assert output_handler.get_impact_template_path() == \
+        assert output_handler.get_impact_template_path(
+            create_missing_folders=False) == \
             './DataLocal/Templates/OPLS2005/HeteroAtoms/' \
             + '{}z'.format(tag.lower()), \
             'Unexpected default Impact template path'
-        assert output_handler.get_solvent_template_path() == \
+        assert output_handler.get_solvent_template_path(
+            create_missing_folders=False) == \
             './DataLocal/OBC/ligandParams.txt', \
             'Unexpected default solvent parameters path'
 
@@ -298,15 +306,18 @@ class TestOutputPathHandler(object):
                 molecule, opls2005, as_datalocal=True,
                 output_path=os.path.join(tmpdir, 'output'))
 
-            assert output_handler.get_rotamer_library_path() == \
+            assert output_handler.get_rotamer_library_path(
+                create_missing_folders=False) == \
                 os.path.join(tmpdir, 'output', 'DataLocal/LigandRotamerLibs/'
                              + '{}.rot.assign'.format(tag.upper())), \
                 'Unexpected default rotamer library path'
-            assert output_handler.get_impact_template_path() == \
+            assert output_handler.get_impact_template_path(
+                create_missing_folders=False) == \
                 os.path.join(tmpdir, 'output', 'DataLocal/Templates/OPLS2005/'
                              + 'HeteroAtoms/{}z'.format(tag.lower())), \
                 'Unexpected default Impact template path'
-            assert output_handler.get_solvent_template_path() == \
+            assert output_handler.get_solvent_template_path(
+                create_missing_folders=False) == \
                 os.path.join(tmpdir, 'output',
                              'DataLocal/OBC/ligandParams.txt'), \
                 'Unexpected default solvent parameters path'
@@ -335,15 +346,18 @@ class TestOutputPathHandler(object):
                                            as_datalocal=True)
 
         # Validate output paths
-        assert output_handler.get_rotamer_library_path() == \
+        assert output_handler.get_rotamer_library_path(
+            create_missing_folders=False) == \
             './DataLocal/LigandRotamerLibs/' \
             + '{}.rot.assign'.format(tag.upper()), \
             'Unexpected default rotamer library path'
-        assert output_handler.get_impact_template_path() == \
+        assert output_handler.get_impact_template_path(
+            create_missing_folders=False) == \
             './DataLocal/Templates/OpenFF/Parsley/' \
             + '{}z'.format(tag.lower()), \
             'Unexpected default Impact template path'
-        assert output_handler.get_solvent_template_path() == \
+        assert output_handler.get_solvent_template_path(
+            create_missing_folders=False) == \
             './DataLocal/OBC/ligandParams.txt', \
             'Unexpected default solvent parameters path'
 
@@ -353,15 +367,18 @@ class TestOutputPathHandler(object):
                 molecule, hybridff, as_datalocal=True,
                 output_path=os.path.join(tmpdir, 'output'))
 
-            assert output_handler.get_rotamer_library_path() == \
+            assert output_handler.get_rotamer_library_path(
+                create_missing_folders=False) == \
                 os.path.join(tmpdir, 'output', 'DataLocal/LigandRotamerLibs/'
                              + '{}.rot.assign'.format(tag.upper())), \
                 'Unexpected default rotamer library path'
-            assert output_handler.get_impact_template_path() == \
+            assert output_handler.get_impact_template_path(
+                create_missing_folders=False) == \
                 os.path.join(tmpdir, 'output', 'DataLocal/Templates/'
                              + 'OpenFF/Parsley/{}z'.format(tag.lower())), \
                 'Unexpected default Impact template path'
-            assert output_handler.get_solvent_template_path() == \
+            assert output_handler.get_solvent_template_path(
+                create_missing_folders=False) == \
                 os.path.join(tmpdir, 'output',
                              'DataLocal/OBC/ligandParams.txt'), \
                 'Unexpected default solvent parameters path'
@@ -374,15 +391,18 @@ class TestOutputPathHandler(object):
         hybridff.set_nonbonding_parameters('opls2005')
 
         # Validate output paths
-        assert output_handler.get_rotamer_library_path() == \
+        assert output_handler.get_rotamer_library_path(
+            create_missing_folders=False) == \
             './DataLocal/LigandRotamerLibs/' \
             + '{}.rot.assign'.format(tag.upper()), \
             'Unexpected default rotamer library path'
-        assert output_handler.get_impact_template_path() == \
+        assert output_handler.get_impact_template_path(
+            create_missing_folders=False) == \
             './DataLocal/Templates/OPLS2005/HeteroAtoms/' \
             + '{}z'.format(tag.lower()), \
             'Unexpected default Impact template path'
-        assert output_handler.get_solvent_template_path() == \
+        assert output_handler.get_solvent_template_path(
+            create_missing_folders=False) == \
             './DataLocal/OBC/ligandParams.txt', \
             'Unexpected default solvent parameters path'
 
@@ -392,15 +412,18 @@ class TestOutputPathHandler(object):
                 molecule, hybridff, as_datalocal=True,
                 output_path=os.path.join(tmpdir, 'output'))
 
-            assert output_handler.get_rotamer_library_path() == \
+            assert output_handler.get_rotamer_library_path(
+                create_missing_folders=False) == \
                 os.path.join(tmpdir, 'output', 'DataLocal/LigandRotamerLibs/'
                              + '{}.rot.assign'.format(tag.upper())), \
                 'Unexpected default rotamer library path'
-            assert output_handler.get_impact_template_path() == \
+            assert output_handler.get_impact_template_path(
+                create_missing_folders=False) == \
                 os.path.join(tmpdir, 'output', 'DataLocal/Templates/OPLS2005/'
                              + 'HeteroAtoms/{}z'.format(tag.lower())), \
                 'Unexpected default Impact template path'
-            assert output_handler.get_solvent_template_path() == \
+            assert output_handler.get_solvent_template_path(
+                create_missing_folders=False) == \
                 os.path.join(tmpdir, 'output',
                              'DataLocal/OBC/ligandParams.txt'), \
                 'Unexpected default solvent parameters path'
@@ -409,7 +432,7 @@ class TestOutputPathHandler(object):
         """
         It tests the folder creation of the OutputPathHandler class.
         """
-        from peleffy.utils import OutputPathHandler
+        from peleffy.utils import OutputPathHandler, temporary_cd
         from peleffy.forcefield import OpenForceField
 
         # Load benzene molecule
@@ -444,24 +467,25 @@ class TestOutputPathHandler(object):
 
         # Initialize output handler with an output_path set
         with tempfile.TemporaryDirectory() as tmpdir:
-            # Initialize output handler without output_path
-            output_handler = OutputPathHandler(
-                molecule, openff, as_datalocal=True,
-                output_path=os.path.join(tmpdir, 'output'))
+            with temporary_cd(tmpdir):
+                # Initialize output handler without output_path
+                output_handler = OutputPathHandler(
+                    molecule, openff, as_datalocal=True,
+                    output_path=os.path.join(tmpdir, 'output'))
 
-            # Test path getter with folder creation
-            path = output_handler.get_rotamer_library_path(
-                create_missing_folders=True)
-            path_dir = os.path.dirname(path)
-            assert os.path.isdir(path_dir) is True, \
-                'This directory should exist'
-            path = output_handler.get_impact_template_path(
-                create_missing_folders=True)
-            path_dir = os.path.dirname(path)
-            assert os.path.isdir(path_dir) is True, \
-                'This directory should exist'
-            path = output_handler.get_solvent_template_path(
-                create_missing_folders=True)
-            path_dir = os.path.dirname(path)
-            assert os.path.isdir(path_dir) is True, \
-                'This directory should exist'
+                # Test path getter with folder creation
+                path = output_handler.get_rotamer_library_path(
+                    create_missing_folders=True)
+                path_dir = os.path.dirname(path)
+                assert os.path.isdir(path_dir) is True, \
+                    'This directory should exist'
+                path = output_handler.get_impact_template_path(
+                    create_missing_folders=True)
+                path_dir = os.path.dirname(path)
+                assert os.path.isdir(path_dir) is True, \
+                    'This directory should exist'
+                path = output_handler.get_solvent_template_path(
+                    create_missing_folders=True)
+                path_dir = os.path.dirname(path)
+                assert os.path.isdir(path_dir) is True, \
+                    'This directory should exist'
