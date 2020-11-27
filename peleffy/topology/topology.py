@@ -374,17 +374,6 @@ class Topology(object):
         return self._atoms
 
     @property
-    def atoms(self):
-        """
-        Dihedral's atom indexes
-
-        Returns
-        -------
-        atoms_idx: tuple
-            The indexes of all atoms involved in this Dihedral object
-        """
-        return (self._atom1_idx, self._atom2_idx, self._atom3_idx, self._atom4_idx)
-
     def bonds(self):
         """
         The list of bonds in the topology.
