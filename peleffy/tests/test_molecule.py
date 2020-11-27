@@ -346,12 +346,19 @@ class TestMolecule(object):
 
     def test_pdb_fixer(self):
         """
-        It checks the initialization of a peleffy Molecule from an OpenFF
-        molecular representation.
+        It checks the PDB fixer prior parsing a PDB input file for
+        a peleffy Molecule.
         """
         from .utils import compare_blocks
 
+        # Check default
         molecule = Molecule()
+
+        assert molecule.fix_pdb is True, \
+            'Unexpected default settings for the PDB fixer'
+
+        # Activate fixer
+        molecule = Molecule(fix_pdb=True)
 
         ref_path = get_data_file_path('tests/ligSUV_fixed.pdb')
         path1 = get_data_file_path('tests/ligSUV_no_elements1.pdb')
@@ -363,3 +370,61 @@ class TestMolecule(object):
 
         compare_blocks(ref_pdb_block, pdb_block1, (76, 78))
         compare_blocks(ref_pdb_block, pdb_block2, (76, 78))
+
+        # Deactivate fixer
+        molecule = Molecule(fix_pdb=False)
+
+        ref_path = get_data_file_path('tests/ligSUV_fixed.pdb')
+        path1 = get_data_file_path('tests/ligSUV_no_elements1.pdb')
+        path2 = get_data_file_path('tests/ligSUV_no_elements2.pdb')
+
+        ref_pdb_block = molecule._read_and_fix_pdb(ref_path)
+        pdb_block1 = molecule._read_and_fix_pdb(path1)
+        pdb_block2 = molecule._read_and_fix_pdb(path2)
+
+        with pytest.raises(AssertionError):
+            compare_blocks(ref_pdb_block, pdb_block1, (76, 78))
+
+        with pytest.raises(AssertionError):
+            compare_blocks(ref_pdb_block, pdb_block2, (76, 78))
+
+    def test_pdb_fixer_logger_messages(self):
+        """It checks the logger messages of the PDB fixer."""
+
+        from peleffy.utils import Logger
+        import io
+
+        molecule = Molecule(fix_pdb=True)
+
+        # Check logger messages
+        path3 = get_data_file_path('tests/ligSUV_no_elements3.pdb')
+
+        import logging
+
+        # Force a hard reset of logging library and the logger it manages
+        from importlib import reload
+        logging.shutdown()
+        reload(logging)
+
+        # Initiate logger
+        log = Logger()
+
+        # Try the default level (INFO)
+        # Catch logger messages to string buffer
+        with io.StringIO() as buf:
+            # Add custom handler to logger
+            log_handler = logging.StreamHandler(buf)
+            log._logger.handlers = list()
+            log._logger.addHandler(log_handler)
+
+            _ = molecule._read_and_fix_pdb(path3)
+
+            # Get string from buffer
+            output = buf.getvalue()
+
+            assert output == "Warning: input PDB has no information " \
+                + "about atom elements and they were inferred from " \
+                + "atom names. " \
+                + "Please, verify that the resulting elements are " \
+                + "correct\n" \
+                + "Error: PDB could not be fixed\n"
