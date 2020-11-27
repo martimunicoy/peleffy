@@ -17,14 +17,15 @@ class Impact(object):
     template.
     """
 
-    def __init__(self, molecule):
+    def __init__(self, topology):
         """
         Initializes an Impact object.
 
         Parameters
         ----------
-        molecule : An peleffy.topology.Molecule
-            A Molecule object to be written as an Impact file
+        topology : a Topology object
+            The molecular topology representation to write as a
+            Impact template
 
         Examples
         --------
@@ -32,48 +33,138 @@ class Impact(object):
         Write the Impact template of a peleffy's molecule
 
         >>> from peleffy.topology import Molecule
-        >>> from peleffy.template import Impact
 
         >>> molecule = Molecule('molecule.pdb')
-        >>> molecule.parameterize('openff_unconstrained-1.1.1.offxml')
-        >>> impact = Impact(molecule)
-        >>> impact.write('molz')
+
+        >>> from peleffy.forcefield import OpenForceField
+
+        >>> openff = OpenForceField('openff_unconstrained-1.2.1.offxml')
+        >>> parameters = openff.parameterize(molecule)
+
+        >>> from peleffy.topology import Topology
+
+        >>> topology = Topology(molecule, parameters)
+
+        >>> from peleffy.template import Impact
+
+        >>> impact = Impact(topology)
+        >>> impact.to_file('molz')
 
         """
 
         # Check input parameters
-        if (isinstance(molecule, peleffy.topology.Molecule)
-                or isinstance(molecule, peleffy.topology.molecule.Molecule)):
-            self._initialize_from_molecule(molecule)
-        else:
+        if (not isinstance(topology, peleffy.topology.Topology)
+                and not
+                isinstance(topology, peleffy.topology.topology.Topology)):
             raise TypeError('Invalid input molecule for Impact template')
 
-        # The molecule needs to be parameterized
-        molecule.assert_parameterized()
+        self._topology = deepcopy(topology)
+        self._molecule = self._topology.molecule
+        self._sort()
 
-    def _initialize_from_molecule(self, molecule):
+    def _get_absolute_parent_atom(self):
         """
-        Initializes an Impact object from an peleffy.topology.Molecule.
+        It returns the absolute parent atom of the Topology.
+
+        Returns
+        -------
+        absolute_parent : a peleffy.topology.molecule.Atom
+            The absolute parent atom corresponding to the Topology
+        """
+        for atom in self.topology.atoms:
+            if atom.parent is None:
+                return atom
+
+        raise Exception('Topology has no absolut parent')
+
+    def _get_core_atoms(self):
+        """
+        It returns all core atoms of the Topology.
+
+        Returns
+        -------
+        core_atoms : list[Atom]
+            The list of core atoms corresponding to the Topology
+        """
+        core_atoms = list()
+
+        for atom in self.topology.atoms:
+            if atom.core:
+                core_atoms.append(atom)
+
+        return core_atoms
+
+    def _get_all_childs_of_atom(self, parent, child_location):
+        """
+        It returns all child atoms of the supplied Atom, if any.
 
         Parameters
         ----------
-        molecule : An peleffy.topology.Molecule
-            A Molecule object to be written as an Impact file
+        parent : a peleffy.topology.molecule.Atom
+            The Atom whose childs are requested
+        child_location : str
+            One of ['core', 'side chain']. Whether to look for childs
+            in the core or the side chain
+
+        Returns
+        -------
+        childs : list[Atom]
+            The list of childs corresponding to the supplied Atom
         """
-        # We will work with a copy to prevent the modification of the original
-        # object
-        self._molecule = deepcopy(molecule)
-        self._sort()
+        childs = list()
+
+        assert child_location in ['core', 'side chain'], \
+            'Unexpected supplied child location'
+
+        for atom in self.topology.atoms:
+            if atom.parent == parent:
+                if child_location == 'core' and atom.core:
+                    childs.append(atom)
+                elif child_location == 'side chain' and not atom.core:
+                    childs.append(atom)
+
+        return childs
 
     def _sort(self):
         """Sort and reindex atoms in a Molecule."""
+
+        # Do not sort an empty array of atoms
+        if len(self.topology.atoms) == 0:
+            return
+
         sorted_atoms = list()
 
-        # Sort by core attribute and parent index
-        for atom in sorted(self.molecule.atoms,
-                           key=lambda a: (WritableAtom(a).core,
-                                          WritableAtom(a).parent.index)):
-            sorted_atoms.append(atom)
+        # Sort core atoms by parent index
+        absolute_parent = self._get_absolute_parent_atom()
+        sorted_atoms.append(absolute_parent)
+        added_new_child = True
+
+        while added_new_child:
+            added_new_child = False
+
+            for atom in sorted_atoms:
+                childs = self._get_all_childs_of_atom(
+                    atom, child_location='core')
+
+                for child in childs:
+                    if child not in sorted_atoms:
+                        sorted_atoms.append(child)
+                        added_new_child = True
+
+        # Sort non-core atoms by parent index
+        added_new_child = True
+
+        while added_new_child:
+            added_new_child = False
+
+            for atom in sorted_atoms:
+                childs = self._get_all_childs_of_atom(
+                    atom, child_location='side chain')
+
+                for child in childs:
+                    if child not in sorted_atoms:
+                        sorted_atoms.append(child)
+                        added_new_child = True
 
         # Define reindexer and reindex atoms
         reindexer = dict()
@@ -83,28 +174,28 @@ class Impact(object):
             atom.set_index(new_index)
 
         # Replace old atom list by the sorted one
-        self.molecule._atoms = sorted_atoms
+        self.topology._atoms = sorted_atoms
 
         # Reindex bonds, angles, propers and impropers
-        for bond in self.molecule.bonds:
+        for bond in self.topology.bonds:
             bond.set_atom1_idx(reindexer[bond.atom1_idx])
             bond.set_atom2_idx(reindexer[bond.atom2_idx])
-        for angle in self.molecule.angles:
+        for angle in self.topology.angles:
             angle.set_atom1_idx(reindexer[angle.atom1_idx])
             angle.set_atom2_idx(reindexer[angle.atom2_idx])
             angle.set_atom3_idx(reindexer[angle.atom3_idx])
-        for proper in self.molecule.propers:
+        for proper in self.topology.propers:
             proper.set_atom1_idx(reindexer[proper.atom1_idx])
             proper.set_atom2_idx(reindexer[proper.atom2_idx])
             proper.set_atom3_idx(reindexer[proper.atom3_idx])
             proper.set_atom4_idx(reindexer[proper.atom4_idx])
-        for improper in self.molecule.impropers:
+        for improper in self.topology.impropers:
             improper.set_atom1_idx(reindexer[improper.atom1_idx])
             improper.set_atom2_idx(reindexer[improper.atom2_idx])
             improper.set_atom3_idx(reindexer[improper.atom3_idx])
             improper.set_atom4_idx(reindexer[improper.atom4_idx])
 
-    def write(self, path):
+    def to_file(self, path):
         """
         It writes the Impact template to a file.
 
@@ -133,7 +224,7 @@ class Impact(object):
             File to write to
         """
         file.write('* LIGAND DATABASE FILE')
-        file.write(' ({})'.format(self.molecule.forcefield.name))
+        file.write(' ({})'.format(self.topology.parameters.forcefield_name))
         file.write('\n')
         file.write('* File generated with peleffy-{}\n'.format(
             peleffy.__version__))
@@ -151,23 +242,23 @@ class Impact(object):
         # template name
         file.write('{:5}'.format(self.molecule.tag))
         # number of non bonding parameters
-        file.write('{:6d}'.format(len(self.molecule.atoms)))
+        file.write('{:6d}'.format(len(self.topology.atoms)))
         # number of bond parameters
-        file.write('{:6d}'.format(len(self.molecule.bonds)))
+        file.write('{:6d}'.format(len(self.topology.bonds)))
         # number of angle parameters
-        file.write('{:6d}'.format(len(self.molecule.angles)))
+        file.write('{:6d}'.format(len(self.topology.angles)))
         # number of dihedral parameters
         # TODO doublecheck that it is indeed the sum of propers and impropers
-        file.write('{:8d}'.format(len(self.molecule.propers)
-                                  + len(self.molecule.impropers)))
+        file.write('{:8d}'.format(len(self.topology.propers)
+                                  + len(self.topology.impropers)))
         # # number of non-null elements in the interactions matrix
         # TODO It might not be always 0
         file.write('{:8d}'.format(0))
         file.write('\n')
 
-        zmatrix = ZMatrix(self.molecule)
+        zmatrix = ZMatrix(self.topology)
 
-        for i, atom in enumerate(self.molecule.atoms):
+        for i, atom in enumerate(self.topology.atoms):
             w_atom = WritableAtom(atom)
             # atom id number
             file.write('{:5d}'.format(w_atom.index))
@@ -200,7 +291,7 @@ class Impact(object):
             File to write to
         """
         file.write('NBON\n')
-        for atom in self.molecule.atoms:
+        for atom in self.topology.atoms:
             w_atom = WritableAtom(atom)
             # TODO an extra space is found in the IMPACT file generated by
             # PlopRotTemp, consider removing it
@@ -240,7 +331,7 @@ class Impact(object):
             File to write to
         """
         file.write('BOND\n')
-        for bond in self.molecule.bonds:
+        for bond in self.topology.bonds:
             w_bond = WritableBond(bond)
             idx1, idx2, spring, eq_dist = [attr[1] for attr in list(w_bond)]
             # TODO an extra space is found in the IMPACT file generated by
@@ -268,7 +359,7 @@ class Impact(object):
             File to write to
         """
         file.write('THET\n')
-        for angle in self.molecule.angles:
+        for angle in self.topology.angles:
             w_angle = WritableAngle(angle)
             idx1, idx2, idx3, spring, eq_angl = [attr[1] for attr in
                                                  list(w_angle)]
@@ -299,7 +390,7 @@ class Impact(object):
             File to write to
         """
         file.write('PHI\n')
-        for proper in self.molecule.propers:
+        for proper in self.topology.propers:
             w_proper = WritableProper(proper)
             idx1, idx2, idx3, idx4, constant, prefactor, term, phase = \
                 [attr[1] for attr in list(w_proper)]
@@ -339,7 +430,7 @@ class Impact(object):
             File to write to
         """
         file.write('IPHI\n')
-        for improper in self.molecule.impropers:
+        for improper in self.topology.impropers:
             w_improper = WritableImproper(improper)
             idx1, idx2, idx3, idx4, constant, prefactor, term = \
                 [attr[1] for attr in list(w_improper)]
@@ -386,10 +477,22 @@ class Impact(object):
 
         Returns
         -------
-        molecule : an peleffy.topology.Molecule
+        molecule : a peleffy.topology.Molecule
             The peleffy's Molecule object
         """
         return self._molecule
+
+    @property
+    def topology(self):
+        """
+        The peleffy's Topology.
+
+        Returns
+        -------
+        topology : a peleffy.topology.Topology
+            The peleffy's Topology object
+        """
+        return self._topology
 
 
 class WritableWrapper(object):
@@ -458,7 +561,7 @@ class WritableWrapper(object):
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
             if out is None:
-                out = peleffy.topology.molecule.DummyAtom(index=-1)
+                out = peleffy.topology.elements.DummyAtom(index=-1)
             return out
         return function_wrapper
 
@@ -585,7 +688,7 @@ class WritableWrapper(object):
         return function_wrapper
 
 
-class WritableAtom(peleffy.topology.molecule.Atom, WritableWrapper):
+class WritableAtom(peleffy.topology.Atom, WritableWrapper):
     """
     Writable peleffy's Atom class
     """
@@ -596,14 +699,15 @@ class WritableAtom(peleffy.topology.molecule.Atom, WritableWrapper):
 
         Parameters
         ----------
-        atom : an peleffy.topology.molecule.Atom
+        atom : a peleffy.topology.molecule.Atom
             The Atom to create the WritableAtom with
         """
         # We do not want to modify the original object
         atom = deepcopy(atom)
 
-        assert isinstance(atom, (peleffy.topology.molecule.Atom,
-                                 peleffy.topology.molecule.DummyAtom)), \
+        assert isinstance(atom, (peleffy.topology.Atom,
+                                 peleffy.topology.elements.Atom,
+                                 peleffy.topology.elements.DummyAtom)), \
             'Wrong type: {}'.format(type(atom))
 
         super().__init__(atom.index, atom.core, atom.OPLS_type, atom.PDB_name,
@@ -621,7 +725,7 @@ class WritableAtom(peleffy.topology.molecule.Atom, WritableWrapper):
 
         Returns
         -------
-        parent : an peleffy.topology.molecule.Atom
+        parent : a peleffy.topology.molecule.Atom
             The parent of this Atom object
         """
         return super().parent
@@ -794,14 +898,14 @@ class WritableBond(peleffy.topology.Bond, WritableWrapper):
 
         Parameters
         ----------
-        bond : an peleffy.topology.Bond
+        bond : a peleffy.topology.Bond
             The Bond to create the WritableBond with
         """
         # We do not want to modify the original object
         bond = deepcopy(bond)
 
         assert isinstance(bond, (peleffy.topology.Bond,
-                                 peleffy.topology.topology.Bond)), \
+                                 peleffy.topology.elements.Bond)), \
             'Wrong type: {}'.format(type(bond))
 
         super().__init__(index=bond.index, atom1_idx=bond.atom1_idx,
@@ -871,14 +975,14 @@ class WritableAngle(peleffy.topology.Angle, WritableWrapper):
 
         Parameters
         ----------
-        angle : an peleffy.topology.Angle
+        angle : a peleffy.topology.Angle
             The Angle to create the WritableAngle with
         """
         # We do not want to modify the original object
         angle = deepcopy(angle)
 
         assert isinstance(angle, (peleffy.topology.Angle,
-                                  peleffy.topology.topology.Angle)), \
+                                  peleffy.topology.elements.Angle)), \
             'Wrong type: {}'.format(type(angle))
 
         super().__init__(index=angle.index, atom1_idx=angle.atom1_idx,
@@ -960,14 +1064,14 @@ class WritableProper(peleffy.topology.Proper, WritableWrapper):
 
         Parameters
         ----------
-        proper : an peleffy.topology.Proper
+        proper : a peleffy.topology.Proper
             The Proper to create the WritableProper with
         """
         # We do not want to modify the original object
         proper = deepcopy(proper)
 
         assert isinstance(proper, (peleffy.topology.Proper,
-                                   peleffy.topology.topology.Proper)), \
+                                   peleffy.topology.elements.Proper)), \
             'Wrong type: {}'.format(type(proper))
 
         super().__init__(index=proper.index, atom1_idx=proper.atom1_idx,
@@ -1071,14 +1175,14 @@ class WritableImproper(peleffy.topology.Improper, WritableWrapper):
 
         Parameters
         ----------
-        improper : an peleffy.topology.Improper
+        improper : a peleffy.topology.Improper
             The Improper to create the WritableImproper with
         """
         # We do not want to modify the original object
         improper = deepcopy(improper)
 
         assert isinstance(improper, (peleffy.topology.Improper,
-                                     peleffy.topology.topology.Improper)), \
+                                     peleffy.topology.elements.Improper)), \
             'Wrong type: {}'.format(type(improper))
 
         super().__init__(index=improper.index, atom1_idx=improper.atom1_idx,

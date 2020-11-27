@@ -305,6 +305,96 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         """
         return mol1.rdkit_molecule.GetSubstructMatch(mol2.rdkit_molecule)
 
+    def get_atom_degrees(self, molecule):
+        """
+        It returns the ordered list of atom degrees. The degree of an atom
+        is defined as the number of directly-bonded neighbors. Note that
+        the degree is independent of bond orders.
+
+        Parameters
+        ----------
+        molecule : an peleffy.topology.Molecule
+            The peleffy's Molecule object
+
+        Returns
+        -------
+        atom_degrees : list[int]
+            The list of atom degrees
+        """
+        rdkit_molecule = molecule.rdkit_molecule
+
+        atom_degrees = list()
+
+        for atom in rdkit_molecule.GetAtoms():
+            atom_degrees.append(atom.GetDegree())
+
+        return atom_degrees
+
+    def get_hydrogen_parents(self, molecule):
+        """
+        It returns the ordered list of the element belonging to the atom
+        parent for the hydrogen atoms of the molecule.
+
+        Note that this functions sets the element to None when
+        the child is not a hydrogen atom.
+
+        Parameters
+        ----------
+        molecule : an peleffy.topology.Molecule
+            The peleffy's Molecule object
+
+        Returns
+        -------
+        atom_parents : list[int]
+            The list of elements belonging to the atom parent, if the
+            atom is an hydrogen. The element is set to None when the
+            child is not a hydrogen atom
+        """
+        rdkit_molecule = molecule.rdkit_molecule
+
+        atom_parents = list()
+
+        for atom in rdkit_molecule.GetAtoms():
+            if atom.GetSymbol() == 'H':
+                bonds = atom.GetBonds()
+
+                assert len(bonds) == 1, \
+                    'Hydrogen atom should only have 1 bond'
+
+                if bonds[0].GetBeginAtom().GetSymbol() == 'H':
+                    atom_parents.append(bonds[0].GetEndAtom().GetSymbol())
+
+                else:
+                    atom_parents.append(bonds[0].GetBeginAtom().GetSymbol())
+
+            else:
+                atom_parents.append(None)
+
+        return atom_parents
+
+    def get_elements(self, molecule):
+        """
+        It returns the ordered list of elements of the molecule.
+
+        Parameters
+        ----------
+        molecule : an peleffy.topology.Molecule
+            The peleffy's Molecule object
+
+        Returns
+        -------
+        elements : list[str]
+            The list of elements belonging to supplied Molecule object
+        """
+        rdkit_molecule = molecule.rdkit_molecule
+
+        elements = list()
+
+        for atom in rdkit_molecule.GetAtoms():
+            elements.append(atom.GetSymbol())
+
+        return elements
+
     def to_pdb_file(self, molecule, path):
         """
         It writes the RDKit molecule to a PDB file.
@@ -634,7 +724,9 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
         from openforcefield.topology.molecule import Molecule
 
         rdkit_molecule = molecule.rdkit_molecule
-        return Molecule.from_rdkit(rdkit_molecule)
+        return Molecule.from_rdkit(
+            rdkit_molecule,
+            allow_undefined_stereo=molecule.allow_undefined_stereo)
 
     def get_forcefield(self, forcefield_name):
         """

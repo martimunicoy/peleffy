@@ -1,0 +1,5 @@
+LIGZ   C1   CT    1.9   0.72
+LIGZ   H1   HC    1.25   0.85
+LIGZ   H2   HC    1.25   0.85
+LIGZ   H3   HC    1.25   0.85
+LIGZ   H4   HC    1.25   0.85
