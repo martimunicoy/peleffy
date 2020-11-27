@@ -6,8 +6,6 @@ This module contains a variety of helpful tools for tests.
 import numpy as np
 from simtk import unit
 
-from peleffy.forcefield import OPLS2005ForceField
-from peleffy.forcefield.calculators import OPLSChargeCalculator
 from peleffy.forcefield.forcefield import _BaseForceField
 
 
