@@ -47,6 +47,10 @@ class ForceFieldSelector(object):
         >>> openff = selector.get_by_name('openff_unconstrained-1.2.1.offxml')
 
         """
+        from peleffy.utils import Logger
+
+        log = Logger()
+        log.info(' - Loading \'{}\''.format(forcefield_name))
 
         from .forcefield import (OpenForceField, OPLS2005ForceField)
 

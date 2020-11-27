@@ -113,7 +113,7 @@ class _OpenFFCompatibleSolvent(_SolventWrapper):
         molecular Topology.
         """
         logger = Logger()
-        logger.info(' - Loading solvent parameters')
+        logger.info(' - Generating solvent parameters')
 
         from peleffy.utils.toolkits import OpenForceFieldToolkitWrapper
 

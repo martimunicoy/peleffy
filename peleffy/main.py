@@ -162,11 +162,18 @@ def run_peleffy(pdb_file,
     rotamer_library.to_file(output_handler.get_rotamer_library_path())
 
     # Parameterize molecule with the selected force field
+    log.info(' - Parameterizing molecule')
     parameters = forcefield.parameterize(molecule,
                                          charge_method=charge_method)
 
     # Generate the molecular topology
     topology = Topology(molecule, parameters)
+    log.info(' - Parameterization results:')
+    log.info('   - {} atoms'.format(len(topology.atoms)))
+    log.info('   - {} bonds'.format(len(topology.bonds)))
+    log.info('   - {} torsions'.format(len(topology.angles)))
+    log.info('   - {} propers'.format(len(topology.propers)))
+    log.info('   - {} impropers'.format(len(topology.impropers)))
 
     # Generate the impact template
     impact = Impact(topology)
@@ -177,7 +184,12 @@ def run_peleffy(pdb_file,
         solvent = OBC2(topology)
         solvent.to_file(output_handler.get_solvent_template_path())
 
-    log.info(' - All files were generated successfully')
+    log.info(' - All files were generated successfully:')
+    log.info('   - {}'.format(output_handler.get_rotamer_library_path()))
+    log.info('   - {}'.format(output_handler.get_impact_template_path()))
+    if with_solvent:
+        log.info('   - {}'.format(output_handler.get_solvent_template_path()))
+
     log.info('-' * 60)
 
 
