@@ -21,6 +21,7 @@ New features
 - `PR #92 <https://github.com/martimunicoy/peleffy/pull/92>`_: New parameter to skip the stereochemistry assignment (and the checking from the OpenFF toolkit).
 - `PR #100 <https://github.com/martimunicoy/peleffy/pull/100>`_: New writer for the OPLS OBC parameters.
 - `PR #106 <https://github.com/martimunicoy/peleffy/pull/106>`_: New method to initialize a Molecule object directly from an RDKit and OpenFF molecular representations.
+- `PR #112 <https://github.com/martimunicoy/peleffy/pull/112>`_: New method to fix an input PDB file with no atomic element identifiers.
 
 Bugfixes
 """"""""
@@ -41,6 +42,7 @@ Tests added
 - `PR #97 <https://github.com/martimunicoy/peleffy/pull/97>`_: Includes tests for the new Topology container class.
 - `PR #100 <https://github.com/martimunicoy/peleffy/pull/100>`_: Adds tests to validate the solvent template writers.
 - `PR #106 <https://github.com/martimunicoy/peleffy/pull/106>`_: Adds tests to check the RDKit and OpenFF molecular initializers.
+- `PR #112 <https://github.com/martimunicoy/peleffy/pull/112>`_: Adds one test to check the new PDB fixer method.
 
 
 1.0.0 - Full compatibility for OPLS2005 and OpenFF dihedrals and rotamer library improvements
