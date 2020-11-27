@@ -19,7 +19,7 @@ from peleffy.utils import Logger, OutputPathHandler
 DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-1.2.1.offxml'
 DEFAULT_RESOLUTION = int(30)
 DEFAULT_CHARGE_METHOD = 'am1bcc'
-AVAILABLE_CHARGE_METHODS = ['am1bcc', 'gasteiger', 'OPLS']
+AVAILABLE_CHARGE_METHODS = ['am1bcc', 'gasteiger', 'OPLS2005']
 IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OFF/Parsley/HeteroAtoms/'
 ROTAMER_LIBRARY_PATH = 'DataLocal/LigandRotamerLibs/'
 SOLVENT_TEMPLATE_PATH = 'DataLocal/OBC/'
