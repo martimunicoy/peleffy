@@ -249,3 +249,24 @@ class TestRDKitToolkitWrapper(object):
                                   ' O4 ': 1, ' H1 ': 1, ' H2 ': 1,
                                   ' H3 ': 1}, \
             'Unexpected pairing between atom names and degrees'
+
+    def test_pdb_parsers(self):
+        """It checks that the PDB parsers from RDKit are correctly working."""
+
+        from rdkit.Chem.rdmolfiles import MolToPDBBlock
+        from peleffy.utils.toolkits import RDKitToolkitWrapper
+        from peleffy.utils import get_data_file_path
+
+        wrapper = RDKitToolkitWrapper()
+
+        pdb_path = get_data_file_path('ligands/benzene.pdb')
+        with open(pdb_path) as f:
+            pdb_block = f.read()
+
+        rdkit_mol1 = wrapper.from_pdb(pdb_path)
+        rdkit_mol2 = wrapper.from_pdb_block(pdb_block)
+
+        block1 = MolToPDBBlock(rdkit_mol1)
+        block2 = MolToPDBBlock(rdkit_mol2)
+
+        assert block1 == block2, 'Unexpected pair of RDKit molecules'

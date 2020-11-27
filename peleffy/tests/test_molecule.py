@@ -222,7 +222,7 @@ class TestMolecule(object):
                 molecule.to_pdb_file('molecule.pdb')
                 check_residue_name('BNZ')
 
-    def test_PDB_checkup(self):
+    def test_pdb_checkup(self):
         """It tests the safety check function for PDB files."""
 
         LIGAND_GOOD = get_data_file_path('ligands/ethylene.pdb')
@@ -343,3 +343,23 @@ class TestMolecule(object):
         assert pdb_atom_names == ref_pdb_atom_names, \
             'Unexpected PDB atom names found in the resulting Molecule ' \
             + 'representation'
+
+    def test_pdb_fixer(self):
+        """
+        It checks the initialization of a peleffy Molecule from an OpenFF
+        molecular representation.
+        """
+        from .utils import compare_blocks
+
+        molecule = Molecule()
+
+        ref_path = get_data_file_path('tests/ligSUV_fixed.pdb')
+        path1 = get_data_file_path('tests/ligSUV_no_elements1.pdb')
+        path2 = get_data_file_path('tests/ligSUV_no_elements2.pdb')
+
+        ref_pdb_block = molecule._read_and_fix_pdb(ref_path)
+        pdb_block1 = molecule._read_and_fix_pdb(path1)
+        pdb_block2 = molecule._read_and_fix_pdb(path2)
+
+        compare_blocks(ref_pdb_block, pdb_block1, (76, 78))
+        compare_blocks(ref_pdb_block, pdb_block2, (76, 78))

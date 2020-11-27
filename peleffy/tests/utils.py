@@ -267,6 +267,85 @@ def compare_files_without_order(file1, file2):
             .format(i) + '\n' + line1
 
 
+def compare_blocks(block1, block2, line_indices):
+    """
+    It compares two PDB blocks and gives an AssertionError if there is any
+    difference.
+
+    Parameters
+    ----------
+    block1 : str
+        First block to compare
+    block2 : str
+        Second block to compare
+    line_indices : tuple[int, int]
+        The line indices to compare
+
+    Raises
+    ------
+        AssertionError
+            If any difference is found between blocks
+    """
+
+    idx1, idx2 = line_indices
+
+    lines1 = list()
+    lines2 = list()
+
+    for line in block1.split('\n'):
+        if line.startswith('REMARK'):
+            continue
+        if line.startswith('TITLE'):
+            continue
+        if line.startswith('CONECT'):
+            continue
+        if line.startswith('CRYST'):
+            continue
+        if line.startswith('END'):
+            continue
+        if line.startswith('MODEL'):
+            continue
+        if line.startswith('ENDMDL'):
+            continue
+        if line.startswith('TER'):
+            continue
+        if line == '':
+            continue
+        lines1.append(line)
+
+    for line in block2.split('\n'):
+        if line.startswith('REMARK'):
+            continue
+        if line.startswith('TITLE'):
+            continue
+        if line.startswith('CONECT'):
+            continue
+        if line.startswith('CRYST'):
+            continue
+        if line.startswith('END'):
+            continue
+        if line.startswith('MODEL'):
+            continue
+        if line.startswith('ENDMDL'):
+            continue
+        if line.startswith('TER'):
+            continue
+        if line == '':
+            continue
+        lines2.append(line)
+
+    assert len(lines1) == len(lines2), \
+        'Number of lines do not match: ' \
+        + str(len(lines1)) + ' and ' + str(len(lines2))
+
+    for line1, line2 in zip(lines1, lines2):
+        print(line1[idx1:idx2] + 'X')
+        print(line2[idx1:idx2] + 'X')
+
+        assert line1[idx1:idx2] == line2[idx1:idx2], \
+            'Found different lines:\n' + line1 + line2
+
+
 def parameterize_opls2005(opls2005, molecule, ffld_file,
                           charge_method='OPLS2005'):
     """
