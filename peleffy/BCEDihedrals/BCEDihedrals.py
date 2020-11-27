@@ -42,7 +42,7 @@ class BCEDihedrals(object):
         # structrue in the future
         dihedral_file = glob.glob(os.path.join(self.bce_path, "DIHEDRALS", "*_new.ndx"))[0]
         dihedrals = read_dihedral_info_file(dihedral_file)
-        clusters = glob.glob(os.path.join(self.bce_path, "CLUSTERS", "CL*", "cluster*.min.imaged.pdb"))
+        clusters = sorted(glob.glob(os.path.join(self.bce_path, "CLUSTERS", "CL*", "cluster*.min.imaged.pdb")))
         for cluster in clusters:
             self.calculate_cluster_angles(cluster, dihedrals)
 
@@ -68,7 +68,6 @@ class BCEDihedrals(object):
         # clusters pdb and the input ligand are the same
         rename_dict = {i: x for i, x in enumerate(rdkit_wrapper.get_substruct_match(self._molecule, mol))}
         for dihedral in dihedral_list:
-            # names = [self._molecule.get_pdb_atom_names()[rename_dict[atom]] for atom in dihedral]
             names = [self._topology.atoms[rename_dict[atom]].PDB_name for atom in dihedral]
             angle = rdkit_wrapper.get_dihedral(mol, *dihedral, units="radians")
             pdb_dihedrals.append(names+[angle])
