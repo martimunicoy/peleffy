@@ -21,14 +21,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - uses: goanpeca/setup-miniconda@v1
-      name:  Conda setup
+    - uses: conda-incubator/setup-miniconda@v2
+      name: Conda setup
       with:
         python-version: ${{ matrix.python-version }}
         activate-environment: standard
         environment-file: devtools/envs/standard.yaml
         auto-activate-base: false
-        
+
     - name: Environment Information
       shell: bash -l {0}
       run: |

@@ -14,20 +14,23 @@ class OutputPathHandler(object):
     It handles the output paths of peleffy parameter files.
     """
 
-    OFF_IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OFF/Parsley/HeteroAtoms/'
+    OFF_IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OpenFF/Parsley/'
     OPLS_IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OPLS2005/HeteroAtoms/'
     ROTAMER_LIBRARY_PATH = 'DataLocal/LigandRotamerLibs/'
     SOLVENT_TEMPLATE_PATH = 'DataLocal/OBC/'
     FILE_TYPES = ['impact template', 'rotamer library', 'solvent template']
 
-    def __init__(self, molecule, as_datalocal=False, output_path=None):
+    def __init__(self, molecule, forcefield,
+                 as_datalocal=False, output_path=None):
         """
         It initializes an OutputPathHandler object.
 
         Parameters
         ----------
-        molecule : An peleffy.topology.Molecule
+        molecule : a peleffy.topology.Molecule
             A Molecule object to be written as an Impact file
+        forcefield : a peleffy.forcefield.forcefield.ForceField
+            The force field employed in the molecular parameterization
         as_datalocal : bool
             Whether to save output files following PELE's DataLocal
             hierarchy or not
@@ -36,6 +39,7 @@ class OutputPathHandler(object):
             is the current directory
         """
         self._molecule = molecule
+        self._forcefield = forcefield
         self._as_datalocal = as_datalocal
         if output_path is None:
             self._output_path = os.path.curdir
@@ -101,21 +105,19 @@ class OutputPathHandler(object):
         file_name = self._molecule.tag.lower() + 'z'
 
         if self.as_datalocal:
-            forcefield = self.molecule.forcefield
-            if forcefield is not None:
-                if forcefield.type == 'OpenFF':
+            if self.forcefield.type == 'OpenFF':
+                path = os.path.join(self.output_path,
+                                    self.OFF_IMPACT_TEMPLATE_PATH)
+            elif self.forcefield.type == 'OpenFF + OPLS2005':
+                if self.forcefield._nonbonding == 'openff':
                     path = os.path.join(self.output_path,
                                         self.OFF_IMPACT_TEMPLATE_PATH)
-                elif forcefield.type == 'OpenFF + OPLS2005':
-                    if forcefield._nonbonding == 'openff':
-                        path = os.path.join(self.output_path,
-                                            self.OFF_IMPACT_TEMPLATE_PATH)
-                    else:
-                        path = os.path.join(self.output_path,
-                                            self.OPLS_IMPACT_TEMPLATE_PATH)
                 else:
                     path = os.path.join(self.output_path,
                                         self.OPLS_IMPACT_TEMPLATE_PATH)
+            else:
+                path = os.path.join(self.output_path,
+                                    self.OPLS_IMPACT_TEMPLATE_PATH)
         else:
             path = self.output_path
 
@@ -196,10 +198,22 @@ class OutputPathHandler(object):
 
         Returns
         -------
-        molecule : an peleffy.topology.Molecule
+        molecule : a peleffy.topology.Molecule
             The peleffy's Molecule object
         """
         return self._molecule
+
+    @property
+    def forcefield(self):
+        """
+        The peleffy's ForceField.
+
+        Returns
+        -------
+        forcefield : a peleffy.forcefield.forcefield.ForceField
+            The force field employed in the molecular parameterization
+        """
+        return self._forcefield
 
     @property
     def output_path(self):

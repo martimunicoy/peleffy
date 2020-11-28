@@ -1,11 +1,9 @@
 name: Build documentation
 
-# Controls when the action will run. Triggers the workflow on push or pull request
+# Controls when the action will run. Triggers the workflow on push
 # events but only for the master branch
 on:
   push:
-    branches: [ master ]
-  pull_request:
     branches: [ master ]
 
 jobs:
@@ -15,14 +13,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - uses: goanpeca/setup-miniconda@v1
-      name:  Conda setup
+    - uses: conda-incubator/setup-miniconda@v2
+      name: Conda setup
       with:
         python-version: 3.7
         activate-environment: standard
         environment-file: devtools/envs/standard.yaml
         auto-activate-base: false
-  
+
     - name: Install dependencies
       shell: bash -l {0}
       run: |

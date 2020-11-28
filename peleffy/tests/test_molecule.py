@@ -5,11 +5,9 @@ This module contains the tests to check peleffy's molecular representations.
 import pytest
 
 import tempfile
+
 from peleffy.topology import Molecule
-from peleffy.utils.toolkits import (RDKitToolkitWrapper,
-                                    OpenForceFieldToolkitWrapper)
 from peleffy.utils import get_data_file_path, temporary_cd
-from .utils import SET_OF_LIGAND_PATHS
 
 
 class TestMolecule(object):
@@ -17,44 +15,29 @@ class TestMolecule(object):
     It wraps all tests that involve the Molecule class.
     """
 
-    def test_bad_init_parameterization(self):
+    def test_pdb_initialization(self):
         """
-        It checks that a call to the parameterize function with a Molecule
-        unsuccessfully initialized raises an Exception.
+        It checks the initialization from a PDB file.
         """
-        FORCEFIELD_NAME = 'openff_unconstrained-1.1.1.offxml'
-        LIGAND_PATH = SET_OF_LIGAND_PATHS[0]
-        ligand_path = get_data_file_path(LIGAND_PATH)
-
-        molecule = Molecule()
-        with pytest.raises(Exception):
-            molecule.parameterize(FORCEFIELD_NAME)
-
-        rdkit_toolkit = RDKitToolkitWrapper()
-        molecule._rdkit_molecule = rdkit_toolkit.from_pdb(ligand_path)
-        molecule._off_molecule = None
-
-        with pytest.raises(Exception):
-            molecule.parameterize(FORCEFIELD_NAME)
-
-        openforcefield_toolkit = OpenForceFieldToolkitWrapper()
-        molecule._off_molecule = openforcefield_toolkit.from_rdkit(molecule)
-        molecule._rdkit_molecule = None
-
-        with pytest.raises(Exception):
-            molecule.parameterize(FORCEFIELD_NAME)
-
-    def test_good_init_parameterization(self):
-        """
-        It checks that a call to the parameterize function with a Molecule
-        successfully initialized does not raise any Exception.
-        """
-        FORCEFIELD_NAME = 'openff_unconstrained-1.1.1.offxml'
-        LIGAND_PATH = SET_OF_LIGAND_PATHS[0]
-        ligand_path = get_data_file_path(LIGAND_PATH)
+        ligand_path = get_data_file_path('ligands/ethylene.pdb')
 
         molecule = Molecule(ligand_path)
-        molecule.parameterize(FORCEFIELD_NAME)
+
+        # Save it
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                molecule.to_pdb_file('molecule.pdb')
+
+    def test_smiles_initialization(self):
+        """
+        It checks the initialization from a SMILES tag.
+        """
+        molecule = Molecule(smiles='c1ccccc1')
+
+        # Save it
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                molecule.to_pdb_file('molecule.pdb')
 
     def test_molecule_name_assignment(self):
         """
@@ -65,13 +48,13 @@ class TestMolecule(object):
         assert molecule.name == '', 'Unexpected atom name'
 
         # Look for the PDB name when a Molecule is loaded from a PDB file
-        ligand_path = get_data_file_path('ligands/BNZ.pdb')
+        ligand_path = get_data_file_path('ligands/benzene.pdb')
         molecule = Molecule(ligand_path)
-        assert molecule.name == 'BNZ', 'Unexpected atom name'
+        assert molecule.name == 'benzene', 'Unexpected atom name'
 
         # Look for benzene name when a Molecule is loaded from a PDB file
         # with a custom name
-        ligand_path = get_data_file_path('ligands/BNZ.pdb')
+        ligand_path = get_data_file_path('ligands/benzene.pdb')
         molecule = Molecule(ligand_path, name='benzene')
         assert molecule.name == 'benzene', 'Unexpected atom name'
 
@@ -94,13 +77,13 @@ class TestMolecule(object):
 
         # Look for the PDB residue name as a tag when a Molecule is loaded
         # from a PDB file
-        ligand_path = get_data_file_path('ligands/BNZ.pdb')
+        ligand_path = get_data_file_path('ligands/benzene.pdb')
         molecule = Molecule(ligand_path)
         assert molecule.tag == 'BNZ', 'Unexpected atom tag'
 
         # Look for BEN tag when a Molecule is loaded from a PDB file with
         # a custom name
-        ligand_path = get_data_file_path('ligands/BNZ.pdb')
+        ligand_path = get_data_file_path('ligands/benzene.pdb')
         molecule = Molecule(ligand_path, tag='BEN')
         assert molecule.tag == 'BEN', 'Unexpected atom tag'
 
@@ -126,7 +109,7 @@ class TestMolecule(object):
         # Initialize a Molecule from a PDB without connectivity and
         # without a connectivity template
         ligand_path = get_data_file_path(
-            'ligands/BNZ_without_connectivity.pdb')
+            'ligands/benzene_without_connectivity.pdb')
         molecule = Molecule(ligand_path)
 
         expected_bond_ids = [(1, 0, False), (2, 1, False), (3, 2, False),
@@ -143,10 +126,10 @@ class TestMolecule(object):
         # Initialize a Molecule from a PDB without connectivity but with
         # a connectivity template
         template_path = get_data_file_path(
-            'ligands/BNZ.pdb')
+            'ligands/benzene.pdb')
         template = Molecule(template_path)
         ligand_path = get_data_file_path(
-            'ligands/BNZ_without_connectivity.pdb')
+            'ligands/benzene_without_connectivity.pdb')
         molecule = Molecule(ligand_path,
                             connectivity_template=template.rdkit_molecule)
 
@@ -164,10 +147,10 @@ class TestMolecule(object):
         # Initialize a Molecule from a PDB with connectivity and with
         # a connectivity template
         template_path = get_data_file_path(
-            'ligands/BNZ.pdb')
+            'ligands/benzene.pdb')
         template = Molecule(template_path)
         ligand_path = get_data_file_path(
-            'ligands/BNZ.pdb')
+            'ligands/benzene.pdb')
         molecule = Molecule(ligand_path,
                             connectivity_template=template.rdkit_molecule)
 
@@ -195,7 +178,7 @@ class TestMolecule(object):
                     if line.startswith('HETATM'):
                         assert line[17:20] == name, 'Unexpected residue name'
 
-        ligand_path = get_data_file_path('ligands/BNZ.pdb')
+        ligand_path = get_data_file_path('ligands/benzene.pdb')
 
         # Checking tag assignation from PDB
         molecule = Molecule(ligand_path)
@@ -239,7 +222,7 @@ class TestMolecule(object):
                 molecule.to_pdb_file('molecule.pdb')
                 check_residue_name('BNZ')
 
-    def test_PDB_checkup(self):
+    def test_pdb_checkup(self):
         """It tests the safety check function for PDB files."""
 
         LIGAND_GOOD = get_data_file_path('ligands/ethylene.pdb')
@@ -284,6 +267,164 @@ class TestMolecule(object):
 
             output = buf.getvalue()
 
-            assert output == "Input PDB has no information about the " \
-                + "connectivity and this could result in an unexpected " \
-                + "bond assignment\n"
+            assert output == "Warning: input PDB has no information " \
+                + "about the connectivity and this could result in " \
+                + "an unexpected bond assignment\n"
+
+    def test_undefined_stereo(self):
+        """
+        It checks the behaviour when ignoring the stereochemistry
+        in the Molecule initialization.
+        """
+        from openforcefield.utils.toolkits import UndefinedStereochemistryError
+        from peleffy.forcefield import OpenForceField
+
+        # This should crash due to an undefined stereochemistry error
+        with pytest.raises(UndefinedStereochemistryError):
+            mol = Molecule(smiles='CN(C)CCC=C1c2ccccc2CCc3c1cccc3')
+
+        # This now should work
+        mol = Molecule(smiles='CN(C)CCC=C1c2ccccc2CCc3c1cccc3',
+                       allow_undefined_stereo=True)
+
+        # And we can parameterize it
+        ff = OpenForceField('openff_unconstrained-1.2.1.offxml')
+        ff.parameterize(mol, charge_method='gasteiger')
+
+        # Save it
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                mol.to_pdb_file('molecule.pdb')
+
+    def test_from_rdkit(self):
+        """
+        It checks the initialization of a peleffy Molecule from an RDKit
+        molecular representation.
+        """
+        from rdkit import Chem
+
+        pdb_path = get_data_file_path('ligands/malonate.pdb')
+        rdkit_molecule = Chem.MolFromPDBFile(pdb_path, removeHs=False)
+        molecule = Molecule.from_rdkit(rdkit_molecule)
+
+        assert molecule._rdkit_molecule is not None, \
+            'Unexpected molecule representation found, it is not initialized'
+        assert molecule._off_molecule is not None, \
+            'Unexpected molecule representation found, it is not initialized'
+
+        ref_pdb_atom_names = [' O1 ', ' C1 ', ' O2 ', ' C2 ', ' C3 ',
+                              ' O3 ', ' O4 ', ' H1 ', ' H2 ', ' H3 ']
+        pdb_atom_names = molecule.get_pdb_atom_names()
+
+        assert pdb_atom_names == ref_pdb_atom_names, \
+            'Unexpected PDB atom names found in the resulting Molecule ' \
+            + 'representation'
+
+    def test_from_openff(self):
+        """
+        It checks the initialization of a peleffy Molecule from an OpenFF
+        molecular representation.
+        """
+        from openforcefield.topology import Molecule as OpenFFMolecule
+
+        openff_molecule = OpenFFMolecule.from_smiles('C(C(=O)[O-])C(=O)[OH]')
+
+        molecule = Molecule.from_openff(openff_molecule)
+
+        assert molecule._rdkit_molecule is not None, \
+            'Unexpected molecule representation found, it is not initialized'
+        assert molecule._off_molecule is not None, \
+            'Unexpected molecule representation found, it is not initialized'
+
+        ref_pdb_atom_names = [' C1 ', ' C2 ', ' O1 ', ' O2 ', ' C3 ',
+                              ' O3 ', ' O4 ', ' H1 ', ' H2 ', ' H3 ']
+        pdb_atom_names = molecule.get_pdb_atom_names()
+
+        assert pdb_atom_names == ref_pdb_atom_names, \
+            'Unexpected PDB atom names found in the resulting Molecule ' \
+            + 'representation'
+
+    def test_pdb_fixer(self):
+        """
+        It checks the PDB fixer prior parsing a PDB input file for
+        a peleffy Molecule.
+        """
+        from .utils import compare_blocks
+
+        # Check default
+        molecule = Molecule()
+
+        assert molecule.fix_pdb is True, \
+            'Unexpected default settings for the PDB fixer'
+
+        # Activate fixer
+        molecule = Molecule(fix_pdb=True)
+
+        ref_path = get_data_file_path('tests/ligSUV_fixed.pdb')
+        path1 = get_data_file_path('tests/ligSUV_no_elements1.pdb')
+        path2 = get_data_file_path('tests/ligSUV_no_elements2.pdb')
+
+        ref_pdb_block = molecule._read_and_fix_pdb(ref_path)
+        pdb_block1 = molecule._read_and_fix_pdb(path1)
+        pdb_block2 = molecule._read_and_fix_pdb(path2)
+
+        compare_blocks(ref_pdb_block, pdb_block1, (76, 78))
+        compare_blocks(ref_pdb_block, pdb_block2, (76, 78))
+
+        # Deactivate fixer
+        molecule = Molecule(fix_pdb=False)
+
+        ref_path = get_data_file_path('tests/ligSUV_fixed.pdb')
+        path1 = get_data_file_path('tests/ligSUV_no_elements1.pdb')
+        path2 = get_data_file_path('tests/ligSUV_no_elements2.pdb')
+
+        ref_pdb_block = molecule._read_and_fix_pdb(ref_path)
+        pdb_block1 = molecule._read_and_fix_pdb(path1)
+        pdb_block2 = molecule._read_and_fix_pdb(path2)
+
+        with pytest.raises(AssertionError):
+            compare_blocks(ref_pdb_block, pdb_block1, (76, 78))
+
+        with pytest.raises(AssertionError):
+            compare_blocks(ref_pdb_block, pdb_block2, (76, 78))
+
+    def test_pdb_fixer_logger_messages(self):
+        """It checks the logger messages of the PDB fixer."""
+
+        from peleffy.utils import Logger
+        import io
+
+        molecule = Molecule(fix_pdb=True)
+
+        # Check logger messages
+        path3 = get_data_file_path('tests/ligSUV_no_elements3.pdb')
+
+        import logging
+
+        # Force a hard reset of logging library and the logger it manages
+        from importlib import reload
+        logging.shutdown()
+        reload(logging)
+
+        # Initiate logger
+        log = Logger()
+
+        # Try the default level (INFO)
+        # Catch logger messages to string buffer
+        with io.StringIO() as buf:
+            # Add custom handler to logger
+            log_handler = logging.StreamHandler(buf)
+            log._logger.handlers = list()
+            log._logger.addHandler(log_handler)
+
+            _ = molecule._read_and_fix_pdb(path3)
+
+            # Get string from buffer
+            output = buf.getvalue()
+
+            assert output == "Warning: input PDB has no information " \
+                + "about atom elements and they were inferred from " \
+                + "atom names. " \
+                + "Please, verify that the resulting elements are " \
+                + "correct\n" \
+                + "Error: PDB could not be fixed\n"

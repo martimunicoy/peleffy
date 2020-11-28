@@ -18,7 +18,7 @@ class TestMolecularGraph(object):
         """
         It tests the rotamer library builder.
         """
-        LIGAND_PATH = 'ligands/OLC.pdb'
+        LIGAND_PATH = 'ligands/oleic_acid.pdb'
 
         ligand_path = get_data_file_path(LIGAND_PATH)
         molecule = Molecule(ligand_path, exclude_terminal_rotamers=False)
@@ -88,7 +88,7 @@ class TestMolecularGraph(object):
         It tests the rotamer library builder when the terminal rotatable bonds
         are ignored.
         """
-        LIGAND_PATH = 'ligands/OLC.pdb'
+        LIGAND_PATH = 'ligands/oleic_acid.pdb'
 
         ligand_path = get_data_file_path(LIGAND_PATH)
         molecule = Molecule(ligand_path, exclude_terminal_rotamers=True)
@@ -156,7 +156,7 @@ class TestMolecularGraph(object):
         to contain a specific atom.
         """
 
-        LIGAND_PATH = 'ligands/OLC.pdb'
+        LIGAND_PATH = 'ligands/oleic_acid.pdb'
         ligand_path = get_data_file_path(LIGAND_PATH)
 
         # Test atom index constraint
@@ -365,7 +365,7 @@ class TestMolecularGraph(object):
         the rotamer library builder with core constraints.
         """
 
-        LIGAND_PATH = 'ligands/OLC.pdb'
+        LIGAND_PATH = 'ligands/oleic_acid.pdb'
         ligand_path = get_data_file_path(LIGAND_PATH)
 
         # Test adjacent core constraint selection
