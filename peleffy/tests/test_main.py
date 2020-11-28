@@ -67,7 +67,7 @@ class TestMain(object):
             'Unexpected charge_method settings were parsed'
         assert parsed_args.debug is False, \
             'Unexpected debug settings were parsed'
-        assert parsed_args.forcefield == 'openff_unconstrained-1.2.1.offxml', \
+        assert parsed_args.forcefield == 'openff_unconstrained-1.3.0.offxml', \
             'Unexpected forcefield settings were parsed'
         assert parsed_args.include_terminal_rotamers is False, \
             'Unexpected include_terminal_rotamers settings were parsed'
@@ -156,7 +156,7 @@ class TestMain(object):
             'Unexpected charge_method settings were parsed'
         assert parsed_args.debug is False, \
             'Unexpected debug settings were parsed'
-        assert parsed_args.forcefield == 'openff_unconstrained-1.2.1.offxml', \
+        assert parsed_args.forcefield == 'openff_unconstrained-1.3.0.offxml', \
             'Unexpected forcefield settings were parsed'
         assert parsed_args.include_terminal_rotamers is False, \
             'Unexpected include_terminal_rotamers settings were parsed'
@@ -181,7 +181,7 @@ class TestMain(object):
             'Unexpected charge_method settings were parsed'
         assert parsed_args.debug is False, \
             'Unexpected debug settings were parsed'
-        assert parsed_args.forcefield == 'openff_unconstrained-1.2.1.offxml', \
+        assert parsed_args.forcefield == 'openff_unconstrained-1.3.0.offxml', \
             'Unexpected forcefield settings were parsed'
         assert parsed_args.include_terminal_rotamers is True, \
             'Unexpected include_terminal_rotamers settings were parsed'
@@ -206,7 +206,7 @@ class TestMain(object):
             'Unexpected charge_method settings were parsed'
         assert parsed_args.debug is False, \
             'Unexpected debug settings were parsed'
-        assert parsed_args.forcefield == 'openff_unconstrained-1.2.1.offxml', \
+        assert parsed_args.forcefield == 'openff_unconstrained-1.3.0.offxml', \
             'Unexpected forcefield settings were parsed'
         assert parsed_args.include_terminal_rotamers is False, \
             'Unexpected include_terminal_rotamers settings were parsed'
@@ -234,7 +234,7 @@ class TestMain(object):
             'Unexpected charge_method settings were parsed'
         assert parsed_args.debug is True, \
             'Unexpected debug settings were parsed'
-        assert parsed_args.forcefield == 'openff_unconstrained-1.2.1.offxml', \
+        assert parsed_args.forcefield == 'openff_unconstrained-1.3.0.offxml', \
             'Unexpected forcefield settings were parsed'
         assert parsed_args.include_terminal_rotamers is False, \
             'Unexpected include_terminal_rotamers settings were parsed'
