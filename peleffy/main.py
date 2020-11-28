@@ -14,12 +14,13 @@ import argparse as ap
 
 import peleffy
 from peleffy.utils import Logger, OutputPathHandler
+from peleffy.forcefield.selectors import ChargeCalculatorSelector
 
 
 DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-1.3.0.offxml'
 DEFAULT_RESOLUTION = int(30)
 DEFAULT_CHARGE_METHOD = 'am1bcc'
-AVAILABLE_CHARGE_METHODS = ['am1bcc', 'gasteiger', 'OPLS2005']
+AVAILABLE_CHARGE_METHODS = ChargeCalculatorSelector()._AVAILABLE_TYPES.keys()
 IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OFF/Parsley/HeteroAtoms/'
 ROTAMER_LIBRARY_PATH = 'DataLocal/LigandRotamerLibs/'
 SOLVENT_TEMPLATE_PATH = 'DataLocal/OBC/'
