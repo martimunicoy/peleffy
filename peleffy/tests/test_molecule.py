@@ -428,3 +428,16 @@ class TestMolecule(object):
                 + "Please, verify that the resulting elements are " \
                 + "correct\n" \
                 + "Error: PDB could not be fixed\n"
+
+    def test_molecule_display(self):
+        """
+        It checks the visual representation of the molecule in a
+        Jupyter notebook.
+        """
+
+        from IPython.display import display
+
+        molecule = Molecule(smiles='c1ccccc1')
+
+        # This should not raise any Exception
+        display(molecule)
