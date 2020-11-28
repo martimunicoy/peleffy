@@ -15,12 +15,14 @@ This minor release integrates the parameterization of OBC charges and scale fact
 
 New features
 """"""""""""
-- `PR #88 <https://github.com/martimunicoy/peleffy/pull/88>`_: New method to retrieve atom degrees with RDKit.
 - `PR #86 <https://github.com/martimunicoy/peleffy/pull/86>`_: New method to check the input PDB prior building the molecule.
-- `PR #94 <https://github.com/martimunicoy/peleffy/pull/94>`_: New method for the OPLS OBC parameters.
+- `PR #88 <https://github.com/martimunicoy/peleffy/pull/88>`_: New method to retrieve atom degrees with RDKit.
+- `PR #90 <https://github.com/martimunicoy/peleffy/pull/90>`_: Add support for openff-1.3.0.
 - `PR #92 <https://github.com/martimunicoy/peleffy/pull/92>`_: New parameter to skip the stereochemistry assignment (and the checking from the OpenFF toolkit).
+- `PR #94 <https://github.com/martimunicoy/peleffy/pull/94>`_: New method for the OPLS OBC parameters.
 - `PR #100 <https://github.com/martimunicoy/peleffy/pull/100>`_: New writer for the OPLS OBC parameters.
 - `PR #106 <https://github.com/martimunicoy/peleffy/pull/106>`_: New method to initialize a Molecule object directly from an RDKit and OpenFF molecular representations.
+- `PR #112 <https://github.com/martimunicoy/peleffy/pull/112>`_: New method to fix an input PDB file with no atomic element identifiers.
 
 Bugfixes
 """"""""
@@ -36,11 +38,13 @@ Tests added
 """""""""""
 - `PR #88 <https://github.com/martimunicoy/peleffy/pull/88>`_: Adds tests to validate the atom degrees getter.
 - `PR #86 <https://github.com/martimunicoy/peleffy/pull/86>`_: Adds tests to validate the PDB check up.
-- `PR #94 <https://github.com/martimunicoy/peleffy/pull/94>`_: Adds tests to validate the OPLS OBC parameters generator.
+- `PR #90 <https://github.com/martimunicoy/peleffy/pull/90>`_: General validation of supported force fields.
 - `PR #92 <https://github.com/martimunicoy/peleffy/pull/92>`_: New test to check the behaviour of the allow_undefined_stereo parameter.
+- `PR #94 <https://github.com/martimunicoy/peleffy/pull/94>`_: Adds tests to validate the OPLS OBC parameters generator.
 - `PR #97 <https://github.com/martimunicoy/peleffy/pull/97>`_: Includes tests for the new Topology container class.
 - `PR #100 <https://github.com/martimunicoy/peleffy/pull/100>`_: Adds tests to validate the solvent template writers.
 - `PR #106 <https://github.com/martimunicoy/peleffy/pull/106>`_: Adds tests to check the RDKit and OpenFF molecular initializers.
+- `PR #112 <https://github.com/martimunicoy/peleffy/pull/112>`_: Adds one test to check the new PDB fixer method.
 
 
 1.0.0 - Full compatibility for OPLS2005 and OpenFF dihedrals and rotamer library improvements

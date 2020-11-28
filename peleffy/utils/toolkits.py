@@ -116,6 +116,24 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         return Chem.rdmolfiles.MolFromPDBFile(path, removeHs=False)
 
+    def from_pdb_block(self, pdb_block):
+        """
+        It initializes an RDKit's Molecule object from a PDB block.
+
+        Parameters
+        ----------
+        pdb_block : str
+            The PDB block to built the molecule with
+
+        Returns
+        -------
+        molecule : an rdkit.Chem.rdchem.Mol object
+            The RDKit's Molecule object
+        """
+        from rdkit import Chem
+
+        return Chem.rdmolfiles.MolFromPDBBlock(pdb_block, removeHs=False)
+
     def from_smiles(self, smiles):
         """
         It initializes an RDKit's Molecule object from a SMILES tag.

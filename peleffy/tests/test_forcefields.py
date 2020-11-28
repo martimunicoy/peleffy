@@ -397,3 +397,58 @@ class TestOpenFFOPLS2005ForceField(object):
         check(hybridff, molecule, ffld_file,
               get_data_file_path(
                   'tests/ETL_openff-1.2.1_opls2005_parameters2.json'))
+
+
+class TestForceFieldSelector(object):
+    """
+    It wraps all tests that check the force field selector class.
+    """
+
+    def test_get_by_name(self):
+        """It checks the get_by_name method."""
+
+        from peleffy.forcefield import ForceFieldSelector
+        from peleffy.forcefield import OpenForceField
+        from peleffy.forcefield import OPLS2005ForceField
+
+        selector = ForceFieldSelector()
+
+        forcefield = selector.get_by_name('openff_unconstrained-1.0.0.offxml')
+
+        assert isinstance(forcefield, OpenForceField), \
+            'Unexpected force field type'
+
+        forcefield = selector.get_by_name('openff_unconstrained-1.0.1.offxml')
+
+        assert isinstance(forcefield, OpenForceField), \
+            'Unexpected force field type'
+
+        forcefield = selector.get_by_name('openff_unconstrained-1.1.0.offxml')
+
+        assert isinstance(forcefield, OpenForceField), \
+            'Unexpected force field type'
+
+        forcefield = selector.get_by_name('openff_unconstrained-1.1.1.offxml')
+
+        assert isinstance(forcefield, OpenForceField), \
+            'Unexpected force field type'
+
+        forcefield = selector.get_by_name('openff_unconstrained-1.2.0.offxml')
+
+        assert isinstance(forcefield, OpenForceField), \
+            'Unexpected force field type'
+
+        forcefield = selector.get_by_name('openff_unconstrained-1.2.1.offxml')
+
+        assert isinstance(forcefield, OpenForceField), \
+            'Unexpected force field type'
+
+        forcefield = selector.get_by_name('openff_unconstrained-1.3.0.offxml')
+
+        assert isinstance(forcefield, OpenForceField), \
+            'Unexpected force field type'
+
+        forcefield = selector.get_by_name('OPLS2005')
+
+        assert isinstance(forcefield, OPLS2005ForceField), \
+            'Unexpected force field type'

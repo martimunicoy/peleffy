@@ -9,7 +9,8 @@ class ForceFieldSelector(object):
     It defines a force field selector.
     """
     _FF_TYPES = {'OPLS2005': ('OPLS2005'),
-                 'OpenFF': ('openff_unconstrained-1.2.1.offxml',
+                 'OpenFF': ('openff_unconstrained-1.3.0.offxml',
+                            'openff_unconstrained-1.2.1.offxml',
                             'openff_unconstrained-1.2.0.offxml',
                             'openff_unconstrained-1.1.1.offxml',
                             'openff_unconstrained-1.1.0.offxml',
@@ -47,6 +48,10 @@ class ForceFieldSelector(object):
         >>> openff = selector.get_by_name('openff_unconstrained-1.2.1.offxml')
 
         """
+        from peleffy.utils import Logger
+
+        log = Logger()
+        log.info(' - Loading \'{}\''.format(forcefield_name))
 
         from .forcefield import (OpenForceField, OPLS2005ForceField)
 

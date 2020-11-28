@@ -16,7 +16,7 @@ import peleffy
 from peleffy.utils import Logger, OutputPathHandler
 
 
-DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-1.2.1.offxml'
+DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-1.3.0.offxml'
 DEFAULT_RESOLUTION = int(30)
 DEFAULT_CHARGE_METHOD = 'am1bcc'
 AVAILABLE_CHARGE_METHODS = ['am1bcc', 'gasteiger', 'OPLS2005']
@@ -167,11 +167,18 @@ def run_peleffy(pdb_file,
     rotamer_library.to_file(output_handler.get_rotamer_library_path())
 
     # Parameterize molecule with the selected force field
+    log.info(' - Parameterizing molecule')
     parameters = forcefield.parameterize(molecule,
                                          charge_method=charge_method)
 
     # Generate the molecular topology
     topology = Topology(molecule, parameters)
+    log.info(' - Parameters were built successfully:')
+    log.info('   - {} atoms'.format(len(topology.atoms)))
+    log.info('   - {} bonds'.format(len(topology.bonds)))
+    log.info('   - {} torsions'.format(len(topology.angles)))
+    log.info('   - {} propers'.format(len(topology.propers)))
+    log.info('   - {} impropers'.format(len(topology.impropers)))
 
     # Generate the impact template
     impact = Impact(topology)
@@ -187,7 +194,12 @@ def run_peleffy(pdb_file,
         dihedrals.calculate()
         dihedrals.save(output_handler.get_dihedral_library_path())
 
-    log.info(' - All files were generated successfully')
+    log.info(' - All files were generated successfully:')
+    log.info('   - {}'.format(output_handler.get_rotamer_library_path()))
+    log.info('   - {}'.format(output_handler.get_impact_template_path()))
+    if with_solvent:
+        log.info('   - {}'.format(output_handler.get_solvent_template_path()))
+
     log.info('-' * 60)
 
 
