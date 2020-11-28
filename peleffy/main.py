@@ -168,7 +168,7 @@ def run_peleffy(pdb_file,
 
     # Generate the molecular topology
     topology = Topology(molecule, parameters)
-    log.info(' - Parameterization results:')
+    log.info(' - Parameters were built successfully:')
     log.info('   - {} atoms'.format(len(topology.atoms)))
     log.info('   - {} bonds'.format(len(topology.bonds)))
     log.info('   - {} torsions'.format(len(topology.angles)))
