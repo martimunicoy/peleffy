@@ -568,6 +568,40 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         AllChem.Compute2DCoords(representation_2D)
         return representation_2D
 
+    def draw_molecule(self, representation, atom_indexes=list(),
+                      radii_dict=dict(), atom_color_dict=dict(),
+                      bond_indexes=list(), bond_color_dict=dict()):
+        """
+        Given a molecular representation, it returns its image as SVG.
+
+        Parameters
+        ----------
+        representation : an RDKit.molecule object
+            It is an RDKit molecule with an embeded 2D representation
+
+        Returns
+        -------
+        image : an IPython's SVG display object
+            The image of the molecular representation to display
+        """
+        from rdkit.Chem.Draw import rdMolDraw2D
+
+        draw = rdMolDraw2D.MolDraw2DSVG(500, 500)
+        draw.SetLineWidth(4)
+        rdMolDraw2D.PrepareAndDrawMolecule(draw, representation,
+                                           highlightAtoms=atom_indexes,
+                                           highlightAtomRadii=radii_dict,
+                                           highlightAtomColors=atom_color_dict,
+                                           highlightBonds=bond_indexes,
+                                           highlightBondColors=bond_color_dict)
+        draw.FinishDrawing()
+
+        from IPython.display import SVG
+
+        image = SVG(draw.GetDrawingText())
+
+        return image
+
 
 class AmberToolkitWrapper(ToolkitWrapper):
     """

@@ -168,7 +168,7 @@ class RotamerLibrary(object):
                   (154 / 255, 92 / 255, 255 / 255), (66 / 255, 255 / 255, 167 / 255),
                   (251 / 255, 255 / 255, 17 / 255)]
 
-        from rdkit.Chem.Draw import rdMolDraw2D
+        from IPython.display import display
 
         # Get 2D molecular representation
         rdkit_toolkit = RDKitToolkitWrapper()
@@ -205,19 +205,17 @@ class RotamerLibrary(object):
                 radii_dict[atom.GetIdx()] = 0.6
                 atom_color_dict[atom.GetIdx()] = (255 / 255, 243 / 255, 133 / 255)
 
-        draw = rdMolDraw2D.MolDraw2DSVG(500, 500)
-        draw.SetLineWidth(4)
-        rdMolDraw2D.PrepareAndDrawMolecule(draw, representation,
-                                           highlightAtoms=atom_indexes,
-                                           highlightAtomRadii=radii_dict,
-                                           highlightAtomColors=atom_color_dict,
-                                           highlightBonds=bond_indexes,
-                                           highlightBondColors=bond_color_dict)
-        draw.FinishDrawing()
+        # Get 2D molecular representation
+        rdkit_toolkit = RDKitToolkitWrapper()
+        representation = rdkit_toolkit.get_2D_representation(self.molecule)
 
-        from IPython.display import SVG, display
-
-        image = SVG(draw.GetDrawingText())
+        # Get its image
+        image = rdkit_toolkit.draw_molecule(representation,
+                                            atom_indexes=atom_indexes,
+                                            radii_dict=radii_dict,
+                                            atom_color_dict=atom_color_dict,
+                                            bond_indexes=bond_indexes,
+                                            bond_color_dict=bond_color_dict)
 
         return display(image)
 

@@ -792,4 +792,7 @@ class Molecule(object):
         rdkit_toolkit = RDKitToolkitWrapper()
         representation = rdkit_toolkit.get_2D_representation(self)
 
-        return display(representation)
+        # Get its image
+        image = rdkit_toolkit.draw_molecule(representation)
+
+        return display(image)
