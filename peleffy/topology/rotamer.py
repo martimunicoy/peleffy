@@ -130,7 +130,7 @@ class RotamerLibrary(object):
                           for name in self.molecule.get_pdb_atom_names()]
 
         with open(path, 'w') as file:
-            file.write('rot assign res {} &\n'.format(self.molecule.name))
+            file.write('rot assign res {} &\n'.format(self.molecule.tag))
             for i, rotamer_branches in enumerate(self.molecule.rotamers):
                 if i > 0:
                     file.write('     newgrp &\n')
