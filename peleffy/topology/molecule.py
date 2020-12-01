@@ -540,6 +540,8 @@ class Molecule(object):
         openforcefield_toolkit = OpenForceFieldToolkitWrapper()
         molecule._off_molecule = openforcefield_toolkit.from_rdkit(molecule)
 
+        molecule._build_rotamers()
+
         return molecule
 
     @staticmethod
@@ -619,6 +621,8 @@ class Molecule(object):
         logger.info('   - Generating RDKit molecular representation with '
                     + 'the Open Force Field Toolkit')
         molecule._rdkit_molecule = openff_molecule.to_rdkit()
+
+        molecule._build_rotamers()
 
         return molecule
 
