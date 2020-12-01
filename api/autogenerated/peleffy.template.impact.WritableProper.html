@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.gd938104
+                0+untagged.1.ged480da
               </div>
             
           
@@ -94,6 +94,7 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../topology.html">Topology representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../forcefield.html">Forcefield methods</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../template.html">Template handlers</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../../template.html#primary-objects">Primary objects</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../../template.html#secondary-objects">Secondary objects</a><ul class="current">
@@ -108,8 +109,6 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../solvent.html">Solvent models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../charge.html">Charge methods</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../forcefield.html">Forcefield methods</a></li>
 </ul>
 
             
@@ -190,7 +189,7 @@
 <dd><p>It initializes a WritableProper object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>proper</strong> (<em>an peleffy.topology.Proper</em>) – The Proper to create the WritableProper with</p>
+<dd class="field-odd"><p><strong>proper</strong> (<em>a peleffy.topology.Proper</em>) – The Proper to create the WritableProper with</p>
 </dd>
 </dl>
 </dd></dl>
@@ -322,6 +321,12 @@ setting the index of the third atom to negative.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="peleffy.template.impact.WritableProper.include_in_14_list">
+<code class="sig-name descname">include_in_14_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.template.impact.WritableProper.include_in_14_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>It includes this proper dihedral in PELE’s 1-4 list.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="peleffy.template.impact.WritableProper.none_to_dummy">
 <em class="property">static </em><code class="sig-name descname">none_to_dummy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.template.impact.WritableProper.none_to_dummy" title="Permalink to this definition">¶</a></dt>
 <dd><p>It converts a returned None to a DummyAtom.</p>
@@ -333,7 +338,7 @@ setting the index of the third atom to negative.</p>
 <dd class="field-even"><p><strong>out</strong> – A DummyAtom object</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="peleffy.topology.molecule.DummyAtom.html#peleffy.topology.molecule.DummyAtom" title="peleffy.topology.molecule.DummyAtom">DummyAtom</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="peleffy.topology.elements.DummyAtom.html#peleffy.topology.elements.DummyAtom" title="peleffy.topology.elements.DummyAtom">DummyAtom</a></p>
 </dd>
 </dl>
 </dd></dl>

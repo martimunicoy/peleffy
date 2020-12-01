@@ -1,7 +1,7 @@
-peleffy.charge.Am1bccCalculator
-===============================
+peleffy.forcefield.calculators.Am1bccCalculator
+===============================================
 
-.. currentmodule:: peleffy.charge
+.. currentmodule:: peleffy.forcefield.calculators
 
 .. autoclass:: Am1bccCalculator
 
@@ -9,6 +9,7 @@ peleffy.charge.Am1bccCalculator
    
    
       .. automethod:: __init__
+      .. automethod:: assign_partial_charges
       .. automethod:: get_partial_charges
    
    

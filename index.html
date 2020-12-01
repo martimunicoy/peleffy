@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0+untagged.1.gd938104
+                0+untagged.1.ged480da
               </div>
             
           
@@ -93,10 +93,9 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="topology.html">Topology representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="forcefield.html">Forcefield methods</a></li>
 <li class="toctree-l1"><a class="reference internal" href="template.html">Template handlers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="solvent.html">Solvent models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="charge.html">Charge methods</a></li>
-<li class="toctree-l1"><a class="reference internal" href="forcefield.html">Forcefield methods</a></li>
 </ul>
 
             
@@ -166,9 +165,22 @@
 <h1>PELE Force Field Yielder<a class="headerlink" href="#pele-force-field-yielder" title="Permalink to this headline">¶</a></h1>
 <p>The <cite>peleffy</cite> (PELE Force Field Yielder) is a Python package that builds
 PELE-compatible force field templates. The current supported force fields
-are:
-- Any force field from the [Open Force Field toolkit](<a class="reference external" href="https://github.com/openforcefield/openforcefield">https://github.com/openforcefield/openforcefield</a>).
-- OPLS2005.</p>
+are:</p>
+<ul class="simple">
+<li><p>The following force field from the <a class="reference external" href="https://github.com/openforcefield/openforcefield">Open Force Field toolkit</a>:</p>
+<ul>
+<li><p>openff_unconstrained-1.2.1.offxml</p></li>
+<li><p>openff_unconstrained-1.2.0.offxml</p></li>
+<li><p>openff_unconstrained-1.1.1.offxml</p></li>
+<li><p>openff_unconstrained-1.1.0.offxml</p></li>
+<li><p>openff_unconstrained-1.0.1.offxml</p></li>
+<li><p>openff_unconstrained-1.0.0.offxml</p></li>
+</ul>
+</li>
+<li><p>OPLS2005</p></li>
+</ul>
+<p>It also generates other files required by PELE such as rotamer libraries or
+solvent templates.</p>
 <div class="section" id="user-guide">
 <h2>User guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
@@ -185,10 +197,9 @@ are:
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="topology.html">Topology representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="forcefield.html">Forcefield methods</a></li>
 <li class="toctree-l1"><a class="reference internal" href="template.html">Template handlers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="solvent.html">Solvent models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="charge.html">Charge methods</a></li>
-<li class="toctree-l1"><a class="reference internal" href="forcefield.html">Forcefield methods</a></li>
 </ul>
 </div>
 </div>

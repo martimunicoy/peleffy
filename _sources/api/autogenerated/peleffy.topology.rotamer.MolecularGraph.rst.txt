@@ -20,6 +20,7 @@ peleffy.topology.rotamer.MolecularGraph
       .. automethod:: copy
       .. automethod:: edge_subgraph
       .. automethod:: get_edge_data
+      .. automethod:: get_parents
       .. automethod:: get_rotamers
       .. automethod:: has_edge
       .. automethod:: has_node
@@ -34,8 +35,6 @@ peleffy.topology.rotamer.MolecularGraph
       .. automethod:: remove_edges_from
       .. automethod:: remove_node
       .. automethod:: remove_nodes_from
-      .. automethod:: set_core
-      .. automethod:: set_parents
       .. automethod:: size
       .. automethod:: subgraph
       .. automethod:: to_directed

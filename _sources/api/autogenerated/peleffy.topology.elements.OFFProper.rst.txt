@@ -1,7 +1,7 @@
-peleffy.topology.topology.OFFProper
+peleffy.topology.elements.OFFProper
 ===================================
 
-.. currentmodule:: peleffy.topology.topology
+.. currentmodule:: peleffy.topology.elements
 
 .. autoclass:: OFFProper
 

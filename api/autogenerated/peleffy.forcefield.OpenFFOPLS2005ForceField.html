@@ -36,6 +36,7 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="peleffy.forcefield.selectors.ForceFieldSelector" href="peleffy.forcefield.selectors.ForceFieldSelector.html" />
     <link rel="prev" title="peleffy.forcefield.OPLS2005ForceField" href="peleffy.forcefield.OPLS2005ForceField.html" /> 
 </head>
 
@@ -60,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.gd938104
+                0+untagged.1.ged480da
               </div>
             
           
@@ -93,18 +94,19 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../topology.html">Topology representations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../template.html">Template handlers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../solvent.html">Solvent models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../charge.html">Charge methods</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../forcefield.html">Forcefield methods</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../../forcefield.html#primary-objects">Primary objects</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="peleffy.forcefield.OpenForceField.html">peleffy.forcefield.OpenForceField</a></li>
 <li class="toctree-l3"><a class="reference internal" href="peleffy.forcefield.OPLS2005ForceField.html">peleffy.forcefield.OPLS2005ForceField</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">peleffy.forcefield.OpenFFOPLS2005ForceField</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.forcefield.selectors.ForceFieldSelector.html">peleffy.forcefield.selectors.ForceFieldSelector</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../../forcefield.html#secondary-objects">Secondary objects</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../template.html">Template handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../solvent.html">Solvent models</a></li>
 </ul>
 
             
@@ -189,19 +191,57 @@ OPLS2005.</p>
 <dd class="field-odd"><p><strong>openff_name</strong> (<em>str</em>) – The name of the OpenFF forcefield to employ</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<p>Load a molecule and generate its parameters with an hybrid
+OpenFF-OPLS2005 force field</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">peleffy.topology</span> <span class="kn">import</span> <span class="n">Molecule</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">molecule</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="s1">&#39;molecule.pdb&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">peleffy.forcefield</span> <span class="kn">import</span> <span class="n">OpenFFOPLS2005ForceField</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hybridff</span> <span class="o">=</span> <span class="n">OpenFFOPLS2005ForceField</span><span class="p">(</span><span class="s1">&#39;openff_unconstrained-1.2.1.offxml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameters</span> <span class="o">=</span> <span class="n">hybridff</span><span class="o">.</span><span class="n">parameterize</span><span class="p">(</span><span class="n">molecule</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can customized it by selecting which force field employ for each
+parameter type. For example, below we are parameterizing all
+force field elements with OPLS2005 except for the dihedrals</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">peleffy.topology</span> <span class="kn">import</span> <span class="n">Molecule</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">molecule</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="s1">&#39;molecule.pdb&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">peleffy.forcefield</span> <span class="kn">import</span> <span class="n">OpenFFOPLS2005ForceField</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hybridff</span> <span class="o">=</span> <span class="n">OpenFFOPLS2005ForceField</span><span class="p">(</span><span class="s1">&#39;openff_unconstrained-1.2.1.offxml&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hybridff</span><span class="o">.</span><span class="n">set_nonbonding_parameters</span><span class="p">(</span><span class="s1">&#39;OPLS2005&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hybridff</span><span class="o">.</span><span class="n">set_bond_parameters</span><span class="p">(</span><span class="s1">&#39;OPLS2005&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hybridff</span><span class="o">.</span><span class="n">set_angle_parameters</span><span class="p">(</span><span class="s1">&#39;OPLS2005&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hybridff</span><span class="o">.</span><span class="n">set_dihedral_parameters</span><span class="p">(</span><span class="s1">&#39;OpenFF&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parameters</span> <span class="o">=</span> <span class="n">hybridff</span><span class="o">.</span><span class="n">parameterize</span><span class="p">(</span><span class="n">molecule</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt id="peleffy.forcefield.OpenFFOPLS2005ForceField.parameterize">
-<code class="sig-name descname">parameterize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">molecule</span></em>, <em class="sig-param"><span class="n">force_parameterization</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.forcefield.OpenFFOPLS2005ForceField.parameterize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">parameterize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">molecule</span></em>, <em class="sig-param"><span class="n">charge_method</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.forcefield.OpenFFOPLS2005ForceField.parameterize" title="Permalink to this definition">¶</a></dt>
 <dd><p>It parameterizes the supplied molecule.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>molecule</strong> (<em>an peleffy.topology.Molecule</em>) – The peleffy’s Molecule object to parameterize</p></li>
-<li><p><strong>force_parameterization</strong> (<em>bool</em>) – Whether to force a new parameterization instead of attempting
-to reuse parameters obtained in a previous parameterization,
-or not</p></li>
+<li><p><strong>molecule</strong> (<em>a peleffy.topology.Molecule</em>) – The peleffy’s Molecule object to parameterize</p></li>
+<li><p><strong>charge_method</strong> (<em>str</em>) – The name of the charge method to employ</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -209,7 +249,7 @@ or not</p></li>
 with the current force field</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>an peleffy.forcefield.parameters.BaseParameterWrapper object</p>
+<dd class="field-odd"><p>a peleffy.forcefield.parameters.BaseParameterWrapper object</p>
 </dd>
 </dl>
 </dd></dl>
@@ -237,12 +277,9 @@ with the current force field</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="peleffy.forcefield.OpenFFOPLS2005ForceField.set_nonbonding_parameters">
-<code class="sig-name descname">set_nonbonding_parameters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">selection</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/forcefield/forcefield.html#OpenFFOPLS2005ForceField.set_nonbonding_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.forcefield.OpenFFOPLS2005ForceField.set_nonbonding_parameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>It sets which force field to use to assign nonbonding parameters.
-Nonbonding parameters are: ‘atom_types’, ‘sigmas’, ‘epsilons’,
-‘SGB_radii’, ‘vdW_radii’, ‘gammas’, ‘alphas’, ‘GBSA_radii’ and
-‘GBSA_scales’.</p>
+<dt id="peleffy.forcefield.OpenFFOPLS2005ForceField.set_dihedral_parameters">
+<code class="sig-name descname">set_dihedral_parameters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">selection</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/forcefield/forcefield.html#OpenFFOPLS2005ForceField.set_dihedral_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.forcefield.OpenFFOPLS2005ForceField.set_dihedral_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>It sets which force field to use to assign parameters to dihedrals.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>selection</strong> (<em>str</em>) – The force field to employ. One of (‘OpenFF’, ‘OPLS2005’)</p>
@@ -251,9 +288,12 @@ Nonbonding parameters are: ‘atom_types’, ‘sigmas’, ‘epsilons’,
 </dd></dl>
 
 <dl class="py method">
-<dt id="peleffy.forcefield.OpenFFOPLS2005ForceField.set_torsion_parameters">
-<code class="sig-name descname">set_torsion_parameters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">selection</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/forcefield/forcefield.html#OpenFFOPLS2005ForceField.set_torsion_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.forcefield.OpenFFOPLS2005ForceField.set_torsion_parameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>It sets which force field to use to assign parameters to torsions.</p>
+<dt id="peleffy.forcefield.OpenFFOPLS2005ForceField.set_nonbonding_parameters">
+<code class="sig-name descname">set_nonbonding_parameters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">selection</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/forcefield/forcefield.html#OpenFFOPLS2005ForceField.set_nonbonding_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.forcefield.OpenFFOPLS2005ForceField.set_nonbonding_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>It sets which force field to use to assign nonbonding parameters.
+Nonbonding parameters are: ‘atom_types’, ‘sigmas’, ‘epsilons’,
+‘SGB_radii’, ‘vdW_radii’, ‘gammas’, ‘alphas’, ‘GBSA_radii’ and
+‘GBSA_scales’.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>selection</strong> (<em>str</em>) – The force field to employ. One of (‘OpenFF’, ‘OPLS2005’)</p>
@@ -291,6 +331,8 @@ Nonbonding parameters are: ‘atom_types’, ‘sigmas’, ‘epsilons’,
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="peleffy.forcefield.selectors.ForceFieldSelector.html" class="btn btn-neutral float-right" title="peleffy.forcefield.selectors.ForceFieldSelector" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="peleffy.forcefield.OPLS2005ForceField.html" class="btn btn-neutral float-left" title="peleffy.forcefield.OPLS2005ForceField" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

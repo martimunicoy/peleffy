@@ -1,7 +1,7 @@
-peleffy.charge.GasteigerCalculator
-==================================
+peleffy.forcefield.calculators.GasteigerCalculator
+==================================================
 
-.. currentmodule:: peleffy.charge
+.. currentmodule:: peleffy.forcefield.calculators
 
 .. autoclass:: GasteigerCalculator
 
@@ -9,6 +9,7 @@ peleffy.charge.GasteigerCalculator
    
    
       .. automethod:: __init__
+      .. automethod:: assign_partial_charges
       .. automethod:: get_partial_charges
    
    

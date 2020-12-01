@@ -39,6 +39,8 @@ peleffy.topology.Atom
       ~Atom.core
       ~Atom.epsilon
       ~Atom.index
+      ~Atom.n_writable_attrs
+      ~Atom.name
       ~Atom.nonpolar_alpha
       ~Atom.nonpolar_gamma
       ~Atom.parent

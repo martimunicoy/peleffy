@@ -37,7 +37,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="peleffy.topology.rotamer.Rotamer" href="peleffy.topology.rotamer.Rotamer.html" />
-    <link rel="prev" title="peleffy.topology.topology.OFFImproper" href="peleffy.topology.topology.OFFImproper.html" /> 
+    <link rel="prev" title="peleffy.topology.elements.OFFImproper" href="peleffy.topology.elements.OFFImproper.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.gd938104
+                0+untagged.1.ged480da
               </div>
             
           
@@ -102,10 +102,10 @@
 <li class="toctree-l3"><a class="reference internal" href="peleffy.topology.Dihedral.html">peleffy.topology.Dihedral</a></li>
 <li class="toctree-l3"><a class="reference internal" href="peleffy.topology.Proper.html">peleffy.topology.Proper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="peleffy.topology.Improper.html">peleffy.topology.Improper</a></li>
-<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.molecule.DummyAtom.html">peleffy.topology.molecule.DummyAtom</a></li>
-<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.topology.OFFDihedral.html">peleffy.topology.topology.OFFDihedral</a></li>
-<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.topology.OFFProper.html">peleffy.topology.topology.OFFProper</a></li>
-<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.topology.OFFImproper.html">peleffy.topology.topology.OFFImproper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.elements.DummyAtom.html">peleffy.topology.elements.DummyAtom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.elements.OFFDihedral.html">peleffy.topology.elements.OFFDihedral</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.elements.OFFProper.html">peleffy.topology.elements.OFFProper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.elements.OFFImproper.html">peleffy.topology.elements.OFFImproper</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">peleffy.topology.ZMatrix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="peleffy.topology.rotamer.Rotamer.html">peleffy.topology.rotamer.Rotamer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="peleffy.topology.rotamer.RotamerLibrary.html">peleffy.topology.rotamer.RotamerLibrary</a></li>
@@ -114,10 +114,9 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../forcefield.html">Forcefield methods</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../template.html">Template handlers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../solvent.html">Solvent models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../charge.html">Charge methods</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../forcefield.html">Forcefield methods</a></li>
 </ul>
 
             
@@ -189,19 +188,45 @@
 <h1>peleffy.topology.ZMatrix<a class="headerlink" href="#peleffy-topology-zmatrix" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="peleffy.topology.ZMatrix">
-<em class="property">class </em><code class="sig-prename descclassname">peleffy.topology.</code><code class="sig-name descname">ZMatrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">molecule</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/topology/zmatrix.html#ZMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.topology.ZMatrix" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">peleffy.topology.</code><code class="sig-name descname">ZMatrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">topology</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/topology/zmatrix.html#ZMatrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.topology.ZMatrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>It generates the zmatrix of a molecule as a numpy.array.</p>
 <p>Inspired by the PlopRotTemp algorithm.</p>
 <blockquote>
 <div><dl class="py method">
 <dt id="peleffy.topology.ZMatrix.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">molecule</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/topology/zmatrix.html#ZMatrix.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.topology.ZMatrix.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">topology</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/topology/zmatrix.html#ZMatrix.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.topology.ZMatrix.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>It initializes a ZMatrix object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>molecule</strong> (<em>An peleffy.topology.Molecule</em>) – A Molecule object to be written as an Impact file</p>
+<dd class="field-odd"><p><strong>topology</strong> (<em>a peleffy.topology.Topology</em>) – The molecular topology representation to generate the
+zmatrix with</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<p>Given a molecular topology, build its Z-matrix</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">peleffy.topology</span> <span class="kn">import</span> <span class="n">Molecule</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">molecule</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="n">smiles</span><span class="o">=</span><span class="s1">&#39;Cc1ccccc1&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">peleffy.forcefield</span> <span class="kn">import</span> <span class="n">OpenForceField</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">openff</span> <span class="o">=</span> <span class="n">OpenForceField</span><span class="p">(</span><span class="s1">&#39;openff_unconstrained-1.2.1.offxml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameters</span> <span class="o">=</span> <span class="n">openff</span><span class="o">.</span><span class="n">parameterize</span><span class="p">(</span><span class="n">molecule</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">peleffy.topology</span> <span class="kn">import</span> <span class="n">Topology</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">topology</span> <span class="o">=</span> <span class="n">Topology</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">peleffy.topology</span> <span class="kn">import</span> <span class="n">ZMatrix</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">zmatrix</span> <span class="o">=</span> <span class="n">ZMatrix</span><span class="p">(</span><span class="n">topology</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1836,7 +1861,7 @@ avoided on arrays defined by slices, transposes, fortran-ordering, etc.:</p>
         <a href="peleffy.topology.rotamer.Rotamer.html" class="btn btn-neutral float-right" title="peleffy.topology.rotamer.Rotamer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="peleffy.topology.topology.OFFImproper.html" class="btn btn-neutral float-left" title="peleffy.topology.topology.OFFImproper" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="peleffy.topology.elements.OFFImproper.html" class="btn btn-neutral float-left" title="peleffy.topology.elements.OFFImproper" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

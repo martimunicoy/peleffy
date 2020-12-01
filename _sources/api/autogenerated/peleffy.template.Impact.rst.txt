@@ -9,7 +9,7 @@ peleffy.template.Impact
    
    
       .. automethod:: __init__
-      .. automethod:: write
+      .. automethod:: to_file
    
    
 
@@ -20,5 +20,6 @@ peleffy.template.Impact
    .. autosummary::
    
       ~Impact.molecule
+      ~Impact.topology
    
    

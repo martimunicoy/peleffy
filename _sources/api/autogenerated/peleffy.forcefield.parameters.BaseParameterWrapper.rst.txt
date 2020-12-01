@@ -1,0 +1,41 @@
+peleffy.forcefield.parameters.BaseParameterWrapper
+==================================================
+
+.. currentmodule:: peleffy.forcefield.parameters
+
+.. autoclass:: BaseParameterWrapper
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: add_parameters
+      .. automethod:: clear
+      .. automethod:: copy
+      .. automethod:: from_impact_template
+      .. automethod:: fromkeys
+      .. automethod:: get
+      .. automethod:: is_empty
+      .. automethod:: items
+      .. automethod:: keys
+      .. automethod:: pop
+      .. automethod:: popitem
+      .. automethod:: setdefault
+      .. automethod:: to_json
+      .. automethod:: to_string
+      .. automethod:: update
+      .. automethod:: values
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~BaseParameterWrapper.atom_iterator
+      ~BaseParameterWrapper.forcefield_name
+      ~BaseParameterWrapper.name
+   
+   

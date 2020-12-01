@@ -1,7 +1,7 @@
-peleffy.topology.molecule.DummyAtom
+peleffy.topology.elements.DummyAtom
 ===================================
 
-.. currentmodule:: peleffy.topology.molecule
+.. currentmodule:: peleffy.topology.elements
 
 .. autoclass:: DummyAtom
 
@@ -39,6 +39,8 @@ peleffy.topology.molecule.DummyAtom
       ~DummyAtom.core
       ~DummyAtom.epsilon
       ~DummyAtom.index
+      ~DummyAtom.n_writable_attrs
+      ~DummyAtom.name
       ~DummyAtom.nonpolar_alpha
       ~DummyAtom.nonpolar_gamma
       ~DummyAtom.parent

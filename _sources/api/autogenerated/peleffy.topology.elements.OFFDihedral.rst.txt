@@ -1,7 +1,7 @@
-peleffy.topology.topology.OFFDihedral
+peleffy.topology.elements.OFFDihedral
 =====================================
 
-.. currentmodule:: peleffy.topology.topology
+.. currentmodule:: peleffy.topology.elements
 
 .. autoclass:: OFFDihedral
 

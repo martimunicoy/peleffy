@@ -36,7 +36,7 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Template handlers" href="../../template.html" />
+    <link rel="next" title="Forcefield methods" href="../../forcefield.html" />
     <link rel="prev" title="peleffy.topology.rotamer.RotamerLibrary" href="peleffy.topology.rotamer.RotamerLibrary.html" /> 
 </head>
 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.gd938104
+                0+untagged.1.ged480da
               </div>
             
           
@@ -102,10 +102,10 @@
 <li class="toctree-l3"><a class="reference internal" href="peleffy.topology.Dihedral.html">peleffy.topology.Dihedral</a></li>
 <li class="toctree-l3"><a class="reference internal" href="peleffy.topology.Proper.html">peleffy.topology.Proper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="peleffy.topology.Improper.html">peleffy.topology.Improper</a></li>
-<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.molecule.DummyAtom.html">peleffy.topology.molecule.DummyAtom</a></li>
-<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.topology.OFFDihedral.html">peleffy.topology.topology.OFFDihedral</a></li>
-<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.topology.OFFProper.html">peleffy.topology.topology.OFFProper</a></li>
-<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.topology.OFFImproper.html">peleffy.topology.topology.OFFImproper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.elements.DummyAtom.html">peleffy.topology.elements.DummyAtom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.elements.OFFDihedral.html">peleffy.topology.elements.OFFDihedral</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.elements.OFFProper.html">peleffy.topology.elements.OFFProper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.elements.OFFImproper.html">peleffy.topology.elements.OFFImproper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="peleffy.topology.ZMatrix.html">peleffy.topology.ZMatrix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="peleffy.topology.rotamer.Rotamer.html">peleffy.topology.rotamer.Rotamer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="peleffy.topology.rotamer.RotamerLibrary.html">peleffy.topology.rotamer.RotamerLibrary</a></li>
@@ -114,10 +114,9 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../forcefield.html">Forcefield methods</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../template.html">Template handlers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../solvent.html">Solvent models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../charge.html">Charge methods</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../forcefield.html">Forcefield methods</a></li>
 </ul>
 
             
@@ -633,6 +632,25 @@ But it is safe to assign attributes <cite>G[u][v][‘foo’]</cite></p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="peleffy.topology.rotamer.MolecularGraph.get_parents">
+<code class="sig-name descname">get_parents</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/topology/rotamer.html#MolecularGraph.get_parents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.topology.rotamer.MolecularGraph.get_parents" title="Permalink to this definition">¶</a></dt>
+<dd><p>It sets the parent of each atom according to the molecular graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>parent</strong> (<em>int</em>) – The index of the node to use as the absolute parent</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>parents</strong> – A dictionary containing the index of the parent of each
+atom according to the molecular graph, keyed by the index
+of each child</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict[int, int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="peleffy.topology.rotamer.MolecularGraph.get_rotamers">
 <code class="sig-name descname">get_rotamers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/topology/rotamer.html#MolecularGraph.get_rotamers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.topology.rotamer.MolecularGraph.get_rotamers" title="Permalink to this definition">¶</a></dt>
 <dd><p>It builds the RotamerLibrary object.</p>
@@ -1010,23 +1028,6 @@ ignored.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="peleffy.topology.rotamer.MolecularGraph.set_core">
-<code class="sig-name descname">set_core</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/topology/rotamer.html#MolecularGraph.set_core"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.topology.rotamer.MolecularGraph.set_core" title="Permalink to this definition">¶</a></dt>
-<dd><p>It sets the core of the molecule to minimize the amount of consecutive
-rotamers as much as possible.</p>
-<p>Please, note that the molecule needs to be already parameterized with
-the Open Force Field toolkit before calling this function.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="peleffy.topology.rotamer.MolecularGraph.set_parents">
-<code class="sig-name descname">set_parents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/topology/rotamer.html#MolecularGraph.set_parents"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.topology.rotamer.MolecularGraph.set_parents" title="Permalink to this definition">¶</a></dt>
-<dd><p>It sets the parent of each atom according to the molecular graph.</p>
-<p>Please, note that the molecule needs to be already parameterized with
-the Open Force Field toolkit before calling this function.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt id="peleffy.topology.rotamer.MolecularGraph.size">
 <code class="sig-name descname">size</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">weight</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.rotamer.MolecularGraph.size" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the number of edges or total of all edge weights.</p>
@@ -1369,7 +1370,7 @@ be slightly different and require tweaks of these examples.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../../template.html" class="btn btn-neutral float-right" title="Template handlers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../../forcefield.html" class="btn btn-neutral float-right" title="Forcefield methods" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="peleffy.topology.rotamer.RotamerLibrary.html" class="btn btn-neutral float-left" title="peleffy.topology.rotamer.RotamerLibrary" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

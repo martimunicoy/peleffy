@@ -36,7 +36,7 @@
     
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="peleffy.topology.molecule.DummyAtom" href="peleffy.topology.molecule.DummyAtom.html" />
+    <link rel="next" title="peleffy.topology.elements.DummyAtom" href="peleffy.topology.elements.DummyAtom.html" />
     <link rel="prev" title="peleffy.topology.Proper" href="peleffy.topology.Proper.html" /> 
 </head>
 
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.gd938104
+                0+untagged.1.ged480da
               </div>
             
           
@@ -102,10 +102,10 @@
 <li class="toctree-l3"><a class="reference internal" href="peleffy.topology.Dihedral.html">peleffy.topology.Dihedral</a></li>
 <li class="toctree-l3"><a class="reference internal" href="peleffy.topology.Proper.html">peleffy.topology.Proper</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">peleffy.topology.Improper</a></li>
-<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.molecule.DummyAtom.html">peleffy.topology.molecule.DummyAtom</a></li>
-<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.topology.OFFDihedral.html">peleffy.topology.topology.OFFDihedral</a></li>
-<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.topology.OFFProper.html">peleffy.topology.topology.OFFProper</a></li>
-<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.topology.OFFImproper.html">peleffy.topology.topology.OFFImproper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.elements.DummyAtom.html">peleffy.topology.elements.DummyAtom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.elements.OFFDihedral.html">peleffy.topology.elements.OFFDihedral</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.elements.OFFProper.html">peleffy.topology.elements.OFFProper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.elements.OFFImproper.html">peleffy.topology.elements.OFFImproper</a></li>
 <li class="toctree-l3"><a class="reference internal" href="peleffy.topology.ZMatrix.html">peleffy.topology.ZMatrix</a></li>
 <li class="toctree-l3"><a class="reference internal" href="peleffy.topology.rotamer.Rotamer.html">peleffy.topology.rotamer.Rotamer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="peleffy.topology.rotamer.RotamerLibrary.html">peleffy.topology.rotamer.RotamerLibrary</a></li>
@@ -114,10 +114,9 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../forcefield.html">Forcefield methods</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../template.html">Template handlers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../solvent.html">Solvent models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../charge.html">Charge methods</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../forcefield.html">Forcefield methods</a></li>
 </ul>
 
             
@@ -189,7 +188,7 @@
 <h1>peleffy.topology.Improper<a class="headerlink" href="#peleffy-topology-improper" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="peleffy.topology.Improper">
-<em class="property">class </em><code class="sig-prename descclassname">peleffy.topology.</code><code class="sig-name descname">Improper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">atom1_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom2_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom3_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom4_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">periodicity</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prefactor</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">constant</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">phase</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/topology/topology.html#Improper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.topology.Improper" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">peleffy.topology.</code><code class="sig-name descname">Improper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">atom1_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom2_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom3_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom4_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">periodicity</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prefactor</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">constant</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">phase</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/topology/elements.html#Improper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.topology.Improper" title="Permalink to this definition">¶</a></dt>
 <dd><p>It represents an improper dihedral in the topology.</p>
 <blockquote>
 <div><dl class="py method">
@@ -318,7 +317,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="peleffy.topology.molecule.DummyAtom.html" class="btn btn-neutral float-right" title="peleffy.topology.molecule.DummyAtom" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="peleffy.topology.elements.DummyAtom.html" class="btn btn-neutral float-right" title="peleffy.topology.elements.DummyAtom" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="peleffy.topology.Proper.html" class="btn btn-neutral float-left" title="peleffy.topology.Proper" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

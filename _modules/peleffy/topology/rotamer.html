@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0+untagged.1.gd938104
+                0+untagged.1.ged480da
               </div>
             
           
@@ -92,10 +92,9 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../topology.html">Topology representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../forcefield.html">Forcefield methods</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../template.html">Template handlers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../solvent.html">Solvent models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../charge.html">Charge methods</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../forcefield.html">Forcefield methods</a></li>
 </ul>
 
             
@@ -292,7 +291,7 @@
                           <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">get_pdb_atom_names</span><span class="p">()]</span>
 
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;rot assign res </span><span class="si">{}</span><span class="s1"> &amp;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;rot assign res </span><span class="si">{}</span><span class="s1"> &amp;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">tag</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">rotamer_branches</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">rotamers</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;     newgrp &amp;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -309,7 +308,7 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        molecule : an peleffy.topology.Molecule</span>
+<span class="sd">        molecule : a peleffy.topology.Molecule</span>
 <span class="sd">            The peleffy&#39;s Molecule object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_molecule</span>
@@ -330,8 +329,7 @@
                   <span class="p">(</span><span class="mi">154</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">92</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span> <span class="o">/</span> <span class="mi">255</span><span class="p">),</span> <span class="p">(</span><span class="mi">66</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">167</span> <span class="o">/</span> <span class="mi">255</span><span class="p">),</span>
                   <span class="p">(</span><span class="mi">251</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">17</span> <span class="o">/</span> <span class="mi">255</span><span class="p">)]</span>
 
-        <span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">Chem</span>
-        <span class="kn">from</span> <span class="nn">rdkit.Chem.Draw</span> <span class="kn">import</span> <span class="n">rdMolDraw2D</span>
+        <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span>
 
         <span class="c1"># Get 2D molecular representation</span>
         <span class="n">rdkit_toolkit</span> <span class="o">=</span> <span class="n">RDKitToolkitWrapper</span><span class="p">()</span>
@@ -368,19 +366,17 @@
                 <span class="n">radii_dict</span><span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()]</span> <span class="o">=</span> <span class="mf">0.6</span>
                 <span class="n">atom_color_dict</span><span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">243</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">133</span> <span class="o">/</span> <span class="mi">255</span><span class="p">)</span>
 
-        <span class="n">draw</span> <span class="o">=</span> <span class="n">rdMolDraw2D</span><span class="o">.</span><span class="n">MolDraw2DSVG</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
-        <span class="n">draw</span><span class="o">.</span><span class="n">SetLineWidth</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
-        <span class="n">rdMolDraw2D</span><span class="o">.</span><span class="n">PrepareAndDrawMolecule</span><span class="p">(</span><span class="n">draw</span><span class="p">,</span> <span class="n">representation</span><span class="p">,</span>
-                                           <span class="n">highlightAtoms</span><span class="o">=</span><span class="n">atom_indexes</span><span class="p">,</span>
-                                           <span class="n">highlightAtomRadii</span><span class="o">=</span><span class="n">radii_dict</span><span class="p">,</span>
-                                           <span class="n">highlightAtomColors</span><span class="o">=</span><span class="n">atom_color_dict</span><span class="p">,</span>
-                                           <span class="n">highlightBonds</span><span class="o">=</span><span class="n">bond_indexes</span><span class="p">,</span>
-                                           <span class="n">highlightBondColors</span><span class="o">=</span><span class="n">bond_color_dict</span><span class="p">)</span>
-        <span class="n">draw</span><span class="o">.</span><span class="n">FinishDrawing</span><span class="p">()</span>
+        <span class="c1"># Get 2D molecular representation</span>
+        <span class="n">rdkit_toolkit</span> <span class="o">=</span> <span class="n">RDKitToolkitWrapper</span><span class="p">()</span>
+        <span class="n">representation</span> <span class="o">=</span> <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">get_2D_representation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="p">)</span>
 
-        <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">SVG</span><span class="p">,</span> <span class="n">display</span>
-
-        <span class="n">image</span> <span class="o">=</span> <span class="n">SVG</span><span class="p">(</span><span class="n">draw</span><span class="o">.</span><span class="n">GetDrawingText</span><span class="p">())</span>
+        <span class="c1"># Get its image</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">draw_molecule</span><span class="p">(</span><span class="n">representation</span><span class="p">,</span>
+                                            <span class="n">atom_indexes</span><span class="o">=</span><span class="n">atom_indexes</span><span class="p">,</span>
+                                            <span class="n">radii_dict</span><span class="o">=</span><span class="n">radii_dict</span><span class="p">,</span>
+                                            <span class="n">atom_color_dict</span><span class="o">=</span><span class="n">atom_color_dict</span><span class="p">,</span>
+                                            <span class="n">bond_indexes</span><span class="o">=</span><span class="n">bond_indexes</span><span class="p">,</span>
+                                            <span class="n">bond_color_dict</span><span class="o">=</span><span class="n">bond_color_dict</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">display</span><span class="p">(</span><span class="n">image</span><span class="p">)</span></div>
 
@@ -549,87 +545,81 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_core_nodes</span> <span class="o">=</span> <span class="n">core_nodes</span>
 
-<div class="viewcode-block" id="MolecularGraph.set_core"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.rotamer.MolecularGraph.html#peleffy.topology.rotamer.MolecularGraph.set_core">[docs]</a>    <span class="k">def</span> <span class="nf">set_core</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        It sets the core of the molecule to minimize the amount of consecutive</span>
-<span class="sd">        rotamers as much as possible.</span>
-
-<span class="sd">        Please, note that the molecule needs to be already parameterized with</span>
-<span class="sd">        the Open Force Field toolkit before calling this function.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">assert_parameterized</span><span class="p">()</span>
-
-        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_nodes</span><span class="p">:</span>
-                <span class="n">atom</span><span class="o">.</span><span class="n">set_as_core</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">atom</span><span class="o">.</span><span class="n">set_as_branch</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="MolecularGraph.set_parents"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.rotamer.MolecularGraph.html#peleffy.topology.rotamer.MolecularGraph.set_parents">[docs]</a>    <span class="k">def</span> <span class="nf">set_parents</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MolecularGraph.get_parents"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.rotamer.MolecularGraph.html#peleffy.topology.rotamer.MolecularGraph.get_parents">[docs]</a>    <span class="k">def</span> <span class="nf">get_parents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        It sets the parent of each atom according to the molecular graph.</span>
 
-<span class="sd">        Please, note that the molecule needs to be already parameterized with</span>
-<span class="sd">        the Open Force Field toolkit before calling this function.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        parent : int</span>
+<span class="sd">            The index of the node to use as the absolute parent</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        parents : dict[int, int]</span>
+<span class="sd">            A dictionary containing the index of the parent of each</span>
+<span class="sd">            atom according to the molecular graph, keyed by the index</span>
+<span class="sd">            of each child</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">recursive_child_visitor</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">already_visited</span><span class="o">=</span><span class="nb">set</span><span class="p">()):</span>
+        <span class="k">def</span> <span class="nf">recursive_child_visitor</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">parents</span><span class="p">,</span>
+                                    <span class="n">already_visited</span><span class="o">=</span><span class="nb">set</span><span class="p">()):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            A recursive function that hierarchically visits all the childs of</span>
 <span class="sd">            each atom.</span>
 
 <span class="sd">            Parameters</span>
 <span class="sd">            ----------</span>
-<span class="sd">            parent : an peleffy.topology.Atom</span>
-<span class="sd">                The atom whose childs will be visited</span>
-<span class="sd">            already_visited : set[peleffy.topology.Atom]</span>
-<span class="sd">                The Atom objects that have already been visited</span>
+<span class="sd">            parent : int</span>
+<span class="sd">                The index of the atom whose childs will be visited</span>
+<span class="sd">            parents : dict[int, int]</span>
+<span class="sd">                A dictionary containing the index of the parent of each</span>
+<span class="sd">                atom according to the molecular graph, keyed by the index</span>
+<span class="sd">            visited_neighbors : set[int]</span>
+<span class="sd">                The updated set that contains the indexes of the atoms</span>
+<span class="sd">                that have already been visited</span>
 
 <span class="sd">            Returns</span>
 <span class="sd">            -------</span>
-<span class="sd">            visited_neighbors : set[peleffy.topology.Atom]</span>
-<span class="sd">                The updated set that contains the Atom objects that have</span>
-<span class="sd">                already been visited</span>
+<span class="sd">            parents : dict[int, int]</span>
+<span class="sd">                A dictionary containing the index of the parent of each</span>
+<span class="sd">                atom according to the molecular graph, keyed by the index</span>
+<span class="sd">                of each child</span>
+<span class="sd">            visited_neighbors : set[int]</span>
+<span class="sd">                The updated set that contains the indexes of the atoms</span>
+<span class="sd">                that have already been visited</span>
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="k">if</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">already_visited</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">already_visited</span>
 
             <span class="n">already_visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
 
-            <span class="n">childs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">index</span><span class="p">)]</span>
+            <span class="n">childs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">neighbors</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">childs</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">already_visited</span><span class="p">:</span>
                     <span class="k">continue</span>
-                <span class="n">child</span><span class="o">.</span><span class="n">set_parent</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
-                <span class="n">already_visited</span> <span class="o">=</span> <span class="n">recursive_child_visitor</span><span class="p">(</span><span class="n">child</span><span class="p">,</span>
-                                                          <span class="n">already_visited</span><span class="p">)</span>
+                <span class="n">parents</span><span class="p">[</span><span class="n">child</span><span class="p">]</span> <span class="o">=</span> <span class="n">parent</span>
+                <span class="n">parents</span><span class="p">,</span> <span class="n">already_visited</span> <span class="o">=</span> <span class="n">recursive_child_visitor</span><span class="p">(</span>
+                    <span class="n">child</span><span class="p">,</span> <span class="n">parents</span><span class="p">,</span> <span class="n">already_visited</span><span class="p">)</span>
 
-            <span class="k">return</span> <span class="n">already_visited</span>
+            <span class="k">return</span> <span class="n">parents</span><span class="p">,</span> <span class="n">already_visited</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">assert_parameterized</span><span class="p">()</span>
+        <span class="c1"># Initialize the parents dictionary</span>
+        <span class="n">parents</span> <span class="o">=</span> <span class="p">{</span><span class="n">parent</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
 
-        <span class="c1"># Start from an atom from the core</span>
-        <span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">core</span><span class="p">:</span>
-                <span class="n">parent</span> <span class="o">=</span> <span class="n">atom</span>
-                <span class="k">break</span>
-
-        <span class="c1"># Assert a parent was found</span>
-        <span class="k">assert</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;No core atom found in molecule &#39;</span> \
-            <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-
-        <span class="n">already_visited</span> <span class="o">=</span> <span class="n">recursive_child_visitor</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
-
-        <span class="c1"># Assert all nodes were explored</span>
-        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">already_visited</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">atoms</span><span class="p">),</span> <span class="s1">&#39;Not all &#39;</span> \
-            <span class="s1">&#39;nodes were explored&#39;</span>
+        <span class="n">parents</span><span class="p">,</span> <span class="n">already_visited</span> <span class="o">=</span> <span class="n">recursive_child_visitor</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">parents</span><span class="p">)</span>
 
         <span class="c1"># Assert absolut parent is the only with a None parent value</span>
-        <span class="k">assert</span> <span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> \
-            <span class="nb">sum</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">atoms</span><span class="p">])</span> \
-            <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Found descendant without parent&#39;</span></div>
+        <span class="k">if</span> <span class="n">parents</span><span class="p">[</span><span class="n">parent</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> \
+                <span class="nb">sum</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">parents</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">])</span> \
+                <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+
+            <span class="kn">from</span> <span class="nn">peleffy.utils</span> <span class="kn">import</span> <span class="n">Logger</span>
+            <span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error: found descendant without parent&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">parents</span></div>
 
     <span class="k">def</span> <span class="nf">_get_rot_bonds_per_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">branch_groups</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -846,7 +836,7 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        molecule : an peleffy.topology.Molecule</span>
+<span class="sd">        molecule : a peleffy.topology.Molecule</span>
 <span class="sd">            The peleffy&#39;s Molecule object</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_molecule</span>

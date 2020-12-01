@@ -1,7 +1,7 @@
-peleffy.charge.OPLSChargeCalculator
-===================================
+peleffy.forcefield.calculators.OPLSChargeCalculator
+===================================================
 
-.. currentmodule:: peleffy.charge
+.. currentmodule:: peleffy.forcefield.calculators
 
 .. autoclass:: OPLSChargeCalculator
 
@@ -9,6 +9,7 @@ peleffy.charge.OPLSChargeCalculator
    
    
       .. automethod:: __init__
+      .. automethod:: assign_partial_charges
       .. automethod:: get_partial_charges
    
    

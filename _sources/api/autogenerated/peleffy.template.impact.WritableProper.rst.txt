@@ -17,6 +17,7 @@ peleffy.template.impact.WritableProper
       .. automethod:: in_kcal_angstrom2mol
       .. automethod:: in_kcal_rad2mol
       .. automethod:: in_kcalmol
+      .. automethod:: include_in_14_list
       .. automethod:: none_to_dummy
       .. automethod:: none_to_zero
       .. automethod:: plot

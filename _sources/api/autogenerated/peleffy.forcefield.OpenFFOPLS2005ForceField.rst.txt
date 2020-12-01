@@ -12,8 +12,8 @@ peleffy.forcefield.OpenFFOPLS2005ForceField
       .. automethod:: parameterize
       .. automethod:: set_angle_parameters
       .. automethod:: set_bond_parameters
+      .. automethod:: set_dihedral_parameters
       .. automethod:: set_nonbonding_parameters
-      .. automethod:: set_torsion_parameters
    
    
 

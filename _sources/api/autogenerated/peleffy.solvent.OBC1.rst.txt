@@ -10,7 +10,7 @@ peleffy.solvent.OBC1
    
       .. automethod:: __init__
       .. automethod:: to_dict
-      .. automethod:: to_json_file
+      .. automethod:: to_file
    
    
 
@@ -20,7 +20,6 @@ peleffy.solvent.OBC1
 
    .. autosummary::
    
-      ~OBC1.molecule
       ~OBC1.name
       ~OBC1.radii
       ~OBC1.scales
@@ -28,5 +27,6 @@ peleffy.solvent.OBC1
       ~OBC1.solvent_dielectric
       ~OBC1.solvent_radius
       ~OBC1.surface_area_penalty
+      ~OBC1.topology
    
    

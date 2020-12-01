@@ -48,6 +48,8 @@ peleffy.template.impact.WritableAtom
       ~WritableAtom.core
       ~WritableAtom.epsilon
       ~WritableAtom.index
+      ~WritableAtom.n_writable_attrs
+      ~WritableAtom.name
       ~WritableAtom.nonpolar_alpha
       ~WritableAtom.nonpolar_gamma
       ~WritableAtom.parent

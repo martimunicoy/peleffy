@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.gd938104
+                0+untagged.1.ged480da
               </div>
             
           
@@ -94,6 +94,7 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../topology.html">Topology representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../forcefield.html">Forcefield methods</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../../template.html">Template handlers</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../../template.html#primary-objects">Primary objects</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">peleffy.template.Impact</a></li>
@@ -103,8 +104,6 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../solvent.html">Solvent models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../charge.html">Charge methods</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../forcefield.html">Forcefield methods</a></li>
 </ul>
 
             
@@ -176,36 +175,53 @@
 <h1>peleffy.template.Impact<a class="headerlink" href="#peleffy-template-impact" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="peleffy.template.Impact">
-<em class="property">class </em><code class="sig-prename descclassname">peleffy.template.</code><code class="sig-name descname">Impact</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">molecule</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/template/impact.html#Impact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.template.Impact" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">peleffy.template.</code><code class="sig-name descname">Impact</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">topology</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/template/impact.html#Impact"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.template.Impact" title="Permalink to this definition">¶</a></dt>
 <dd><p>It is in charge of writing a Molecule object as a PELE’s Impact
 template.</p>
 <blockquote>
 <div><dl class="py method">
 <dt id="peleffy.template.Impact.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">molecule</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/template/impact.html#Impact.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.template.Impact.__init__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">topology</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/template/impact.html#Impact.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.template.Impact.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes an Impact object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>molecule</strong> (<em>An peleffy.topology.Molecule</em>) – A Molecule object to be written as an Impact file</p>
+<dd class="field-odd"><p><strong>topology</strong> (<em>a Topology object</em>) – The molecular topology representation to write as a
+Impact template</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
 <p>Write the Impact template of a peleffy’s molecule</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">peleffy.topology</span> <span class="kn">import</span> <span class="n">Molecule</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">peleffy.template</span> <span class="kn">import</span> <span class="n">Impact</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">molecule</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="s1">&#39;molecule.pdb&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">molecule</span><span class="o">.</span><span class="n">parameterize</span><span class="p">(</span><span class="s1">&#39;openff_unconstrained-1.1.1.offxml&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">impact</span> <span class="o">=</span> <span class="n">Impact</span><span class="p">(</span><span class="n">molecule</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">impact</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;molz&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">peleffy.forcefield</span> <span class="kn">import</span> <span class="n">OpenForceField</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">openff</span> <span class="o">=</span> <span class="n">OpenForceField</span><span class="p">(</span><span class="s1">&#39;openff_unconstrained-1.2.1.offxml&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameters</span> <span class="o">=</span> <span class="n">openff</span><span class="o">.</span><span class="n">parameterize</span><span class="p">(</span><span class="n">molecule</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">peleffy.topology</span> <span class="kn">import</span> <span class="n">Topology</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">topology</span> <span class="o">=</span> <span class="n">Topology</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">peleffy.template</span> <span class="kn">import</span> <span class="n">Impact</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">impact</span> <span class="o">=</span> <span class="n">Impact</span><span class="p">(</span><span class="n">topology</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">impact</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="s1">&#39;molz&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="py method">
-<dt id="peleffy.template.Impact.write">
-<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/template/impact.html#Impact.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.template.Impact.write" title="Permalink to this definition">¶</a></dt>
+<dt id="peleffy.template.Impact.to_file">
+<code class="sig-name descname">to_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/template/impact.html#Impact.to_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.template.Impact.to_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>It writes the Impact template to a file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -224,6 +240,9 @@ template.</p>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">molecule</span></code></p></td>
 <td><p>The peleffy’s Molecule.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">topology</span></code></p></td>
+<td><p>The peleffy’s Topology.</p></td>
 </tr>
 </tbody>
 </table>
