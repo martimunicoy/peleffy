@@ -28,7 +28,7 @@ jobs:
         activate-environment: standard
         environment-file: devtools/envs/standard.yaml
         auto-activate-base: false
-        
+
     - name: Environment Information
       shell: bash -l {0}
       run: |

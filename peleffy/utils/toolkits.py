@@ -116,6 +116,24 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         return Chem.rdmolfiles.MolFromPDBFile(path, removeHs=False)
 
+    def from_pdb_block(self, pdb_block):
+        """
+        It initializes an RDKit's Molecule object from a PDB block.
+
+        Parameters
+        ----------
+        pdb_block : str
+            The PDB block to built the molecule with
+
+        Returns
+        -------
+        molecule : an rdkit.Chem.rdchem.Mol object
+            The RDKit's Molecule object
+        """
+        from rdkit import Chem
+
+        return Chem.rdmolfiles.MolFromPDBBlock(pdb_block, removeHs=False)
+
     def from_smiles(self, smiles):
         """
         It initializes an RDKit's Molecule object from a SMILES tag.
@@ -263,6 +281,96 @@ class RDKitToolkitWrapper(ToolkitWrapper):
                                                  + str(occurrences[element])))
 
         return atom_names
+
+    def get_atom_degrees(self, molecule):
+        """
+        It returns the ordered list of atom degrees. The degree of an atom
+        is defined as the number of directly-bonded neighbors. Note that
+        the degree is independent of bond orders.
+
+        Parameters
+        ----------
+        molecule : an peleffy.topology.Molecule
+            The peleffy's Molecule object
+
+        Returns
+        -------
+        atom_degrees : list[int]
+            The list of atom degrees
+        """
+        rdkit_molecule = molecule.rdkit_molecule
+
+        atom_degrees = list()
+
+        for atom in rdkit_molecule.GetAtoms():
+            atom_degrees.append(atom.GetDegree())
+
+        return atom_degrees
+
+    def get_hydrogen_parents(self, molecule):
+        """
+        It returns the ordered list of the element belonging to the atom
+        parent for the hydrogen atoms of the molecule.
+
+        Note that this functions sets the element to None when
+        the child is not a hydrogen atom.
+
+        Parameters
+        ----------
+        molecule : an peleffy.topology.Molecule
+            The peleffy's Molecule object
+
+        Returns
+        -------
+        atom_parents : list[int]
+            The list of elements belonging to the atom parent, if the
+            atom is an hydrogen. The element is set to None when the
+            child is not a hydrogen atom
+        """
+        rdkit_molecule = molecule.rdkit_molecule
+
+        atom_parents = list()
+
+        for atom in rdkit_molecule.GetAtoms():
+            if atom.GetSymbol() == 'H':
+                bonds = atom.GetBonds()
+
+                assert len(bonds) == 1, \
+                    'Hydrogen atom should only have 1 bond'
+
+                if bonds[0].GetBeginAtom().GetSymbol() == 'H':
+                    atom_parents.append(bonds[0].GetEndAtom().GetSymbol())
+
+                else:
+                    atom_parents.append(bonds[0].GetBeginAtom().GetSymbol())
+
+            else:
+                atom_parents.append(None)
+
+        return atom_parents
+
+    def get_elements(self, molecule):
+        """
+        It returns the ordered list of elements of the molecule.
+
+        Parameters
+        ----------
+        molecule : an peleffy.topology.Molecule
+            The peleffy's Molecule object
+
+        Returns
+        -------
+        elements : list[str]
+            The list of elements belonging to supplied Molecule object
+        """
+        rdkit_molecule = molecule.rdkit_molecule
+
+        elements = list()
+
+        for atom in rdkit_molecule.GetAtoms():
+            elements.append(atom.GetSymbol())
+
+        return elements
 
     def to_pdb_file(self, molecule, path):
         """
@@ -418,6 +526,40 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         AllChem.Compute2DCoords(representation_2D)
         return representation_2D
+
+    def draw_molecule(self, representation, atom_indexes=list(),
+                      radii_dict=dict(), atom_color_dict=dict(),
+                      bond_indexes=list(), bond_color_dict=dict()):
+        """
+        Given a molecular representation, it returns its image as SVG.
+
+        Parameters
+        ----------
+        representation : an RDKit.molecule object
+            It is an RDKit molecule with an embeded 2D representation
+
+        Returns
+        -------
+        image : an IPython's SVG display object
+            The image of the molecular representation to display
+        """
+        from rdkit.Chem.Draw import rdMolDraw2D
+
+        draw = rdMolDraw2D.MolDraw2DSVG(500, 500)
+        draw.SetLineWidth(4)
+        rdMolDraw2D.PrepareAndDrawMolecule(draw, representation,
+                                           highlightAtoms=atom_indexes,
+                                           highlightAtomRadii=radii_dict,
+                                           highlightAtomColors=atom_color_dict,
+                                           highlightBonds=bond_indexes,
+                                           highlightBondColors=bond_color_dict)
+        draw.FinishDrawing()
+
+        from IPython.display import SVG
+
+        image = SVG(draw.GetDrawingText())
+
+        return image
 
 
 class AmberToolkitWrapper(ToolkitWrapper):
@@ -593,7 +735,9 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
         from openforcefield.topology.molecule import Molecule
 
         rdkit_molecule = molecule.rdkit_molecule
-        return Molecule.from_rdkit(rdkit_molecule)
+        return Molecule.from_rdkit(
+            rdkit_molecule,
+            allow_undefined_stereo=molecule.allow_undefined_stereo)
 
     def get_forcefield(self, forcefield_name):
         """

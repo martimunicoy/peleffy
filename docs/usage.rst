@@ -33,27 +33,41 @@ The more straightforward way to install `peleffy` along with the required depend
 .. code-block::
 
      ------------------------------------------------------------
-     Open Force Field parameterizer for PELE v0.3.0
+     Open Force Field parameterizer for PELE 1.1.0
      ------------------------------------------------------------
       - General:
-        - Input PDB: my_ligand.pdb
+        - Input PDB: my_ligand
         - Output path: None
         - Write solvent parameters: False
         - DataLocal-like output: False
       - Parameterization:
-        - Force field: openff_unconstrained-1.2.0.offxml
-        - Charges method: am1bcc
-        - Use OPLS nonbonding parameters: False
-        - Use OPLS bonds and angles: False
+        - Force field: openff_unconstrained-1.3.0.offxml
+        - Charge method: am1bcc
       - Rotamer library:
         - Resolution: 30
         - Exclude terminal rotamers: True
      ------------------------------------------------------------
-      - Loading molecule from RDKit
+      - Initializing molecule from PDB
+        - Loading molecule from RDKit
+        - Assigning stereochemistry from 3D coordinates
+        - Setting molecule name to 'ligand'
+        - Setting molecule tag to 'LIG'
+        - Representing molecule with the Open Force Field Toolkit
       - Generating rotamer library
-      - Loading forcefield
-      - Computing partial charges with am1bcc
-      - All files were generated successfully
+        - Core set to the center of the molecule
+      - Loading 'openff_unconstrained-1.3.0.offxml'
+      - Parameterizing molecule
+      - Parameters were built successfully:
+        - 12 atoms
+        - 12 bonds
+        - 18 torsions
+        - 24 propers
+        - 6 impropers
+      - Generating solvent parameters
+      - All files were generated successfully:
+        - /Users/martimunicoy/repos/BSC/peleffy/LIG.rot.assign
+        - /Users/martimunicoy/repos/BSC/peleffy/ligz
+        - /Users/martimunicoy/repos/BSC/peleffy/ligandParams.txt
      ------------------------------------------------------------
 
 Command-line arguments

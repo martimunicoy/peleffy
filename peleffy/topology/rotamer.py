@@ -130,7 +130,7 @@ class RotamerLibrary(object):
                           for name in self.molecule.get_pdb_atom_names()]
 
         with open(path, 'w') as file:
-            file.write('rot assign res {} &\n'.format(self.molecule.name))
+            file.write('rot assign res {} &\n'.format(self.molecule.tag))
             for i, rotamer_branches in enumerate(self.molecule.rotamers):
                 if i > 0:
                     file.write('     newgrp &\n')
@@ -147,7 +147,7 @@ class RotamerLibrary(object):
 
         Returns
         -------
-        molecule : an peleffy.topology.Molecule
+        molecule : a peleffy.topology.Molecule
             The peleffy's Molecule object
         """
         return self._molecule
@@ -168,8 +168,7 @@ class RotamerLibrary(object):
                   (154 / 255, 92 / 255, 255 / 255), (66 / 255, 255 / 255, 167 / 255),
                   (251 / 255, 255 / 255, 17 / 255)]
 
-        from rdkit import Chem
-        from rdkit.Chem.Draw import rdMolDraw2D
+        from IPython.display import display
 
         # Get 2D molecular representation
         rdkit_toolkit = RDKitToolkitWrapper()
@@ -206,19 +205,17 @@ class RotamerLibrary(object):
                 radii_dict[atom.GetIdx()] = 0.6
                 atom_color_dict[atom.GetIdx()] = (255 / 255, 243 / 255, 133 / 255)
 
-        draw = rdMolDraw2D.MolDraw2DSVG(500, 500)
-        draw.SetLineWidth(4)
-        rdMolDraw2D.PrepareAndDrawMolecule(draw, representation,
-                                           highlightAtoms=atom_indexes,
-                                           highlightAtomRadii=radii_dict,
-                                           highlightAtomColors=atom_color_dict,
-                                           highlightBonds=bond_indexes,
-                                           highlightBondColors=bond_color_dict)
-        draw.FinishDrawing()
+        # Get 2D molecular representation
+        rdkit_toolkit = RDKitToolkitWrapper()
+        representation = rdkit_toolkit.get_2D_representation(self.molecule)
 
-        from IPython.display import SVG, display
-
-        image = SVG(draw.GetDrawingText())
+        # Get its image
+        image = rdkit_toolkit.draw_molecule(representation,
+                                            atom_indexes=atom_indexes,
+                                            radii_dict=radii_dict,
+                                            atom_color_dict=atom_color_dict,
+                                            bond_indexes=bond_indexes,
+                                            bond_color_dict=bond_color_dict)
 
         return display(image)
 
@@ -387,87 +384,81 @@ class MolecularGraph(nx.Graph):
 
         self._core_nodes = core_nodes
 
-    def set_core(self):
-        """
-        It sets the core of the molecule to minimize the amount of consecutive
-        rotamers as much as possible.
-
-        Please, note that the molecule needs to be already parameterized with
-        the Open Force Field toolkit before calling this function.
-        """
-        self.molecule.assert_parameterized()
-
-        for atom in self.molecule.atoms:
-            if atom.index in self.core_nodes:
-                atom.set_as_core()
-            else:
-                atom.set_as_branch()
-
-    def set_parents(self):
+    def get_parents(self, parent):
         """
         It sets the parent of each atom according to the molecular graph.
 
-        Please, note that the molecule needs to be already parameterized with
-        the Open Force Field toolkit before calling this function.
+        Parameters
+        ----------
+        parent : int
+            The index of the node to use as the absolute parent
+
+        Returns
+        -------
+        parents : dict[int, int]
+            A dictionary containing the index of the parent of each
+            atom according to the molecular graph, keyed by the index
+            of each child
         """
 
-        def recursive_child_visitor(parent, already_visited=set()):
+        def recursive_child_visitor(parent, parents,
+                                    already_visited=set()):
             """
             A recursive function that hierarchically visits all the childs of
             each atom.
 
             Parameters
             ----------
-            parent : an peleffy.topology.Atom
-                The atom whose childs will be visited
-            already_visited : set[peleffy.topology.Atom]
-                The Atom objects that have already been visited
+            parent : int
+                The index of the atom whose childs will be visited
+            parents : dict[int, int]
+                A dictionary containing the index of the parent of each
+                atom according to the molecular graph, keyed by the index
+            visited_neighbors : set[int]
+                The updated set that contains the indexes of the atoms
+                that have already been visited
 
             Returns
             -------
-            visited_neighbors : set[peleffy.topology.Atom]
-                The updated set that contains the Atom objects that have
-                already been visited
+            parents : dict[int, int]
+                A dictionary containing the index of the parent of each
+                atom according to the molecular graph, keyed by the index
+                of each child
+            visited_neighbors : set[int]
+                The updated set that contains the indexes of the atoms
+                that have already been visited
             """
             if parent in already_visited:
                 return already_visited
 
             already_visited.add(parent)
 
-            childs = [self.molecule.atoms[n] for n in self.neighbors(parent.index)]
+            childs = self.neighbors(parent)
 
             for child in childs:
                 if child in already_visited:
                     continue
-                child.set_parent(parent)
-                already_visited = recursive_child_visitor(child,
-                                                          already_visited)
+                parents[child] = parent
+                parents, already_visited = recursive_child_visitor(
+                    child, parents, already_visited)
 
-            return already_visited
+            return parents, already_visited
 
-        self.molecule.assert_parameterized()
+        # Initialize the parents dictionary
+        parents = {parent: None}
 
-        # Start from an atom from the core
-        parent = None
-        for atom in self.molecule.atoms:
-            if atom.core:
-                parent = atom
-                break
-
-        # Assert a parent was found
-        assert parent is not None, 'No core atom found in molecule ' \
-            '{}'.format(self.molecule.name)
-
-        already_visited = recursive_child_visitor(parent)
-
-        # Assert all nodes were explored
-        assert len(already_visited) == len(self.molecule.atoms), 'Not all ' \
-            'nodes were explored'
+        parents, already_visited = recursive_child_visitor(parent, parents)
 
         # Assert absolut parent is the only with a None parent value
-        assert parent.parent is None and \
-            sum([int(a.parent is not None) for a in self.molecule.atoms]) \
-            == len(self.molecule.atoms) - 1, 'Found descendant without parent'
+        if parents[parent] is not None or \
+                sum([int(parents[i] is not None) for i in self.nodes]) \
+                != len(self.nodes) - 1:
+
+            from peleffy.utils import Logger
+            logger = Logger()
+            logger.error('Error: found descendant without parent')
+
+        return parents
 
     def _get_rot_bonds_per_group(self, branch_groups):
         """
@@ -684,7 +675,7 @@ class MolecularGraph(nx.Graph):
 
         Returns
         -------
-        molecule : an peleffy.topology.Molecule
+        molecule : a peleffy.topology.Molecule
             The peleffy's Molecule object
         """
         return self._molecule

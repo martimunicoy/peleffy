@@ -20,7 +20,7 @@ jobs:
         activate-environment: standard
         environment-file: devtools/envs/standard.yaml
         auto-activate-base: false
-  
+
     - name: Install dependencies
       shell: bash -l {0}
       run: |
