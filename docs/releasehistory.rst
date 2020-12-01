@@ -8,10 +8,10 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
-1.1.0 - Compatibility with OBC for PELE's OPLS2005 - Current development
-------------------------------------------------------------------------
+1.1.0 - Improvements in parameterization API, OBC template for OPLS2005 and Molecule initializators 
+---------------------------------------------------------------------------------------------------
 
-This minor release integrates the parameterization of OBC charges and scale factors required by the OPLS2005 implementation of PELE.
+This minor release introduces improvements to the parameterization API of peleffy. It also integrates the parameterization of OBC radii and scale factors required by the OPLS2005 implementation of PELE. It also improves the initialization of the Molecule class with a PDB checking and fixer and taking RDKit and OpenFF molecular representations as input. It also adds support for the new openff-1.3.0. Besides, it fixes a serious bug in the atom ordering of the Impact template that affected PELE's side chain prediction algorithm.
 
 New features
 """"""""""""
