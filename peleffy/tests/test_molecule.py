@@ -320,6 +320,9 @@ class TestMolecule(object):
             'Unexpected PDB atom names found in the resulting Molecule ' \
             + 'representation'
 
+        assert molecule.graph is not None, \
+            'Molecule\' graph should be initialized'
+
     def test_from_openff(self):
         """
         It checks the initialization of a peleffy Molecule from an OpenFF
@@ -343,6 +346,9 @@ class TestMolecule(object):
         assert pdb_atom_names == ref_pdb_atom_names, \
             'Unexpected PDB atom names found in the resulting Molecule ' \
             + 'representation'
+
+        assert molecule.graph is not None, \
+            'Molecule\' graph should be initialized'
 
     def test_pdb_fixer(self):
         """
