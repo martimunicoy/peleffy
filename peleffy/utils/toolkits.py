@@ -568,6 +568,26 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         AllChem.Compute2DCoords(representation_2D)
         return representation_2D
 
+    def get_rmsd(self, molecule, molecule_2):
+        """
+        It returns the RMSD between two RDKit molecules.
+
+        Parameters
+        ----------
+        molecule : an peleffy.topology.Molecule
+            The peleffy's Molecule object
+        molecule_2 : an peleffy.topology.Molecule
+            The peleffy's Molecule object
+
+        Returns
+        -------
+        rmsd_value : float
+            RMSD between two RDKit molecules
+        """
+        from rdkit.Chem import rdMolAlign
+        return rdMolAlign.AlignMol(molecule.rdkit_molecule,
+                molecule_2.rdkit_molecule)
+
     def draw_molecule(self, representation, atom_indexes=list(),
                       radii_dict=dict(), atom_color_dict=dict(),
                       bond_indexes=list(), bond_color_dict=dict()):
