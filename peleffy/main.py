@@ -191,9 +191,11 @@ def run_peleffy(pdb_file,
         solvent.to_file(output_handler.get_solvent_template_path())
 
     if dihedral_path is not None:
-        dihedrals = BCEDihedrals(topology, dihedral_path)
+        previous_level = log.get_level()
+        dihedrals = BCEDihedrals(topology, dihedral_path, mode=dihedral_mode)
         dihedrals.calculate()
         dihedrals.save(output_handler.get_dihedral_library_path())
+        log.set_level(previous_level)
 
     log.info(' - All files were generated successfully:')
     log.info('   - {}'.format(output_handler.get_rotamer_library_path()))
