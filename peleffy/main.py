@@ -58,6 +58,10 @@ def parse_args(args):
     parser.add_argument("--dihedrals_info_path", default=None, type=str,
                         help="Path to the folder containing the BCE output"
                         + " used to collect dihedral angles for PELE")
+    parser.add_argument("--dihedrals_mode", default="all_dihedrals", type=str,
+                        help="Mode for extracting the dihedrals: 'all_dihedrals' will"+
+                        "extract the values fro all, while 'flexible_dihedrals' will extract"+
+                        "the values only for those that are marked as flexible")
     parser.add_argument('--with_solvent', dest='with_solvent',
                         help="Generate solvent parameters for OBC",
                         action='store_true')
@@ -99,7 +103,7 @@ def run_peleffy(pdb_file,
                 charge_method=DEFAULT_CHARGE_METHOD,
                 exclude_terminal_rotamers=True,
                 output=None, with_solvent=False, as_datalocal=False,
-                dihedral_path=None):
+                dihedral_path=None, dihedral_mode="all_dihedrals"):
     """
     It runs peleffy.
 
@@ -124,6 +128,10 @@ def run_peleffy(pdb_file,
     as_datalocal : bool
         Whether to save output files following PELE's DataLocal hierarchy or
         not
+    dihedral_path: str
+        Path to the BCE server outupt to use to extract dihedral angles
+    dihedral_mode: str
+        Select what kind of dihedrals to extract (all or only flexible)
     """
     log = Logger()
     log.info('-' * 60)
