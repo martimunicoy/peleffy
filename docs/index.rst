@@ -7,6 +7,8 @@ are:
 
 * The following force field from the `Open Force Field toolkit <https://github.com/openforcefield/openforcefield>`_:
 
+  * openff_unconstrained-1.3.0.offxml
+
   * openff_unconstrained-1.2.1.offxml
 
   * openff_unconstrained-1.2.0.offxml
