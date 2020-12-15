@@ -249,7 +249,7 @@ def parse_charges_from_mae(path, parameters):
     copy =  False
     with open(path, 'r') as file:
         for line in file.readlines():
-            if bool(re.match(' m_atom\[(.*?)\] {', line)):
+            if bool(re.match(r' m_atom\[(.*?)\] {', line)):
                 copy = True
                 type_data = 'info'
             if ':::' in line:
