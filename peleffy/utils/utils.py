@@ -249,7 +249,7 @@ def parse_charges_from_mae(path, parameters):
     copy =  False
     with open(path, 'r') as file:
         for line in file.readlines():
-            if bool(re.match(r' m_atom\[(.*?)\] {', line)):
+            if bool(re.match(' m_atom\[(.*?)\] {', line)):
                 copy = True
                 type_data = 'info'
             if ':::' in line:
@@ -270,7 +270,7 @@ def parse_charges_from_mae(path, parameters):
             idx_atom_name = idx
         if 'r_m_charge1' in line:
             idx_charges = idx
-    if idx_charges == None or idx_atom_name == None:
+    if idx_charges is None or idx_atom_name is None:
         raise ValueError(
             " {} does not contain charges information. ".format(path))
 
