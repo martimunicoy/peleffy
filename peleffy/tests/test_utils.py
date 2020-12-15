@@ -489,3 +489,134 @@ class TestOutputPathHandler(object):
                 path_dir = os.path.dirname(path)
                 assert os.path.isdir(path_dir) is True, \
                     'This directory should exist'
+
+class TestMAEParser(object):
+    """
+    It contains all the tests to validate functions that parse MAE files.
+    """
+    def test_parse_charges_from_mae(self):
+        """
+        It tests the MAE parser for assigning partial charges from an external
+        file.
+        """
+        from peleffy.utils import get_data_file_path, parse_charges_from_mae
+        from peleffy.topology import Molecule
+        from peleffy.forcefield import OpenForceField
+
+        FORCEFIELD = 'openff_unconstrained-1.2.0.offxml'
+
+        PATH_MAE_MAT = get_data_file_path('tests/MAT.mae')
+        PATH_PDB_MAT= get_data_file_path('tests/MAT.pdb')
+        PATH_MAE_BHP = get_data_file_path('ligands/BHP.mae')
+        PATH_PDB_BHP = get_data_file_path('ligands/BHP.pdb')
+        PATH_MAE_ETL = get_data_file_path('ligands/ethylene.mae')
+        PATH_PDB_ETL = get_data_file_path('ligands/ethylene.pdb')
+        PATH_PDB_MAL = get_data_file_path('ligands/malonate.pdb')
+
+        CHARGES_REFERENCE_BHP = [[-0.35703,  'O1'],
+                                [-0.59535,  'O2'],
+                                [-0.50292,  'O3'],
+                                [-0.25243,  'C1'],
+                                [0.30438 ,  'C2'],
+                                [0.22092 ,  'C3'],
+                                [0.54336 ,  'C4'],
+                                [-0.20569,  'C5'],
+                                [-0.20192 ,  'C6'],
+                                [0.16631 ,  'C7'],
+                                [0.02422 ,  'C8'],
+                                [-0.09115,  'C9'],
+                                [-0.09904,  'C10'],
+                                [-0.15673,  'C11'],
+                                [-0.13245,  'C12'],
+                                [-0.17806 ,  'C13'],
+                                [-0.12489,  'C14'],
+                                [-0.09307 ,  'C15'],
+                                [-0.08973,  'C16'],
+                                [0.05397 ,  'H1'],
+                                [0.07338 ,  'H2'],
+                                [0.04514 ,  'H3'],
+                                [0.12979 ,  'H4'],
+                                [0.11025 ,  'H5'],
+                                [0.04054 ,  'H6'],
+                                [0.04581 ,  'H7'],
+                                [0.11444 ,  'H8'],
+                                [0.11761 ,  'H9'],
+                                [0.37274 ,  'H10'],
+                                [0.11825 ,  'H11'],
+                                [0.12584 ,  'H12'],
+                                [0.1381 ,  'H13'],
+                                [0.11696 ,  'H14'],
+                                [0.11148 ,  'H15'],
+                                [0.10697 ,  'H16']]
+
+        CHARGES_REFERENCE_MAT = [[-0.18938 , 'F1' ],
+                                [-0.21715 , 'F2'],
+                                [-0.21234 , 'F3'],
+                                [-0.39736 , 'O1'],
+                                [-0.58890 , 'O2'],
+                                [-1.00825 , 'N1'],
+                                [0.72066  , 'C1'],
+                                [-0.06281 , 'C2'],
+                                [-0.67474 , 'C3'],
+                                [0.10391  , 'C4'],
+                                [0.16293  , 'C5'],
+                                [-0.61076 , 'C6'],
+                                [0.78183  , 'C7'],
+                                [0.27041  , 'C8'],
+                                [-0.48769 , 'C9'],
+                                [0.15704  , 'C10'],
+                                [-0.02646 , 'H1'],
+                                [-0.08394 , 'H2'],
+                                [-0.01308 , 'H3'],
+                                [0.14006  , 'H4'],
+                                [0.12960  , 'H5'],
+                                [0.31245  , 'H6'],
+                                [0.30268  , 'H7'],
+                                [0.17026  , 'H8'],
+                                [0.15782  , 'H9'],
+                                [0.03175  , 'C11'],
+                                [0.03894  , 'H10'],
+                                [0.07509  , 'H11'],
+                                [0.01743  , 'H12']]
+
+        # Check up correct charges for malonate
+        m = Molecule(PATH_PDB_MAT)
+        openff = OpenForceField(FORCEFIELD)
+        parameters = openff.parameterize(m, charge_method='dummy')
+        parameters = parse_charges_from_mae(PATH_MAE_MAT, parameters)
+
+        for charge, atom_name in zip(parameters['charges'],
+                                     parameters['atom_names']):
+            assert [charge._value, atom_name.replace('_', '')] in \
+            CHARGES_REFERENCE_MAT, \
+            'Incorrect charge value for {}.'.format(atom_name)
+
+        # Check up correct charges for BHP
+        m = Molecule (PATH_PDB_BHP)
+        openff = OpenForceField(FORCEFIELD)
+        parameters = openff.parameterize(m, charge_method='dummy')
+        parameters = parse_charges_from_mae(PATH_MAE_BHP, parameters)
+
+        for charge, atom_name in zip(parameters['charges'],
+                                     parameters['atom_names']):
+            assert [charge._value, atom_name.replace('_', '')] in \
+            CHARGES_REFERENCE_BHP, \
+            'Incorrect charge value for {}.'.format(atom_name)
+
+        # Error: MAE file without charges information
+        m = Molecule(PATH_PDB_ETL)
+        openff = OpenForceField(FORCEFIELD)
+        parameters = openff.parameterize(m, charge_method='dummy')
+        with pytest.raises(ValueError):
+            _ = parse_charges_from_mae(PATH_MAE_ETL, parameters)
+
+        # Error: Inconsistency between Moelcule atom names and MAE atom names
+        m = Molecule(PATH_PDB_MAL)
+        openff = OpenForceField(FORCEFIELD)
+        parameters = openff.parameterize(m, charge_method='dummy')
+        with pytest.raises(ValueError):
+            _ = parse_charges_from_mae(PATH_PDB_BHP, parameters)
+
+
+
+

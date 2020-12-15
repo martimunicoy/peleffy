@@ -263,12 +263,16 @@ def parse_charges_from_mae(path, parameters):
         params_info = [ p.replace('\n', '').strip() for p in params_info[1:]]
         params_list = [l.replace('"', '').split() for l in params_list[1:-1]]
 
-    # Get the index of the atom name and charge in the parameter's list
+    # Get the index of the atom name and charge from the parameter's list
+    idx_charges, idx_atom_name = (None for i in range(2))
     for idx,line in enumerate(params_info):
         if 's_m_pdb_atom_name' in line:
             idx_atom_name = idx
         if 'r_m_charge1' in line:
             idx_charges = idx
+    if idx_charges == None or idx_atom_name == None:
+        raise ValueError(
+            " {} does not contain charges information. ".format(path))
 
     # Creates a charges by atom name dictionary
     d = {}
@@ -278,12 +282,17 @@ def parse_charges_from_mae(path, parameters):
     # Update the charges in BaseParameterWrapper object
     new_charges_parameters = []
     for atom_name in parameters['atom_names']:
-        new_charges_parameters.append(unit.Quantity(
-                            value = float(d.get(atom_name.replace('_', ''))),
+        atom_name = atom_name.replace('_', '')
+        if atom_name in d:
+            new_charges_parameters.append(unit.Quantity(
+                            value = float(d.get(atom_name)),
                             unit = unit.elementary_charge))
+        else:
+            raise ValueError(
+                "Molecule atom name {} does not match with ".format(atom_name)
+                + "any external file atom name's.")
     parameters['charges'] = new_charges_parameters
     return parameters
-
 
 class Logger(object):
     """

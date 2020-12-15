@@ -1,0 +1,71 @@
+TITLE     MAT
+REMARK   4      COMPLIES WITH FORMAT V. 3.0, 1-DEC-2006
+REMARK 888
+REMARK 888 WRITTEN BY MAESTRO (A PRODUCT OF SCHRODINGER, LLC)
+HETATM    1  F1  MAT L 900       0.136  -1.607   1.888  1.00  0.00           F  
+HETATM    2  F2  MAT L 900      -2.898   1.782  -1.149  1.00  0.00           F  
+HETATM    3  F3  MAT L 900      -3.886  -0.661  -0.418  1.00  0.00           F  
+HETATM    4  O1  MAT L 900       2.067  -2.296  -0.607  1.00  0.00           O  
+HETATM    5  O2  MAT L 900       1.185  -0.794  -2.060  1.00  0.00           O  
+HETATM    6  N1  MAT L 900       3.279   2.088   0.565  1.00  0.00           N  
+HETATM    7  C1  MAT L 900       2.244   1.187   0.040  1.00  0.00           C  
+HETATM    8  C2  MAT L 900       1.270   0.888   1.199  1.00  0.00           C  
+HETATM    9  C3  MAT L 900       2.926  -0.074  -0.522  1.00  0.00           C  
+HETATM   10  C4  MAT L 900      -0.113   0.470   0.765  1.00  0.00           C  
+HETATM   11  C5  MAT L 900      -0.602  -0.772   1.144  1.00  0.00           C  
+HETATM   12  C6  MAT L 900      -0.873   1.337  -0.004  1.00  0.00           C  
+HETATM   13  C7  MAT L 900       1.956  -1.055  -1.146  1.00  0.00           C  
+HETATM   14  C8  MAT L 900      -2.153   0.954  -0.406  1.00  0.00           C  
+HETATM   15  C9  MAT L 900      -1.881  -1.155   0.743  1.00  0.00           C  
+HETATM   16  C10 MAT L 900      -2.657  -0.292  -0.032  1.00  0.00           C  
+HETATM   17  C11 MAT L 900       1.170  -3.223  -1.217  1.00  0.00           C  
+HETATM   18  H1  MAT L 900       1.738   1.711  -0.779  1.00  0.00           H  
+HETATM   19  H2  MAT L 900       1.126   1.788   1.816  1.00  0.00           H  
+HETATM   20  H3  MAT L 900       1.713   0.146   1.876  1.00  0.00           H  
+HETATM   21  H4  MAT L 900       3.482  -0.586   0.275  1.00  0.00           H  
+HETATM   22  H5  MAT L 900       3.659   0.188  -1.295  1.00  0.00           H  
+HETATM   23  H6  MAT L 900       3.752   1.649   1.354  1.00  0.00           H  
+HETATM   24  H7  MAT L 900       2.847   2.937   0.928  1.00  0.00           H  
+HETATM   25  H8  MAT L 900      -0.499   2.314  -0.293  1.00  0.00           H  
+HETATM   26  H9  MAT L 900      -2.274  -2.125   1.033  1.00  0.00           H  
+HETATM   27  H10 MAT L 900       1.291  -4.204  -0.757  1.00  0.00           H  
+HETATM   28  H11 MAT L 900       0.144  -2.881  -1.079  1.00  0.00           H  
+HETATM   29  H12 MAT L 900       1.388  -3.293  -2.283  1.00  0.00           H  
+CONECT    1   11
+CONECT    2   14
+CONECT    3   16
+CONECT    4   13   17
+CONECT    5   13
+CONECT    5   13
+CONECT    6    7   23   24
+CONECT    7    6    8    9   18
+CONECT    8    7   10   19   20
+CONECT    9    7   13   21   22
+CONECT   10    8   11   12
+CONECT   10   12
+CONECT   11    1   10   15
+CONECT   11   15
+CONECT   12   10   14   25
+CONECT   12   10
+CONECT   13    4    5    9
+CONECT   13    5
+CONECT   14    2   12   16
+CONECT   14   16
+CONECT   15   11   16   26
+CONECT   15   11
+CONECT   16    3   14   15
+CONECT   16   14
+CONECT   18    7
+CONECT   19    8
+CONECT   20    8
+CONECT   21    9
+CONECT   22    9
+CONECT   23    6
+CONECT   24    6
+CONECT   25   12
+CONECT   26   15
+CONECT   17    4   27   28   29
+CONECT   27   17
+CONECT   28   17
+CONECT   29   17
+END   
