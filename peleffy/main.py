@@ -158,6 +158,7 @@ def run_peleffy(pdb_file,
     from peleffy.solvent import OBC2
     from peleffy.forcefield import ForceFieldSelector
     from peleffy.topology import Topology
+    from peleffy.utils import parse_charges_from_mae
 
     if not output:
         output = os.getcwd()
@@ -182,7 +183,9 @@ def run_peleffy(pdb_file,
     parameters = forcefield.parameterize(molecule,
                                          charge_method=charge_method)
 
-    # TODO: update charge parameters with the new mae parser
+    # Update charge parameters from the MAE file
+    if charges_from_file is not None:
+        parameters = parse_charges_from_mae(charges_from_file, parameters)
 
     # Generate the molecular topology
     topology = Topology(molecule, parameters)
