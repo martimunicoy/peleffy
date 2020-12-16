@@ -206,6 +206,19 @@ It sets the method to compute the partial charges.
 
         $ python -m peleffy.main path/to/my_ligand.pdb -c gasteiger
 
+Charge from file
+----------------
+It sets the method to load external partial charges.
+
+- Flag: ``--charges_from_file PATH``
+- Type: ``string``
+- Default: ``None``
+- Example: the code below will load the partial charges from a MAE file
+
+  .. code-block:: bash
+
+        $ python -m peleffy.main path/to/my_ligand.pdb --charges_from_file path/to/my_ligand.mae
+
 Include terminal rotamers
 -------------------------
 It always includes terminal rotamers, even if they belong to a terminal methyl group whose rotation is trivial in PELE.
