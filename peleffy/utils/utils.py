@@ -224,6 +224,7 @@ def convert_all_quantities_to_string(data_structure):
 
     return obj_to_return
 
+
 def parse_charges_from_mae(path, parameters):
     """
     It reads an external file containing the partial charges to assign to the
@@ -245,8 +246,8 @@ def parse_charges_from_mae(path, parameters):
     import re
 
     # Read external file containing the partial charges information
-    params_info, params_list =([] for i in range(2))
-    copy =  False
+    params_info, params_list = ([] for i in range(2))
+    copy = False
     with open(path, 'r') as file:
         for line in file.readlines():
             if bool(re.match(r' m_atom\[(.*?)\] {', line)):
@@ -256,16 +257,16 @@ def parse_charges_from_mae(path, parameters):
                 type_data = 'params'
             if '}' in line:
                 copy = False
-            if copy == True and type_data == 'info':
+            if copy is True and type_data == 'info':
                 params_info.append(line)
-            if copy == True and type_data == 'params':
+            if copy is True and type_data == 'params':
                 params_list.append(line)
-        params_info = [ p.replace('\n', '').strip() for p in params_info[1:]]
+        params_info = [p.replace('\n', '').strip() for p in params_info[1:]]
         params_list = [l.replace('"', '').split() for l in params_list[1:-1]]
 
     # Get the index of the atom name and charge from the parameter's list
     idx_charges, idx_atom_name = (None for i in range(2))
-    for idx,line in enumerate(params_info):
+    for idx, line in enumerate(params_info):
         if 's_m_pdb_atom_name' in line:
             idx_atom_name = idx
         if 'r_m_charge1' in line:
@@ -285,14 +286,15 @@ def parse_charges_from_mae(path, parameters):
         atom_name = atom_name.replace('_', '')
         if atom_name in d:
             new_charges_parameters.append(unit.Quantity(
-                            value = float(d.get(atom_name)),
-                            unit = unit.elementary_charge))
+                value=float(d.get(atom_name)),
+                unit=unit.elementary_charge))
         else:
             raise ValueError(
                 "Molecule atom name {} does not match with ".format(atom_name)
                 + "any external file atom name's.")
     parameters['charges'] = new_charges_parameters
     return parameters
+
 
 class Logger(object):
     """
