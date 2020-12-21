@@ -1,0 +1,89 @@
+TITLE     BHP
+REMARK   4      COMPLIES WITH FORMAT V. 3.0, 1-DEC-2006
+REMARK 888
+REMARK 888 WRITTEN BY MAESTRO (A PRODUCT OF SCHRODINGER, LLC)
+HETATM    1  O1  BHP L   1       1.082  -1.164   0.187  1.00  0.00           O  
+HETATM    2  O2  BHP L   1      -2.290  -2.552   0.411  1.00  0.00           O  
+HETATM    3  O3  BHP L   1       0.328  -3.315  -0.065  1.00  0.00           O  
+HETATM    4  C1  BHP L   1      -1.683  -0.535  -0.776  1.00  0.00           C  
+HETATM    5  C2  BHP L   1      -1.296  -1.525   0.345  1.00  0.00           C  
+HETATM    6  C3  BHP L   1      -2.840   0.369  -0.380  1.00  0.00           C  
+HETATM    7  C4  BHP L   1       0.125  -2.117   0.147  1.00  0.00           C  
+HETATM    8  C5  BHP L   1      -4.157  -0.047  -0.595  1.00  0.00           C  
+HETATM    9  C6  BHP L   1      -2.578   1.604   0.217  1.00  0.00           C  
+HETATM   10  C7  BHP L   1       2.441  -1.485  -0.088  1.00  0.00           C  
+HETATM   11  C8  BHP L   1       3.280  -0.218  -0.059  1.00  0.00           C  
+HETATM   12  C9  BHP L   1      -5.212   0.783  -0.226  1.00  0.00           C  
+HETATM   13  C10 BHP L   1      -3.634   2.433   0.585  1.00  0.00           C  
+HETATM   14  C11 BHP L   1      -4.948   2.020   0.359  1.00  0.00           C  
+HETATM   15  C12 BHP L   1       3.510   0.502  -1.236  1.00  0.00           C  
+HETATM   16  C13 BHP L   1       3.848   0.202   1.146  1.00  0.00           C  
+HETATM   17  C14 BHP L   1       4.320   1.636  -1.207  1.00  0.00           C  
+HETATM   18  C15 BHP L   1       4.657   1.334   1.174  1.00  0.00           C  
+HETATM   19  C16 BHP L   1       4.893   2.046  -0.002  1.00  0.00           C  
+HETATM   20  H1  BHP L   1      -0.842   0.105  -1.054  1.00  0.00           H  
+HETATM   21  H2  BHP L   1      -1.935  -1.074  -1.691  1.00  0.00           H  
+HETATM   22  H3  BHP L   1      -1.285  -0.999   1.301  1.00  0.00           H  
+HETATM   23  H4  BHP L   1      -4.357  -1.017  -1.025  1.00  0.00           H  
+HETATM   24  H5  BHP L   1      -1.561   1.917   0.403  1.00  0.00           H  
+HETATM   25  H6  BHP L   1       2.543  -1.959  -1.064  1.00  0.00           H  
+HETATM   26  H7  BHP L   1       2.826  -2.193   0.645  1.00  0.00           H  
+HETATM   27  H8  BHP L   1      -6.231   0.459  -0.383  1.00  0.00           H  
+HETATM   28  H9  BHP L   1      -3.434   3.385   1.051  1.00  0.00           H  
+HETATM   29  H10 BHP L   1      -2.185  -3.147  -0.340  1.00  0.00           H  
+HETATM   30  H11 BHP L   1      -5.767   2.660   0.654  1.00  0.00           H  
+HETATM   31  H12 BHP L   1       3.068   0.188  -2.169  1.00  0.00           H  
+HETATM   32  H13 BHP L   1       3.662  -0.348   2.055  1.00  0.00           H  
+HETATM   33  H14 BHP L   1       4.508   2.195  -2.112  1.00  0.00           H  
+HETATM   34  H15 BHP L   1       5.104   1.657   2.102  1.00  0.00           H  
+HETATM   35  H16 BHP L   1       5.530   2.923   0.020  1.00  0.00           H  
+CONECT    1    7   10
+CONECT    2    5   29
+CONECT    3    7
+CONECT    3    7
+CONECT    4    5    6   20   21
+CONECT    5    2    4    7   22
+CONECT    6    4    8    9
+CONECT    6    8
+CONECT    7    1    3    5
+CONECT    7    3
+CONECT    8    6   12   23
+CONECT    8    6
+CONECT    9    6   13   24
+CONECT    9   13
+CONECT   10    1   11   25   26
+CONECT   11   10   15   16
+CONECT   11   15
+CONECT   12    8   14   27
+CONECT   12   14
+CONECT   13    9   14   28
+CONECT   13    9
+CONECT   14   12   13   30
+CONECT   14   12
+CONECT   15   11   17   31
+CONECT   15   11
+CONECT   16   11   18   32
+CONECT   16   18
+CONECT   17   15   19   33
+CONECT   17   19
+CONECT   18   16   19   34
+CONECT   18   16
+CONECT   19   17   18   35
+CONECT   19   17
+CONECT   20    4
+CONECT   21    4
+CONECT   22    5
+CONECT   23    8
+CONECT   24    9
+CONECT   25   10
+CONECT   26   10
+CONECT   27   12
+CONECT   28   13
+CONECT   29    2
+CONECT   30   14
+CONECT   31   15
+CONECT   32   16
+CONECT   33   17
+CONECT   34   18
+CONECT   35   19
+END   

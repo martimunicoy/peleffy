@@ -1,0 +1,452 @@
+{ 
+ s_m_m2io_version
+ :::
+ 2.0.0 
+} 
+
+f_m_ct { 
+ s_m_title
+ s_m_entry_id
+ s_m_entry_name
+ s_m_Source_Path
+ s_m_Source_File
+ i_m_Source_File_Index
+ i_m_Spin_multiplicity
+ s_j_Task
+ s_j_Jaguar_input_file
+ s_j_Jaguar_restart_input_file
+ s_j_Jaguar_restart_mae_file
+ s_j_Jaguar_output_file
+ s_j_Jaguar_log_file
+ s_j_Jaguar_mae_file
+ s_j_QM_Method
+ s_j_QM_Basis
+ i_j_Number_of_canonical_orbitals
+ r_j_Gas_Phase_Energy
+ r_j_HOMO
+ r_j_LUMO
+ s_m_job_name
+ i_sd_PUBCHEM\_COMPOUND\_CID
+ r_sd_PUBCHEM\_CONFORMER\_RMSD
+ s_sd_PUBCHEM\_CONFORMER\_DIVERSEORDER
+ s_sd_PUBCHEM\_MMFF94\_PARTIAL\_CHARGES
+ i_sd_PUBCHEM\_EFFECTIVE\_ROTOR\_COUNT
+ s_sd_PUBCHEM\_PHARMACOPHORE\_FEATURES
+ i_sd_PUBCHEM\_HEAVY\_ATOM\_COUNT
+ i_sd_PUBCHEM\_ATOM\_DEF\_STEREO\_COUNT
+ i_sd_PUBCHEM\_ATOM\_UDEF\_STEREO\_COUNT
+ i_sd_PUBCHEM\_BOND\_DEF\_STEREO\_COUNT
+ i_sd_PUBCHEM\_BOND\_UDEF\_STEREO\_COUNT
+ i_sd_PUBCHEM\_ISOTOPIC\_ATOM\_COUNT
+ i_sd_PUBCHEM\_COMPONENT\_COUNT
+ i_sd_PUBCHEM\_CACTVS\_TAUTO\_COUNT
+ r_sd_PUBCHEM\_CONFORMER\_ID
+ r_sd_PUBCHEM\_MMFF94\_ENERGY
+ r_sd_PUBCHEM\_FEATURE\_SELFOVERLAP
+ s_sd_PUBCHEM\_SHAPE\_FINGERPRINT
+ s_sd_PUBCHEM\_SHAPE\_MULTIPOLES
+ r_sd_PUBCHEM\_SHAPE\_SELFOVERLAP
+ r_sd_PUBCHEM\_SHAPE\_VOLUME
+ s_sd_PUBCHEM\_COORDINATE\_TYPE
+ b_sd_chiral_flag
+ i_sd_version
+ s_st_Chirality_1
+ i_m_ct_enhanced_stereo_status
+ s_m_subgroup_title
+ s_m_subgroupid
+ b_m_subgroup_collapsed
+ i_m_ct_format
+ :::
+ BHP 
+  38 
+  Conformer3D_CID_9992574.1 
+  /home/home/sergiroda/Documents/LAE5_project/BHPP 
+  BHPP.mae 
+  1
+  1
+  "Single Point" 
+  /home/alma/jag_gamma-valerolactone_spe_B3LYP-D3_CC-PVTZ_2/jag_gamma-valerolactone_spe_B3LYP-D3_CC-PVTZ_2.in 
+  /home/alma/jag_gamma-valerolactone_spe_B3LYP-D3_CC-PVTZ_2/jag_gamma-valerolactone_spe_B3LYP-D3_CC-PVTZ_2.01.in 
+  /home/alma/jag_gamma-valerolactone_spe_B3LYP-D3_CC-PVTZ_2/jag_gamma-valerolactone_spe_B3LYP-D3_CC-PVTZ_2.01.mae 
+  /home/alma/jag_gamma-valerolactone_spe_B3LYP-D3_CC-PVTZ_2/jag_gamma-valerolactone_spe_B3LYP-D3_CC-PVTZ_2.out 
+  /home/alma/jag_gamma-valerolactone_spe_B3LYP-D3_CC-PVTZ_2/jag_gamma-valerolactone_spe_B3LYP-D3_CC-PVTZ_2.log 
+  /home/alma/jag_gamma-valerolactone_spe_B3LYP-D3_CC-PVTZ_2/jag_gamma-valerolactone_spe_B3LYP-D3_CC-PVTZ_2.mae 
+  DFT(b3lyp-d3) 
+  cc-pvtz 
+  781
+  -845.346984400771
+  -0.247480727714395
+  -0.0312438417389906
+  jag_gamma-valerolactone_spe_B3LYP-D3_CC-PVTZ_2 
+  9992574
+  0.8
+  "1
+48
+11
+37
+20
+101
+76
+5
+108
+82
+69
+35
+89
+107
+43
+12
+93
+86
+49
+68
+42
+56
+88
+55
+79
+50
+4
+52
+13
+66
+45
+95
+27
+7
+16
+24
+59
+8
+73
+106
+17
+87
+10
+36
+105
+28
+2
+29
+40
+104
+63
+94
+96
+67
+103
+65
+41
+54
+3
+83
+72
+71
+22
+33
+97
+99
+6
+64
+39
+80
+51
+90
+74
+60
+58
+85
+92
+15
+21
+18
+46
+61
+9
+34
+25
+91
+32
+100
+70
+102
+38
+53
+81
+30
+84
+19
+26
+14
+77
+57
+62
+44
+75
+23
+47
+78
+98
+31" 
+  "30
+1 -0.43
+10 0.42
+11 -0.14
+12 -0.15
+13 -0.15
+14 -0.15
+15 -0.15
+16 -0.15
+17 -0.15
+18 -0.15
+19 -0.15
+2 -0.68
+23 0.15
+24 0.15
+27 0.15
+28 0.15
+29 0.4
+3 -0.57
+30 0.15
+31 0.15
+32 0.15
+33 0.15
+34 0.15
+35 0.15
+4 0.14
+5 0.34
+6 -0.14
+7 0.66
+8 -0.15
+9 -0.15" 
+  6
+  "5
+1 2 acceptor
+1 2 donor
+1 3 acceptor
+6 11 15 16 17 18 19 rings
+6 6 8 9 12 13 14 rings" 
+  19
+  1
+  0
+  0
+  0
+  0
+  1
+  1
+  987970
+  39.8082
+  25.38
+  "10498660 4 18342745151926713408
+10670039 82 18336558131415248884
+10928967 22 9727636132838798420
+11405975 8 18334574633903092626
+12173636 292 18411979191103413791
+12390115 104 18339095868117131715
+12596602 18 17313101994437249977
+12633257 1 15864075407464067032
+12788726 201 17681843139123945178
+13590594 115 17474963021260540330
+13828863 39 14420420012012480838
+13887833 79 15625950793744188728
+13965767 371 17968370148593990252
+1420 369 8934997066344951324
+14251757 17 17346874554935998368
+14251764 75 18337966652580484992
+14468879 13 18060145361535215823
+14739800 52 18270099310757339424
+14767858 380 18268975623096277279
+14840074 17 17531258287201624492
+14848178 96 18411982421008250440
+15342168 16 18335423418161148341
+15342816 4 9727631730855295010
+15885798 251 9151173151388630586
+1741750 31 18409448119910711306
+17810953 82 18336548192396669188
+17834072 32 18336830878743736548
+1798214 55 18410293592680708852
+18222031 100 8142079866607103905
+18785283 64 18190459359685459938
+204376 136 18333733498790892735
+22182937 141 18410862100221519633
+22950370 63 9511458948240325017
+23227448 37 18341330088930309477
+235170 7 16200432463735462989
+23557571 272 18268163126214830958
+23559900 14 18127690431030573150
+245318 6 17823435952883370076
+341906 21 18338512053755892544
+3472631 163 18201719518600472845
+3680242 22 18335981978431588240
+474 4 18334577901966515975
+5104073 3 18261114032868159491
+6328613 192 18334019419834273508
+633830 44 18341891827660989527
+67856867 119 18266169531392700467
+7064713 232 18334293180042294972
+76465 3 9583518706989223462
+7808743 9 18337673147895821432
+7970288 3 9511464415929839636
+960060 61 12031779284253631160
+9981440 41 18408319999458564419" 
+  "373.4
+12.27
+3
+1.02
+0.31
+1.31
+0.06
+-10
+-0.13
+-0.7
+-0.39
+0.97
+-0.29
+-0.5" 
+  788.099
+  208.6
+  "2
+5
+10" 
+  1
+  0
+  5_R_2_7_4_22 
+  0
+  jag_gamma-valerolactone_spe_B3LYP-D3_CC-PVTZ_21 
+  jag_gamma-valerolactone_spe_B3LYP-D3_CC-PVTZ_211 
+  0
+  2
+ m_depend[16] { 
+  # First column is dependency index #
+  i_m_depend_dependency
+  s_m_depend_property
+  :::
+  1 20 i_m_Spin_multiplicity 
+  2 20 s_j_Task 
+  3 20 s_j_Jaguar_input_file 
+  4 20 s_j_Jaguar_restart_input_file 
+  5 20 s_j_Jaguar_restart_mae_file 
+  6 20 s_j_Jaguar_output_file 
+  7 20 s_j_Jaguar_log_file 
+  8 20 s_j_Jaguar_mae_file 
+  9 20 s_j_QM_Method 
+  10 20 s_j_QM_Basis 
+  11 20 i_j_Number_of_canonical_orbitals 
+  12 20 r_j_Gas_Phase_Energy 
+  13 20 r_j_HOMO 
+  14 20 r_j_LUMO 
+  15 30 s_m_job_name 
+  16 10 s_st_Chirality_1 
+  :::
+ } 
+ m_atom[35] { 
+  # First column is atom index #
+  i_m_mmod_type
+  r_m_x_coord
+  r_m_y_coord
+  r_m_z_coord
+  i_m_residue_number
+  s_m_chain_name
+  i_m_color
+  r_m_charge1
+  r_m_charge2
+  s_m_pdb_residue_name
+  s_m_pdb_atom_name
+  i_m_atomic_number
+  s_m_color_rgb
+  s_m_atom_name
+  s_m_label_format
+  i_m_label_color
+  s_m_label_user_text
+  r_j_ESP_Charges
+  i_m_atom_chirality
+  i_m_bond_stereo
+  i_m_minimize_atom_index
+  s_bioluminate_saved_label_format
+  i_sd_original_parity
+  :::
+  1 16 1.082246 -1.164428 0.187051 1 L 16 -0.35703 -0.35703 "BHP " " O1 " 8 E11E1E  O1  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  -0.357030509013447 0 10 1 ""  <>
+  2 16 -2.289677 -2.551950 0.410570 1 L 16 -0.59535 -0.59535 "BHP " " O2 " 8 E11E1E  O2  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  -0.595354552354532 0 10 2 ""  <>
+  3 15 0.328148 -3.315381 -0.065134 1 L 16 -0.50292 -0.50292 "BHP " " O3 " 8 E11E1E  O3  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  -0.502920604123228 0 10 3 ""  <>
+  4 3 -1.683347 -0.534890 -0.776190 1 L 10 -0.25243 -0.25243 "BHP " " C1 " 6 1EE11E  C4  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  -0.252432508745142 0 10 4 ""  <>
+  5 3 -1.295879 -1.524738 0.344510 1 L 10 0.30438 0.30438 "BHP " " C2 " 6 1EE11E  C5  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  0.30437714992254 1 10 5 ""  2
+  6 2 -2.839729 0.368631 -0.380423 1 L 10 0.22092 0.22092 "BHP " " C3 " 6 1EE11E  C6  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  0.220923341075242 0 10 6 ""  <>
+  7 2 0.124865 -2.116773 0.147366 1 L 10 0.54336 0.54336 "BHP " " C4 " 6 1EE11E  C7  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  0.543358319602461 0 10 7 ""  <>
+  8 2 -4.157224 -0.047375 -0.594782 1 L 10 -0.20569 -0.20569 "BHP " " C5 " 6 1EE11E  C8  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  -0.20569458863582 0 10 8 ""  <>
+  9 2 -2.578247 1.603649 0.216813 1 L 10 -0.20192 -0.20192 "BHP " " C6 " 6 1EE11E  C9  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  -0.201917063920989 0 10 9 ""  <>
+  10 3 2.441218 -1.485246 -0.088292 1 L 10 0.16631 0.16631 "BHP " " C7 " 6 1EE11E  C10  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  0.166314921392934 0 10 10 ""  <>
+  11 2 3.279778 -0.218135 -0.059328 1 L 10 0.02422 0.02422 "BHP " " C8 " 6 1EE11E  C11  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  0.0242204498783285 0 10 11 ""  <>
+  12 2 -5.212396 0.783014 -0.225826 1 L 10 -0.09115 -0.09115 "BHP " " C9 " 6 1EE11E  C12  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  -0.0911502129276023 0 10 12 ""  <>
+  13 2 -3.633828 2.433091 0.585359 1 L 10 -0.09904 -0.09904 "BHP " " C10" 6 1EE11E  C13  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  -0.0990379734219864 0 10 13 ""  <>
+  14 2 -4.947758 2.020255 0.358908 1 L 10 -0.15673 -0.15673 "BHP " " C11" 6 1EE11E  C14  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  -0.156731451023703 0 10 14 ""  <>
+  15 2 3.510163 0.502162 -1.236320 1 L 10 -0.13245 -0.13245 "BHP " " C12" 6 1EE11E  C15  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  -0.132448267464731 0 10 15 ""  <>
+  16 2 3.847981 0.201531 1.145746 1 L 10 -0.17806 -0.17806 "BHP " " C13" 6 1EE11E  C16  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  -0.178062756672596 0 10 16 ""  <>
+  17 2 4.319732 1.636025 -1.206906 1 L 10 -0.12489 -0.12489 "BHP " " C14" 6 1EE11E  C17  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  -0.124888851194865 0 10 17 ""  <>
+  18 2 4.657453 1.333948 1.174256 1 L 10 -0.09307 -0.09307 "BHP " " C15" 6 1EE11E  C18  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  -0.093067562500934 0 10 18 ""  <>
+  19 2 4.893442 2.045702 -0.002445 1 L 10 -0.08973 -0.08973 "BHP " " C16" 6 1EE11E  C19  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  -0.0897265949087118 0 10 19 ""  <>
+  20 41 -0.842372 0.105196 -1.054289 1 L 21 0.05397 0.05397 "BHP " " H1 " 1 FFFFFF  H20  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  0.0539678458608934 0 10 20 ""  <>
+  21 41 -1.934996 -1.073994 -1.691275 1 L 21 0.07338 0.07338 "BHP " " H2 " 1 FFFFFF  H21  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  0.0733751245441545 0 10 21 ""  <>
+  22 41 -1.284639 -0.998810 1.301168 1 L 21 0.04514 0.04514 "BHP " " H3 " 1 FFFFFF  H22  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  0.0451373736804906 0 10 22 ""  <>
+  23 41 -4.357314 -1.017283 -1.024555 1 L 21 0.12979 0.12979 "BHP " " H4 " 1 FFFFFF  H23  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  0.129786256204015 0 10 23 ""  <>
+  24 41 -1.560889 1.917222 0.403192 1 L 21 0.11025 0.11025 "BHP " " H5 " 1 FFFFFF  H24  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  0.110246762459741 0 10 24 ""  <>
+  25 41 2.543089 -1.959372 -1.063694 1 L 21 0.04054 0.04054 "BHP " " H6 " 1 FFFFFF  H25  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  0.0405425094521452 0 10 25 ""  <>
+  26 41 2.825567 -2.192587 0.645431 1 L 21 0.04581 0.04581 "BHP " " H7 " 1 FFFFFF  H26  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  0.0458137470605686 0 10 26 ""  <>
+  27 41 -6.230511 0.459404 -0.382777 1 L 21 0.11444 0.11444 "BHP " " H8 " 1 FFFFFF  H27  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  0.114439454734196 0 10 27 ""  <>
+  28 41 -3.434239 3.385202 1.050541 1 L 21 0.11761 0.11761 "BHP " " H9 " 1 FFFFFF  H28  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  0.117607691364182 0 10 28 ""  <>
+  29 42 -2.185076 -3.147327 -0.340386 1 L 21 0.37274 0.37274 "BHP " " H10" 1 FFFFFF  H29  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  0.37274163202657 0 10 29 ""  <>
+  30 41 -5.766827 2.659891 0.653532 1 L 21 0.11825 0.11825 "BHP " " H11" 1 FFFFFF  H30  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  0.118254468540995 0 10 30 ""  <>
+  31 41 3.067505 0.188312 -2.169197 1 L 21 0.12584 0.12584 "BHP " " H12" 1 FFFFFF  H31  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  0.125844241612749 0 10 31 ""  <>
+  32 41 3.661643 -0.348493 2.054974 1 L 21 0.13810 0.13810 "BHP " " H13" 1 FFFFFF  H32  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  0.13809821271347 0 10 32 ""  <>
+  33 41 4.508034 2.194613 -2.111727 1 L 21 0.11696 0.11696 "BHP " " H14" 1 FFFFFF  H33  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  0.116961339538331 0 10 33 ""  <>
+  34 41 5.103758 1.656881 2.102431 1 L 21 0.11148 0.11148 "BHP " " H15" 1 FFFFFF  H34  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  0.111484203218553 0 10 34 ""  <>
+  35 41 5.529525 2.922553 0.020097 1 L 21 0.10697 0.10697 "BHP " " H16" 1 FFFFFF  H35  "%UA:r_j_ESP_Charges:%ST%CY %FC"  2 ""  0.106968452025727 0 10 35 ""  <>
+  :::
+ } 
+ m_bond[36] { 
+  # First column is bond index #
+  i_m_from
+  i_m_to
+  i_m_order
+  i_m_from_rep
+  i_m_to_rep
+  :::
+  1 1 7 1 2 2
+  2 1 10 1 2 2
+  3 2 5 1 2 2
+  4 2 29 1 2 2
+  5 3 7 2 2 2
+  6 4 5 1 2 2
+  7 4 6 1 2 2
+  8 4 20 1 2 2
+  9 4 21 1 2 2
+  10 5 7 1 2 2
+  11 5 22 1 2 2
+  12 6 8 2 2 2
+  13 6 9 1 2 2
+  14 8 12 1 2 2
+  15 8 23 1 2 2
+  16 9 13 2 2 2
+  17 9 24 1 2 2
+  18 10 11 1 2 2
+  19 10 25 1 2 2
+  20 10 26 1 2 2
+  21 11 15 2 2 2
+  22 11 16 1 2 2
+  23 12 14 2 2 2
+  24 12 27 1 2 2
+  25 13 14 1 2 2
+  26 13 28 1 2 2
+  27 14 30 1 2 2
+  28 15 17 1 2 2
+  29 15 31 1 2 2
+  30 16 18 2 2 2
+  31 16 32 1 2 2
+  32 17 19 2 2 2
+  33 17 33 1 2 2
+  34 18 19 1 2 2
+  35 18 34 1 2 2
+  36 19 35 1 2 2
+  :::
+ } 
+} 
+
