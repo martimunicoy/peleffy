@@ -285,8 +285,217 @@ class BaseParameterWrapper(dict):
         parameters : a BaseParameterWrapper object
             The resulting parameters wrapper
         """
+        from simtk import unit
 
-        raise NotImplementedError()
+        def index(atom_idx):
+            """
+            Atom's index.
+
+            Parameters
+            ----------
+            index : int
+                The Atom's index for a WritableWrapper
+
+            Returns
+            -------
+            index : int
+                The Atom's index for a BaseParameterWrapper object
+            """
+            return int(atom_idx) - 1
+
+        def zero_to_none(values):
+            """
+            It converts a vector of zeros to None.
+
+            Parameters
+            ----------
+            values : list
+                List of parameters.
+
+            Returns
+            -------
+            values : list
+                It is set to None if all the parameters are zeros.
+            """
+            n_atoms = len(values)
+            if type(values[0]) == float:
+                if all(value == float(0.0) for value in values):
+                    values = [None, ] * n_atoms
+            if type(values[0] == unit.quantity.Quantity):
+                if all(value == unit.Quantity(0, unit.angstroms) for value
+                       in values):
+                    values = values = [None, ] * n_atoms
+            return values
+
+        def phase_PELE(prefactor):
+            """
+            It computes the phase of a Dihedral given its prefactor. PELE
+            prefactors can equal to 1 or -1.
+
+            Parameters
+            ----------
+            prefactor : float
+                The prefactor of the Dihedral
+
+            Returns
+            -------
+            phase : simtk.unit.Quantity
+                The phase constant of the Dihedral
+            """
+            if prefactor == 1:
+                return unit.Quantity(
+                    value=0.00,
+                    unit=unit.degree)
+            elif prefactor == -1:
+                return unit.Quantity(
+                    value=180.00,
+                    unit=unit.degree)
+            else:
+                raise NotImplementedError()
+
+        # Parse Impact template file
+        tag, nbon, bond, thet, phi, iphi = ([] for i in range(6))
+        with open(impact_template_path, 'r') as fd:
+            type_info = 'tag'
+            for line in fd.readlines():
+                if not line.startswith('*'):
+                    if 'NBON' in line:
+                        type_info = 'nbon'
+                    elif 'BOND' in line:
+                        type_info = 'bond'
+                    elif 'THET' in line:
+                        type_info = 'thet'
+                    elif 'PHI' in line and 'IPHI' not in line:
+                        type_info = 'phi'
+                    elif 'IPHI' in line:
+                        type_info = 'iphi'
+                    else:
+                        if type_info == 'tag':
+                            tag.append(line)
+                        if type_info == 'nbon':
+                            nbon.append(line)
+                        if type_info == 'bond':
+                            bond.append(line)
+                        if type_info == 'thet':
+                            thet.append(line)
+                        if type_info == 'phi':
+                            phi.append(line)
+                        if type_info == 'iphi':
+                            iphi.append(line)
+
+        # Atom names and atom types
+        atom_names_list, atom_types_list = ([] for i in range(2))
+        for line in tag[1:]:
+            info = line.split()
+            atom_names_list.append(info[4])
+            atom_types_list.append(info[3])
+
+        # Charges, epsilons, sigmas, SGB radius, vdW radius, gammas and alphas
+        charges_list, epsilons_list, sigmas_list, SGB_list, vdW_list, \
+            gammas_list, alphas_list = ([] for i in range(7))
+        for line in nbon:
+            info = line.split()
+            charges_list.append(unit.Quantity(
+                value=float(info[3]),
+                unit=unit.elementary_charge))
+            epsilons_list.append(unit.Quantity(
+                value=float(info[2]),
+                unit=unit.kilocalorie / unit.mole))
+            sigmas_list.append(unit.Quantity(
+                value=float(info[1]),
+                unit=unit.angstrom))
+            SGB_list.append(unit.Quantity(
+                value=float(info[4]),
+                unit=unit.angstrom))
+            vdW_list.append(unit.Quantity(
+                value=float(info[5]),
+                unit=unit.angstrom))
+            gammas_list.append(float(info[6]))
+            alphas_list.append(float(info[7]))
+
+        # Bonds
+        bonds_list = []
+        for line in bond:
+            info = line.split()
+            case = {'atom1_idx': index(info[0]),
+                    'atom2_idx': index(info[1]),
+                    'eq_dist': unit.Quantity(
+                        value=float(info[3]),
+                        unit=unit.angstrom),
+                    'spring_constant': unit.Quantity(
+                        value=float(info[2]),
+                        unit=unit.kilocalorie
+                        / (unit.angstrom ** 2 * unit.mole))}
+            bonds_list.append(case)
+
+        # Angles
+        angles_list = []
+        for line in thet:
+            info = line.split()
+            case = {'atom1_idx': index(info[0]),
+                    'atom2_idx': index(info[1]),
+                    'atom3_idx': index(info[2]),
+                    'eq_angle': unit.Quantity(
+                        value=float(info[4]),
+                        unit=unit.degrees),
+                    'spring_constant': unit.Quantity(
+                        value=float(info[3]),
+                        unit=unit.kilocalorie
+                        / (unit.radian ** 2 * unit.mole))}
+            angles_list.append(case)
+
+        # Impropers
+        impropers_list = []
+        for line in iphi[:-1]:
+            info = line.split()
+            case = {'atom1_idx': index(info[0]),
+                    'atom2_idx': index(info[1]),
+                    'atom3_idx': index(info[2]),
+                    'atom4_idx': index(info[3]),
+                    'idivf': abs(float(info[5])),
+                    'k': unit.Quantity(
+                        value=float(info[4]),
+                        unit=unit.kilocalorie / unit.mole),
+                    'periodicity': int(float(info[6])),
+                    'phase': phase_PELE(float(info[5]))}
+            impropers_list.append(case)
+
+        # Propers
+        propers_list = []
+        for line in phi:
+            info = line.split()
+            case = {'atom1_idx': index(info[0]),
+                    'atom2_idx': index(info[1]),
+                    'atom3_idx': index(info[2]),
+                    'atom4_idx': index(info[3]),
+                    'idivf': abs(float(info[5])),
+                    'k': unit.Quantity(
+                        value=float(info[4]),
+                        unit=unit.kilocalorie / unit.mole),
+                    'periodicity': int(float(info[6])),
+                    'phase': phase_PELE(float(info[5]))}
+            propers_list.append(case)
+
+        # Initialize the BaseParameterWrapper object
+        params = BaseParameterWrapper()
+
+        # Assign parameters from Impact template to the BaseParameterWrapper
+        #object
+        params['angles'] = angles_list
+        params['atom_names'] = atom_names_list
+        params['atom_types'] = atom_types_list
+        params['bonds'] = bonds_list
+        params['charges'] = charges_list
+        params['epsilons'] = epsilons_list
+        params['impropers'] = impropers_list
+        params['propers'] = propers_list
+        params['sigmas'] = sigmas_list
+        params['vdW_radii'] = vdW_list
+        params['SGB_radii'] = zero_to_none(SGB_list)
+        params['gammas'] = zero_to_none(gammas_list)
+        params['alphas'] = zero_to_none(alphas_list)
+
+        return params
 
     @property
     def forcefield_name(self):
@@ -460,7 +669,8 @@ class OpenForceFieldParameterWrapper(BaseParameterWrapper):
                 params['bonds'].append(
                     {'atom1_idx': idx1,
                      'atom2_idx': idx2,
-                     'spring_constant': k_by_idx[idxs] / 2.0,  # PELE works with half of the OFF's spring
+                     # PELE works with half of the OFF's spring
+                     'spring_constant': k_by_idx[idxs] / 2.0,
                      'eq_dist': length_by_idx[idxs]
                      })
 
@@ -475,7 +685,8 @@ class OpenForceFieldParameterWrapper(BaseParameterWrapper):
                     {'atom1_idx': idx1,
                      'atom2_idx': idx2,
                      'atom3_idx': idx3,
-                     'spring_constant': k_by_idx[idxs] / 2.0,  # PELE works with half of the OFF's spring
+                     # PELE works with half of the OFF's spring
+                     'spring_constant': k_by_idx[idxs] / 2.0,
                      'eq_angle': angle_by_idx[idxs]
                      })
 
