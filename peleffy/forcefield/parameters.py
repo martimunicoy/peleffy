@@ -10,6 +10,7 @@ __all__ = ["OpenForceFieldParameterWrapper",
 
 
 from collections import defaultdict
+from simtk import unit
 
 from peleffy.utils import get_data_file_path
 from peleffy.utils import Logger
@@ -285,7 +286,6 @@ class BaseParameterWrapper(dict):
         parameters : a BaseParameterWrapper object
             The resulting parameters wrapper
         """
-        from simtk import unit
 
         def index(atom_idx):
             """
@@ -301,7 +301,7 @@ class BaseParameterWrapper(dict):
             index : int
                 The Atom's index for a BaseParameterWrapper object
             """
-            return int(atom_idx) - 1
+            return abs(int(atom_idx)) - 1
 
         def zero_to_none(values):
             """
@@ -327,31 +327,38 @@ class BaseParameterWrapper(dict):
                     values = values = [None, ] * n_atoms
             return values
 
-        def phase_PELE(prefactor):
+        def get_phase(info):
             """
             It computes the phase of a Dihedral given its prefactor. PELE
-            prefactors can equal to 1 or -1.
+            prefactors can equal to 1 or -1. If the phase constant is different
+            than 0 or 180, an extra column in the Impact template specifies its
+            value.
 
             Parameters
             ----------
-            prefactor : float
-                The prefactor of the Dihedral
+            info : list
+                List of parameters for this Dihedral
 
             Returns
             -------
             phase : simtk.unit.Quantity
                 The phase constant of the Dihedral
             """
-            if prefactor == 1:
+            if len(info) > 7:
                 return unit.Quantity(
-                    value=0.00,
-                    unit=unit.degree)
-            elif prefactor == -1:
-                return unit.Quantity(
-                    value=180.00,
+                    value=float(info[7]),
                     unit=unit.degree)
             else:
-                raise NotImplementedError()
+                prefactor = float(info[5])
+                if prefactor == 1:
+                    return unit.Quantity(
+                        value=0.00,
+                        unit=unit.degree)
+                if prefactor == -1:
+                    return unit.Quantity(
+                        value=180.00,
+                        unit=unit.degree)
+
 
         # Parse Impact template file
         tag, nbon, bond, thet, phi, iphi = ([] for i in range(6))
@@ -457,7 +464,7 @@ class BaseParameterWrapper(dict):
                         value=float(info[4]),
                         unit=unit.kilocalorie / unit.mole),
                     'periodicity': int(float(info[6])),
-                    'phase': phase_PELE(float(info[5]))}
+                    'phase': get_phase(info)}
             impropers_list.append(case)
 
         # Propers
@@ -473,7 +480,7 @@ class BaseParameterWrapper(dict):
                         value=float(info[4]),
                         unit=unit.kilocalorie / unit.mole),
                     'periodicity': int(float(info[6])),
-                    'phase': phase_PELE(float(info[5]))}
+                    'phase': get_phase(info)}
             propers_list.append(case)
 
         # Initialize the BaseParameterWrapper object
