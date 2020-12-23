@@ -54,6 +54,8 @@ class BCEDihedrals(object):
 
     def _calculate_all_dihedrals(self):
         clusters = sorted(glob.glob(os.path.join(self.bce_path, "CLUSTERS", "CL*", "cluster*.min.imaged.pdb")))
+        if not clusters:
+            raise ValueError("Path to the BCE output does not contain a CLUSTERS folder, please check if the path is correct!")
         clusters_order = self.order_clusters_min_distances(clusters)
         dihedrals = self.list_all_dihedrals()
         ordered_clusters = [clusters[x] for x in clusters_order]
