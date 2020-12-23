@@ -172,8 +172,10 @@ def run_peleffy(pdb_file,
                                        output_path=output,
                                        as_datalocal=as_datalocal)
 
-    rotamer_library = peleffy.topology.RotamerLibrary(molecule)
-    rotamer_library.to_file(output_handler.get_rotamer_library_path())
+    if dihedral_path is None:
+        # if dihedral_path is set, we don't want a rotamer library
+        rotamer_library = peleffy.topology.RotamerLibrary(molecule)
+        rotamer_library.to_file(output_handler.get_rotamer_library_path())
 
     # Parameterize molecule with the selected force field
     log.info(' - Parameterizing molecule')
@@ -208,6 +210,8 @@ def run_peleffy(pdb_file,
     log.info(' - All files were generated successfully:')
     log.info('   - {}'.format(output_handler.get_rotamer_library_path()))
     log.info('   - {}'.format(output_handler.get_impact_template_path()))
+    if dihedral_path is not None:
+        log.info('   - {}'.format(output_handler.get_dihedral_library_path()))
     if with_solvent:
         log.info('   - {}'.format(output_handler.get_solvent_template_path()))
 
