@@ -208,7 +208,8 @@ def run_peleffy(pdb_file,
         log.set_level(previous_level)
 
     log.info(' - All files were generated successfully:')
-    log.info('   - {}'.format(output_handler.get_rotamer_library_path()))
+    if dihedral_path is None:
+        log.info('   - {}'.format(output_handler.get_rotamer_library_path()))
     log.info('   - {}'.format(output_handler.get_impact_template_path()))
     if dihedral_path is not None:
         log.info('   - {}'.format(output_handler.get_dihedral_library_path()))
