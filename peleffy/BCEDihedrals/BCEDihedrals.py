@@ -103,8 +103,6 @@ class BCEDihedrals(object):
                 angle = rdkit_wrapper.get_dihedral(mol, *dihedral, units="radians")
             else:
                 names = [self._topology.atoms[atom].PDB_name for atom in dihedral]
-                if any(["H" in name for name in names]):
-                    continue
                 dihedral_matched = tuple([rename_dict[index] for index in dihedral])
                 angle = rdkit_wrapper.get_dihedral(mol, *dihedral_matched, units="radians")
 
