@@ -240,7 +240,8 @@ class TestWrapper(object):
         parameters = ff.parameterize(molecule, charge_method='gasteiger')
         topology = Topology(molecule, parameters)
         impact = Impact(topology)
-        impact.to_file('data/tests/unlz')
+        impact_template_path = 'data/tests/unlz'
+        impact.to_file(impact_template_path)
         # Test from_impact_template method
         test_generate_OpenForceFieldParameterWrapper(molecule,
                                             get_data_file_path('tests/unlz'))
