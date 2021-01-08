@@ -283,8 +283,26 @@ class BaseParameterWrapper(dict):
 
         Returns
         -------
-        parameters : a BaseParameterWrapper object
+        params : a BaseParameterWrapper object
             The resulting parameters wrapper
+
+        Examples
+        --------
+
+        Obtain a parameter wrapper from an Impact template.
+
+        >>> from peleffy.topology import Molecule
+
+        >>> molecule = Molecule('molecule.pdb')
+        >>> impact_template_path = 'molz'
+
+        >>> from peleffy.forcefield.parameters import \
+                OpenForceFieldParametersWrapper
+
+        >>> wrapper_off = OpenForceFieldParameterWrapper()
+        >>> parameters = wrapper_off.from_impact_template(
+                molecule, impact_template_path)
+
         """
 
         def index(atom_idx):
@@ -321,7 +339,7 @@ class BaseParameterWrapper(dict):
             if type(values[0]) == float:
                 if all(value == float(0.0) for value in values):
                     values = [None, ] * n_atoms
-            if type(values[0] == unit.quantity.Quantity):
+            if type(values[0]) == unit.quantity.Quantity:
                 if all(value == unit.Quantity(0, unit.angstroms) for value
                        in values):
                     values = values = [None, ] * n_atoms
@@ -330,9 +348,9 @@ class BaseParameterWrapper(dict):
         def get_phase(info):
             """
             It computes the phase of a Dihedral given its prefactor. PELE
-            prefactors can equal to 1 or -1. If the phase constant is different
-            than 0 or 180, an extra column in the Impact template specifies its
-            value.
+            prefactors can be  equal to 1 or -1. If the phase constant is
+            different than 0 or 180, an extra column in the Impact template
+            specifies its value.
 
             Parameters
             ----------
@@ -359,6 +377,28 @@ class BaseParameterWrapper(dict):
                         value=180.00,
                         unit=unit.degree)
 
+        def reindex_atom_idx(list_params, dict_index):
+            """
+            It sorts and reindexes atoms of a parameters list according to a
+            dictionary.
+
+            Parameters
+            ----------
+            list_params : list
+                List of parameters to reindex
+            dict_index : dict
+                Dictionary that defines the reindexer between old and new index
+
+            Returns
+            -------
+            list_params : list
+                Updated list of parameters with the correct indexes
+            """
+            for i, atom_info in enumerate(list_params):
+                for key, value in atom_info.items():
+                    if '_idx' in key:
+                        list_params[i][key] = dict_index.get(value)
+            return list_params
 
         # Parse Impact template file
         tag, nbon, bond, thet, phi, iphi = ([] for i in range(6))
@@ -486,22 +526,57 @@ class BaseParameterWrapper(dict):
         # Initialize the BaseParameterWrapper object
         params = BaseParameterWrapper()
 
-        # Assign parameters from Impact template to the BaseParameterWrapper
-        #object
-        params['angles'] = angles_list
-        params['atom_names'] = atom_names_list
-        params['atom_types'] = atom_types_list
-        params['bonds'] = bonds_list
-        params['charges'] = charges_list
-        params['epsilons'] = epsilons_list
-        params['impropers'] = impropers_list
-        params['propers'] = propers_list
-        params['sigmas'] = sigmas_list
-        params['vdW_radii'] = vdW_list
-        params['SGB_radii'] = zero_to_none(SGB_list)
-        params['gammas'] = zero_to_none(gammas_list)
-        params['alphas'] = zero_to_none(alphas_list)
+        # PDB atom names from Molecule object
+        ordered_pdb_atom_names = [pdb_name.replace(' ', '_') for pdb_name in
+                                  molecule.get_pdb_atom_names()]
 
+        # Molecule object and Impact template have the atoms in the same order
+        if ordered_pdb_atom_names == atom_names_list:
+            # Assign parameters from Impact template to the BaseParameterWrapper
+            # object
+            params['angles'] = angles_list
+            params['atom_names'] = atom_names_list
+            params['atom_types'] = atom_types_list
+            params['bonds'] = bonds_list
+            params['charges'] = charges_list
+            params['epsilons'] = epsilons_list
+            params['impropers'] = impropers_list
+            params['propers'] = propers_list
+            params['sigmas'] = sigmas_list
+            params['vdW_radii'] = vdW_list
+            params['SGB_radii'] = zero_to_none(SGB_list)
+            params['gammas'] = zero_to_none(gammas_list)
+            params['alphas'] = zero_to_none(alphas_list)
+
+        # Molecule object and Impact template have the atoms in different order
+        if ordered_pdb_atom_names != atom_names_list:
+            # Reindexer dictionary to sort atoms as Molecule object
+            index_order = [atom_names_list.index(atom_name) for atom_name in
+                           ordered_pdb_atom_names]
+            dict_reindex = dict(zip(index_order, range(len(index_order))))
+
+            # Assign parameters from Impact template to the BaseParameterWrapper
+            # object reordering atoms according to Molecule object atoms
+            params['atom_names'] = [atom_names_list[i] for i in index_order]
+            params['atom_types'] = [atom_types_list[i] for i in index_order]
+            params['charges'] = [charges_list[i] for i in index_order]
+            params['epsilons'] = [epsilons_list[i] for i in index_order]
+            params['sigmas'] = [sigmas_list[i] for i in index_order]
+            params['vdW_radii'] = [vdW_list[i] for i in index_order]
+            params['SGB_radii'] = [zero_to_none(SGB_list)[i] for i in
+                                   index_order]
+            params['gammas'] = [zero_to_none(gammas_list)[i] for i in
+                                index_order]
+            params['alphas'] = [zero_to_none(alphas_list)[i] for i in
+                                index_order]
+            params['impropers'] = reindex_atom_idx(impropers_list,
+                                                   dict_reindex)
+            params['propers'] = reindex_atom_idx(propers_list,
+                                                 dict_reindex)
+            params['angles'] = reindex_atom_idx(angles_list,
+                                                dict_reindex)
+            params['bonds'] = reindex_atom_idx(bonds_list,
+                                               dict_reindex)
         return params
 
     @property

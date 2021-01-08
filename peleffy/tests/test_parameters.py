@@ -163,6 +163,7 @@ class TestWrapper(object):
 
             with tempfile.TemporaryDirectory() as tmpdir:
                 with temporary_cd(tmpdir):
+
                     # Assign parameters to BaseParametersWrapper object from
                     # an Impact Template
                     wrapper_off = OpenForceFieldParameterWrapper()
@@ -186,6 +187,7 @@ class TestWrapper(object):
             """
 
             from peleffy.forcefield.parameters import OPLS2005ParameterWrapper
+
             with tempfile.TemporaryDirectory() as tmpdir:
                 with temporary_cd(tmpdir):
 
@@ -217,6 +219,13 @@ class TestWrapper(object):
         test_generate_OpenForceFieldParameterWrapper(molecule,
                                                      impact_template_path)
 
+        # Test with OFF parametrization (for malonate)
+        pdb_path = get_data_file_path('ligands/malonate.pdb')
+        molecule = Molecule(pdb_path)
+        impact_template_path = get_data_file_path('tests/malz')
+        test_generate_OpenForceFieldParameterWrapper(molecule,
+                                                     impact_template_path)
+
         # Test with OPLS parametrization (for ethylene)
         pdb_path = get_data_file_path('ligands/ethylene.pdb')
         molecule = Molecule(pdb_path, tag='ETL')
@@ -229,6 +238,7 @@ class TestWrapper(object):
         impact_template_path = get_data_file_path('tests/unkz')
         test_generate_OpenForceFieldParameterWrapper(molecule,
                                                      impact_template_path)
+
 
 class TestBonds(object):
     """
