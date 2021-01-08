@@ -236,15 +236,10 @@ class TestWrapper(object):
         # Test with molecule with phase different than 0 or 180
         # Load molecule, parameterize and generate Impact template
         molecule = Molecule(smiles='c1c(c(n(n1)S(=O)(=O)C))O')
-        ff = OpenForceField(FORCEFIELD_NAME)
-        parameters = ff.parameterize(molecule, charge_method='gasteiger')
-        topology = Topology(molecule, parameters)
-        impact = Impact(topology)
-        impact_template_path = 'data/tests/unlz'
-        impact.to_file(impact_template_path)
+        impact_template_path = get_data_file_path('tests/unlz')
         # Test from_impact_template method
         test_generate_OpenForceFieldParameterWrapper(molecule,
-                                            get_data_file_path('tests/unlz'))
+                                            impact_template_path)
 
 
 class TestBonds(object):
