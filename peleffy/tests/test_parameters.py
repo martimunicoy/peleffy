@@ -17,6 +17,7 @@ from peleffy.template.impact import (WritableBond, WritableAngle,
 from peleffy.forcefield import OpenForceField, OPLS2005ForceField
 from peleffy.forcefield.parameters import BaseParameterWrapper
 from peleffy.topology import Topology
+from peleffy.template import Impact
 from peleffy.utils import get_data_file_path, temporary_cd
 
 
@@ -143,6 +144,102 @@ class TestWrapper(object):
                 ref_json_file = get_data_file_path(
                     'tests/MET_parameters_to_json.json')
                 compare_files('parameters_to_check.json', ref_json_file)
+
+    def test_from_impact_template(self):
+        """
+        It tests the method to generate a parameter wrapper out of an
+        impact template.
+        """
+        def test_generate_OpenForceFieldParameterWrapper(molecule,
+                                                         impact_template_path):
+            """
+            It tests the method to return a OpenForceFieldParameterWrapper
+            object from an Impact file by comparing the reference Impact file
+            and the generated from the obtained Wrapper.
+            """
+
+            from peleffy.forcefield.parameters import \
+                OpenForceFieldParameterWrapper
+
+            with tempfile.TemporaryDirectory() as tmpdir:
+                with temporary_cd(tmpdir):
+
+                    # Assign parameters to BaseParametersWrapper object from
+                    # an Impact Template
+                    wrapper_off = OpenForceFieldParameterWrapper()
+                    parameters = wrapper_off.from_impact_template(
+                        molecule, impact_template_path)
+
+                    # Generate the new impact template
+                    topology = Topology(molecule, parameters)
+                    impact = Impact(topology)
+                    impact.to_file('unlz_generated')
+
+                    # Compare the reference and generated Impact templates
+                    compare_files(impact_template_path, 'unlz_generated')
+
+        def test_generate_OPLS2005ParameterWrapper(molecule,
+                                                   impact_template_path):
+            """
+            It tests the method to return a OPLS2005FieldParameterWrapper
+            object from an Impact file by comparing the reference Impact file
+            and the generated from the obtained Wrapper.
+            """
+
+            from peleffy.forcefield.parameters import OPLS2005ParameterWrapper
+
+            with tempfile.TemporaryDirectory() as tmpdir:
+                with temporary_cd(tmpdir):
+
+                    # Assign parameters to BaseParametersWrapper object from
+                    # an Impact Template
+                    wrapper_opls = OPLS2005ParameterWrapper()
+                    parameters = wrapper_opls.from_impact_template(
+                        molecule, impact_template_path)
+
+                    # Generate the new impact template
+                    topology = Topology(molecule, parameters)
+                    impact = Impact(topology)
+                    impact.to_file('unlz_generated')
+
+                    # Compare the reference and generated Impact templates
+                    compare_files(impact_template_path, 'unlz_generated')
+
+        # Test with OFF parametrization (for ethylene)
+        pdb_path = get_data_file_path('ligands/ethylene.pdb')
+        molecule = Molecule(pdb_path, tag='ETL')
+        impact_template_path = get_data_file_path('tests/etlz')
+        test_generate_OpenForceFieldParameterWrapper(molecule,
+                                                     impact_template_path)
+
+        # Test with OFF parametrization (for methane)
+        pdb_path = get_data_file_path('ligands/methane.pdb')
+        molecule = Molecule(pdb_path)
+        impact_template_path = get_data_file_path('tests/metz')
+        test_generate_OpenForceFieldParameterWrapper(molecule,
+                                                     impact_template_path)
+
+        # Test with OFF parametrization (for malonate)
+        pdb_path = get_data_file_path('ligands/malonate.pdb')
+        molecule = Molecule(pdb_path)
+        impact_template_path = get_data_file_path('tests/malz')
+        test_generate_OpenForceFieldParameterWrapper(molecule,
+                                                     impact_template_path)
+
+        # Test with OPLS parametrization (for ethylene)
+        pdb_path = get_data_file_path('ligands/ethylene.pdb')
+        molecule = Molecule(pdb_path, tag='ETL')
+        impact_template_path = get_data_file_path('tests/OPLS_etlz')
+        test_generate_OPLS2005ParameterWrapper(molecule,
+                                               impact_template_path)
+
+        # Test with molecule with phase different than 0 or 180
+        # Load molecule, parameterize and generate Impact template
+        molecule = Molecule(smiles='c1c(c(n(n1)S(=O)(=O)C))O')
+        impact_template_path = get_data_file_path('tests/unlz')
+        # Test from_impact_template method
+        test_generate_OpenForceFieldParameterWrapper(molecule,
+                                            impact_template_path)
 
 
 class TestBonds(object):

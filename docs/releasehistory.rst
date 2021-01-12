@@ -13,10 +13,12 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 New features
 """"""""""""
 - `PR #117 <https://github.com/martimunicoy/peleffy/pull/117>`_: New method to assign external partial charges.
+- `PR #118 <https://github.com/martimunicoy/peleffy/pull/118>`_: New method to load parameters from an Impact Template.
 
 Tests added
 """""""""""
 - `PR #117 <https://github.com/martimunicoy/peleffy/pull/117>`_: Adds tests to validate the MAE parse for external partial charges.
+- `PR #118 <https://github.com/martimunicoy/peleffy/pull/118>`_: Adds tests to validate the new method to load parameters from an Impact Template.
 
 
 1.1.0 - Improvements in parameterization API, OBC template for OPLS2005 and Molecule initializators
