@@ -535,7 +535,7 @@ class BaseParameterWrapper(dict):
         if not set(ordered_pdb_atom_names) == set(atom_names_list):
             raise ValueError(
                 "The Impact template file {} ".format(impact_template_path) +
-                "not does represent the same chemical entity as the molecule.")
+                "does not represent the same chemical entity as the molecule.")
 
         # Molecule object and Impact template have the atoms in the same order
         if ordered_pdb_atom_names == atom_names_list:
