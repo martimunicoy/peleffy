@@ -14,11 +14,15 @@ New features
 """"""""""""
 - `PR #117 <https://github.com/martimunicoy/peleffy/pull/117>`_: New method to assign external partial charges.
 - `PR #118 <https://github.com/martimunicoy/peleffy/pull/118>`_: New method to load parameters from an Impact Template.
+- `PR #119 <https://github.com/martimunicoy/peleffy/pull/119>`_: Adds explanatory error message when using an invalid Impact Template in the from_impact_template method.
+- `PR #119 <https://github.com/martimunicoy/peleffy/pull/119>`_: Supports Openforcefield-0.8.3 .
+
 
 Tests added
 """""""""""
 - `PR #117 <https://github.com/martimunicoy/peleffy/pull/117>`_: Adds tests to validate the MAE parse for external partial charges.
 - `PR #118 <https://github.com/martimunicoy/peleffy/pull/118>`_: Adds tests to validate the new method to load parameters from an Impact Template.
+- `PR #119 <https://github.com/martimunicoy/peleffy/pull/119>`_: Adds tests for the new error message when using an invalid Impact Template in the from_impact_template method.
 
 
 1.1.0 - Improvements in parameterization API, OBC template for OPLS2005 and Molecule initializators
