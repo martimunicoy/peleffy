@@ -237,9 +237,17 @@ class TestWrapper(object):
         # Load molecule, parameterize and generate Impact template
         molecule = Molecule(smiles='c1c(c(n(n1)S(=O)(=O)C))O')
         impact_template_path = get_data_file_path('tests/unlz')
-        # Test from_impact_template method
         test_generate_OpenForceFieldParameterWrapper(molecule,
-                                            impact_template_path)
+                                                     impact_template_path)
+
+        # The molecule and Impact template do no represent the same chemical
+        # entity
+        with pytest.raises(ValueError):
+            pdb_path = get_data_file_path('ligands/ethylene.pdb')
+            molecule = Molecule(pdb_path, tag='ETL')
+            impact_template_path = get_data_file_path('tests/metz')
+            test_generate_OpenForceFieldParameterWrapper(molecule,
+                                                         impact_template_path)
 
 
 class TestBonds(object):
