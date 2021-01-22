@@ -17,6 +17,9 @@ New features
 - `PR #119 <https://github.com/martimunicoy/peleffy/pull/119>`_: Adds explanatory error message when using an invalid Impact Template in the from_impact_template method.
 - `PR #119 <https://github.com/martimunicoy/peleffy/pull/119>`_: Supports Openforcefield-0.8.3 .
 
+Bugfixes
+""""""""
+- `PR #125 <https://github.com/martimunicoy/peleffy/pull/125>`_: A bad index slicing in the molecule.Molecule._pdb_checkup() is now fixed. 
 
 Tests added
 """""""""""
