@@ -115,6 +115,27 @@ def compare_dicts(dict1, dict2):
             + 'dictionary1: {}, dictionary2: {}'.format(value, dict2[key])
 
 
+def merge_dicts(*dict_args):
+    """
+    Given any number of dictionaries, shallow copy and merge into a new dict,
+    precedence goes to key-value pairs in latter dictionaries.
+
+    Parameters
+    ----------
+    **dict_args : dict
+        Dictionary to merge
+
+    Returns
+    -------
+    merged_dict : str
+        Merged dictionary
+    """
+    merged_dict = {}
+    for dictionary in dict_args:
+        merged_dict.update(dictionary)
+    return merged_dict
+
+
 def check_parameters(topology, expected_nonbonding=None,
                      expected_bonds=None, expected_angles=None,
                      expected_propers=None, expected_impropers=None):
