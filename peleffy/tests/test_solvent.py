@@ -85,6 +85,51 @@ class TestSolvent(object):
                                   solvent_MET_dict['SolventParameters']),
                       solvent_dict['SolventParameters'])
 
+    def test_multiple_topologies_writer(self):
+        """
+        It tests the class that generates a OpenFFCompatibleSolvent object for multiple topologies. It compares the outcome of the Solvent writer with
+        a reference file.
+        """
+        from .utils import compare_dicts
+        import json
+
+        TEMPLATE_PARAMS = get_data_file_path('tests/ligandParams.txt')
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                path_OXO = get_data_file_path('tests/MRO_oleic/OXO.pdb')
+                path_OLC = get_data_file_path('tests/MRO_oleic/OLC.pdb')
+
+                ff = OpenForceField('openff_unconstrained-1.2.1.offxml')
+                opls2005 = OPLS2005ForceField()
+
+                # Group OXO
+                m_OXO = Molecule(path_OXO)
+                parameters_OXO = opls2005.parameterize(m_OXO)
+                topology_OXO = Topology(m_OXO, parameters_OXO)
+
+                # Acid oleic
+                m_OLC = Molecule(path_OLC)
+                parameters_OLC = ff.parameterize(m_OLC,
+                                                 charge_method='gasteiger')
+                topology_OLC = Topology(m_OLC, parameters_OLC)
+
+                # Multiple topologies
+                topologies = [topology_OXO, topology_OLC]
+                solvent = OBC2(topologies)
+                solvent.to_file('OBC_parameters.txt')
+
+                # Loads reference dict from template
+                with open(TEMPLATE_PARAMS, 'r') as f:
+                    reference_dict = json.load(f)
+
+                # Loads the generated template into a dict
+                with open('OBC_parameters.txt', 'r') as f:
+                    solvent_dict = json.load(f)
+
+                # Compare the output parameters dict with the reference parameters
+                compare_dicts(reference_dict, solvent_dict)
+
     def test_OBCOPLS_writer(self):
         """
         It test the function that writes a OPLS2005CompatibleSolvent object to
