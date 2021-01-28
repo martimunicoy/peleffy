@@ -90,7 +90,7 @@ class TestSolvent(object):
         It tests the class that generates a OpenFFCompatibleSolvent object for multiple topologies. It compares the outcome of the Solvent writer with
         a reference file.
         """
-        from .utils import compare_dicts
+        from .utils import compare_dicts, parameterize_opls2005
         import json
 
         TEMPLATE_PARAMS = get_data_file_path('tests/ligandParams.txt')
@@ -105,7 +105,9 @@ class TestSolvent(object):
 
                 # Group OXO
                 m_OXO = Molecule(path_OXO)
-                parameters_OXO = opls2005.parameterize(m_OXO)
+                ffld_file = get_data_file_path('tests/OXO_ffld_output.txt')
+                parameters_OXO = parameterize_opls2005(opls2005, m_OXO,
+                                                       ffld_file)
                 topology_OXO = Topology(m_OXO, parameters_OXO)
 
                 # Acid oleic

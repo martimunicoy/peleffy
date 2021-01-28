@@ -1,0 +1,32 @@
+FFLD_VERSION 4.1.0
+================================================================================
+  ATOMTYPES and PARAMETERS for molecule:
+
+================================================================================
+
+ Total charge of the system = -2.0000
+Formal charge of the system = -2.0000
+
+
+Charges
+atom  formal fractional formal
+1      -2    -2.000
+
+BCI's             index  type   type    bci        assignement info
+
+OPLSAA FORCE FIELD TYPE ASSIGNED
+-------------------------------------------------------------------------------
+ atom   type  vdw  symbol    charge   sigma    epsilon  quality   comment
+-------------------------------------------------------------------------------
+ O1       801  O4   O       -2.0000   3.0000   0.1700 high   O
+------------------------------------------------------------------------------
+
+
+ Stretch            k            r0    quality         bt        comment
+
+ Bending                      k       theta0    quality   at  comment
+
+ proper Torsion                     V1      V2      V3      V4    quality  tt  comment
+
+
+
