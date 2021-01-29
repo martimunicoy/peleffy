@@ -17,23 +17,39 @@ class _SolventWrapper(object):
     _name = None
     _compatibility = None
 
-    def __init__(self, topology):
+    def __init__(self, topologies):
         """
         Initializes a SolventWrapper object.
 
         Parameters
         ----------
-        topology : a Topology object
+        topologies : a Topology object or list[Topology object]
             The molecular topology representation to write as a
             Impact template
         """
-        self._topology = topology
-        self._radii = dict.fromkeys([tuple((idx, ))
-                                     for idx in range(0, len(topology.atoms))],
-                                    unit.Quantity())
-        self._scales = dict.fromkeys([tuple((idx, ))
-                                      for idx in range(0, len(topology.atoms))],
-                                     unit.Quantity())
+        self._topologies = topologies
+
+        self._initialize_dicts()
+
+    def _initialize_dicts(self):
+        """
+        It initializes empty radii and scales dictionaries. It also handles the
+        possibility of dealing with a single topology or multiple of topologies.
+        """
+
+        _multiple_topologies = isinstance(self.topologies, list)
+
+        if not _multiple_topologies:
+            self._topologies = [self._topologies]
+
+        self._radii = \
+            [dict.fromkeys([tuple((idx, )) for idx in
+                            range(0, len(topology.atoms))], unit.Quantity())
+             for topology in self._topologies]
+        self._scales = \
+            [dict.fromkeys([tuple((idx, )) for idx in
+                            range(0, len(topology.atoms))], unit.Quantity())
+             for topology in self._topologies]
 
     @property
     def name(self):
@@ -48,26 +64,26 @@ class _SolventWrapper(object):
         return self._name
 
     @property
-    def topology(self):
+    def topologies(self):
         """
         The peleffy's Topology.
 
         Returns
         -------
-        topology : a peleffy.topology.Topology
+        topologies : a Topology object or list[Topology object]
             The molecular topology representation to write as a
             Impact template
         """
-        return self._topology
+        return self._topologies
 
     @property
     def radii(self):
         """
-        The dict of radii of the parameterized molecule.
+        A list of the dicts of radii of the parameterized molecules.
 
         Returns
         -------
-        radii : dict[atom indexes: simtk.unit.Quantity]
+        radii : list[dict[atom indexes: simtk.unit.Quantity]]
             The radius assigned to each atom of the molecule
         """
         return self._radii
@@ -75,11 +91,11 @@ class _SolventWrapper(object):
     @property
     def scales(self):
         """
-        The dict of scales of the parameterized molecule.
+        A list of the dicts of scales of the parameterized molecules.
 
         Returns
         -------
-        scales : dict[atom indexes: simtk.unit.Quantity]
+        scales : list[dict[atom indexes: simtk.unit.Quantity]]
             The scale assigned to each atom of the molecule
         """
         return self._scales
@@ -93,17 +109,17 @@ class _OpenFFCompatibleSolvent(_SolventWrapper):
 
     _compatibility = 'openff'
 
-    def __init__(self, topology):
+    def __init__(self, topologies):
         """
         It initializes an OpenFFCompatibleSolvent.
 
         Parameters
         ----------
-        topology : a Topology object
+        topologies : a Topology object or list[Topology object]
             The molecular topology representation to write as a
             Impact template
         """
-        super().__init__(topology)
+        super().__init__(topologies)
 
         self._initialize_from_topology()
 
@@ -129,11 +145,12 @@ class _OpenFFCompatibleSolvent(_SolventWrapper):
         from peleffy.forcefield import OpenForceField
 
         forcefield = OpenForceField(self._ff_file)
-        parameters = forcefield.parameterize(self.topology.molecule,
-                                             charge_method='dummy')
 
-        self._radii = parameters['GBSA_radii']
-        self._scales = parameters['GBSA_scales']
+        for idx, topology in enumerate(self.topologies):
+            parameters = forcefield.parameterize(topology.molecule,
+                                                 charge_method='dummy')
+            self._radii[idx] = parameters['GBSA_radii']
+            self._scales[idx] = parameters['GBSA_scales']
 
     def to_dict(self):
         """
@@ -157,19 +174,21 @@ class _OpenFFCompatibleSolvent(_SolventWrapper):
         data['SolventParameters']['General']['surface_area_penalty'] = \
             round(self.surface_area_penalty.value_in_unit(
                 unit.kilocalorie / (unit.angstrom**2 * unit.mole)), 8)
-        data['SolventParameters'][self.topology.molecule.tag] = dict()
 
-        atom_names = self.topology.molecule.get_pdb_atom_names()
+        for topology, radii, scales in zip(self._topologies,
+                                           self._radii, self._scales):
+            data['SolventParameters'][topology.molecule.tag] = dict()
 
-        for atom, name in zip(self.topology.molecule.rdkit_molecule.GetAtoms(),
-                              atom_names):
-            name = name.replace(' ', '_')
-            index = atom.GetIdx()
-            data['SolventParameters'][self.topology.molecule.tag][name] = \
-                {'radius': round(self.radii[tuple((index, ))].value_in_unit(
-                                 unit.angstrom), 5),
-                 'scale': round(self.scales[tuple((index, ))], 5)}
+            atom_names = topology.molecule.get_pdb_atom_names()
 
+            for atom, name in zip(topology.molecule.rdkit_molecule.GetAtoms(),
+                                  atom_names):
+                name = name.replace(' ', '_')
+                index = atom.GetIdx()
+                data['SolventParameters'][topology.molecule.tag][name] = \
+                    {'radius': round(radii[tuple((index, ))]
+                                     .value_in_unit(unit.angstrom), 5),
+                     'scale': round(scales[tuple((index, ))], 5)}
         return data
 
     def to_file(self, path):
@@ -243,31 +262,39 @@ class _OPLS2005CompatibleSolvent(_SolventWrapper):
     _compatibility = 'opls2005'
     _PARAMS_PATH = get_data_file_path('parameters/solventParamsHCTOBC.txt')
 
-    def __init__(self, topology):
+    def __init__(self, topologies):
         """
         It initializes an OPLS2005CompatibleSolvent.
 
         Parameters
         ----------
-        topology : a Topology object
+        topologies : a Topology object or list[Topology object]
             The molecular topology representation to write as a
             Impact template
         """
-        super().__init__(topology)
+        super().__init__(topologies)
 
+        self._initialize_from_topology()
+
+    def _initialize_from_topology(self):
+        """
+        Initializes a SolventWrapper object using a peleffy's
+        molecular Topology.
+        """
         from peleffy.forcefield import OPLS2005ForceField
         from peleffy.forcefield.parameters import OPLS2005ParameterWrapper
 
-        # Parameterize with OPLS2005 only is the parameters in topology
-        # are not obtained with OPLS2005
-        if isinstance(topology.parameters, OPLS2005ParameterWrapper):
-            parameters = topology.parameters
-        else:
-            forcefield = OPLS2005ForceField()
-            parameters = forcefield.parameterize(self.molecule)
+        for idx, topology in enumerate(self.topologies):
+            # Parameterize with OPLS2005 only if the parameters in topology
+            # are not obtained with OPLS2005
+            if isinstance(topology.parameters, OPLS2005ParameterWrapper):
+                parameters = topology.parameters
+            else:
+                forcefield = OPLS2005ForceField()
+                parameters = forcefield.parameterize(topology.molecule)
 
-        self._radii = parameters['GBSA_radii']
-        self._scales = parameters['GBSA_scales']
+            self._radii[idx] = parameters['GBSA_radii']
+            self._scales[idx] = parameters['GBSA_scales']
 
     def to_file(self, path):
         """
@@ -284,22 +311,26 @@ class _OPLS2005CompatibleSolvent(_SolventWrapper):
         with open(self._PARAMS_PATH) as f:
             standard_params = f.read()
 
-        # Add parameters for non standard residues
-        atom_names = [param.replace('_', '')
-                      for param in self.topology.parameters['atom_names']]
-
         with open(path, 'w') as f:
+            # Write parameters for standard residues
             f.write(standard_params)
 
-            for atom_name, atom_type, scale, radii in zip(
-                atom_names, self.topology.parameters['atom_types'],
-                    self.scales, self.radii):
+            # Write parameters for non standard residues
+            for topology, radii, scales in zip(self.topologies,
+                                               self.radii, self.scales):
 
-                f.write(self.topology.molecule.tag + 'Z'.upper() + '   '
-                        + atom_name + '   '
-                        + atom_type + '    '
-                        + str(scale) + '   '
-                        + str(radii._value) + '\n')
+                atom_names = [param.replace('_', '') for param in
+                              topology.parameters['atom_names']]
+
+                for atom_name, atom_type, scale, radi in \
+                        zip(atom_names, topology.parameters['atom_types'],
+                            scales, radii):
+
+                    f.write(topology.molecule.tag + 'Z'.upper() + '   '
+                            + atom_name + '   '
+                            + atom_type + '    '
+                            + str(scale) + '   '
+                            + str(radi._value) + '\n')
 
 
 class OBC1(_OpenFFCompatibleSolvent):
@@ -310,13 +341,13 @@ class OBC1(_OpenFFCompatibleSolvent):
     _ff_file = get_data_file_path('forcefields/GBSA_OBC1-1.0.offxml')
     _name = 'OBC1'
 
-    def __init__(self, topology):
+    def __init__(self, topologies):
         """
         Initializes an OBC1 object.
 
         Parameters
         ----------
-        topology : a Topology object
+        topologies : a Topology object or list[Topology object]
             The molecular topology representation to write as a
             Impact template
         """
@@ -324,7 +355,7 @@ class OBC1(_OpenFFCompatibleSolvent):
         logger = Logger()
         logger.warning('OBC1 is not implemented in PELE')
 
-        super().__init__(topology)
+        super().__init__(topologies)
 
 
 class OBC2(_OpenFFCompatibleSolvent):
@@ -335,13 +366,13 @@ class OBC2(_OpenFFCompatibleSolvent):
     _ff_file = get_data_file_path('forcefields/GBSA_OBC2-1.0.offxml')
     _name = 'OBC2'
 
-    def __init__(self, topology):
+    def __init__(self, topologies):
         """
         Initializes an OBC2 object.
 
         Parameters
         ----------
-        topology : a Topology object
+        topologies : a Topology object or list[Topology object]
             The molecular topology representation to write as a
             Impact template
 
@@ -369,7 +400,7 @@ class OBC2(_OpenFFCompatibleSolvent):
         >>> solvent.to_file('OBC_parameters.txt')
 
         """
-        super().__init__(topology)
+        super().__init__(topologies)
 
 
 class OPLSOBC(_OPLS2005CompatibleSolvent):
@@ -379,13 +410,13 @@ class OPLSOBC(_OPLS2005CompatibleSolvent):
     """
     _name = 'OBC'
 
-    def __init__(self, topology):
+    def __init__(self, topologies):
         """
         Initializes an OPLSOBC object.
 
         Parameters
         ----------
-        topology : a Topology object
+        topologies : a Topology object or list[Topology object]
             The molecular topology representation to write as a
             Impact template
 
@@ -413,4 +444,4 @@ class OPLSOBC(_OPLS2005CompatibleSolvent):
         >>> solvent.to_file('OBC_parameters.txt')
 
         """
-        super().__init__(topology)
+        super().__init__(topologies)

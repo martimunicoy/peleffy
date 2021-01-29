@@ -16,6 +16,7 @@ New features
 - `PR #118 <https://github.com/martimunicoy/peleffy/pull/118>`_: New method to load parameters from an Impact Template.
 - `PR #119 <https://github.com/martimunicoy/peleffy/pull/119>`_: Adds explanatory error message when using an invalid Impact Template in the from_impact_template method.
 - `PR #119 <https://github.com/martimunicoy/peleffy/pull/119>`_: Supports Openforcefield-0.8.3 .
+- `PR #126 <https://github.com/martimunicoy/peleffy/pull/126>`_: Allows the Solvent class to be compatible with multiple topologies. 
 
 Bugfixes
 """"""""
@@ -26,6 +27,7 @@ Tests added
 - `PR #117 <https://github.com/martimunicoy/peleffy/pull/117>`_: Adds tests to validate the MAE parse for external partial charges.
 - `PR #118 <https://github.com/martimunicoy/peleffy/pull/118>`_: Adds tests to validate the new method to load parameters from an Impact Template.
 - `PR #119 <https://github.com/martimunicoy/peleffy/pull/119>`_: Adds tests for the new error message when using an invalid Impact Template in the from_impact_template method.
+- `PR #126 <https://github.com/martimunicoy/peleffy/pull/126>`_: Adds tests for the new compatibility of the Solvent class with multiple topologies. 
 
 
 1.1.0 - Improvements in parameterization API, OBC template for OPLS2005 and Molecule initializators
