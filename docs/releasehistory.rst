@@ -7,8 +7,8 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``minor`` increments add features but do not break API compatibility
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
-1.2.0 - Current development
----------------------------
+1.2.0 - New tools for parameters and templates
+----------------------------------------------
 
 This is a minor release of peleffy that includes new useful tools to handle parameters and their templates more easily. It also supports the newest version of the OpenForceField toolkit, which is 0.8.3.
 
