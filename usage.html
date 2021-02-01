@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                1.1.0
+                0+untagged.1.ga81633a
               </div>
             
           
@@ -99,6 +99,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#include-solvent-parameters">Include solvent parameters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#save-output-as-datalocal">Save output as DataLocal</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#charge-method">Charge method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#charge-from-file">Charge from file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#include-terminal-rotamers">Include terminal rotamers</a></li>
 </ul>
 </li>
@@ -370,6 +371,20 @@ installation path.</p>
 <li><p>Default: <code class="docutils literal notranslate"><span class="pre">am1bcc</span></code></p></li>
 <li><p>Example: the code below will calculate partial charges using ‘gasteiger’ method</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m peleffy.main path/to/my_ligand.pdb -c gasteiger
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="charge-from-file">
+<h3>Charge from file<a class="headerlink" href="#charge-from-file" title="Permalink to this headline">¶</a></h3>
+<p>It sets the method to load external partial charges.</p>
+<ul>
+<li><p>Flag: <code class="docutils literal notranslate"><span class="pre">--charges_from_file</span> <span class="pre">PATH</span></code></p></li>
+<li><p>Type: <code class="docutils literal notranslate"><span class="pre">string</span></code></p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p>Example: the code below will load the partial charges from a MAE file</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m peleffy.main path/to/my_ligand.pdb --charges_from_file path/to/my_ligand.mae
 </pre></div>
 </div>
 </li>
