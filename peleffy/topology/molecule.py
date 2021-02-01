@@ -176,9 +176,9 @@ class Molecule(object):
         with open(path) as pdb_file:
             for line in pdb_file:
                 if line.startswith('ATOM') or line.startswith('HETATM'):
-                    atom_id.append(line[13:16])
-                    res_name.append(line[18:20])
-                    res_id.append(line[23:26])
+                    atom_id.append(line[12:16])
+                    res_name.append(line[17:20])
+                    res_id.append(line[22:26])
                 if line.startswith('CONECT'):
                     connectivity = True
 

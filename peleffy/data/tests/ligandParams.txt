@@ -1,0 +1,231 @@
+{
+    "SolventParameters": {
+        "Name": "OBC2",
+        "General": {
+            "solvent_dielectric": 78.5,
+            "solute_dielectric": 1,
+            "solvent_radius": 1.4,
+            "surface_area_penalty": 0.0054
+        },
+        "OXO": {
+            "_O__": {
+                "radius": 1.5,
+                "scale": 0.85
+            }
+        },
+        "OLC": {
+            "_C2_": {
+                "radius": 1.7,
+                "scale": 0.72
+            },
+            "_C1_": {
+                "radius": 1.7,
+                "scale": 0.72
+            },
+            "_C3_": {
+                "radius": 1.7,
+                "scale": 0.72
+            },
+            "_O1_": {
+                "radius": 1.5,
+                "scale": 0.85
+            },
+            "_O2_": {
+                "radius": 1.5,
+                "scale": 0.85
+            },
+            "_C4_": {
+                "radius": 1.7,
+                "scale": 0.72
+            },
+            "_C5_": {
+                "radius": 1.7,
+                "scale": 0.72
+            },
+            "_C6_": {
+                "radius": 1.7,
+                "scale": 0.72
+            },
+            "_C7_": {
+                "radius": 1.7,
+                "scale": 0.72
+            },
+            "_C8_": {
+                "radius": 1.7,
+                "scale": 0.72
+            },
+            "_C9_": {
+                "radius": 1.7,
+                "scale": 0.72
+            },
+            "_C10": {
+                "radius": 1.7,
+                "scale": 0.72
+            },
+            "_C11": {
+                "radius": 1.7,
+                "scale": 0.72
+            },
+            "_C12": {
+                "radius": 1.7,
+                "scale": 0.72
+            },
+            "_C13": {
+                "radius": 1.7,
+                "scale": 0.72
+            },
+            "_C14": {
+                "radius": 1.7,
+                "scale": 0.72
+            },
+            "_C15": {
+                "radius": 1.7,
+                "scale": 0.72
+            },
+            "_C16": {
+                "radius": 1.7,
+                "scale": 0.72
+            },
+            "_C17": {
+                "radius": 1.7,
+                "scale": 0.72
+            },
+            "_C18": {
+                "radius": 1.7,
+                "scale": 0.72
+            },
+            "_H1_": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H2_": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H3_": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H4_": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H5_": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H6_": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H7_": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H8_": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H9_": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H10": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H11": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H12": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H13": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H14": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H15": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H16": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H17": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H18": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H19": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H20": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H21": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H22": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H23": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H24": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H25": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H26": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H27": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H28": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H29": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H30": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H31": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H32": {
+                "radius": 1.2,
+                "scale": 0.85
+            },
+            "_H33": {
+                "radius": 1.2,
+                "scale": 0.85
+            }
+        }
+    }
+}

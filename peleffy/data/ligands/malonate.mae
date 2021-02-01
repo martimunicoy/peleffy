@@ -1,0 +1,61 @@
+{ 
+ s_m_m2io_version
+ :::
+ 2.0.0 
+} 
+
+f_m_ct { 
+ s_m_title
+ i_m_ct_format
+ :::
+ "Displayed atoms" 
+  2
+ m_atom[10] { 
+  # First column is atom index #
+  i_m_mmod_type
+  r_m_x_coord
+  r_m_y_coord
+  r_m_z_coord
+  i_m_residue_number
+  i_m_color
+  s_m_pdb_residue_name
+  s_m_pdb_atom_name
+  i_m_atomic_number
+  i_m_formal_charge
+  s_m_color_rgb
+  s_m_atom_name
+  r_m_pdb_occupancy
+  i_m_pdb_convert_problem
+  i_pdb_PDB_serial
+  :::
+  1 15 -1.598000 -1.076000 1.038000 1 70 "UNL " " O1 " 8 0 FF2E2E  O1  1 4 1
+  2 2 -1.509000 -0.220000 0.134000 1 10 "UNL " " C1 " 6 0 1EE11E  C2  1 4 2
+  3 18 -2.594000 0.553000 -0.220000 1 70 "UNL " " O2 " 8 -1 FF2E2E  O3  1 4 3
+  4 3 -0.228000 -0.031000 -0.564000 1 10 "UNL " " C2 " 6 0 1EE11E  C4  1 4 4
+  5 2 0.811000 0.299000 0.424000 1 10 "UNL " " C3 " 6 0 1EE11E  C5  1 4 5
+  6 16 2.138000 0.539000 0.046000 1 70 "UNL " " O3 " 8 0 FF2E2E  O6  1 4 6
+  7 15 0.529000 0.371000 1.629000 1 70 "UNL " " O4 " 8 0 FF2E2E  O7  1 4 7
+  8 41 0.047000 -0.941000 -1.147000 1 21 "UNL " " H1 " 1 0 FFFFFF  H8  1 4 8
+  9 41 -0.338000 0.776000 -1.310000 1 21 "UNL " " H2 " 1 0 FFFFFF  H9  1 4 9
+  10 42 2.740000 -0.269000 -0.031000 1 21 "UNL " " H3 " 1 0 FFFFFF  H10  1 4 10
+  :::
+ } 
+ m_bond[9] { 
+  # First column is bond index #
+  i_m_from
+  i_m_to
+  i_m_order
+  :::
+  1 1 2 2
+  2 2 3 1
+  3 2 4 1
+  4 4 5 1
+  5 4 8 1
+  6 4 9 1
+  7 5 6 1
+  8 5 7 2
+  9 6 10 1
+  :::
+ } 
+} 
+
