@@ -5,9 +5,9 @@ Generate PELE parameter files
 
 The main purpose of `peleffy` is to build the parameter files for PELE. Basically, PELE requires two files for each non-standard residue found in the system:
 
-- `IMPACT template <https://eapm-bsc.github.io/PELE-repo/fileFormats.html#impact-template-file-format>`_: a file containing the atom types and parameters of the ligand. Its job is to link each atom with the corresponding parameters using PDB atom names. Thus, PDB atom names in the input PDB file must match with the expected PDB atom names in the Impact file. This file intrinsically contains the information about the topology and connectivity of each residue.
+- `IMPACT template <https://nostrumbiodiscovery.github.io/pele_docs/fileFormats.html#sec-fileformats-impact>`_: a file containing the atom types and parameters of the ligand. Its job is to link each atom with the corresponding parameters using PDB atom names. Thus, PDB atom names in the input PDB file must match with the expected PDB atom names in the Impact file. This file intrinsically contains the information about the topology and connectivity of each residue.
 
-- `Rotamer library <https://eapm-bsc.github.io/PELE-repo/fileFormats.html#ligand-rotamer-library-file>`_: a file containing the branches that can rotate with respect to a central atomic core. Each branch consists in a set of consecutive rotatable bonds.
+- `Rotamer library <https://nostrumbiodiscovery.github.io/pele_docs/fileFormats.html#sec-fileformats-ligandrotamers>`_: a file containing the branches that can rotate with respect to a central atomic core. Each branch consists in a set of consecutive rotatable bonds.
 
 Besides, a third file with the `Solvent parameters` might be required when employing the OBC implicit solvent.
 
