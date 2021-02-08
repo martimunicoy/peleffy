@@ -102,6 +102,8 @@ arguments. To obtain the full list of flags you can type:
                              hierarchy
        -c NAME, --charge_method NAME
                              The name of the method to use to compute charges
+       --charges_from_file PATH
+                             The path to the file with charges
        --include_terminal_rotamers
                              Not exclude terminal rotamers when building the
                              rotamer library
