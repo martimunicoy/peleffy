@@ -7,6 +7,17 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``minor`` increments add features but do not break API compatibility
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
+1.2.1 - Current development
+---------------------------
+
+New features
+""""""""""""
+- `PR #131 <https://github.com/martimunicoy/peleffy/pull/131>`_: New method to load parameters from a JSON file.
+
+Tests added
+"""""""""""
+- `PR #131 <https://github.com/martimunicoy/peleffy/pull/131>`_: Adds tests to validate the new method to load parameters from a JSON file.
+
 1.2.0 - New tools for parameters and templates
 ----------------------------------------------
 
