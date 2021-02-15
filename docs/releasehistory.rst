@@ -7,8 +7,32 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``minor`` increments add features but do not break API compatibility
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
+1.2.0 - New tools for parameters and templates
+----------------------------------------------
 
-1.1.0 - Improvements in parameterization API, OBC template for OPLS2005 and Molecule initializators 
+This is a minor release of peleffy that includes new useful tools to handle parameters and their templates more easily. It also supports the newest version of the OpenForceField toolkit, which is 0.8.3.
+
+New features
+""""""""""""
+- `PR #117 <https://github.com/martimunicoy/peleffy/pull/117>`_: New method to assign external partial charges.
+- `PR #118 <https://github.com/martimunicoy/peleffy/pull/118>`_: New method to load parameters from an Impact Template.
+- `PR #119 <https://github.com/martimunicoy/peleffy/pull/119>`_: Adds explanatory error message when using an invalid Impact Template in the from_impact_template method.
+- `PR #119 <https://github.com/martimunicoy/peleffy/pull/119>`_: Supports Openforcefield-0.8.3 .
+- `PR #126 <https://github.com/martimunicoy/peleffy/pull/126>`_: Allows the Solvent class to be compatible with multiple topologies. 
+
+Bugfixes
+""""""""
+- `PR #125 <https://github.com/martimunicoy/peleffy/pull/125>`_: A bad index slicing in the molecule.Molecule._pdb_checkup() is now fixed. 
+
+Tests added
+"""""""""""
+- `PR #117 <https://github.com/martimunicoy/peleffy/pull/117>`_: Adds tests to validate the MAE parse for external partial charges.
+- `PR #118 <https://github.com/martimunicoy/peleffy/pull/118>`_: Adds tests to validate the new method to load parameters from an Impact Template.
+- `PR #119 <https://github.com/martimunicoy/peleffy/pull/119>`_: Adds tests for the new error message when using an invalid Impact Template in the from_impact_template method.
+- `PR #126 <https://github.com/martimunicoy/peleffy/pull/126>`_: Adds tests for the new compatibility of the Solvent class with multiple topologies. 
+
+
+1.1.0 - Improvements in parameterization API, OBC template for OPLS2005 and Molecule initializators
 ---------------------------------------------------------------------------------------------------
 
 This minor release introduces improvements to the parameterization API of peleffy. It also integrates the parameterization of OBC radii and scale factors required by the OPLS2005 implementation of PELE. It also improves the initialization of the Molecule class with a PDB checking and fixer and taking RDKit and OpenFF molecular representations as input. It also adds support for the new openff-1.3.0. Besides, it fixes a serious bug in the atom ordering of the Impact template that affected PELE's side chain prediction algorithm.

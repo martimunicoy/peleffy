@@ -10,6 +10,7 @@ __all__ = ["OpenForceFieldParameterWrapper",
 
 
 from collections import defaultdict
+from simtk import unit
 
 from peleffy.utils import get_data_file_path
 from peleffy.utils import Logger
@@ -282,11 +283,308 @@ class BaseParameterWrapper(dict):
 
         Returns
         -------
-        parameters : a BaseParameterWrapper object
+        params : a BaseParameterWrapper object
             The resulting parameters wrapper
+
+        Examples
+        --------
+
+        Obtain a parameter wrapper from an Impact template.
+
+        >>> from peleffy.topology import Molecule
+
+        >>> molecule = Molecule('molecule.pdb')
+        >>> impact_template_path = 'molz'
+
+        >>> from peleffy.forcefield.parameters import \
+                OpenForceFieldParametersWrapper
+
+        >>> wrapper_off = OpenForceFieldParameterWrapper()
+        >>> parameters = wrapper_off.from_impact_template(
+                molecule, impact_template_path)
+
         """
 
-        raise NotImplementedError()
+        def index(atom_idx):
+            """
+            Atom's index.
+
+            Parameters
+            ----------
+            index : int
+                The Atom's index for a WritableWrapper
+
+            Returns
+            -------
+            index : int
+                The Atom's index for a BaseParameterWrapper object
+            """
+            return abs(int(atom_idx)) - 1
+
+        def zero_to_none(values):
+            """
+            It converts a vector of zeros to None.
+
+            Parameters
+            ----------
+            values : list
+                List of parameters.
+
+            Returns
+            -------
+            values : list
+                It is set to None if all the parameters are zeros.
+            """
+            n_atoms = len(values)
+            if type(values[0]) == float:
+                if all(value == float(0.0) for value in values):
+                    values = [None, ] * n_atoms
+            if type(values[0]) == unit.quantity.Quantity:
+                if all(value == unit.Quantity(0, unit.angstroms) for value
+                       in values):
+                    values = values = [None, ] * n_atoms
+            return values
+
+        def get_phase(info):
+            """
+            It computes the phase of a Dihedral given its prefactor. PELE
+            prefactors can be  equal to 1 or -1. If the phase constant is
+            different than 0 or 180, an extra column in the Impact template
+            specifies its value.
+
+            Parameters
+            ----------
+            info : list
+                List of parameters for this Dihedral
+
+            Returns
+            -------
+            phase : simtk.unit.Quantity
+                The phase constant of the Dihedral
+            """
+            if len(info) > 7:
+                return unit.Quantity(
+                    value=float(info[7]),
+                    unit=unit.degree)
+            else:
+                prefactor = float(info[5])
+                if prefactor == 1:
+                    return unit.Quantity(
+                        value=0.00,
+                        unit=unit.degree)
+                if prefactor == -1:
+                    return unit.Quantity(
+                        value=180.00,
+                        unit=unit.degree)
+
+        def reindex_atom_idx(list_params, dict_index):
+            """
+            It sorts and reindexes atoms of a parameters list according to a
+            dictionary.
+
+            Parameters
+            ----------
+            list_params : list
+                List of parameters to reindex
+            dict_index : dict
+                Dictionary that defines the reindexer between old and new index
+
+            Returns
+            -------
+            list_params : list
+                Updated list of parameters with the correct indexes
+            """
+            for i, atom_info in enumerate(list_params):
+                for key, value in atom_info.items():
+                    if '_idx' in key:
+                        list_params[i][key] = dict_index.get(value)
+            return list_params
+
+        # Parse Impact template file
+        tag, nbon, bond, thet, phi, iphi = ([] for i in range(6))
+        with open(impact_template_path, 'r') as fd:
+            type_info = 'tag'
+            for line in fd.readlines():
+                if not line.startswith('*'):
+                    if 'NBON' in line:
+                        type_info = 'nbon'
+                    elif 'BOND' in line:
+                        type_info = 'bond'
+                    elif 'THET' in line:
+                        type_info = 'thet'
+                    elif 'PHI' in line and 'IPHI' not in line:
+                        type_info = 'phi'
+                    elif 'IPHI' in line:
+                        type_info = 'iphi'
+                    else:
+                        if type_info == 'tag':
+                            tag.append(line)
+                        if type_info == 'nbon':
+                            nbon.append(line)
+                        if type_info == 'bond':
+                            bond.append(line)
+                        if type_info == 'thet':
+                            thet.append(line)
+                        if type_info == 'phi':
+                            phi.append(line)
+                        if type_info == 'iphi':
+                            iphi.append(line)
+
+        # Atom names and atom types
+        atom_names_list, atom_types_list = ([] for i in range(2))
+        for line in tag[1:]:
+            info = line.split()
+            atom_names_list.append(info[4])
+            atom_types_list.append(info[3])
+
+        # Charges, epsilons, sigmas, SGB radius, vdW radius, gammas and alphas
+        charges_list, epsilons_list, sigmas_list, SGB_list, vdW_list, \
+            gammas_list, alphas_list = ([] for i in range(7))
+        for line in nbon:
+            info = line.split()
+            charges_list.append(unit.Quantity(
+                value=float(info[3]),
+                unit=unit.elementary_charge))
+            epsilons_list.append(unit.Quantity(
+                value=float(info[2]),
+                unit=unit.kilocalorie / unit.mole))
+            sigmas_list.append(unit.Quantity(
+                value=float(info[1]),
+                unit=unit.angstrom))
+            SGB_list.append(unit.Quantity(
+                value=float(info[4]),
+                unit=unit.angstrom))
+            vdW_list.append(unit.Quantity(
+                value=float(info[5]),
+                unit=unit.angstrom))
+            gammas_list.append(float(info[6]))
+            alphas_list.append(float(info[7]))
+
+        # Bonds
+        bonds_list = []
+        for line in bond:
+            info = line.split()
+            case = {'atom1_idx': index(info[0]),
+                    'atom2_idx': index(info[1]),
+                    'eq_dist': unit.Quantity(
+                        value=float(info[3]),
+                        unit=unit.angstrom),
+                    'spring_constant': unit.Quantity(
+                        value=float(info[2]),
+                        unit=unit.kilocalorie
+                        / (unit.angstrom ** 2 * unit.mole))}
+            bonds_list.append(case)
+
+        # Angles
+        angles_list = []
+        for line in thet:
+            info = line.split()
+            case = {'atom1_idx': index(info[0]),
+                    'atom2_idx': index(info[1]),
+                    'atom3_idx': index(info[2]),
+                    'eq_angle': unit.Quantity(
+                        value=float(info[4]),
+                        unit=unit.degrees),
+                    'spring_constant': unit.Quantity(
+                        value=float(info[3]),
+                        unit=unit.kilocalorie
+                        / (unit.radian ** 2 * unit.mole))}
+            angles_list.append(case)
+
+        # Impropers
+        impropers_list = []
+        for line in iphi[:-1]:
+            info = line.split()
+            case = {'atom1_idx': index(info[0]),
+                    'atom2_idx': index(info[1]),
+                    'atom3_idx': index(info[2]),
+                    'atom4_idx': index(info[3]),
+                    'idivf': abs(float(info[5])),
+                    'k': unit.Quantity(
+                        value=float(info[4]),
+                        unit=unit.kilocalorie / unit.mole),
+                    'periodicity': int(float(info[6])),
+                    'phase': get_phase(info)}
+            impropers_list.append(case)
+
+        # Propers
+        propers_list = []
+        for line in phi:
+            info = line.split()
+            case = {'atom1_idx': index(info[0]),
+                    'atom2_idx': index(info[1]),
+                    'atom3_idx': index(info[2]),
+                    'atom4_idx': index(info[3]),
+                    'idivf': abs(float(info[5])),
+                    'k': unit.Quantity(
+                        value=float(info[4]),
+                        unit=unit.kilocalorie / unit.mole),
+                    'periodicity': int(float(info[6])),
+                    'phase': get_phase(info)}
+            propers_list.append(case)
+
+        # Initialize the BaseParameterWrapper object
+        params = BaseParameterWrapper()
+
+        # PDB atom names from Molecule object
+        ordered_pdb_atom_names = [pdb_name.replace(' ', '_') for pdb_name in
+                                  molecule.get_pdb_atom_names()]
+
+        # Check up that the Molecule representation and the Impact template
+        # represent the same chemical entity
+        if not set(ordered_pdb_atom_names) == set(atom_names_list):
+            raise ValueError(
+                "The Impact template file {} ".format(impact_template_path) +
+                "does not represent the same chemical entity as the molecule.")
+
+        # Molecule object and Impact template have the atoms in the same order
+        if ordered_pdb_atom_names == atom_names_list:
+            # Assign parameters from Impact template to the BaseParameterWrapper
+            # object
+            params['angles'] = angles_list
+            params['atom_names'] = atom_names_list
+            params['atom_types'] = atom_types_list
+            params['bonds'] = bonds_list
+            params['charges'] = charges_list
+            params['epsilons'] = epsilons_list
+            params['impropers'] = impropers_list
+            params['propers'] = propers_list
+            params['sigmas'] = sigmas_list
+            params['vdW_radii'] = vdW_list
+            params['SGB_radii'] = zero_to_none(SGB_list)
+            params['gammas'] = zero_to_none(gammas_list)
+            params['alphas'] = zero_to_none(alphas_list)
+
+        # Molecule object and Impact template have the atoms in different order
+        if ordered_pdb_atom_names != atom_names_list:
+            # Reindexer dictionary to sort atoms as Molecule object
+            index_order = [atom_names_list.index(atom_name) for atom_name in
+                           ordered_pdb_atom_names]
+            dict_reindex = dict(zip(index_order, range(len(index_order))))
+
+            # Assign parameters from Impact template to the BaseParameterWrapper
+            # object reordering atoms according to Molecule object atoms
+            params['atom_names'] = [atom_names_list[i] for i in index_order]
+            params['atom_types'] = [atom_types_list[i] for i in index_order]
+            params['charges'] = [charges_list[i] for i in index_order]
+            params['epsilons'] = [epsilons_list[i] for i in index_order]
+            params['sigmas'] = [sigmas_list[i] for i in index_order]
+            params['vdW_radii'] = [vdW_list[i] for i in index_order]
+            params['SGB_radii'] = [zero_to_none(SGB_list)[i] for i in
+                                   index_order]
+            params['gammas'] = [zero_to_none(gammas_list)[i] for i in
+                                index_order]
+            params['alphas'] = [zero_to_none(alphas_list)[i] for i in
+                                index_order]
+            params['impropers'] = reindex_atom_idx(impropers_list,
+                                                   dict_reindex)
+            params['propers'] = reindex_atom_idx(propers_list,
+                                                 dict_reindex)
+            params['angles'] = reindex_atom_idx(angles_list,
+                                                dict_reindex)
+            params['bonds'] = reindex_atom_idx(bonds_list,
+                                               dict_reindex)
+        return params
 
     @property
     def forcefield_name(self):
@@ -460,7 +758,8 @@ class OpenForceFieldParameterWrapper(BaseParameterWrapper):
                 params['bonds'].append(
                     {'atom1_idx': idx1,
                      'atom2_idx': idx2,
-                     'spring_constant': k_by_idx[idxs] / 2.0,  # PELE works with half of the OFF's spring
+                     # PELE works with half of the OFF's spring
+                     'spring_constant': k_by_idx[idxs] / 2.0,
                      'eq_dist': length_by_idx[idxs]
                      })
 
@@ -475,7 +774,8 @@ class OpenForceFieldParameterWrapper(BaseParameterWrapper):
                     {'atom1_idx': idx1,
                      'atom2_idx': idx2,
                      'atom3_idx': idx3,
-                     'spring_constant': k_by_idx[idxs] / 2.0,  # PELE works with half of the OFF's spring
+                     # PELE works with half of the OFF's spring
+                     'spring_constant': k_by_idx[idxs] / 2.0,
                      'eq_angle': angle_by_idx[idxs]
                      })
 

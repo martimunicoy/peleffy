@@ -1,0 +1,331 @@
+{ 
+ s_m_m2io_version
+ :::
+ 2.0.0 
+} 
+
+f_m_ct { 
+ s_m_title
+ s_st_Chirality_1
+ s_m_entry_id
+ s_m_entry_name
+ i_sd_PUBCHEM\_COMPOUND\_CID
+ i_sd_PUBCHEM\_HEAVY\_ATOM\_COUNT
+ i_sd_PUBCHEM\_ATOM\_DEF\_STEREO\_COUNT
+ i_sd_PUBCHEM\_ATOM\_UDEF\_STEREO\_COUNT
+ i_sd_PUBCHEM\_BOND\_DEF\_STEREO\_COUNT
+ i_sd_PUBCHEM\_BOND\_UDEF\_STEREO\_COUNT
+ i_sd_PUBCHEM\_ISOTOPIC\_ATOM\_COUNT
+ i_sd_PUBCHEM\_COMPONENT\_COUNT
+ i_sd_PUBCHEM\_CACTVS\_TAUTO\_COUNT
+ s_sd_PUBCHEM\_COORDINATE\_TYPE
+ b_sd_chiral_flag
+ i_sd_version
+ i_m_ct_enhanced_stereo_status
+ s_m_Source_Path
+ s_m_Source_File
+ i_m_Source_File_Index
+ r_sd_PUBCHEM\_CONFORMER\_RMSD
+ s_sd_PUBCHEM\_CONFORMER\_DIVERSEORDER
+ s_sd_PUBCHEM\_MMFF94\_PARTIAL\_CHARGES
+ i_sd_PUBCHEM\_EFFECTIVE\_ROTOR\_COUNT
+ s_sd_PUBCHEM\_PHARMACOPHORE\_FEATURES
+ s_sd_PUBCHEM\_CONFORMER\_ID
+ r_sd_PUBCHEM\_MMFF94\_ENERGY
+ r_sd_PUBCHEM\_FEATURE\_SELFOVERLAP
+ s_sd_PUBCHEM\_SHAPE\_FINGERPRINT
+ s_sd_PUBCHEM\_SHAPE\_MULTIPOLES
+ r_sd_PUBCHEM\_SHAPE\_SELFOVERLAP
+ r_sd_PUBCHEM\_SHAPE\_VOLUME
+ i_m_Spin_multiplicity
+ i_m_Molecular_charge
+ s_j_Task
+ s_j_Jaguar_input_file
+ s_j_Jaguar_restart_input_file
+ s_j_Jaguar_restart_mae_file
+ s_j_Jaguar_output_file
+ s_j_Jaguar_log_file
+ s_j_Jaguar_mae_file
+ s_j_QM_Method
+ s_j_QM_Basis
+ i_j_Number_of_canonical_orbitals
+ r_j_Gas_Phase_Energy
+ r_j_alpha_HOMO
+ r_j_alpha_LUMO
+ r_j_beta_HOMO
+ r_j_beta_LUMO
+ r_j_S2_Value
+ i_m_ct_format
+ :::
+ MAT 
+  7_R_6_9_8_17 
+  4 
+  AminoTriFB_Acid.1 
+  7146283
+  16
+  1
+  0
+  0
+  0
+  0
+  1
+  1
+  "2
+5
+10" 
+  1
+  0
+  0
+  /home/sergi/Downloads 
+  AminoTriFB_Acid.sdf 
+  1
+  0.6
+  "1
+29
+18
+12
+36
+27
+26
+3
+21
+22
+30
+33
+28
+34
+6
+13
+8
+20
+2
+10
+17
+14
+38
+35
+5
+15
+19
+32
+7
+11
+31
+25
+16
+37
+4
+24
+9
+23" 
+  "21
+1 -0.19
+10 -0.14
+11 0.19
+12 -0.15
+13 0.66
+14 0.19
+15 -0.15
+16 0.19
+2 -0.19
+22 0.36
+23 0.36
+24 0.15
+25 0.15
+26 0.5
+3 -0.19
+4 -0.65
+5 -0.57
+6 -0.99
+7 0.27
+8 0.14
+9 0.06" 
+  4
+  "6
+1 4 acceptor
+1 5 acceptor
+1 6 cation
+1 6 donor
+3 4 5 13 anion
+6 10 11 12 14 15 16 rings" 
+  006D0B2B00000001 
+  21.5392
+  30.505
+  "11640471 11 15647628889830663852
+12423570 1 11493903152406358833
+14817 1 10758997178314292410
+15207287 21 18339637962036346626
+15219456 202 18413672421803698665
+15775835 57 14779556732791855478
+15852999 172 18262801886227100626
+16945 1 18343585169851076072
+17357990 137 16081095848386176836
+17834072 14 18268706100702522186
+18186145 218 18335423413576322669
+20201158 50 18341902887196267538
+20344682 1 18197214969294511237
+20645476 183 16009033937927384619
+20645477 70 17846782901367029789
+20671657 53 17844260531688729894
+21501502 16 18130801009517592297
+21947302 44 18341894073870479240
+22802520 49 18335713701730648057
+23402539 116 18043233846170889205
+23557571 272 17824559679483454083
+23559900 14 18187087291251865792
+257057 1 17838905828515207974
+2748010 2 18260829276377957649
+58245506 1 18270127807290276095
+77492 1 15626235627511717544" 
+  "290.73
+5.02
+1.98
+1.45
+1.11
+0.1
+0.02
+-0.74
+-1.28
+-0.94
+-0.09
+-0.11
+0.4
+1.15" 
+  604.945
+  165.5
+  2
+  -1
+  "Single Point" 
+  /gpfs/projects/bsc72/sroda/Transaminases/Pharmaceutical_compounds_PELE_simulation/jag_MAT_spe_B3LYP-D3_CC-PVTZ/jag_MAT_spe_B3LYP-D3_CC-PVTZ.in 
+  /gpfs/projects/bsc72/sroda/Transaminases/Pharmaceutical_compounds_PELE_simulation/jag_MAT_spe_B3LYP-D3_CC-PVTZ/jag_MAT_spe_B3LYP-D3_CC-PVTZ.01.in 
+  /gpfs/projects/bsc72/sroda/Transaminases/Pharmaceutical_compounds_PELE_simulation/jag_MAT_spe_B3LYP-D3_CC-PVTZ/jag_MAT_spe_B3LYP-D3_CC-PVTZ.01.mae 
+  /gpfs/projects/bsc72/sroda/Transaminases/Pharmaceutical_compounds_PELE_simulation/jag_MAT_spe_B3LYP-D3_CC-PVTZ/jag_MAT_spe_B3LYP-D3_CC-PVTZ.out 
+  /gpfs/projects/bsc72/sroda/Transaminases/Pharmaceutical_compounds_PELE_simulation/jag_MAT_spe_B3LYP-D3_CC-PVTZ/jag_MAT_spe_B3LYP-D3_CC-PVTZ.log 
+  /gpfs/projects/bsc72/sroda/Transaminases/Pharmaceutical_compounds_PELE_simulation/jag_MAT_spe_B3LYP-D3_CC-PVTZ/jag_MAT_spe_B3LYP-D3_CC-PVTZ.mae 
+  UDFT(b3lyp-d3) 
+  cc-pvtz 
+  670
+  -931.456893310843
+  0.0844465446946714
+  0.129570959700156
+  -0.071527252846213
+  0.1345953522174
+  0.75483541206038
+  2
+ m_depend[18] { 
+  # First column is dependency index #
+  i_m_depend_dependency
+  s_m_depend_property
+  :::
+  1 20 i_m_Spin_multiplicity 
+  2 20 i_m_Molecular_charge 
+  3 20 s_j_Task 
+  4 20 s_j_Jaguar_input_file 
+  5 20 s_j_Jaguar_restart_input_file 
+  6 20 s_j_Jaguar_restart_mae_file 
+  7 20 s_j_Jaguar_output_file 
+  8 20 s_j_Jaguar_log_file 
+  9 20 s_j_Jaguar_mae_file 
+  10 20 s_j_QM_Method 
+  11 20 s_j_QM_Basis 
+  12 20 i_j_Number_of_canonical_orbitals 
+  13 20 r_j_Gas_Phase_Energy 
+  14 20 r_j_alpha_HOMO 
+  15 20 r_j_alpha_LUMO 
+  16 20 r_j_beta_HOMO 
+  17 20 r_j_beta_LUMO 
+  18 20 r_j_S2_Value 
+  :::
+ } 
+ m_atom[29] { 
+  # First column is atom index #
+  i_m_mmod_type
+  r_m_x_coord
+  r_m_y_coord
+  r_m_z_coord
+  i_m_residue_number
+  s_m_chain_name
+  i_m_color
+  r_m_charge1
+  r_m_charge2
+  s_m_pdb_residue_name
+  s_m_pdb_atom_name
+  i_m_atomic_number
+  i_m_representation
+  s_m_color_rgb
+  s_m_atom_name
+  r_j_ESP_Charges
+  b_st_NoSrcChirality
+  :::
+  1 56 0.136400 -1.606600 1.888400 900 L 8 -0.18938 -0.18938 "MAT " " F1 " 9 3 00FF7F  F1  -0.189381007754499 <>
+  2 56 -2.897800 1.781700 -1.149100 900 L 8 -0.21715 -0.21715 "MAT " " F2 " 9 3 00FF7F  F2  -0.21715491188276 <>
+  3 56 -3.885600 -0.660900 -0.417800 900 L 8 -0.21234 -0.21234 "MAT " " F3 " 9 3 00FF7F  F3  -0.212342238602534 <>
+  4 16 2.066900 -2.295900 -0.606900 900 L 70 -0.39736 -0.39736 "MAT " " O1 " 8 3 FF2F2F  O4  -0.397355862098786 <>
+  5 15 1.185200 -0.794400 -2.060400 900 L 70 -0.58890 -0.58890 "MAT " " O2 " 8 3 FF2F2F  O5  -0.588897492157642 <>
+  6 26 3.279300 2.088400 0.564700 900 L 43 -1.00825 -1.00825 "MAT " " N1 " 7 3 5757FF  N6  -1.00824917291544 <>
+  7 3 2.243900 1.187200 0.039600 900 L 2 0.72066 0.72066 "MAT " " C1 " 6 3 A0A0A0  C7  0.720663097266971 1
+  8 3 1.269500 0.888300 1.199200 900 L 2 -0.06281 -0.06281 "MAT " " C2 " 6 3 A0A0A0  C8  -0.0628104819120706 <>
+  9 3 2.925900 -0.074300 -0.521800 900 L 2 -0.67474 -0.67474 "MAT " " C3 " 6 3 A0A0A0  C9  -0.674742507725455 <>
+  10 2 -0.113200 0.469700 0.765400 900 L 2 0.10391 0.10391 "MAT " " C4 " 6 3 A0A0A0  C10  0.103911047005205 <>
+  11 2 -0.601600 -0.771500 1.143900 900 L 2 0.16293 0.16293 "MAT " " C5 " 6 3 A0A0A0  C11  0.162934991438303 <>
+  12 2 -0.873200 1.336800 -0.004400 900 L 2 -0.61076 -0.61076 "MAT " " C6 " 6 3 A0A0A0  C12  -0.610758716911476 <>
+  13 2 1.955500 -1.054600 -1.145800 900 L 2 0.78183 0.78183 "MAT " " C7 " 6 3 A0A0A0  C13  0.781832745506856 <>
+  14 2 -2.152900 0.953500 -0.405500 900 L 2 0.27041 0.27041 "MAT " " C8 " 6 3 A0A0A0  C14  0.270409269249383 <>
+  15 2 -1.881300 -1.154900 0.742700 900 L 2 -0.48769 -0.48769 "MAT " " C9 " 6 3 A0A0A0  C15  -0.487686845764794 <>
+  16 2 -2.657000 -0.292400 -0.032100 900 L 2 0.15704 0.15704 "MAT " " C10" 6 3 A0A0A0  C16  0.157039766143276 <>
+  17 41 1.737600 1.710600 -0.778700 900 L 21 -0.02646 -0.02646 "MAT " " H1 " 1 3 FFFFFF  H17  -0.0264587619292393 <>
+  18 41 1.126000 1.787700 1.816200 900 L 21 -0.08394 -0.08394 "MAT " " H2 " 1 3 FFFFFF  H18  -0.0839374144130638 <>
+  19 41 1.712900 0.145800 1.875600 900 L 21 -0.01308 -0.01308 "MAT " " H3 " 1 3 FFFFFF  H19  -0.0130810759363484 <>
+  20 41 3.482000 -0.586000 0.274700 900 L 21 0.14006 0.14006 "MAT " " H4 " 1 3 FFFFFF  H20  0.140055140078799 <>
+  21 41 3.658900 0.188200 -1.294600 900 L 21 0.12960 0.12960 "MAT " " H5 " 1 3 FFFFFF  H21  0.129599570483456 <>
+  22 43 3.752000 1.649200 1.354100 900 L 21 0.31245 0.31245 "MAT " " H6 " 1 3 FFFFFF  H22  0.312448752190927 <>
+  23 43 2.846900 2.937000 0.927800 900 L 21 0.30268 0.30268 "MAT " " H7 " 1 3 FFFFFF  H23  0.302679430921071 <>
+  24 41 -0.498600 2.314400 -0.293100 900 L 21 0.17026 0.17026 "MAT " " H8 " 1 3 FFFFFF  H24  0.170264916923274 <>
+  25 41 -2.273500 -2.124900 1.033100 900 L 21 0.15782 0.15782 "MAT " " H9 " 1 3 FFFFFF  H25  0.157816207029052 <>
+  26 3 1.169586 -3.222897 -1.217429 900 L 2 0.03175 0.03175 "MAT " " C11" 6 3 A0A0A0  C26  0.0317457284125078 <>
+  27 41 1.290862 -4.203553 -0.757315 900 L 21 0.03894 0.03894 "MAT " " H10" 1 3 FFFFFF  H27  0.0389394979751902 <>
+  28 41 0.143769 -2.881450 -1.078811 900 L 21 0.07509 0.07509 "MAT " " H11" 1 3 FFFFFF  H28  0.0750870284974399 <>
+  29 41 1.387901 -3.292612 -2.283064 900 L 21 0.01743 0.01743 "MAT " " H12" 1 3 FFFFFF  H29  0.0174293008823931 <>
+  :::
+ } 
+ m_bond[29] { 
+  # First column is bond index #
+  i_m_from
+  i_m_to
+  i_m_order
+  i_m_from_rep
+  i_m_to_rep
+  :::
+  1 1 11 1 3 3
+  2 2 14 1 3 3
+  3 3 16 1 3 3
+  4 4 13 1 3 3
+  5 4 26 1 3 3
+  6 5 13 2 3 3
+  7 6 7 1 3 3
+  8 6 22 1 3 3
+  9 6 23 1 3 3
+  10 7 8 1 3 3
+  11 7 9 1 3 3
+  12 7 17 1 3 3
+  13 8 10 1 3 3
+  14 8 18 1 3 3
+  15 8 19 1 3 3
+  16 9 13 1 3 3
+  17 9 20 1 3 3
+  18 9 21 1 3 3
+  19 10 11 1 3 3
+  20 10 12 2 3 3
+  21 11 15 2 3 3
+  22 12 14 1 3 3
+  23 12 24 1 3 3
+  24 14 16 2 3 3
+  25 15 16 1 3 3
+  26 15 25 1 3 3
+  27 26 27 1 3 3
+  28 26 28 1 3 3
+  29 26 29 1 3 3
+  :::
+ } 
+} 
+

@@ -72,6 +72,9 @@ def parse_args(args):
                         type=str, help="The name of the method to use to "
                         + "compute charges", default=DEFAULT_CHARGE_METHOD,
                         choices=AVAILABLE_CHARGE_METHODS)
+    parser.add_argument('--charges_from_file', metavar="PATH",
+                        type=str, help="The path to the file with charges",
+                        default=None)
     parser.add_argument('--include_terminal_rotamers',
                         dest="include_terminal_rotamers",
                         action='store_true',
@@ -101,6 +104,7 @@ def run_peleffy(pdb_file,
                 forcefield_name=DEFAULT_OFF_FORCEFIELD,
                 resolution=DEFAULT_RESOLUTION,
                 charge_method=DEFAULT_CHARGE_METHOD,
+                charges_from_file=None,
                 exclude_terminal_rotamers=True,
                 output=None, with_solvent=False, as_datalocal=False,
                 dihedral_path=None, dihedral_mode="all_dihedrals"):
@@ -118,6 +122,9 @@ def run_peleffy(pdb_file,
     charge_method : str
         The name of the method to use to compute partial charges. Default
         is 'am1bcc'
+    charges_from_file : str
+        The file containing the partial charges to assign to the
+        molecule. Default is None
     exclude_terminal_rotamers : bool
         Whether to exclude terminal rotamers or not
     output : str
@@ -133,6 +140,13 @@ def run_peleffy(pdb_file,
     dihedral_mode: str
         Select what kind of dihedrals to extract (all or only flexible)
     """
+    if charges_from_file is not None:
+        charge_method_str = 'file\n' \
+            + '   - Charge file: {}'.format(charges_from_file)
+        charge_method = 'dummy'
+    else:
+        charge_method_str = charge_method
+
     log = Logger()
     log.info('-' * 60)
     log.info('Open Force Field parameterizer for PELE', peleffy.__version__)
@@ -144,7 +158,7 @@ def run_peleffy(pdb_file,
     log.info('   - DataLocal-like output:', as_datalocal)
     log.info(' - Parameterization:')
     log.info('   - Force field:', forcefield_name)
-    log.info('   - Charge method:', charge_method)
+    log.info('   - Charge method:', charge_method_str)
     log.info(' - Rotamer library:')
     log.info('   - Resolution:', resolution)
     log.info('   - Exclude terminal rotamers:', exclude_terminal_rotamers)
@@ -156,6 +170,7 @@ def run_peleffy(pdb_file,
     from peleffy.BCEDihedrals import BCEDihedrals
     from peleffy.forcefield import ForceFieldSelector
     from peleffy.topology import Topology
+    from peleffy.utils import parse_charges_from_mae
 
     if not output:
         output = os.getcwd()
@@ -181,6 +196,10 @@ def run_peleffy(pdb_file,
     log.info(' - Parameterizing molecule')
     parameters = forcefield.parameterize(molecule,
                                          charge_method=charge_method)
+
+    # Update charge parameters from the MAE file
+    if charges_from_file is not None:
+        parameters = parse_charges_from_mae(charges_from_file, parameters)
 
     # Generate the molecular topology
     topology = Topology(molecule, parameters)
@@ -261,7 +280,8 @@ def main(args):
                 output=args.output,
                 with_solvent=args.with_solvent,
                 as_datalocal=args.as_datalocal,
-                dihedral_path=args.dihedrals_info_path)
+                dihedral_path=args.dihedrals_info_path,
+                charges_from_file=args.charges_from_file)
 
 
 if __name__ == '__main__':
