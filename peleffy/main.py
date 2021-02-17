@@ -60,7 +60,7 @@ def parse_args(args):
                         + " used to collect dihedral angles for PELE")
     parser.add_argument("--dihedrals_mode", default="all_dihedrals", type=str,
                         help="Mode for extracting the dihedrals: 'all_dihedrals' will"+
-                        "extract the values fro all, while 'flexible_dihedrals' will extract"+
+                        "extract the values for all, while 'flexible_dihedrals' will extract"+
                         "the values only for those that are marked as flexible")
     parser.add_argument('--with_solvent', dest='with_solvent',
                         help="Generate solvent parameters for OBC",
@@ -281,7 +281,8 @@ def main(args):
                 with_solvent=args.with_solvent,
                 as_datalocal=args.as_datalocal,
                 dihedral_path=args.dihedrals_info_path,
-                charges_from_file=args.charges_from_file)
+                charges_from_file=args.charges_from_file, 
+                dihedral_mode=args.dihedrals_mode)
 
 
 if __name__ == '__main__':
