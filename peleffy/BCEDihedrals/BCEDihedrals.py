@@ -127,7 +127,7 @@ class BCEDihedrals(object):
                 for dihedral in dihedral_values:
                     fw.write("{:s} {:s} {:s} {:s} {:5f}\n".format(*dihedral))
                 fw.write("ENDDIHEDRALS\n")
-            fw.write("END")
+            fw.write("END\n")
 
     def list_all_dihedrals(self):
         dihedrals = []

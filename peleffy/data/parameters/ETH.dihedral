@@ -1,0 +1,10 @@
+* DIHEDRAL LIBRARY FILE
+* File generated with peleffy-1.0.0+164.g06140f6
+* File: ../../PELEPipelineSanja/4S0V-LIG/CLUSTERS/CL1/cluster1.min.imaged.pdb
+UNK 4 1
+_H1_ _C1_ _C2_ _H3_ 0.001146
+_H1_ _C1_ _C2_ _H4_ -3.141280
+_H2_ _C1_ _C2_ _H3_ -3.141120
+_H2_ _C1_ _C2_ _H4_ -0.000361
+ENDDIHEDRALS
+END
