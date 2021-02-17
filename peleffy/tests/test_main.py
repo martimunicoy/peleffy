@@ -81,6 +81,10 @@ class TestMain(object):
             'Unexpected silent settings were parsed'
         assert parsed_args.with_solvent is False, \
             'Unexpected with_solvent settings were parsed'
+        assert parsed_args.dihedrals_info_path is None, \
+            'Unexpected dihedral_path settings were passed'
+        assert parsed_args.dihedrals_mode == "all_dihedrals", \
+            'Unexpected dihedrals_mode settings were passed'
 
         # Test custom shorts
         parsed_args = parse_args(['toluene.pdb',
@@ -109,6 +113,10 @@ class TestMain(object):
             'Unexpected silent settings were parsed'
         assert parsed_args.with_solvent is False, \
             'Unexpected with_solvent settings were parsed'
+        assert parsed_args.dihedrals_info_path is None, \
+            'Unexpected dihedral_path settings were passed'
+        assert parsed_args.dihedrals_mode == "all_dihedrals", \
+            'Unexpected dihedrals_mode settings were passed'
 
         # Test custom longs
         parsed_args = parse_args(['methane.pdb',
@@ -138,6 +146,10 @@ class TestMain(object):
             'Unexpected silent settings were parsed'
         assert parsed_args.with_solvent is False, \
             'Unexpected with_solvent settings were parsed'
+        assert parsed_args.dihedrals_info_path is None, \
+            'Unexpected dihedral_path settings were passed'
+        assert parsed_args.dihedrals_mode == "all_dihedrals", \
+            'Unexpected dihedrals_mode settings were passed'
 
         # Test unexpected charge method
         with pytest.raises(SystemExit) as pytest_wrapped_e:
@@ -170,6 +182,10 @@ class TestMain(object):
             'Unexpected silent settings were parsed'
         assert parsed_args.with_solvent is False, \
             'Unexpected with_solvent settings were parsed'
+        assert parsed_args.dihedrals_info_path is None, \
+            'Unexpected dihedral_path settings were passed'
+        assert parsed_args.dihedrals_mode == "all_dihedrals", \
+            'Unexpected dihedrals_mode settings were passed'
 
         # Test charges_from_file argument
         parsed_args = parse_args(['BHP.pdb',
@@ -197,6 +213,10 @@ class TestMain(object):
             'Unexpected silent settings were parsed'
         assert parsed_args.with_solvent is False, \
             'Unexpected with_solvent settings were parsed'
+        assert parsed_args.dihedrals_info_path is None, \
+            'Unexpected dihedral_path settings were passed'
+        assert parsed_args.dihedrals_mode == "all_dihedrals", \
+            'Unexpected dihedrals_mode settings were passed'
 
         # Test include_terminal_rotamers argument
         parsed_args = parse_args(['methane.pdb',
@@ -222,6 +242,10 @@ class TestMain(object):
             'Unexpected silent settings were parsed'
         assert parsed_args.with_solvent is False, \
             'Unexpected with_solvent settings were parsed'
+        assert parsed_args.dihedrals_info_path is None, \
+            'Unexpected dihedral_path settings were passed'
+        assert parsed_args.dihedrals_mode == "all_dihedrals", \
+            'Unexpected dihedrals_mode settings were passed'
 
         # Test silent argument
         parsed_args = parse_args(['methane.pdb',
@@ -247,6 +271,10 @@ class TestMain(object):
             'Unexpected silent settings were parsed'
         assert parsed_args.with_solvent is False, \
             'Unexpected with_solvent settings were parsed'
+        assert parsed_args.dihedrals_info_path is None, \
+            'Unexpected dihedral_path settings were passed'
+        assert parsed_args.dihedrals_mode == "all_dihedrals", \
+            'Unexpected dihedrals_mode settings were passed'
 
         parse_args(['methane.pdb', '-s']) == parse_args(['methane.pdb',
                                                          '--silent'])
@@ -275,9 +303,43 @@ class TestMain(object):
             'Unexpected silent settings were parsed'
         assert parsed_args.with_solvent is False, \
             'Unexpected with_solvent settings were parsed'
+        assert parsed_args.dihedrals_info_path is None, \
+            'Unexpected dihedral_path settings were passed'
+        assert parsed_args.dihedrals_mode == "all_dihedrals", \
+            'Unexpected dihedrals_mode settings were passed'
 
         parse_args(['methane.pdb', '-d']) == parse_args(['methane.pdb',
                                                          '--debug'])
+
+        # Test dihedral library arguments
+        parsed_args = parse_args(['methane.pdb',
+                                  '--dihedrals_info_path', 'test_path',
+                                  '--dihedrals_mode', 'flexible_dihedrals'])
+
+        assert parsed_args.as_datalocal is False, \
+            'Unexpected as_datalocal settings were parsed'
+        assert parsed_args.charge_method == 'am1bcc', \
+            'Unexpected charge_method settings were parsed'
+        assert parsed_args.debug is False, \
+            'Unexpected debug settings were parsed'
+        assert parsed_args.forcefield == 'openff_unconstrained-1.3.0.offxml', \
+            'Unexpected forcefield settings were parsed'
+        assert parsed_args.include_terminal_rotamers is False, \
+            'Unexpected include_terminal_rotamers settings were parsed'
+        assert parsed_args.output is None, \
+            'Unexpected output settings were parsed'
+        assert parsed_args.pdb_file == 'methane.pdb', \
+            'Unexpected pdb_file settings were parsed'
+        assert parsed_args.resolution == 30, \
+            'Unexpected resolution settings were parsed'
+        assert parsed_args.silent is False, \
+            'Unexpected silent settings were parsed'
+        assert parsed_args.with_solvent is False, \
+            'Unexpected with_solvent settings were parsed'
+        assert parsed_args.dihedrals_info_path == "test_path", \
+            'Unexpected dihedral_path settings were passed'
+        assert parsed_args.dihedrals_mode == "flexible_dihedrals", \
+            'Unexpected dihedrals_mode settings were passed'
 
     def test_peleffy_main(self):
         """It checks the main function of peleffy."""
