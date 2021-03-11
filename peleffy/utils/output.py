@@ -18,8 +18,8 @@ class OutputPathHandler(object):
     OPLS_IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OPLS2005/HeteroAtoms/'
     ROTAMER_LIBRARY_PATH = 'DataLocal/LigandRotamerLibs/'
     SOLVENT_TEMPLATE_PATH = 'DataLocal/OBC/'
-    DIHEDRALS_LIBRARY_PATH = 'DataLocal/Dihedrals/'
-    FILE_TYPES = ['impact template', 'rotamer library', 'solvent template', 'dihedral library']
+    CONFORMATION_LIBRARY_PATH = 'DataLocal/Conformations/'
+    FILE_TYPES = ['impact template', 'rotamer library', 'solvent template', 'conformation library']
 
     def __init__(self, molecule, forcefield,
                  as_datalocal=False, output_path=None):
@@ -67,7 +67,7 @@ class OutputPathHandler(object):
         ----------
         file_type : str
             The file type whose path is requested. One of
-            ['impact template', 'rotamer library', 'solvent template']
+            ['impact template', 'rotamer library', 'solvent template', 'conformation library']
         create_missing_folders : bool
             Whether to create missing folders or not. Default is True
 
@@ -89,8 +89,8 @@ class OutputPathHandler(object):
         if file_type.lower() == 'solvent template':
             return self.get_solvent_template_path(create_missing_folders)
 
-        if file_type.lower() == 'dihedral library':
-            return self.get_dihedral_library_path(create_missing_folders)
+        if file_type.lower() == 'conformation library':
+            return self.get_conformation_library_path(create_missing_folders)
 
     def get_impact_template_path(self, create_missing_folders=True):
         """
@@ -182,9 +182,9 @@ class OutputPathHandler(object):
 
         return os.path.join(path, file_name)
 
-    def get_dihedral_library_path(self, create_missing_folders=True):
+    def get_conformation_library_path(self, create_missing_folders=True):
         """
-        It returns the path for a dihedral library file.
+        It returns the path for a conformation library file.
 
         Parameters
         ----------
@@ -194,12 +194,12 @@ class OutputPathHandler(object):
         Returns
         -------
         file_path : str
-            The path for a dihedral library file
+            The path for a conformation library file
         """
-        file_name = self._molecule.tag.upper() + '.dihedral'
+        file_name = self._molecule.tag.upper() + '.conformation'
 
         if self.as_datalocal:
-            path = os.path.join(self.output_path, self.DIHEDRALS_LIBRARY_PATH)
+            path = os.path.join(self.output_path, self.CONFORMATION_LIBRARY_PATH)
         else:
             path = self.output_path
 

@@ -55,13 +55,9 @@ def parse_args(args):
     parser.add_argument("-o", "--output", metavar="PATH",
                         help="Output path. Default is the current working "
                         + "directory")
-    parser.add_argument("--dihedrals_info_path", default=None, type=str,
+    parser.add_argument("--conformations_info_path", default=None, type=str,
                         help="Path to the folder containing the BCE output"
-                        + " used to collect dihedral angles for PELE")
-    parser.add_argument("--dihedrals_mode", default="all_dihedrals", type=str,
-                        help="Mode for extracting the dihedrals: 'all_dihedrals' will"+
-                        "extract the values for all, while 'flexible_dihedrals' will extract"+
-                        "the values only for those that are marked as flexible")
+                        + " used to collect conformations for PELE")
     parser.add_argument('--with_solvent', dest='with_solvent',
                         help="Generate solvent parameters for OBC",
                         action='store_true')
@@ -107,7 +103,7 @@ def run_peleffy(pdb_file,
                 charges_from_file=None,
                 exclude_terminal_rotamers=True,
                 output=None, with_solvent=False, as_datalocal=False,
-                dihedral_path=None, dihedral_mode="all_dihedrals"):
+                conformation_path=None):
     """
     It runs peleffy.
 
@@ -135,7 +131,7 @@ def run_peleffy(pdb_file,
     as_datalocal : bool
         Whether to save output files following PELE's DataLocal hierarchy or
         not
-    dihedral_path: str
+    conformation_path: str
         Path to the BCE server outupt to use to extract dihedral angles
     dihedral_mode: str
         Select what kind of dihedrals to extract (all or only flexible)
@@ -167,7 +163,7 @@ def run_peleffy(pdb_file,
     from peleffy.topology import Molecule
     from peleffy.template import Impact
     from peleffy.solvent import OBC2
-    from peleffy.BCEDihedrals import BCEDihedrals
+    from peleffy.BCEConformations import BCEConformations
     from peleffy.forcefield import ForceFieldSelector
     from peleffy.topology import Topology
     from peleffy.utils import parse_charges_from_mae
@@ -187,8 +183,8 @@ def run_peleffy(pdb_file,
                                        output_path=output,
                                        as_datalocal=as_datalocal)
 
-    if dihedral_path is None:
-        # if dihedral_path is set, we don't want a rotamer library
+    if conformation_path is None:
+        # if conformation_path is set, we don't want a rotamer library
         rotamer_library = peleffy.topology.RotamerLibrary(molecule)
         rotamer_library.to_file(output_handler.get_rotamer_library_path())
 
@@ -219,19 +215,19 @@ def run_peleffy(pdb_file,
         solvent = OBC2(topology)
         solvent.to_file(output_handler.get_solvent_template_path())
 
-    if dihedral_path is not None:
+    if conformation_path is not None:
         previous_level = log.get_level()
-        dihedrals = BCEDihedrals(topology, dihedral_path, mode=dihedral_mode)
-        dihedrals.calculate()
-        dihedrals.save(output_handler.get_dihedral_library_path())
+        conformations = BCEConformations(topology, conformation_path)
+        conformations.calculate()
+        conformations.save(output_handler.get_conformation_library_path())
         log.set_level(previous_level)
 
     log.info(' - All files were generated successfully:')
-    if dihedral_path is None:
+    if conformation_path is None:
         log.info('   - {}'.format(output_handler.get_rotamer_library_path()))
     log.info('   - {}'.format(output_handler.get_impact_template_path()))
-    if dihedral_path is not None:
-        log.info('   - {}'.format(output_handler.get_dihedral_library_path()))
+    if conformation_path is not None:
+        log.info('   - {}'.format(output_handler.get_conformation_library_path()))
     if with_solvent:
         log.info('   - {}'.format(output_handler.get_solvent_template_path()))
 
@@ -280,9 +276,8 @@ def main(args):
                 output=args.output,
                 with_solvent=args.with_solvent,
                 as_datalocal=args.as_datalocal,
-                dihedral_path=args.dihedrals_info_path,
-                charges_from_file=args.charges_from_file, 
-                dihedral_mode=args.dihedrals_mode)
+                conformation_path=args.conformations_info_path,
+                charges_from_file=args.charges_from_file)
 
 
 if __name__ == '__main__':
