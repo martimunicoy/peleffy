@@ -194,9 +194,9 @@ class TestOutputPathHandler(object):
         assert output_handler.get_solvent_template_path() == \
             './ligandParams.txt', \
             'Unexpected default solvent parameters path'
-        assert output_handler.get_dihedral_library_path() == \
-            './{}.dihedral'.format(tag.upper()), \
-            'Unexpected default dihedral library path'
+        assert output_handler.get_conformation_library_path() == \
+            './{}.conformation'.format(tag.upper()), \
+            'Unexpected default conformation library path'
 
         # Initialize output handler with an output_path set
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -214,9 +214,9 @@ class TestOutputPathHandler(object):
             assert output_handler.get_solvent_template_path() == \
                 os.path.join(tmpdir, 'output', 'ligandParams.txt'), \
                 'Unexpected default solvent parameters path'
-            assert output_handler.get_dihedral_library_path() == \
-                os.path.join(tmpdir, 'output', '{}.dihedral'.format(tag.upper())), \
-                'Unexpected default dihedral library path'
+            assert output_handler.get_conformation_library_path() == \
+                os.path.join(tmpdir, 'output', '{}.conformation'.format(tag.upper())), \
+                'Unexpected default conformation library path'
 
     def test_datalocal_paths_for_openff(self):
         """It tests the datalocal paths assignment for OpenFF."""
@@ -250,10 +250,10 @@ class TestOutputPathHandler(object):
             create_missing_folders=False) == \
             './DataLocal/OBC/ligandParams.txt', \
             'Unexpected default solvent parameters path'
-        assert output_handler.get_dihedral_library_path(
+        assert output_handler.get_conformation_library_path(
             create_missing_folders=False) == \
-            './DataLocal/Dihedrals/'+'{}.dihedral'.format(tag.upper()), \
-            'Unexpected default dihedral library path'
+            './DataLocal/Conformations/'+'{}.conformation'.format(tag.upper()), \
+            'Unexpected default conformation library path'
 
         with tempfile.TemporaryDirectory() as tmpdir:
             output_handler = OutputPathHandler(
@@ -275,10 +275,10 @@ class TestOutputPathHandler(object):
                 create_missing_folders=False) == \
                 tmpdir + '/output/DataLocal/OBC/ligandParams.txt', \
                 'Unexpected default solvent parameters path'
-            assert output_handler.get_dihedral_library_path(
+            assert output_handler.get_conformation_library_path(
                 create_missing_folders=False) == \
-                tmpdir + '/output/DataLocal/Dihedrals/'+'{}.dihedral'.format(tag.upper()), \
-                'Unexpected default dihedral library path'
+                tmpdir + '/output/DataLocal/Conformations/'+'{}.conformation'.format(tag.upper()), \
+                'Unexpected default conformation library path'
 
     def test_datalocal_paths_for_opls(self):
         """It tests the datalocal paths assignment for OPLS2005."""
@@ -313,10 +313,10 @@ class TestOutputPathHandler(object):
             create_missing_folders=False) == \
             './DataLocal/OBC/ligandParams.txt', \
             'Unexpected default solvent parameters path'
-        assert output_handler.get_dihedral_library_path(
+        assert output_handler.get_conformation_library_path(
             create_missing_folders=False) == \
-            './DataLocal/Dihedrals/'+'{}.dihedral'.format(tag.upper()), \
-            'Unexpected default dihedral library path'
+            './DataLocal/Conformations/'+'{}.conformation'.format(tag.upper()), \
+            'Unexpected default conformation library path'
 
         # Initialize output handler with an output_path set
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -339,10 +339,10 @@ class TestOutputPathHandler(object):
                 os.path.join(tmpdir, 'output',
                              'DataLocal/OBC/ligandParams.txt'), \
                 'Unexpected default solvent parameters path'
-            assert output_handler.get_dihedral_library_path(
+            assert output_handler.get_conformation_library_path(
                 create_missing_folders=False) == \
-                os.path.join(tmpdir, 'output/DataLocal/Dihedrals/'+'{}.dihedral'.format(tag.upper())), \
-                'Unexpected default dihedral library path'
+                os.path.join(tmpdir, 'output/DataLocal/Conformations/'+'{}.conformation'.format(tag.upper())), \
+                'Unexpected default conformation library path'
 
     def test_datalocal_paths_for_offopls(self):
         """
@@ -382,10 +382,10 @@ class TestOutputPathHandler(object):
             create_missing_folders=False) == \
             './DataLocal/OBC/ligandParams.txt', \
             'Unexpected default solvent parameters path'
-        assert output_handler.get_dihedral_library_path(
+        assert output_handler.get_conformation_library_path(
             create_missing_folders=False) == \
-            './DataLocal/Dihedrals/'+'{}.dihedral'.format(tag.upper()), \
-            'Unexpected default dihedral library path'
+            './DataLocal/Conformations/'+'{}.conformation'.format(tag.upper()), \
+            'Unexpected default conformation library path'
 
         # Initialize output handler with an output_path set
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -408,10 +408,10 @@ class TestOutputPathHandler(object):
                 os.path.join(tmpdir, 'output',
                              'DataLocal/OBC/ligandParams.txt'), \
                 'Unexpected default solvent parameters path'
-            assert output_handler.get_dihedral_library_path(
+            assert output_handler.get_conformation_library_path(
                 create_missing_folders=False) == \
-                os.path.join(tmpdir, 'output/DataLocal/Dihedrals/'+'{}.dihedral'.format(tag.upper())), \
-                'Unexpected default dihedral library path'
+                os.path.join(tmpdir, 'output/DataLocal/Conformations/'+'{}.conformation'.format(tag.upper())), \
+                'Unexpected default conformation library path'
 
         # Initialize output handler without output_path
         output_handler = OutputPathHandler(molecule, hybridff,
@@ -435,10 +435,10 @@ class TestOutputPathHandler(object):
             create_missing_folders=False) == \
             './DataLocal/OBC/ligandParams.txt', \
             'Unexpected default solvent parameters path'
-        assert output_handler.get_dihedral_library_path(
+        assert output_handler.get_conformation_library_path(
             create_missing_folders=False) == \
-            './DataLocal/Dihedrals/'+'{}.dihedral'.format(tag.upper()), \
-            'Unexpected default dihedral library path'
+            './DataLocal/Conformations/'+'{}.conformation'.format(tag.upper()), \
+            'Unexpected default conformation library path'
 
         # Initialize output handler with an output_path set
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -461,11 +461,11 @@ class TestOutputPathHandler(object):
                 os.path.join(tmpdir, 'output',
                              'DataLocal/OBC/ligandParams.txt'), \
                 'Unexpected default solvent parameters path'
-            assert output_handler.get_dihedral_library_path(
+            assert output_handler.get_conformation_library_path(
                 create_missing_folders=False) == \
                 os.path.join(tmpdir, 'output', 
-                             'DataLocal/Dihedrals/'+'{}.dihedral'.format(tag.upper())), \
-                'Unexpected default dihedral library path'
+                             'DataLocal/Conformations/'+'{}.conformation'.format(tag.upper())), \
+                'Unexpected default conformation library path'
 
     def test_folder_creation(self):
         """
@@ -503,7 +503,7 @@ class TestOutputPathHandler(object):
             path_dir = os.path.dirname(path)
             assert os.path.isdir(path_dir) is False, \
                 'This directory should not exist'
-            path = output_handler.get_dihedral_library_path(
+            path = output_handler.get_conformation_library_path(
                 create_missing_folders=False)
             path_dir = os.path.dirname(path)
             assert os.path.isdir(path_dir) is False, \
@@ -533,7 +533,7 @@ class TestOutputPathHandler(object):
                 path_dir = os.path.dirname(path)
                 assert os.path.isdir(path_dir) is True, \
                     'This directory should exist'
-                path = output_handler.get_dihedral_library_path(
+                path = output_handler.get_conformation_library_path(
                     create_missing_folders=True)
                 path_dir = os.path.dirname(path)
                 assert os.path.isdir(path_dir) is True, \
