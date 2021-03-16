@@ -7,6 +7,14 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``minor`` increments add features but do not break API compatibility
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
+1.2.1 - Current development
+---------------------------
+
+Bugfixes
+""""""""
+- `PR #129 <https://github.com/martimunicoy/peleffy/pull/129>`_: Some format errors in the API documentation are fixed. Links to the PELE documentation are updated.
+
+
 1.2.0 - New tools for parameters and templates
 ----------------------------------------------
 
