@@ -6,7 +6,7 @@ Installation
 Installing via `conda`
 ======================
 The more straightforward way to install `peleffy` along with the required
-dependencies is through the `conda <http://www.continuum.io/blog/conda>`_
+dependencies is through the `conda <https://docs.conda.io/en/latest/>`_
 package manager.
 
 First, you need to install the
