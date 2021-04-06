@@ -7,8 +7,10 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``minor`` increments add features but do not break API compatibility
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
-1.2.1 - Current development
----------------------------
+1.2.1 - API Documentation and improvements
+------------------------------------------
+
+This is a micro release of peleffy that includes and new method to load parameters from a JSON file and solves different bugs in the documentation and the OPLS parametrization. 
 
 New features
 """"""""""""
@@ -17,6 +19,12 @@ New features
 Tests added
 """""""""""
 - `PR #131 <https://github.com/martimunicoy/peleffy/pull/131>`_: Adds tests to validate the new method to load parameters from a JSON file.
+
+Bugfixes
+""""""""
+- `PR #129 <https://github.com/martimunicoy/peleffy/pull/129>`_: Some format errors in the API documentation are fixed. Links to the PELE documentation are updated.
+- `PR #134 <https://github.com/martimunicoy/peleffy/pull/134>`_: Fixes bug when parsing the parameters of the ligand when OPLS is used to parameterize. 
+
 
 1.2.0 - New tools for parameters and templates
 ----------------------------------------------
