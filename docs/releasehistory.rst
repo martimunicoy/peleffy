@@ -13,6 +13,7 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 Bugfixes
 """"""""
 - `PR #129 <https://github.com/martimunicoy/peleffy/pull/129>`_: Some format errors in the API documentation are fixed. Links to the PELE documentation are updated.
+- `PR #134 <https://github.com/martimunicoy/peleffy/pull/134>`_: Fixes bug when parsing the parameters of the ligand when OPLS is used to parameterize. 
 
 
 1.2.0 - New tools for parameters and templates
