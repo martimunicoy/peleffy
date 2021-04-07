@@ -215,6 +215,107 @@ class BaseParameterWrapper(dict):
             json.dump(convert_all_quantities_to_string(self), f,
                       indent=4, sort_keys=True)
 
+    def from_json(self, input_path):
+        """
+        It loads a json file containing the parameters into the parameter
+        wrapper.
+
+        Parameters
+        ----------
+        input_path : str
+            The path to the json file to load the parameters from
+
+        Returns
+        -------
+        self : a BaseParameterWrapper object
+            The resulting parameters wrapper
+        """
+        import json
+        def correct_type(label, value):
+            """
+            It converts the parameters loaded from the JSON file into the
+            expected data type in the parameter wrapper.
+
+            Parameters
+            ----------
+            label : str
+                Label for the parameters
+            value : list
+                Set of parameters
+
+            Returns
+            -------
+            correct_value : list
+                Set of paramaeters with the expected data type
+            """
+            import simtk.unit
+            from peleffy.utils import string_to_quantity
+
+            # Dictionary relating parameters key with the expected data type
+            dict_units = {
+                'alphas': float, 'gammas': float,
+                'charges':  simtk.unit.quantity.Quantity,
+                'sigmas' : 'list_Quantity', 'epsilons' : 'list_Quantity',
+                'SGB_radii' : 'list_Quantity','vdW_radii' : 'list_Quantity',
+                'angles': dict, 'bonds': dict, 'impropers': dict,
+                'propers': dict, 'GBSA_radii': 'list_Quantity',
+                'GBSA_scales': 'list_Quantity',
+                'atom_names': str, 'atom_types' : str
+                }
+
+            # Skip data type transformation if the list is empty or None values
+            if value == [None,] * len(value):
+                return value
+            if value == []:
+                return None
+
+            # Perform data type transformation, if needed
+            else:
+                if dict_units[label] is str:
+                    correct_value = value
+
+                if dict_units[label] is float:
+                    correct_value  = [float(v) if not v is None else v
+                    for v in value]
+
+                if dict_units[label] is simtk.unit.quantity.Quantity:
+                    correct_value = string_to_quantity(value)
+                    return correct_value
+
+                if dict_units[label] == 'list_Quantity':
+                    correct_value = \
+                            [unit.Quantity(value=string_to_quantity(v)._value,
+                                           unit=string_to_quantity(v).unit)
+                            for v in value]
+
+                if dict_units[label] is dict:
+                    correct_value = []
+                    for element in value:
+                        correct_dict = dict()
+                        for k,v in element.items():
+                            if 'idx' in k:
+                                correct_dict[k] = int(v)
+                            else:
+                                try:
+                                    correct_dict[k] = unit.Quantity(
+                                            value=string_to_quantity(v)._value,
+                                            unit=string_to_quantity(v).unit)
+                                except:
+                                    correct_dict[k] = v
+                        correct_value.append(correct_dict)
+                return correct_value
+
+        # Load the dict from the JSON file
+        with open(input_path) as f:
+            data = json.load(f)
+
+        # Correct the data type format and fetch the BaseParameterWrapper
+        for key, value in data.items():
+            value_correct = correct_type(key, value)
+            if not value_correct is None:
+                self.add_parameters(key, value_correct)
+        return self
+
     @property
     def atom_iterator(self):
         """
@@ -299,7 +400,7 @@ class BaseParameterWrapper(dict):
         >>> from peleffy.forcefield.parameters import \
                 OpenForceFieldParametersWrapper
 
-        >>> wrapper_off = OpenForceFieldParameterWrapper()
+        >>> wrapper_off = OpenForceFieldParametersWrapper()
         >>> parameters = wrapper_off.from_impact_template(
                 molecule, impact_template_path)
 
@@ -952,7 +1053,7 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                 assert len(fields) > 7, 'Unexpected number of fields ' \
                     + 'found at line {}'.format(line)
 
-                name_to_index[line[0:4]] = len(name_to_index)
+                name_to_index[line[0:8]] = len(name_to_index)
 
                 params['atom_types'].append(fields[3])
                 params['charges'].append(
@@ -971,8 +1072,8 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                     + 'found at line {}'.format(line)
 
                 params['bonds'].append(
-                    {'atom1_idx': name_to_index[line[0:4]],
-                     'atom2_idx': name_to_index[line[8:12]],
+                    {'atom1_idx': name_to_index[line[0:8]],
+                     'atom2_idx': name_to_index[line[8:16]],
                      'spring_constant': unit.Quantity(
                         float(fields[2]), unit.kilocalorie
                         / (unit.angstrom ** 2 * unit.mole)),
@@ -986,9 +1087,9 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                     + 'found at line {}'.format(line)
 
                 params['angles'].append(
-                    {'atom1_idx': name_to_index[line[0:4]],
-                     'atom2_idx': name_to_index[line[8:12]],
-                     'atom3_idx': name_to_index[line[16:20]],
+                    {'atom1_idx': name_to_index[line[0:8]],
+                     'atom2_idx': name_to_index[line[8:16]],
+                     'atom3_idx': name_to_index[line[16:24]],
                      'spring_constant': unit.Quantity(
                         float(fields[3]), unit.kilocalorie
                         / (unit.radian ** 2 * unit.mole)),
@@ -1001,10 +1102,10 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                 assert len(fields) > 9, 'Unexpected number of fields ' \
                     + 'found at line {}'.format(line)
 
-                atom1_idx = name_to_index[line[0:4]]
-                atom2_idx = name_to_index[line[8:12]]
-                atom3_idx = name_to_index[line[16:20]]
-                atom4_idx = name_to_index[line[24:28]]
+                atom1_idx = name_to_index[line[0:8]]
+                atom2_idx = name_to_index[line[8:16]]
+                atom3_idx = name_to_index[line[16:24]]
+                atom4_idx = name_to_index[line[24:32]]
 
                 for k, periodicity, phase in zip(
                         fields[4:8], [1, 2, 3, 4],
@@ -1051,10 +1152,10 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                                   unit.kilocalorie / unit.mole)
 
                 params['impropers'].append(
-                    {'atom1_idx': name_to_index[line[0:4]],
-                     'atom2_idx': name_to_index[line[8:12]],
-                     'atom3_idx': name_to_index[line[16:20]],
-                     'atom4_idx': name_to_index[line[24:28]],
+                    {'atom1_idx': name_to_index[line[0:8]],
+                     'atom2_idx': name_to_index[line[8:16]],
+                     'atom3_idx': name_to_index[line[16:24]],
+                     'atom4_idx': name_to_index[line[24:32]],
                      'periodicity': 2,
                      'phase': unit.Quantity(180.0, unit.degree),
                      'k': k / 2.0,  # PELE works with half of Schrodinger's force constant

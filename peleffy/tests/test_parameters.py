@@ -145,6 +145,63 @@ class TestWrapper(object):
                     'tests/MET_parameters_to_json.json')
                 compare_files('parameters_to_check.json', ref_json_file)
 
+    def test_from_json(self):
+        """It tests the loading function from json files into the parameter
+        wrapper"""
+
+        def compare_BaseParameterWrapper(params1, params2):
+            """
+            It compares two BaseParameterWrapper objects.
+            """
+            import numpy as np
+            for p in params1.keys():
+                if p == 'charges':      #charges have to be handle differently
+                    assert params1[p].__eq__(params2[p]).all() == \
+                            np.full((len(params1[p])), True, dtype=bool).all()
+                else:
+                    assert params1[p] == params2[p]
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                #Force Field to parameterize the molecules
+                ff = OpenForceField('openff_unconstrained-1.2.1.offxml')
+
+                # Test for malonate
+                m = Molecule(get_data_file_path('ligands/malonate.pdb'))
+                params_ref = ff.parameterize(m)
+                params_ref.to_json('parameters_mal.json')
+
+                from peleffy.forcefield.parameters import \
+                                OpenForceFieldParameterWrapper
+                wrapper_off = OpenForceFieldParameterWrapper()
+                params_load = wrapper_off.from_json('parameters_mal.json')
+
+                compare_BaseParameterWrapper(params_ref, params_load)
+
+                # Test for methane
+                m = Molecule(get_data_file_path('ligands/methane.pdb'))
+                params_ref = ff.parameterize(m)
+                params_ref.to_json('parameters_met.json')
+
+                from peleffy.forcefield.parameters import \
+                                OpenForceFieldParameterWrapper
+                wrapper_off = OpenForceFieldParameterWrapper()
+                params_load = wrapper_off.from_json('parameters_met.json')
+
+                compare_BaseParameterWrapper(params_ref, params_load)
+
+                # Test for ethylene
+                m = Molecule(get_data_file_path('ligands/ethylene.pdb'))
+                params_ref = ff.parameterize(m)
+                params_ref.to_json('parameters_etl.json')
+
+                from peleffy.forcefield.parameters import \
+                                OpenForceFieldParameterWrapper
+                wrapper_off = OpenForceFieldParameterWrapper()
+                params_load = wrapper_off.from_json('parameters_etl.json')
+
+                compare_BaseParameterWrapper(params_ref, params_load)
+
     def test_from_impact_template(self):
         """
         It tests the method to generate a parameter wrapper out of an
