@@ -28,11 +28,7 @@ jobs:
       shell: bash -l {0}
       run: |
         cd docs/
-        make github
-        
-    - name: Build sphinx documentation (again)
-      shell: bash -l {0}
-      run: |
+        make html
         make github
         
     # https://github.com/peaceiris/actions-gh-pages
