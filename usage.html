@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Generate PELE parameter files &mdash; Open Force Field for PELE  documentation</title>
@@ -61,7 +62,7 @@
             
             
               <div class="version">
-                0+untagged.1.ga81633a
+                0+untagged.1.g31a1487
               </div>
             
           
@@ -177,18 +178,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="generate-pele-parameter-files">
+  <section id="generate-pele-parameter-files">
 <h1>Generate PELE parameter files<a class="headerlink" href="#generate-pele-parameter-files" title="Permalink to this headline">¶</a></h1>
 <p>The main purpose of <cite>peleffy</cite> is to build the parameter files for PELE. Basically, PELE requires two files for each non-standard residue found in the system:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://eapm-bsc.github.io/PELE-repo/fileFormats.html#impact-template-file-format">IMPACT template</a>: a file containing the atom types and parameters of the ligand. Its job is to link each atom with the corresponding parameters using PDB atom names. Thus, PDB atom names in the input PDB file must match with the expected PDB atom names in the Impact file. This file intrinsically contains the information about the topology and connectivity of each residue.</p></li>
-<li><p><a class="reference external" href="https://eapm-bsc.github.io/PELE-repo/fileFormats.html#ligand-rotamer-library-file">Rotamer library</a>: a file containing the branches that can rotate with respect to a central atomic core. Each branch consists in a set of consecutive rotatable bonds.</p></li>
+<li><p><a class="reference external" href="https://nostrumbiodiscovery.github.io/pele_docs/fileFormats.html#sec-fileformats-impact">IMPACT template</a>: a file containing the atom types and parameters of the ligand. Its job is to link each atom with the corresponding parameters using PDB atom names. Thus, PDB atom names in the input PDB file must match with the expected PDB atom names in the Impact file. This file intrinsically contains the information about the topology and connectivity of each residue.</p></li>
+<li><p><a class="reference external" href="https://nostrumbiodiscovery.github.io/pele_docs/fileFormats.html#sec-fileformats-ligandrotamers">Rotamer library</a>: a file containing the branches that can rotate with respect to a central atomic core. Each branch consists in a set of consecutive rotatable bonds.</p></li>
 </ul>
 <p>Besides, a third file with the <cite>Solvent parameters</cite> might be required when employing the OBC implicit solvent.</p>
 <a class="reference internal image-reference" href="_images/PELE_templates_scheme.png"><img alt="Scheme with all the files that PELE requires to run a simulation" src="_images/PELE_templates_scheme.png" style="width: 400px;" /></a>
 <p>The <a class="reference external" href="https://github.com/openforcefield/openforcefield">Open Force Field Toolkit</a> is employed to assign the parameters to each atom according to its chemical environment. Besides, the PDB atom names are stored using <a class="reference external" href="https://www.rdkit.org">RDKit</a>. With this dual molecular representation, <cite>peleffy</cite> can run the parameterization workflow of Open Force Field while tracking the PDB atom names with RDKit.</p>
 <a class="reference internal image-reference" href="_images/dual_representation.png"><img alt="Scheme with the dual molecular representation employed in peleffy" src="_images/dual_representation.png" style="width: 400px;" /></a>
-<div class="section" id="basic-usage">
+<section id="basic-usage">
 <h2>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
 <p>The more straightforward way to install <cite>peleffy</cite> along with the required dependencies is through the command-line interface built in <a class="reference external" href="https://github.com/martimunicoy/peleffy/blob/master/peleffy/main.py">main.py</a> module. Therefore, the parameter files for a particular ligand can be obtained with:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m peleffy.main my_ligand.pdb
@@ -233,8 +234,8 @@
 <span class="o">------------------------------------------------------------</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="command-line-arguments">
+</section>
+<section id="command-line-arguments">
 <h2>Command-line arguments<a class="headerlink" href="#command-line-arguments" title="Permalink to this headline">¶</a></h2>
 <p>Almost all the important settings can be tuned up through command-line
 arguments. To obtain the full list of flags you can type:</p>
@@ -262,13 +263,15 @@ arguments. To obtain the full list of flags you can type:</p>
                         <span class="n">hierarchy</span>
   <span class="o">-</span><span class="n">c</span> <span class="n">NAME</span><span class="p">,</span> <span class="o">--</span><span class="n">charge_method</span> <span class="n">NAME</span>
                         <span class="n">The</span> <span class="n">name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">method</span> <span class="n">to</span> <span class="n">use</span> <span class="n">to</span> <span class="n">compute</span> <span class="n">charges</span>
+  <span class="o">--</span><span class="n">charges_from_file</span> <span class="n">PATH</span>
+                        <span class="n">The</span> <span class="n">path</span> <span class="n">to</span> <span class="n">the</span> <span class="n">file</span> <span class="k">with</span> <span class="n">charges</span>
   <span class="o">--</span><span class="n">include_terminal_rotamers</span>
                         <span class="n">Not</span> <span class="n">exclude</span> <span class="n">terminal</span> <span class="n">rotamers</span> <span class="n">when</span> <span class="n">building</span> <span class="n">the</span>
                         <span class="n">rotamer</span> <span class="n">library</span>
 </pre></div>
 </div>
 <p>Find below the complete list of command-line arguments in full detail.</p>
-<div class="section" id="pdb-file">
+<section id="pdb-file">
 <h3>PDB file<a class="headerlink" href="#pdb-file" title="Permalink to this headline">¶</a></h3>
 <p>It is a mandatory positional argument that points to the PDB file which
 contains ligand to parameterize.</p>
@@ -281,8 +284,8 @@ contains ligand to parameterize.</p>
 </div>
 </li>
 </ul>
-</div>
-<div class="section" id="force-field">
+</section>
+<section id="force-field">
 <h3>Force field<a class="headerlink" href="#force-field" title="Permalink to this headline">¶</a></h3>
 <p>It defines the force field to employ to parameterize the ligand. It can
 be any supported force field shipped by the OpenFF toolkit or the
@@ -306,8 +309,8 @@ installation path.</p>
 </div>
 </li>
 </ul>
-</div>
-<div class="section" id="rotamer-library-resolution">
+</section>
+<section id="rotamer-library-resolution">
 <h3>Rotamer library resolution<a class="headerlink" href="#rotamer-library-resolution" title="Permalink to this headline">¶</a></h3>
 <p>It defines the resolution, in degrees, to use in the rotamer library.</p>
 <ul>
@@ -320,8 +323,8 @@ installation path.</p>
 </div>
 </li>
 </ul>
-</div>
-<div class="section" id="output-path">
+</section>
+<section id="output-path">
 <h3>Output path<a class="headerlink" href="#output-path" title="Permalink to this headline">¶</a></h3>
 <p>It defines the output path where the resulting files will be saved.</p>
 <ul>
@@ -334,8 +337,8 @@ installation path.</p>
 </div>
 </li>
 </ul>
-</div>
-<div class="section" id="include-solvent-parameters">
+</section>
+<section id="include-solvent-parameters">
 <h3>Include solvent parameters<a class="headerlink" href="#include-solvent-parameters" title="Permalink to this headline">¶</a></h3>
 <p>It also generates the OBC solvent parameters and saves them into the output location.</p>
 <ul>
@@ -347,8 +350,8 @@ installation path.</p>
 </div>
 </li>
 </ul>
-</div>
-<div class="section" id="save-output-as-datalocal">
+</section>
+<section id="save-output-as-datalocal">
 <h3>Save output as DataLocal<a class="headerlink" href="#save-output-as-datalocal" title="Permalink to this headline">¶</a></h3>
 <p>It saves the output files following the DataLocal hierarchy expected by PELE.</p>
 <ul>
@@ -360,8 +363,8 @@ installation path.</p>
 </div>
 </li>
 </ul>
-</div>
-<div class="section" id="charge-method">
+</section>
+<section id="charge-method">
 <h3>Charge method<a class="headerlink" href="#charge-method" title="Permalink to this headline">¶</a></h3>
 <p>It sets the method to compute the partial charges.</p>
 <ul>
@@ -375,8 +378,8 @@ installation path.</p>
 </div>
 </li>
 </ul>
-</div>
-<div class="section" id="charge-from-file">
+</section>
+<section id="charge-from-file">
 <h3>Charge from file<a class="headerlink" href="#charge-from-file" title="Permalink to this headline">¶</a></h3>
 <p>It sets the method to load external partial charges.</p>
 <ul>
@@ -389,8 +392,8 @@ installation path.</p>
 </div>
 </li>
 </ul>
-</div>
-<div class="section" id="include-terminal-rotamers">
+</section>
+<section id="include-terminal-rotamers">
 <h3>Include terminal rotamers<a class="headerlink" href="#include-terminal-rotamers" title="Permalink to this headline">¶</a></h3>
 <p>It always includes terminal rotamers, even if they belong to a terminal methyl group whose rotation is trivial in PELE.</p>
 <ul>
@@ -402,9 +405,9 @@ installation path.</p>
 </div>
 </li>
 </ul>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>
