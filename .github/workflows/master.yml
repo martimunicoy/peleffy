@@ -29,7 +29,12 @@ jobs:
       run: |
         cd docs/
         make github
-
+        
+    - name: Build sphinx documentation (again)
+      shell: bash -l {0}
+      run: |
+        make github
+        
     # https://github.com/peaceiris/actions-gh-pages
     - name: Deploy documentation
       if: success()
