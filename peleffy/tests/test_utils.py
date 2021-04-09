@@ -617,6 +617,19 @@ class TestMAEParser(object):
         with pytest.raises(ValueError):
             _ = parse_charges_from_mae(PATH_PDB_BHP, parameters)
 
+class TestPDB(object):
+    """
+    It contains all the tests to validate the PDB class.
+    """
+    def test_get_molecule_from_chain(self):
+        """
+        TO DO
+        """
+        pass
 
-
+    def test_get_hetero_molecules(self):
+        """
+        TO DO
+        """
+        pass
 
