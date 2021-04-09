@@ -290,8 +290,10 @@ class Molecule(object):
         logger = Logger()
         logger.info(' - Initializing molecule from PDB')
         self._initialize()
+
         # Validate PDB
         self._pdb_checkup(path)
+
         # Read and fix PDB
         pdb_block = self._read_and_fix_pdb(path)
 

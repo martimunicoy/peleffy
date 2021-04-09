@@ -85,7 +85,9 @@ class PDB(object):
 
     def get_molecule_from_chain(self, selected_chain):
         """
-        It selects a molecule by the chain Id.
+        It selects a molecule from a chain. It handles the possibles error when
+        selecting the chain for a PDB, and if any it returns the molecule as a
+        peleffy.topology.Molecule object.
 
         Parameters
         ----------
@@ -104,14 +106,14 @@ class PDB(object):
         chain_ids = set([line[21:22] for line in self.pdb_content
                          if line.startswith('HETATM')])
         all_chain_ids = set([line[21:22] for line in self.pdb_content
-                                 if line.startswith('ATOM')
-                                 or line.startswith('HETATM')])
+                             if line.startswith('ATOM')
+                             or line.startswith('HETATM')])
         if not selected_chain in all_chain_ids:
             raise ValueError('The selected chain {}'.format(selected_chain) +
                              ' is not a valid chain for this PDB. Available' +
                              ' chains to select are: {}'.format(chain_ids))
         if not selected_chain in chain_ids and selected_chain in all_chain_ids:
-                raise ValueError('The selected chain {}'.format(selected_chain)+
+            raise ValueError('The selected chain {}'.format(selected_chain) +
                              ' is not a hetero molecule. Peleffy' +
                              ' is only compatible with hetero atoms.')
         return self.extract_molecule_from_chain(chain_id=selected_chain)
