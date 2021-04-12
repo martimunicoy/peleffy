@@ -1,0 +1,312 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>peleffy.topology.elements.OFFImproper &mdash; Open Force Field for PELE  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="peleffy.topology.ZMatrix" href="peleffy.topology.ZMatrix.html" />
+    <link rel="prev" title="peleffy.topology.elements.OFFProper" href="peleffy.topology.elements.OFFProper.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Open Force Field for PELE
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.1.ga1f6818
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releasehistory.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Generate PELE parameter files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../topology.html">Topology representations</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../topology.html#primary-objects">Primary objects</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../topology.html#secondary-objects">Secondary objects</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.Atom.html">peleffy.topology.Atom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.Bond.html">peleffy.topology.Bond</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.Angle.html">peleffy.topology.Angle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.Dihedral.html">peleffy.topology.Dihedral</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.Proper.html">peleffy.topology.Proper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.Improper.html">peleffy.topology.Improper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.elements.DummyAtom.html">peleffy.topology.elements.DummyAtom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.elements.OFFDihedral.html">peleffy.topology.elements.OFFDihedral</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.elements.OFFProper.html">peleffy.topology.elements.OFFProper</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">peleffy.topology.elements.OFFImproper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.ZMatrix.html">peleffy.topology.ZMatrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.rotamer.Rotamer.html">peleffy.topology.rotamer.Rotamer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.rotamer.RotamerLibrary.html">peleffy.topology.rotamer.RotamerLibrary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.topology.rotamer.MolecularGraph.html">peleffy.topology.rotamer.MolecularGraph</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../forcefield.html">Forcefield methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../template.html">Template handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../solvent.html">Solvent models</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Open Force Field for PELE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../topology.html">Topology representations</a> &raquo;</li>
+        
+      <li>peleffy.topology.elements.OFFImproper</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/api/autogenerated/peleffy.topology.elements.OFFImproper.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="peleffy-topology-elements-offimproper">
+<h1>peleffy.topology.elements.OFFImproper<a class="headerlink" href="#peleffy-topology-elements-offimproper" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="peleffy.topology.elements.OFFImproper">
+<em class="property">class </em><code class="sig-prename descclassname">peleffy.topology.elements.</code><code class="sig-name descname">OFFImproper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">atom1_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom2_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom3_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom4_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">periodicity</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">phase</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">k</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">idivf</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/topology/elements.html#OFFImproper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.topology.elements.OFFImproper" title="Permalink to this definition">¶</a></dt>
+<dd><p>It represents an improper dihedral in the Open Force Field’s topology.</p>
+<blockquote>
+<div><dl class="py method">
+<dt id="peleffy.topology.elements.OFFImproper.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span><span class="o">=</span><span class="default_value">- 1</span></em>, <em class="sig-param"><span class="n">atom1_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom2_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom3_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">atom4_idx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">periodicity</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">phase</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">k</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">idivf</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.elements.OFFImproper.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>It initiates an Dihedral object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>index</strong> (<em>int</em>) – The index of this Dihedral object</p></li>
+<li><p><strong>atom1_idx</strong> (<em>int</em>) – The index of the first atom involved in this Dihedral</p></li>
+<li><p><strong>atom2_idx</strong> (<em>int</em>) – The index of the second atom involved in this Dihedral</p></li>
+<li><p><strong>atom3_idx</strong> (<em>int</em>) – The index of the third atom involved in this Dihedral</p></li>
+<li><p><strong>atom4_idx</strong> (<em>int</em>) – The index of the fourth atom involved in this Dihedral</p></li>
+<li><p><strong>periodicity</strong> (<em>int</em>) – The periodicity of this Dihedral</p></li>
+<li><p><strong>phase</strong> (<em>simtk.unit.Quantity</em>) – The phase of this Dihedral</p></li>
+<li><p><strong>k</strong> (<em>simtk.unit.Quantity</em>) – The constant of this Dihedral</p></li>
+<li><p><strong>idivf</strong> (<em>int</em>) – The idivf of this Dihedral</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.elements.OFFImproper.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.elements.OFFImproper.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>It plots this Dihedral as a function of phi angle.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.elements.OFFImproper.to_PELE">
+<code class="sig-name descname">to_PELE</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.elements.OFFImproper.to_PELE" title="Permalink to this definition">¶</a></dt>
+<dd><p>It converts this Open Force Field Dihedral object into a
+PELE-compatible one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>PELE_dihedral</strong> – The PELE-compatible Dihedral object</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>a Dihedral</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div></blockquote>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_writable_attrs</span></code></p></td>
+<td><p>The number of writable attributes this topological element has.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>The name that this topological element has.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="peleffy.topology.ZMatrix.html" class="btn btn-neutral float-right" title="peleffy.topology.ZMatrix" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="peleffy.topology.elements.OFFProper.html" class="btn btn-neutral float-left" title="peleffy.topology.elements.OFFProper" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Barcelona Supercomputing Center
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

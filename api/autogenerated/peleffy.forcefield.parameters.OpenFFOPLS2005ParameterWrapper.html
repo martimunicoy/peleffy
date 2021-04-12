@@ -1,0 +1,458 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper &mdash; Open Force Field for PELE  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Template handlers" href="../../template.html" />
+    <link rel="prev" title="peleffy.forcefield.parameters.OPLS2005ParameterWrapper" href="peleffy.forcefield.parameters.OPLS2005ParameterWrapper.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Open Force Field for PELE
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.1.ga1f6818
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releasehistory.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Generate PELE parameter files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../topology.html">Topology representations</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../forcefield.html">Forcefield methods</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../forcefield.html#primary-objects">Primary objects</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../forcefield.html#secondary-objects">Secondary objects</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="peleffy.forcefield.calculators.Am1bccCalculator.html">peleffy.forcefield.calculators.Am1bccCalculator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.forcefield.calculators.GasteigerCalculator.html">peleffy.forcefield.calculators.GasteigerCalculator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.forcefield.calculators.OPLSChargeCalculator.html">peleffy.forcefield.calculators.OPLSChargeCalculator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.forcefield.calculators.DummyChargeCalculator.html">peleffy.forcefield.calculators.DummyChargeCalculator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.forcefield.selectors.ChargeCalculatorSelector.html">peleffy.forcefield.selectors.ChargeCalculatorSelector</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.forcefield.parameters.BaseParameterWrapper.html">peleffy.forcefield.parameters.BaseParameterWrapper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.forcefield.parameters.OpenForceFieldParameterWrapper.html">peleffy.forcefield.parameters.OpenForceFieldParameterWrapper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.forcefield.parameters.OPLS2005ParameterWrapper.html">peleffy.forcefield.parameters.OPLS2005ParameterWrapper</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../template.html">Template handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../solvent.html">Solvent models</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Open Force Field for PELE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../forcefield.html">Forcefield methods</a> &raquo;</li>
+        
+      <li>peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/api/autogenerated/peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="peleffy-forcefield-parameters-openffopls2005parameterwrapper">
+<h1>peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper<a class="headerlink" href="#peleffy-forcefield-parameters-openffopls2005parameterwrapper" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper">
+<em class="property">class </em><code class="sig-prename descclassname">peleffy.forcefield.parameters.</code><code class="sig-name descname">OpenFFOPLS2005ParameterWrapper</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parameters_dict</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">forcefield_name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/forcefield/parameters.html#OpenFFOPLS2005ParameterWrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>It defines a parameters wrapper for an hybrid OpenFF-OPLS2005 force
+field.</p>
+<blockquote>
+<div><dl class="py method">
+<dt id="peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parameters_dict</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">forcefield_name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>It initializes a parameter wrapper object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parameters_dict</strong> (<em>dict</em>) – A dictionary keyed by parameter type that contains the
+parameters to store. Default is an empty dict</p></li>
+<li><p><strong>forcefield_name</strong> (<em>str</em>) – The name of the force field the parameters belong to</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.add_parameters">
+<code class="sig-name descname">add_parameters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">label</span></em>, <em class="sig-param"><span class="n">parameters</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.add_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>It adds a list of parameters of the same type to the collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> (<em>str</em>) – The label to describe the parameter type</p></li>
+<li><p><strong>parameters</strong> (<em>list</em>) – The list of parameters to include to the collection</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.clear">
+<code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None.  Remove all items from D.<a class="headerlink" href="#peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.clear" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; a shallow copy of D<a class="headerlink" href="#peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.copy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.from_impact_template">
+<em class="property">static </em><code class="sig-name descname">from_impact_template</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">molecule</span></em>, <em class="sig-param"><span class="n">impact_template_path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.from_impact_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>It returns a parameter wrapper out of an impact template.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>molecule</strong> (<em>a peleffy.topology.Molecule</em>) – The peleffy’s Molecule object</p></li>
+<li><p><strong>impact_template_path</strong> (<em>str</em>) – The path to the impact template from where the parameters
+will be fetched</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>params</strong> – The resulting parameters wrapper</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>a BaseParameterWrapper object</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Obtain a parameter wrapper from an Impact template.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">peleffy.topology</span> <span class="kn">import</span> <span class="n">Molecule</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">molecule</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span><span class="s1">&#39;molecule.pdb&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">impact_template_path</span> <span class="o">=</span> <span class="s1">&#39;molz&#39;</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">peleffy.forcefield.parameters</span> <span class="kn">import</span>                 <span class="n">OpenForceFieldParametersWrapper</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">wrapper_off</span> <span class="o">=</span> <span class="n">OpenForceFieldParametersWrapper</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parameters</span> <span class="o">=</span> <span class="n">wrapper_off</span><span class="o">.</span><span class="n">from_impact_template</span><span class="p">(</span>
+<span class="go">        molecule, impact_template_path)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.from_json">
+<code class="sig-name descname">from_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.from_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>It loads a json file containing the parameters into the parameter
+wrapper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_path</strong> (<em>str</em>) – The path to the json file to load the parameters from</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>self</strong> – The resulting parameters wrapper</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>a BaseParameterWrapper object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.fromkeys">
+<code class="sig-name descname">fromkeys</code><span class="sig-paren">(</span><em class="sig-param">value=None</em>, <em class="sig-param">/</em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.fromkeys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new dictionary with keys from iterable and values set to value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">default=None</em>, <em class="sig-param">/</em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the value for key if key is in the dictionary, else default.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.is_empty">
+<code class="sig-name descname">is_empty</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.is_empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the are no parameters stored in this wrapper, it returns True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>answer</strong> – Whether this parameter wrapper is empty or not</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.items">
+<code class="sig-name descname">items</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; a set-like object providing a view on D’s items<a class="headerlink" href="#peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.items" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.keys">
+<code class="sig-name descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; a set-like object providing a view on D’s keys<a class="headerlink" href="#peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.keys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.pop">
+<code class="sig-name descname">pop</code><span class="sig-paren">(</span><em class="sig-param">k</em><span class="optional">[</span>, <em class="sig-param">d</em><span class="optional">]</span><span class="sig-paren">)</span> &#x2192; v, remove specified key and return the corresponding value.<a class="headerlink" href="#peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.pop" title="Permalink to this definition">¶</a></dt>
+<dd><p>If key is not found, d is returned if given, otherwise KeyError is raised</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.popitem">
+<code class="sig-name descname">popitem</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; (k, v), remove and return some (key, value) pair as a<a class="headerlink" href="#peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.popitem" title="Permalink to this definition">¶</a></dt>
+<dd><p>2-tuple; but raise KeyError if D is empty.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.setdefault">
+<code class="sig-name descname">setdefault</code><span class="sig-paren">(</span><em class="sig-param">key</em>, <em class="sig-param">default=None</em>, <em class="sig-param">/</em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.setdefault" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert key with a value of default if key is not in the dictionary.</p>
+<p>Return the value for key if key is in the dictionary, else default.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.to_json">
+<code class="sig-name descname">to_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">output_path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.to_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>It saves this parameter wrapper as a json file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>output_path</strong> (<em>str</em>) – The path to save the output json file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.to_string">
+<code class="sig-name descname">to_string</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.to_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>It returns a string representation of the parameters stored in
+the wrapper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>string_repr</strong> – The string representation</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><span class="optional">[</span><em class="sig-param">E</em>, <span class="optional">]</span><em class="sig-param">**F</em><span class="sig-paren">)</span> &#x2192; None.  Update D from dict/iterable E and F.<a class="headerlink" href="#peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k]
+If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v
+In either case, this is followed by: for k in F:  D[k] = F[k]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.values">
+<code class="sig-name descname">values</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; an object providing a view on D’s values<a class="headerlink" href="#peleffy.forcefield.parameters.OpenFFOPLS2005ParameterWrapper.values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div></blockquote>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">atom_iterator</span></code></p></td>
+<td><p>It returns an iterator that goes through all atom parameters.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">forcefield_name</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>It returns the name of the current parameter wrapper.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../../template.html" class="btn btn-neutral float-right" title="Template handlers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="peleffy.forcefield.parameters.OPLS2005ParameterWrapper.html" class="btn btn-neutral float-left" title="peleffy.forcefield.parameters.OPLS2005ParameterWrapper" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Barcelona Supercomputing Center
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

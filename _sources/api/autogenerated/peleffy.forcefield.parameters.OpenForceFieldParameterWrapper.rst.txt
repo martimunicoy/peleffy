@@ -1,0 +1,43 @@
+peleffy.forcefield.parameters.OpenForceFieldParameterWrapper
+============================================================
+
+.. currentmodule:: peleffy.forcefield.parameters
+
+.. autoclass:: OpenForceFieldParameterWrapper
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: add_parameters
+      .. automethod:: clear
+      .. automethod:: copy
+      .. automethod:: from_impact_template
+      .. automethod:: from_json
+      .. automethod:: from_label_molecules
+      .. automethod:: fromkeys
+      .. automethod:: get
+      .. automethod:: is_empty
+      .. automethod:: items
+      .. automethod:: keys
+      .. automethod:: pop
+      .. automethod:: popitem
+      .. automethod:: setdefault
+      .. automethod:: to_json
+      .. automethod:: to_string
+      .. automethod:: update
+      .. automethod:: values
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~OpenForceFieldParameterWrapper.atom_iterator
+      ~OpenForceFieldParameterWrapper.forcefield_name
+      ~OpenForceFieldParameterWrapper.name
+   
+   

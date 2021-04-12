@@ -1,0 +1,26 @@
+peleffy.forcefield.calculators.GasteigerCalculator
+==================================================
+
+.. currentmodule:: peleffy.forcefield.calculators
+
+.. autoclass:: GasteigerCalculator
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: assign_partial_charges
+      .. automethod:: get_partial_charges
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~GasteigerCalculator.molecule
+      ~GasteigerCalculator.name
+   
+   
