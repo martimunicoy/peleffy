@@ -18,7 +18,7 @@ jobs:
         with:
           update-conda: true
           python-version: 3.7
-          conda-channels: anaconda, conda-forge
+          conda-channels: anaconda, omnia, conda-forge, martimunicoy
 
       - name: Install doc dependencies
         shell: bash
@@ -27,10 +27,7 @@ jobs:
           if [ -f docs/requirements.txt ]; then pip install -r docs/requirements.txt; fi
 
       - name: Install latest peleffy version
-        shell: bash
-        run: |
-          conda config --add channels omnia --add channels conda-forge --add channels martimunicoy
-          conda install peleffy
+        run: conda install peleffy
 
       - name: Build sphinx documentation
         shell: bash
