@@ -4,8 +4,7 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
-
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Generate PELE parameter files &mdash; Open Force Field for PELE  documentation</title>
@@ -62,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.g2dc110d
+                0+untagged.1.ged38c80
               </div>
             
           
@@ -178,7 +177,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <section id="generate-pele-parameter-files">
+  <div class="section" id="generate-pele-parameter-files">
 <h1>Generate PELE parameter files<a class="headerlink" href="#generate-pele-parameter-files" title="Permalink to this headline">¶</a></h1>
 <p>The main purpose of <cite>peleffy</cite> is to build the parameter files for PELE. Basically, PELE requires two files for each non-standard residue found in the system:</p>
 <ul class="simple">
@@ -189,7 +188,7 @@
 <a class="reference internal image-reference" href="_images/PELE_templates_scheme.png"><img alt="Scheme with all the files that PELE requires to run a simulation" src="_images/PELE_templates_scheme.png" style="width: 400px;" /></a>
 <p>The <a class="reference external" href="https://github.com/openforcefield/openforcefield">Open Force Field Toolkit</a> is employed to assign the parameters to each atom according to its chemical environment. Besides, the PDB atom names are stored using <a class="reference external" href="https://www.rdkit.org">RDKit</a>. With this dual molecular representation, <cite>peleffy</cite> can run the parameterization workflow of Open Force Field while tracking the PDB atom names with RDKit.</p>
 <a class="reference internal image-reference" href="_images/dual_representation.png"><img alt="Scheme with the dual molecular representation employed in peleffy" src="_images/dual_representation.png" style="width: 400px;" /></a>
-<section id="basic-usage">
+<div class="section" id="basic-usage">
 <h2>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
 <p>The more straightforward way to install <cite>peleffy</cite> along with the required dependencies is through the command-line interface built in <a class="reference external" href="https://github.com/martimunicoy/peleffy/blob/master/peleffy/main.py">main.py</a> module. Therefore, the parameter files for a particular ligand can be obtained with:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m peleffy.main my_ligand.pdb
@@ -234,8 +233,8 @@
 <span class="o">------------------------------------------------------------</span>
 </pre></div>
 </div>
-</section>
-<section id="command-line-arguments">
+</div>
+<div class="section" id="command-line-arguments">
 <h2>Command-line arguments<a class="headerlink" href="#command-line-arguments" title="Permalink to this headline">¶</a></h2>
 <p>Almost all the important settings can be tuned up through command-line
 arguments. To obtain the full list of flags you can type:</p>
@@ -271,7 +270,7 @@ arguments. To obtain the full list of flags you can type:</p>
 </pre></div>
 </div>
 <p>Find below the complete list of command-line arguments in full detail.</p>
-<section id="pdb-file">
+<div class="section" id="pdb-file">
 <h3>PDB file<a class="headerlink" href="#pdb-file" title="Permalink to this headline">¶</a></h3>
 <p>It is a mandatory positional argument that points to the PDB file which
 contains ligand to parameterize.</p>
@@ -284,8 +283,8 @@ contains ligand to parameterize.</p>
 </div>
 </li>
 </ul>
-</section>
-<section id="force-field">
+</div>
+<div class="section" id="force-field">
 <h3>Force field<a class="headerlink" href="#force-field" title="Permalink to this headline">¶</a></h3>
 <p>It defines the force field to employ to parameterize the ligand. It can
 be any supported force field shipped by the OpenFF toolkit or the
@@ -309,8 +308,8 @@ installation path.</p>
 </div>
 </li>
 </ul>
-</section>
-<section id="rotamer-library-resolution">
+</div>
+<div class="section" id="rotamer-library-resolution">
 <h3>Rotamer library resolution<a class="headerlink" href="#rotamer-library-resolution" title="Permalink to this headline">¶</a></h3>
 <p>It defines the resolution, in degrees, to use in the rotamer library.</p>
 <ul>
@@ -323,8 +322,8 @@ installation path.</p>
 </div>
 </li>
 </ul>
-</section>
-<section id="output-path">
+</div>
+<div class="section" id="output-path">
 <h3>Output path<a class="headerlink" href="#output-path" title="Permalink to this headline">¶</a></h3>
 <p>It defines the output path where the resulting files will be saved.</p>
 <ul>
@@ -337,8 +336,8 @@ installation path.</p>
 </div>
 </li>
 </ul>
-</section>
-<section id="include-solvent-parameters">
+</div>
+<div class="section" id="include-solvent-parameters">
 <h3>Include solvent parameters<a class="headerlink" href="#include-solvent-parameters" title="Permalink to this headline">¶</a></h3>
 <p>It also generates the OBC solvent parameters and saves them into the output location.</p>
 <ul>
@@ -350,8 +349,8 @@ installation path.</p>
 </div>
 </li>
 </ul>
-</section>
-<section id="save-output-as-datalocal">
+</div>
+<div class="section" id="save-output-as-datalocal">
 <h3>Save output as DataLocal<a class="headerlink" href="#save-output-as-datalocal" title="Permalink to this headline">¶</a></h3>
 <p>It saves the output files following the DataLocal hierarchy expected by PELE.</p>
 <ul>
@@ -363,8 +362,8 @@ installation path.</p>
 </div>
 </li>
 </ul>
-</section>
-<section id="charge-method">
+</div>
+<div class="section" id="charge-method">
 <h3>Charge method<a class="headerlink" href="#charge-method" title="Permalink to this headline">¶</a></h3>
 <p>It sets the method to compute the partial charges.</p>
 <ul>
@@ -378,8 +377,8 @@ installation path.</p>
 </div>
 </li>
 </ul>
-</section>
-<section id="charge-from-file">
+</div>
+<div class="section" id="charge-from-file">
 <h3>Charge from file<a class="headerlink" href="#charge-from-file" title="Permalink to this headline">¶</a></h3>
 <p>It sets the method to load external partial charges.</p>
 <ul>
@@ -392,8 +391,8 @@ installation path.</p>
 </div>
 </li>
 </ul>
-</section>
-<section id="include-terminal-rotamers">
+</div>
+<div class="section" id="include-terminal-rotamers">
 <h3>Include terminal rotamers<a class="headerlink" href="#include-terminal-rotamers" title="Permalink to this headline">¶</a></h3>
 <p>It always includes terminal rotamers, even if they belong to a terminal methyl group whose rotation is trivial in PELE.</p>
 <ul>
@@ -405,9 +404,9 @@ installation path.</p>
 </div>
 </li>
 </ul>
-</section>
-</section>
-</section>
+</div>
+</div>
+</div>
 
 
            </div>
