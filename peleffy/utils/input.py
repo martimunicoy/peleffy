@@ -107,7 +107,8 @@ class PDB(object):
         molecules = [self.extract_molecule_from_chain(
             chain=chain_id,
             rotamer_resolution=rotamer_resolution,
-            exclude_terminal_rotamers=exclude_terminal_rotamers)
+            exclude_terminal_rotamers=exclude_terminal_rotamers,
+            allow_undefined_stereo=allow_undefined_stereo)
             for chain_id in chain_ids]
 
         return molecules
