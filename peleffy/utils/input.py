@@ -69,6 +69,8 @@ class PDB(object):
 
         residue = set([line[17:20].strip() for line in self.pdb_content
                     if line.startswith('HETATM') and line[21:22] == chain])
+
+        # Check that the chain only contains one non-standard residue
         if len(residue) > 1:
             raise ValueError('The selected chain {}'.format(chain) +
                              ' has more than one residue. Each hetero' +
