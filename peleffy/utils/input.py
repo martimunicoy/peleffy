@@ -67,6 +67,13 @@ class PDB(object):
         """
         from peleffy.topology.molecule import Molecule
 
+        residue = set([line[17:20].strip() for line in self.pdb_content
+                    if line.startswith('HETATM') and line[21:22] == chain])
+        if len(residue) > 1:
+            raise ValueError('The selected chain {}'.format(chain) +
+                             ' has more than one residue. Each hetero' +
+                             ' molecule has to be in a different chain.')
+
         # Select which atoms compose this molecule
         atom_ids = [line[6:11].strip() for line in self.pdb_content
                     if line.startswith('HETATM') and line[21:22] == chain]
@@ -74,7 +81,8 @@ class PDB(object):
         # Extract the PDB block of the molecule
         pdb_block = [line for line in self.pdb_content
                      if (line.startswith('HETATM') or line.startswith('CONECT'))
-                     and any(a in line for a in atom_ids)]
+                     and any(' {} '.format(a) in line for a in atom_ids)]
+
         return Molecule(pdb_block=''.join(pdb_block),
                         rotamer_resolution=rotamer_resolution,
                         exclude_terminal_rotamers=exclude_terminal_rotamers,
@@ -103,7 +111,9 @@ class PDB(object):
             raise a complaint if not possible. Default is False
         """
         chain_ids = set([line[21:22] for line in self.pdb_content
-                         if line.startswith('HETATM')])
+                         if line.startswith('HETATM')
+                         and not line[17:20].strip() == 'HOH'])
+
         molecules = [self.extract_molecule_from_chain(
             chain=chain_id,
             rotamer_resolution=rotamer_resolution,
@@ -143,7 +153,8 @@ class PDB(object):
         """
 
         chain_ids = set([line[21:22] for line in self.pdb_content
-                         if line.startswith('HETATM')])
+                         if line.startswith('HETATM')
+                         and not line[17:20].strip() == 'HOH'])
         all_chain_ids = set([line[21:22] for line in self.pdb_content
                              if line.startswith('ATOM')
                              or line.startswith('HETATM')])
