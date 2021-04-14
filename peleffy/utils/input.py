@@ -40,7 +40,8 @@ class PDB(object):
         self.pdb_content = open(path, 'r').readlines()
 
     def extract_molecule_from_chain(self, chain, rotamer_resolution,
-                                    exclude_terminal_rotamers):
+                                    exclude_terminal_rotamers,
+                                    allow_undefined_stereo):
         """
         It extracts a peleffy.topology.Molecule object selected by the chain.
 
@@ -54,6 +55,10 @@ class PDB(object):
         exclude_terminal_rotamers : bool
             Whether to exclude terminal rotamers when generating the
             rotamers library  or not
+        allow_undefined_stereo : bool
+            Whether to allow a molecule with undefined stereochemistry
+            to be defined or try to assign the stereochemistry and
+            raise a complaint if not possible. Default is False
 
         Returns
         -------
@@ -70,13 +75,14 @@ class PDB(object):
         pdb_block = [line for line in self.pdb_content
                      if (line.startswith('HETATM') or line.startswith('CONECT'))
                      and any(a in line for a in atom_ids)]
-
         return Molecule(pdb_block=''.join(pdb_block),
                         rotamer_resolution=rotamer_resolution,
-                        exclude_terminal_rotamers=exclude_terminal_rotamers)
+                        exclude_terminal_rotamers=exclude_terminal_rotamers,
+                        allow_undefined_stereo=allow_undefined_stereo)
 
     def get_hetero_molecules(self, rotamer_resolution=30,
-                             exclude_terminal_rotamers=True):
+                             exclude_terminal_rotamers=True,
+                             allow_undefined_stereo=False):
         """
         It returns a list of peleffy.topology.Molecule objects with all the
         hetero molecules contained in the PDB.
@@ -91,6 +97,10 @@ class PDB(object):
         exclude_terminal_rotamers : bool
             Whether to exclude terminal rotamers when generating the
             rotamers library  or not
+        allow_undefined_stereo : bool
+            Whether to allow a molecule with undefined stereochemistry
+            to be defined or try to assign the stereochemistry and
+            raise a complaint if not possible. Default is False
         """
         chain_ids = set([line[21:22] for line in self.pdb_content
                          if line.startswith('HETATM')])
@@ -103,7 +113,8 @@ class PDB(object):
         return molecules
 
     def get_molecule_from_chain(self, selected_chain, rotamer_resolution=30,
-                                exclude_terminal_rotamers=True):
+                                exclude_terminal_rotamers=True,
+                                allow_undefined_stereo=False):
         """
         It selects a molecule from a chain. It handles the possibles error when
         selecting the chain for a PDB, and if any it returns the molecule as a
@@ -119,6 +130,10 @@ class PDB(object):
         exclude_terminal_rotamers : bool
             Whether to exclude terminal rotamers when generating the
             rotamers library  or not
+        allow_undefined_stereo : bool
+            Whether to allow a molecule with undefined stereochemistry
+            to be defined or try to assign the stereochemistry and
+            raise a complaint if not possible. Default is False
 
         Returns
         -------
@@ -141,4 +156,5 @@ class PDB(object):
                              ' is only compatible with hetero atoms.')
         return self.extract_molecule_from_chain(chain=selected_chain,
                             rotamer_resolution=rotamer_resolution,
-                            exclude_terminal_rotamers=exclude_terminal_rotamers)
+                            exclude_terminal_rotamers=exclude_terminal_rotamers,
+                            allow_undefined_stereo=allow_undefined_stereo)
