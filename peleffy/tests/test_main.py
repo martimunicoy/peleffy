@@ -247,7 +247,7 @@ class TestMain(object):
             'Unexpected silent settings were parsed'
         assert parsed_args.with_solvent is False, \
             'Unexpected with_solvent settings were parsed'
-        assert parsed_args.chain is 'L',\
+        assert parsed_args.chain == 'L',\
             'Unexpected chain settings were parsed'
 
         # Test silent argument
