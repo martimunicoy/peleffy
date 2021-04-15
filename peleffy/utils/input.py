@@ -97,7 +97,7 @@ class PDB(object):
                             rotamer_resolution=rotamer_resolution,
                             exclude_terminal_rotamers=exclude_terminal_rotamers,
                             allow_undefined_stereo=allow_undefined_stereo))
-            except:
+            except Exception:
                 log = Logger()
                 log.warning(' - Skipping {} from chain {}.'
                             .format(list(res_name)[0],chain))
