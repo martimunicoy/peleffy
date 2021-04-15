@@ -2,6 +2,7 @@
 This module contains a set of classes and methods designed to handle
 input data.
 """
+from peleffy.utils import Logger
 
 
 class PDB(object):
@@ -67,28 +68,41 @@ class PDB(object):
         """
         from peleffy.topology.molecule import Molecule
 
-        residue = set([line[17:20].strip() for line in self.pdb_content
-                    if line.startswith('HETATM') and line[21:22] == chain])
+        # Check if there is more than one hetero molecule in the same chain
+        residues_ids = set([line[22:26].strip() for line in self.pdb_content
+                    if line.startswith('HETATM') and line[21:22] == chain
+                    and not line[17:20].strip() == 'HOH'])
 
-        # Check that the chain only contains one non-standard residue
-        if len(residue) > 1:
-            raise ValueError('The selected chain {}'.format(chain) +
-                             ' has more than one residue. Each hetero' +
-                             ' molecule has to be in a different chain.')
+        molecules = []
+        for residue_id in residues_ids:
+            res_name = set([line[17:20].strip() for line in self.pdb_content
+                            if line.startswith('HETATM')
+                            and line[21:22] == chain
+                            and line[22:26].strip() == residue_id])
 
-        # Select which atoms compose this molecule
-        atom_ids = [line[6:11].strip() for line in self.pdb_content
-                    if line.startswith('HETATM') and line[21:22] == chain]
+            # Select which atoms compose this hetero molecule
+            atom_ids = [line[6:11].strip() for line in self.pdb_content
+                            if line.startswith('HETATM')
+                            and line[21:22] == chain
+                            and line[22:26].strip() == residue_id]
 
-        # Extract the PDB block of the molecule
-        pdb_block = [line for line in self.pdb_content
-                     if (line.startswith('HETATM') or line.startswith('CONECT'))
-                     and any(' {} '.format(a) in line for a in atom_ids)]
+            # Extract the PDB block of the molecule
+            pdb_block = [line for line in self.pdb_content
+                            if (line.startswith('HETATM') or
+                                line.startswith('CONECT'))
+                            and any(' {} '.format(a) in line for a in atom_ids)]
 
-        return Molecule(pdb_block=''.join(pdb_block),
-                        rotamer_resolution=rotamer_resolution,
-                        exclude_terminal_rotamers=exclude_terminal_rotamers,
-                        allow_undefined_stereo=allow_undefined_stereo)
+            try:
+                molecules.append(Molecule(pdb_block=''.join(pdb_block),
+                            rotamer_resolution=rotamer_resolution,
+                            exclude_terminal_rotamers=exclude_terminal_rotamers,
+                            allow_undefined_stereo=allow_undefined_stereo))
+            except:
+                log = Logger()
+                log.warning(' - Skipping {} from chain {}.'
+                            .format(list(res_name)[0],chain))
+
+        return molecules
 
     def get_hetero_molecules(self, rotamer_resolution=30,
                              exclude_terminal_rotamers=True,
@@ -122,8 +136,7 @@ class PDB(object):
             exclude_terminal_rotamers=exclude_terminal_rotamers,
             allow_undefined_stereo=allow_undefined_stereo)
             for chain_id in chain_ids]
-
-        return molecules
+        return sum(molecules, [])
 
     def get_molecule_from_chain(self, selected_chain, rotamer_resolution=30,
                                 exclude_terminal_rotamers=True,
@@ -168,7 +181,10 @@ class PDB(object):
             raise ValueError('The selected chain {}'.format(selected_chain) +
                              ' is not a hetero molecule. Peleffy' +
                              ' is only compatible with hetero atoms.')
-        return self.extract_molecule_from_chain(chain=selected_chain,
+        molecules =  self.extract_molecule_from_chain(chain=selected_chain,
                             rotamer_resolution=rotamer_resolution,
                             exclude_terminal_rotamers=exclude_terminal_rotamers,
                             allow_undefined_stereo=allow_undefined_stereo)
+
+        return molecules[0] if len(molecules) == 1 else molecules
+
