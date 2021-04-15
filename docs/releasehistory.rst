@@ -7,6 +7,17 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``minor`` increments add features but do not break API compatibility
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
+1.3.0 - Current development
+---------------------------
+
+New features
+""""""""""""
+- `PR #137 <https://github.com/martimunicoy/peleffy/pull/137>`_: New PDB class that allows to handle an input PDB file with multiple molecules. 
+
+Tests added
+"""""""""""
+- `PR #137 <https://github.com/martimunicoy/peleffy/pull/137>`_: Adds tests to validate the new PDB class that allows to handle an input PDB file with multiple molecules.
+
 
 1.2.1 - API Documentation and improvements
 ------------------------------------------
