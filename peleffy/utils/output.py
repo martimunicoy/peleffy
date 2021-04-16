@@ -102,7 +102,7 @@ class OutputPathHandler(object):
         file_path : str
             The path for an Impact template file
         """
-        file_name = self._molecule.tag.lower() + 'z'
+        file_name = self._molecule.tag.lower().strip() + 'z'
 
         if self.as_datalocal:
             if self.forcefield.type == 'OpenFF':
@@ -140,7 +140,7 @@ class OutputPathHandler(object):
         file_path : str
             The path for a rotamer library file
         """
-        file_name = self._molecule.tag.upper() + '.rot.assign'
+        file_name = self._molecule.tag.upper().strip() + '.rot.assign'
 
         if self.as_datalocal:
             path = os.path.join(self.output_path, self.ROTAMER_LIBRARY_PATH)
