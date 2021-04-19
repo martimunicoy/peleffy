@@ -160,10 +160,9 @@ def run_peleffy(pdb_file,
     log.info('   - Exclude terminal rotamers:', exclude_terminal_rotamers)
     log.info('-' * 60)
 
-    from peleffy.topology import Molecule
+    from peleffy.topology import Molecule, BCEConformations
     from peleffy.template import Impact
     from peleffy.solvent import OBC2
-    from peleffy.BCEConformations import BCEConformations
     from peleffy.forcefield import ForceFieldSelector
     from peleffy.topology import Topology
     from peleffy.utils import parse_charges_from_mae
@@ -183,8 +182,8 @@ def run_peleffy(pdb_file,
                                        output_path=output,
                                        as_datalocal=as_datalocal)
 
+    # if conformation_path is set, we don't want a rotamer library
     if conformation_path is None:
-        # if conformation_path is set, we don't want a rotamer library
         rotamer_library = peleffy.topology.RotamerLibrary(molecule)
         rotamer_library.to_file(output_handler.get_rotamer_library_path())
 
@@ -216,11 +215,9 @@ def run_peleffy(pdb_file,
         solvent.to_file(output_handler.get_solvent_template_path())
 
     if conformation_path is not None:
-        previous_level = log.get_level()
         conformations = BCEConformations(topology, conformation_path)
         conformations.calculate()
         conformations.save(output_handler.get_conformation_library_path())
-        log.set_level(previous_level)
 
     log.info(' - All files were generated successfully:')
     if conformation_path is None:

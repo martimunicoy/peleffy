@@ -5,9 +5,9 @@ This module contains tests that check that the BCEConformations module.
 import numpy as np
 import pytest
 
+
 def build_mock_BCEConformations(pdb_file, ffld_file):
-    from peleffy.topology import Molecule
-    from peleffy.BCEConformations import BCEConformations
+    from peleffy.topology import Molecule, BCEConformations
     from peleffy.forcefield import ForceFieldSelector
     from peleffy.topology import Topology
     from .utils import parameterize_opls2005
@@ -19,10 +19,11 @@ def build_mock_BCEConformations(pdb_file, ffld_file):
     topology = Topology(molecule, parameters)
     return BCEConformations(topology, "")
 
+
 class TestBCEConformations(object):
     """BCEConformations test."""
 
-    from peleffy.BCEConformations import BCEConformations
+    from peleffy.topology import BCEConformations
 
     def test_calculate_cluster_offsets(self):
         from peleffy.utils import get_data_file_path

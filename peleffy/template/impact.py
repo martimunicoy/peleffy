@@ -7,7 +7,7 @@ from copy import deepcopy
 
 from simtk import unit
 
-import peleffy
+from peleffy.topology import Atom, Bond, Angle, Proper, Improper
 from peleffy.topology import ZMatrix
 
 
@@ -51,6 +51,7 @@ class Impact(object):
         >>> impact.to_file('molz')
 
         """
+        import peleffy
 
         # Check input parameters
         if (not isinstance(topology, peleffy.topology.Topology)
@@ -223,6 +224,8 @@ class Impact(object):
         file : file object
             File to write to
         """
+        import peleffy
+
         file.write('* LIGAND DATABASE FILE')
         file.write(' ({})'.format(self.topology.parameters.forcefield_name))
         file.write('\n')
@@ -558,6 +561,8 @@ class WritableWrapper(object):
         out : DummyAtom
             A DummyAtom object
         """
+        import peleffy
+
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
             if out is None:
@@ -688,7 +693,7 @@ class WritableWrapper(object):
         return function_wrapper
 
 
-class WritableAtom(peleffy.topology.Atom, WritableWrapper):
+class WritableAtom(Atom, WritableWrapper):
     """
     Writable peleffy's Atom class
     """
@@ -702,6 +707,8 @@ class WritableAtom(peleffy.topology.Atom, WritableWrapper):
         atom : a peleffy.topology.molecule.Atom
             The Atom to create the WritableAtom with
         """
+        import peleffy
+
         # We do not want to modify the original object
         atom = deepcopy(atom)
 
@@ -887,7 +894,7 @@ class WritableAtom(peleffy.topology.Atom, WritableWrapper):
         return super().nonpolar_alpha
 
 
-class WritableBond(peleffy.topology.Bond, WritableWrapper):
+class WritableBond(Bond, WritableWrapper):
     """
     Writable peleffy's Bond class
     """
@@ -901,6 +908,8 @@ class WritableBond(peleffy.topology.Bond, WritableWrapper):
         bond : a peleffy.topology.Bond
             The Bond to create the WritableBond with
         """
+        import peleffy
+
         # We do not want to modify the original object
         bond = deepcopy(bond)
 
@@ -964,7 +973,7 @@ class WritableBond(peleffy.topology.Bond, WritableWrapper):
         return super().eq_dist
 
 
-class WritableAngle(peleffy.topology.Angle, WritableWrapper):
+class WritableAngle(Angle, WritableWrapper):
     """
     Writable peleffy's Angle class
     """
@@ -978,6 +987,8 @@ class WritableAngle(peleffy.topology.Angle, WritableWrapper):
         angle : a peleffy.topology.Angle
             The Angle to create the WritableAngle with
         """
+        import peleffy
+
         # We do not want to modify the original object
         angle = deepcopy(angle)
 
@@ -1053,7 +1064,7 @@ class WritableAngle(peleffy.topology.Angle, WritableWrapper):
         return super().eq_angle
 
 
-class WritableProper(peleffy.topology.Proper, WritableWrapper):
+class WritableProper(Proper, WritableWrapper):
     """
     Writable peleffy's Proper class
     """
@@ -1067,6 +1078,8 @@ class WritableProper(peleffy.topology.Proper, WritableWrapper):
         proper : a peleffy.topology.Proper
             The Proper to create the WritableProper with
         """
+        import peleffy
+
         # We do not want to modify the original object
         proper = deepcopy(proper)
 
@@ -1164,7 +1177,7 @@ class WritableProper(peleffy.topology.Proper, WritableWrapper):
         return super().phase
 
 
-class WritableImproper(peleffy.topology.Improper, WritableWrapper):
+class WritableImproper(Improper, WritableWrapper):
     """
     Writable peleffy's Improper class
     """
@@ -1178,6 +1191,8 @@ class WritableImproper(peleffy.topology.Improper, WritableWrapper):
         improper : a peleffy.topology.Improper
             The Improper to create the WritableImproper with
         """
+        import peleffy
+
         # We do not want to modify the original object
         improper = deepcopy(improper)
 

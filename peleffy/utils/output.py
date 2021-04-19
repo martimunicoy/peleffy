@@ -19,7 +19,8 @@ class OutputPathHandler(object):
     ROTAMER_LIBRARY_PATH = 'DataLocal/LigandRotamerLibs/'
     SOLVENT_TEMPLATE_PATH = 'DataLocal/OBC/'
     CONFORMATION_LIBRARY_PATH = 'DataLocal/Conformations/'
-    FILE_TYPES = ['impact template', 'rotamer library', 'solvent template', 'conformation library']
+    FILE_TYPES = ['impact template', 'rotamer library', 'solvent template',
+                  'conformation library']
 
     def __init__(self, molecule, forcefield,
                  as_datalocal=False, output_path=None):
@@ -67,7 +68,8 @@ class OutputPathHandler(object):
         ----------
         file_type : str
             The file type whose path is requested. One of
-            ['impact template', 'rotamer library', 'solvent template', 'conformation library']
+            ['impact template', 'rotamer library', 'solvent template',
+            'conformation library']
         create_missing_folders : bool
             Whether to create missing folders or not. Default is True
 
@@ -199,7 +201,8 @@ class OutputPathHandler(object):
         file_name = self._molecule.tag.upper() + '.conformation'
 
         if self.as_datalocal:
-            path = os.path.join(self.output_path, self.CONFORMATION_LIBRARY_PATH)
+            path = os.path.join(self.output_path,
+                                self.CONFORMATION_LIBRARY_PATH)
         else:
             path = self.output_path
 
