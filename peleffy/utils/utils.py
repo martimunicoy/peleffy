@@ -418,6 +418,30 @@ class Logger(object):
         for handler in self._logger.handlers:
             handler.setLevel(logging_level)
 
+    def get_level(self):
+        """
+        It gets the logging level.
+
+        Returns
+        -------
+        level : str
+            The logging level to set. One of [DEBUG, INFO, WARNING, ERROR,
+            CRITICAL]
+        """
+        import logging
+        level = self._logger.level
+
+        if level == logging.DEBUG:
+            return 'DEBUG'
+        if level == logging.INFO:
+            return 'INFO'
+        if level == logging.WARNING:
+            return 'WARNING'
+        if level == logging.ERROR:
+            return 'ERROR'
+        if level == logging.CRITICAL:
+            return 'CRITICAL'
+
     def debug(self, *messages):
         """
         It pulls a debug message.
