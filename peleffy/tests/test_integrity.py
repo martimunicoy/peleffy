@@ -17,6 +17,7 @@ class TestIntegrity(object):
             from peleffy import template
             from peleffy import topology
             from peleffy import utils
+            from peleffy import BCEConformations
 
         except ImportError as e:
             raise AssertionError('The following peleffy module is missing: '
