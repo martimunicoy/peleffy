@@ -215,7 +215,8 @@ class TestOutputPathHandler(object):
                 os.path.join(tmpdir, 'output', 'ligandParams.txt'), \
                 'Unexpected default solvent parameters path'
             assert output_handler.get_conformation_library_path() == \
-                os.path.join(tmpdir, 'output', '{}.conformation'.format(tag.upper())), \
+                os.path.join(tmpdir, 'output',
+                             '{}.conformation'.format(tag.upper())), \
                 'Unexpected default conformation library path'
 
     def test_datalocal_paths_for_openff(self):
@@ -252,7 +253,8 @@ class TestOutputPathHandler(object):
             'Unexpected default solvent parameters path'
         assert output_handler.get_conformation_library_path(
             create_missing_folders=False) == \
-            './DataLocal/Conformations/'+'{}.conformation'.format(tag.upper()), \
+            './DataLocal/Conformations/' \
+            + '{}.conformation'.format(tag.upper()), \
             'Unexpected default conformation library path'
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -277,7 +279,8 @@ class TestOutputPathHandler(object):
                 'Unexpected default solvent parameters path'
             assert output_handler.get_conformation_library_path(
                 create_missing_folders=False) == \
-                tmpdir + '/output/DataLocal/Conformations/'+'{}.conformation'.format(tag.upper()), \
+                tmpdir + '/output/DataLocal/Conformations/' \
+                + '{}.conformation'.format(tag.upper()), \
                 'Unexpected default conformation library path'
 
     def test_datalocal_paths_for_opls(self):
@@ -315,7 +318,8 @@ class TestOutputPathHandler(object):
             'Unexpected default solvent parameters path'
         assert output_handler.get_conformation_library_path(
             create_missing_folders=False) == \
-            './DataLocal/Conformations/'+'{}.conformation'.format(tag.upper()), \
+            './DataLocal/Conformations/' \
+            + '{}.conformation'.format(tag.upper()), \
             'Unexpected default conformation library path'
 
         # Initialize output handler with an output_path set
@@ -341,7 +345,8 @@ class TestOutputPathHandler(object):
                 'Unexpected default solvent parameters path'
             assert output_handler.get_conformation_library_path(
                 create_missing_folders=False) == \
-                os.path.join(tmpdir, 'output/DataLocal/Conformations/'+'{}.conformation'.format(tag.upper())), \
+                os.path.join(tmpdir, 'output/DataLocal/Conformations/' \
+                + '{}.conformation'.format(tag.upper())), \
                 'Unexpected default conformation library path'
 
     def test_datalocal_paths_for_offopls(self):
@@ -384,7 +389,8 @@ class TestOutputPathHandler(object):
             'Unexpected default solvent parameters path'
         assert output_handler.get_conformation_library_path(
             create_missing_folders=False) == \
-            './DataLocal/Conformations/'+'{}.conformation'.format(tag.upper()), \
+            './DataLocal/Conformations/' \
+            + '{}.conformation'.format(tag.upper()), \
             'Unexpected default conformation library path'
 
         # Initialize output handler with an output_path set
@@ -410,7 +416,8 @@ class TestOutputPathHandler(object):
                 'Unexpected default solvent parameters path'
             assert output_handler.get_conformation_library_path(
                 create_missing_folders=False) == \
-                os.path.join(tmpdir, 'output/DataLocal/Conformations/'+'{}.conformation'.format(tag.upper())), \
+                os.path.join(tmpdir, 'output/DataLocal/Conformations/' \
+                + '{}.conformation'.format(tag.upper())), \
                 'Unexpected default conformation library path'
 
         # Initialize output handler without output_path
@@ -437,7 +444,8 @@ class TestOutputPathHandler(object):
             'Unexpected default solvent parameters path'
         assert output_handler.get_conformation_library_path(
             create_missing_folders=False) == \
-            './DataLocal/Conformations/'+'{}.conformation'.format(tag.upper()), \
+            './DataLocal/Conformations/' \
+            + '{}.conformation'.format(tag.upper()), \
             'Unexpected default conformation library path'
 
         # Initialize output handler with an output_path set
@@ -463,8 +471,9 @@ class TestOutputPathHandler(object):
                 'Unexpected default solvent parameters path'
             assert output_handler.get_conformation_library_path(
                 create_missing_folders=False) == \
-                os.path.join(tmpdir, 'output', 
-                             'DataLocal/Conformations/'+'{}.conformation'.format(tag.upper())), \
+                os.path.join(tmpdir, 'output',
+                             'DataLocal/Conformations/',
+                             '{}.conformation'.format(tag.upper())), \
                 'Unexpected default conformation library path'
 
     def test_folder_creation(self):
@@ -831,3 +840,4 @@ class TestPDBFile(object):
         with pytest.raises(ValueError):
             PDBreader = PDBFile(PATH_COMPLEX_PDB)
             _ = PDBreader.get_molecule_from_chain(selected_chain='A')
+

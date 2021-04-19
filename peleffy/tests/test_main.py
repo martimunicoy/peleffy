@@ -82,7 +82,7 @@ class TestMain(object):
         assert parsed_args.with_solvent is False, \
             'Unexpected with_solvent settings were parsed'
         assert parsed_args.conformations_info_path is None, \
-            'Unexpected conformations_path settings were passed'
+            'Unexpected conformations_path settings were parsed'
 
         # Test custom shorts
         parsed_args = parse_args(['toluene.pdb',
@@ -112,7 +112,7 @@ class TestMain(object):
         assert parsed_args.with_solvent is False, \
             'Unexpected with_solvent settings were parsed'
         assert parsed_args.conformations_info_path is None, \
-            'Unexpected conformations_path settings were passed'
+            'Unexpected conformations_path settings were parsed'
 
         # Test custom longs
         parsed_args = parse_args(['methane.pdb',
@@ -143,7 +143,7 @@ class TestMain(object):
         assert parsed_args.with_solvent is False, \
             'Unexpected with_solvent settings were parsed'
         assert parsed_args.conformations_info_path is None, \
-            'Unexpected conformations_path settings were passed'
+            'Unexpected conformations_path settings were parsed'
 
         # Test unexpected charge method
         with pytest.raises(SystemExit) as pytest_wrapped_e:
@@ -177,7 +177,7 @@ class TestMain(object):
         assert parsed_args.with_solvent is False, \
             'Unexpected with_solvent settings were parsed'
         assert parsed_args.conformations_info_path is None, \
-            'Unexpected conformations_path settings were passed'
+            'Unexpected conformations_path settings were parsed'
 
         # Test charges_from_file argument
         parsed_args = parse_args(['BHP.pdb',
@@ -206,7 +206,7 @@ class TestMain(object):
         assert parsed_args.with_solvent is False, \
             'Unexpected with_solvent settings were parsed'
         assert parsed_args.conformations_info_path is None, \
-            'Unexpected conformations_path settings were passed'
+            'Unexpected conformations_path settings were parsed'
 
         # Test include_terminal_rotamers argument
         parsed_args = parse_args(['methane.pdb',
@@ -233,7 +233,7 @@ class TestMain(object):
         assert parsed_args.with_solvent is False, \
             'Unexpected with_solvent settings were parsed'
         assert parsed_args.conformations_info_path is None, \
-            'Unexpected conformations_path settings were passed'
+            'Unexpected conformations_path settings were parsed'
 
         # Test chain argument
         parsed_args = parse_args(['LYS_BNZ.pdb',
@@ -287,7 +287,7 @@ class TestMain(object):
         assert parsed_args.with_solvent is False, \
             'Unexpected with_solvent settings were parsed'
         assert parsed_args.conformations_info_path is None, \
-            'Unexpected conformations_path settings were passed'
+            'Unexpected conformations_path settings were parsed'
 
         parse_args(['methane.pdb', '-s']) == parse_args(['methane.pdb',
                                                          '--silent'])
@@ -317,7 +317,7 @@ class TestMain(object):
         assert parsed_args.with_solvent is False, \
             'Unexpected with_solvent settings were parsed'
         assert parsed_args.conformations_info_path is None, \
-            'Unexpected conformations_path settings were passed'
+            'Unexpected conformations_path settings were parsed'
 
         parse_args(['methane.pdb', '-d']) == parse_args(['methane.pdb',
                                                          '--debug'])
@@ -347,7 +347,7 @@ class TestMain(object):
         assert parsed_args.with_solvent is False, \
             'Unexpected with_solvent settings were parsed'
         assert parsed_args.conformations_info_path == "test_path", \
-            'Unexpected conformations_path settings were passed'
+            'Unexpected conformations_path settings were parsed'
 
     def test_peleffy_main(self):
         """It checks the main function of peleffy."""

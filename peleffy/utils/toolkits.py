@@ -320,8 +320,15 @@ class RDKitToolkitWrapper(ToolkitWrapper):
             Molecule to match atoms from
         mol2 : an offpele.topology.Molecule
             Molecule with the atoms to match
+
+        Returns
+        -------
+        mol2_atoms : tuple[int]
+            The tuple of atom indices from mol2 that match those in mol1
         """
-        return mol1.rdkit_molecule.GetSubstructMatch(mol2.rdkit_molecule)
+        mol2_atoms = mol1.rdkit_molecule.GetSubstructMatch(mol2.rdkit_molecule)
+
+        return mol2_atoms
 
     def get_atom_degrees(self, molecule):
         """
@@ -585,8 +592,10 @@ class RDKitToolkitWrapper(ToolkitWrapper):
             RMSD between two RDKit molecules
         """
         from rdkit.Chem import rdMolAlign
-        return rdMolAlign.AlignMol(molecule.rdkit_molecule,
-                molecule_2.rdkit_molecule)
+
+        rmsd_value = rdMolAlign.AlignMol(molecule.rdkit_molecule,
+                                         molecule_2.rdkit_molecule)
+        return rmsd_value
 
     def draw_molecule(self, representation, atom_indexes=list(),
                       radii_dict=dict(), atom_color_dict=dict(),
