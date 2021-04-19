@@ -620,9 +620,9 @@ class TestMAEParser(object):
             _ = parse_charges_from_mae(PATH_PDB_BHP, parameters)
 
 
-class TestPDB(object):
+class TestPDBFile(object):
     """
-    It contains all the tests to validate the PDB class.
+    It contains all the tests to validate the PDBFile class.
     """
     def test_get_molecule_from_chain(self):
         """
@@ -657,7 +657,7 @@ class TestPDB(object):
             else:
                 return False
 
-        from peleffy.utils.input import PDB
+        from peleffy.utils.input import PDBFile
         from peleffy.utils import get_data_file_path
         from peleffy.topology import Molecule
 
@@ -665,37 +665,41 @@ class TestPDB(object):
         PATH_LIGAND_PDB = get_data_file_path('ligands/BNZ.pdb')
 
         # Test method get_molecule_from_chain
-        PDBreader = PDB(PATH_COMPLEX_PDB)
+        PDBreader = PDBFile(PATH_COMPLEX_PDB)
         molecule = PDBreader.get_molecule_from_chain(selected_chain='L')
-
         assert compare_molecules(molecule, Molecule(PATH_LIGAND_PDB)) is True
 
         # Test allow_undefined_stereo flag
-        PDBreader = PDB(PATH_COMPLEX_PDB)
+        PDBreader = PDBFile(PATH_COMPLEX_PDB)
         molecule = \
             PDBreader.get_molecule_from_chain(selected_chain='L',
                                               allow_undefined_stereo=True)
-
         assert compare_molecules(molecule,
                                  Molecule(PATH_LIGAND_PDB,
                                           allow_undefined_stereo=True)) is True
 
         # Test exclude_terminal_rotamers flag
-        PDBreader = PDB(PATH_COMPLEX_PDB)
+        PDBreader = PDBFile(PATH_COMPLEX_PDB)
         molecule = \
             PDBreader.get_molecule_from_chain(selected_chain='L',
                                               exclude_terminal_rotamers=False)
-
         assert compare_molecules(molecule, Molecule(
             PATH_LIGAND_PDB, exclude_terminal_rotamers=False)) is True
 
-        # Test rotamer_resolution frag
-        PDBreader = PDB(PATH_COMPLEX_PDB)
+        # Test rotamer_resolution flag
+        PDBreader = PDBFile(PATH_COMPLEX_PDB)
         molecule = PDBreader.get_molecule_from_chain(selected_chain='L',
                                                      rotamer_resolution=10)
+        assert compare_molecules(molecule,
+                                 Molecule(PATH_LIGAND_PDB,
+                                          rotamer_resolution=10)) is True
 
-        assert compare_molecules(molecule, Molecule(
-            PATH_LIGAND_PDB, rotamer_resolution=10)) is True
+        # Test core_constraints flag
+        PDBreader = PDBFile(PATH_COMPLEX_PDB)
+        molecule = PDBreader.get_molecule_from_chain(selected_chain='L',
+                                                     core_constraints=[1,2])
+        assert molecule.core_constraints == [1,2]
+
 
     def test_get_hetero_molecules(self):
         """
@@ -730,7 +734,7 @@ class TestPDB(object):
             else:
                 return False
 
-        from peleffy.utils.input import PDB
+        from peleffy.utils.input import PDBFile
         from peleffy.utils import get_data_file_path
         from peleffy.topology import Molecule
 
@@ -738,7 +742,8 @@ class TestPDB(object):
         PATH_LIGAND1 = get_data_file_path('ligands/LIG1.pdb')
         PATH_LIGAND2 = get_data_file_path('ligands/LIG2.pdb')
 
-        PDBreader = PDB(PATH_COMPLEX_PDB)
+        # Test extract multiple molecules
+        PDBreader = PDBFile(PATH_COMPLEX_PDB)
         molecules = PDBreader.get_hetero_molecules()
 
         for molecule in molecules:
@@ -746,21 +751,34 @@ class TestPDB(object):
                 if molecule._tag == molecule_ref.tag:
                     assert compare_molecules(molecule, molecule_ref)
 
+        # Test set ligand core constraints
+        PATH_COMPLEX_PDB = get_data_file_path('complexes/complex_test.pdb')
+        molecules = \
+            PDBreader.get_hetero_molecules(allow_undefined_stereo = True,
+                                           ligand_core_constraints = [1,2,3],
+                                           ligand_resname = 'ANL')
+        for molecule in molecules:
+            if molecule._tag == 'ANL':
+                assert molecule.core_constraints == [1,2,3]
+            else:
+                assert molecule.core_constraints == []
+
+
     def test_raise_errors(self):
         """
         It tests all the possible errors when geting a molecule from a chain.
         """
-        from peleffy.utils.input import PDB
+        from peleffy.utils.input import PDBFile
         from peleffy.utils import get_data_file_path
 
         PATH_COMPLEX_PDB = get_data_file_path('complexes/LYS_BNZ.pdb')
 
         # The chain selected does not exist in the PDB file
         with pytest.raises(ValueError):
-            PDBreader = PDB(PATH_COMPLEX_PDB)
+            PDBreader = PDBFile(PATH_COMPLEX_PDB)
             _ = PDBreader.get_molecule_from_chain(selected_chain='F')
 
         # The chain selected is not an hetero molecule
         with pytest.raises(ValueError):
-            PDBreader = PDB(PATH_COMPLEX_PDB)
+            PDBreader = PDBFile(PATH_COMPLEX_PDB)
             _ = PDBreader.get_molecule_from_chain(selected_chain='A')

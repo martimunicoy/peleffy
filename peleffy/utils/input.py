@@ -5,7 +5,7 @@ input data.
 from peleffy.utils import Logger
 
 
-class PDB(object):
+class PDBFile(object):
     """
     It handles an input PDB file and allows the extraction of multiple molecules
     as peleffy.topology.Molecule objects.
@@ -25,24 +25,25 @@ class PDB(object):
 
         Load all the hetero molecules from a PDB
 
-        >>> from peleffy.utils.input import PDB
+        >>> from peleffy.utils.input import PDBFile
 
-        >>> PDBreader = PDB('/path/to/pdb.pdb')
+        >>> PDBreader = PDBFile('/path/to/pdb.pdb')
         >>> molecules = PDBreader.get_hetero_molecules()
 
         Load from a PDB the hetero atom in the L chain.
 
-        >>> from peleffy.utils.input import PDB
+        >>> from peleffy.utils.input import PDBFile
 
-        >>> PDBreader = PDB('/path/to/pdb.pdb')
+        >>> PDBreader = PDBFile('/path/to/pdb.pdb')
         >>> molecule  = PDBreader.get_molecule_from_chain(selected_chain = 'L')
 
         """
         self.pdb_content = open(path, 'r').readlines()
 
-    def extract_molecule_from_chain(self, chain, rotamer_resolution,
-                                    exclude_terminal_rotamers,
-                                    allow_undefined_stereo):
+    def _extract_molecule_from_chain(self, chain, rotamer_resolution,
+                                     exclude_terminal_rotamers,
+                                     allow_undefined_stereo,
+                                     core_constraints):
         """
         It extracts a peleffy.topology.Molecule object selected by the chain.
 
@@ -60,18 +61,24 @@ class PDB(object):
             Whether to allow a molecule with undefined stereochemistry
             to be defined or try to assign the stereochemistry and
             raise a complaint if not possible. Default is False
+        core_constraints : list[int or str]
+            It defines the list of atoms to constrain in the core, thus,
+            the core will be forced to contain them. Atoms can be specified
+            through integers that match the atom index or strings that
+            match with the atom PDB name
 
         Returns
         -------
-        molecule : a peleffy.topology.Molecule object
-            Selected molecule.
+        molecule : list[peleffy.topology.Molecule object]
+            Selected molecules.
         """
         from peleffy.topology.molecule import Molecule
 
         # Check if there is more than one hetero molecule in the same chain
         residues_ids = set([line[22:26].strip() for line in self.pdb_content
-                    if line.startswith('HETATM') and line[21:22] == chain
-                    and not line[17:20].strip() == 'HOH'])
+                            if line.startswith('HETATM')
+                            and line[21:22] == chain
+                            and not line[17:20].strip() == 'HOH'])
 
         molecules = []
         for residue_id in residues_ids:
@@ -82,39 +89,41 @@ class PDB(object):
 
             # Select which atoms compose this hetero molecule
             atom_ids = [line[6:11].strip() for line in self.pdb_content
-                            if line.startswith('HETATM')
-                            and line[21:22] == chain
-                            and line[22:26].strip() == residue_id]
+                        if line.startswith('HETATM')
+                        and line[21:22] == chain
+                        and line[22:26].strip() == residue_id]
 
             # Extract the PDB block of the molecule
             pdb_block = [line for line in self.pdb_content
-                            if (line.startswith('HETATM') or
-                                line.startswith('CONECT'))
-                            and any(' {} '.format(a) in line for a in atom_ids)]
+                         if (line.startswith('HETATM') or
+                             line.startswith('CONECT'))
+                         and any(' {} '.format(a) in line for a in atom_ids)]
 
             try:
-                molecules.append(Molecule(pdb_block=''.join(pdb_block),
-                            rotamer_resolution=rotamer_resolution,
-                            exclude_terminal_rotamers=exclude_terminal_rotamers,
-                            allow_undefined_stereo=allow_undefined_stereo))
+                molecules.append(
+                    Molecule(pdb_block=''.join(pdb_block),
+                             rotamer_resolution=rotamer_resolution,
+                             exclude_terminal_rotamers=exclude_terminal_rotamers,
+                             allow_undefined_stereo=allow_undefined_stereo,
+                             core_constraints=core_constraints))
             except Exception:
                 log = Logger()
                 log.warning(' - Skipping {} from chain {}.'
-                            .format(list(res_name)[0],chain))
+                            .format(list(res_name)[0], chain))
 
         return molecules
 
     def get_hetero_molecules(self, rotamer_resolution=30,
                              exclude_terminal_rotamers=True,
-                             allow_undefined_stereo=False):
+                             allow_undefined_stereo=False,
+                             ligand_core_constraints=[],
+                             ligand_resname=None):
         """
         It returns a list of peleffy.topology.Molecule objects with all the
         hetero molecules contained in the PDB.
 
-        Returns
-        -------
-        molecules : list[peleffy.topology.Molecule]
-            List of the multiple molecules in the PDB file
+        Parameters
+        ----------
         rotamer_resolution : float
             The resolution in degrees to discretize the rotamer's
             conformational space. Default is 30
@@ -125,22 +134,48 @@ class PDB(object):
             Whether to allow a molecule with undefined stereochemistry
             to be defined or try to assign the stereochemistry and
             raise a complaint if not possible. Default is False
+        ligand_core_constraints : list[int or str]
+            It defines the list of atoms to constrain in the core of the ligand,
+            thus, the core will be forced to contain them.
+            Atoms can be specified through integers that match the atom index or
+            strings that match with the atom PDB name
+        ligand_resname : str
+            Residue name of the ligand. Default is None
+
+        Returns
+        -------
+        molecules : list[peleffy.topology.Molecule]
+            List of the multiple molecules in the PDB file
         """
         chain_ids = set([line[21:22] for line in self.pdb_content
                          if line.startswith('HETATM')
                          and not line[17:20].strip() == 'HOH'])
 
-        molecules = [self.extract_molecule_from_chain(
+        # Assign core constraints to the ligand, if specified
+        d = {}
+        for chain in chain_ids:
+            resnames = \
+                list(set([line[17:20].strip() for line in self.pdb_content
+                          if line.startswith('HETATM') and line[21:22] == chain
+                          and not line[17:20].strip() == 'HOH']))
+            core_constraints = \
+                ligand_core_constraints if ligand_resname in resnames else []
+            d[chain] = {'Residues names': resnames,
+                        'Core constraints': core_constraints}
+
+        molecules = [self._extract_molecule_from_chain(
             chain=chain_id,
             rotamer_resolution=rotamer_resolution,
             exclude_terminal_rotamers=exclude_terminal_rotamers,
-            allow_undefined_stereo=allow_undefined_stereo)
+            allow_undefined_stereo=allow_undefined_stereo,
+            core_constraints=d[chain_id]['Core constraints'])
             for chain_id in chain_ids]
         return sum(molecules, [])
 
     def get_molecule_from_chain(self, selected_chain, rotamer_resolution=30,
                                 exclude_terminal_rotamers=True,
-                                allow_undefined_stereo=False):
+                                allow_undefined_stereo=False,
+                                core_constraints=[]):
         """
         It selects a molecule from a chain. It handles the possibles error when
         selecting the chain for a PDB, and if any it returns the molecule as a
@@ -181,10 +216,17 @@ class PDB(object):
             raise ValueError('The selected chain {}'.format(selected_chain) +
                              ' is not a hetero molecule. Peleffy' +
                              ' is only compatible with hetero atoms.')
-        molecules =  self.extract_molecule_from_chain(chain=selected_chain,
-                            rotamer_resolution=rotamer_resolution,
-                            exclude_terminal_rotamers=exclude_terminal_rotamers,
-                            allow_undefined_stereo=allow_undefined_stereo)
+        molecules = self._extract_molecule_from_chain(
+            chain=selected_chain,
+            rotamer_resolution=rotamer_resolution,
+            exclude_terminal_rotamers=exclude_terminal_rotamers,
+            allow_undefined_stereo=allow_undefined_stereo,
+            core_constraints=core_constraints)
 
-        return molecules[0] if len(molecules) == 1 else molecules
-
+        if len(molecules) == 1:
+            return molecules[0]
+        else:
+            log = Logger()
+            log.warning(' - This chain contains more than one molecule.' +
+                        ' A list of molecules is returned.')
+            return molecules

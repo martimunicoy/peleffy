@@ -165,17 +165,19 @@ def run_peleffy(pdb_file,
     from peleffy.forcefield import ForceFieldSelector
     from peleffy.topology import Topology
     from peleffy.utils import parse_charges_from_mae
-    from peleffy.utils.input import PDB
+    from peleffy.utils.input import PDBFile
 
     if not output:
         output = os.getcwd()
 
     # Initialize molecule
     if chain is not None:
-        PDBreader = PDB(pdb_file)
-        molecule = PDBreader.get_molecule_from_chain(selected_chain=chain,
-                        rotamer_resolution=resolution,
-                        exclude_terminal_rotamers=exclude_terminal_rotamers)
+        PDBreader = PDBFile(pdb_file)
+        molecule = \
+        PDBreader.get_molecule_from_chain(selected_chain=chain,
+                                          rotamer_resolution=resolution,
+                                          exclude_terminal_rotamers=
+                                          exclude_terminal_rotamers)
     else:
         molecule = Molecule(pdb_file, rotamer_resolution=resolution,
                             exclude_terminal_rotamers=exclude_terminal_rotamers)
