@@ -224,7 +224,7 @@ It sets the method to load external partial charges.
 
 Chain
 -----
-It defines the chain of the molecule to parameterize from the input PDB file.
+It defines the chain of the molecule to parameterize from the input PDB file. This flag has to be used if the input PDB file contains multiple chains, if no chain is supplied a PDB with a single chain is expected. 
 
 - Flag: ``--chain``
 - Default: ``None``
