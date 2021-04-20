@@ -7,16 +7,18 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``minor`` increments add features but do not break API compatibility
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
-1.3.0 - Current development
----------------------------
+1.3.0 - BCE conformations and automatic heteromolecules extraction
+------------------------------------------------------------------
 
 New features
 """"""""""""
-- `PR #137 <https://github.com/martimunicoy/peleffy/pull/137>`_: New PDB class that allows to handle an input PDB file with multiple molecules. 
+- `PR #135 <https://github.com/martimunicoy/peleffy/pull/135>`_: New class to load conformations from the BCE server (Bioactive Conformational Ensemble) and generate the required input files for PELE.
+- `PR #137 <https://github.com/martimunicoy/peleffy/pull/137>`_: New PDB class that allows to handle an input PDB file with multiple heteromolecules. 
 
 Tests added
 """""""""""
-- `PR #137 <https://github.com/martimunicoy/peleffy/pull/137>`_: Adds tests to validate the new PDB class that allows to handle an input PDB file with multiple molecules.
+- `PR #135 <https://github.com/martimunicoy/peleffy/pull/135>`_: Adds tests to validate the new BCEConformations class.
+- `PR #137 <https://github.com/martimunicoy/peleffy/pull/137>`_: Adds tests to validate the new PDBFile class.
 
 
 1.2.1 - API Documentation and improvements
