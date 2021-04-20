@@ -38,14 +38,16 @@ class PDBFile(object):
         >>> molecule  = PDBreader.get_molecule_from_chain(selected_chain = 'L')
 
         """
-        self.pdb_content = open(path, 'r').readlines()
+        with open(path, 'r') as pdb_file:
+            self.pdb_content = pdb_file.readlines()
 
-    def _extract_molecule_from_chain(self, chain, rotamer_resolution,
+    def _extract_molecules_from_chain(self, chain, rotamer_resolution,
                                      exclude_terminal_rotamers,
                                      allow_undefined_stereo,
                                      core_constraints):
         """
-        It extracts a peleffy.topology.Molecule object selected by the chain.
+        It extracts all hetero molecules found in the selected the chain
+        of a PDB file.
 
         Parameters
         ----------
@@ -69,8 +71,8 @@ class PDBFile(object):
 
         Returns
         -------
-        molecule : list[peleffy.topology.Molecule object]
-            Selected molecules.
+        molecules : list[peleffy.topology.Molecule object]
+            Selected molecules
         """
         from peleffy.topology.molecule import Molecule
 
@@ -106,10 +108,12 @@ class PDBFile(object):
                              exclude_terminal_rotamers=exclude_terminal_rotamers,
                              allow_undefined_stereo=allow_undefined_stereo,
                              core_constraints=core_constraints))
-            except Exception:
+            except Exception as e:
                 log = Logger()
-                log.warning(' - Skipping {} from chain {}.'
-                            .format(list(res_name)[0], chain))
+                log.warning(' - Skipping {} '.format(list(res_name)[0])
+                            + 'from chain {}'.format(chain))
+                log.warning('  - The following exception was raised: '
+                            + '{}'.format(e))
 
         return molecules
 
@@ -135,10 +139,10 @@ class PDBFile(object):
             to be defined or try to assign the stereochemistry and
             raise a complaint if not possible. Default is False
         ligand_core_constraints : list[int or str]
-            It defines the list of atoms to constrain in the core of the ligand,
-            thus, the core will be forced to contain them.
-            Atoms can be specified through integers that match the atom index or
-            strings that match with the atom PDB name
+            It defines the list of atoms to constrain in the core of the
+            ligand, thus, the core will be forced to contain them.
+            Atoms can be specified through integers that match the atom index
+            or strings that match with the atom PDB name
         ligand_resname : str
             Residue name of the ligand. Default is None
 
@@ -163,23 +167,24 @@ class PDBFile(object):
             d[chain] = {'Residues names': resnames,
                         'Core constraints': core_constraints}
 
-        molecules = [self._extract_molecule_from_chain(
+        molecules = [self._extract_molecules_from_chain(
             chain=chain_id,
             rotamer_resolution=rotamer_resolution,
             exclude_terminal_rotamers=exclude_terminal_rotamers,
             allow_undefined_stereo=allow_undefined_stereo,
             core_constraints=d[chain_id]['Core constraints'])
             for chain_id in chain_ids]
+
         return sum(molecules, [])
 
-    def get_molecule_from_chain(self, selected_chain, rotamer_resolution=30,
-                                exclude_terminal_rotamers=True,
-                                allow_undefined_stereo=False,
-                                core_constraints=[]):
+    def get_molecules_from_chain(self, selected_chain, rotamer_resolution=30,
+                                 exclude_terminal_rotamers=True,
+                                 allow_undefined_stereo=False,
+                                 core_constraints=[]):
         """
-        It selects a molecule from a chain. It handles the possibles error when
-        selecting the chain for a PDB, and if any it returns the molecule as a
-        peleffy.topology.Molecule object.
+        It returns all hetero molecule defined in a specific chain from the
+        PDB file. It handles the possible errors when selecting the chain
+        for a PDB.
 
         Parameters
         ----------
@@ -198,35 +203,34 @@ class PDBFile(object):
 
         Returns
         -------
-        molecule : a peleffy.topology.Molecule
-            The peleffy's Molecule object corresponding to the selected chain.
+        molecule : list[peleffy.topology.Molecule]
+            The list of peleffy's Molecule object corresponding to the
+            selected chain
         """
 
         chain_ids = set([line[21:22] for line in self.pdb_content
                          if line.startswith('HETATM')
                          and not line[17:20].strip() == 'HOH'])
+
         all_chain_ids = set([line[21:22] for line in self.pdb_content
                              if line.startswith('ATOM')
                              or line.startswith('HETATM')])
+
         if not selected_chain in all_chain_ids:
-            raise ValueError('The selected chain {}'.format(selected_chain) +
-                             ' is not a valid chain for this PDB. Available' +
-                             ' chains to select are: {}'.format(chain_ids))
+            raise ValueError('The selected chain {} '.format(selected_chain)
+                             + 'is not a valid chain for this PDB. Available '
+                             + 'chains to select are: {}'.format(chain_ids))
+
         if not selected_chain in chain_ids and selected_chain in all_chain_ids:
-            raise ValueError('The selected chain {}'.format(selected_chain) +
-                             ' is not a hetero molecule. Peleffy' +
-                             ' is only compatible with hetero atoms.')
-        molecules = self._extract_molecule_from_chain(
+            raise ValueError('The selected chain {} '.format(selected_chain)
+                             + 'is not an hetero molecule. Peleffy '
+                             + 'is only compatible with hetero atoms.')
+
+        molecules = self._extract_molecules_from_chain(
             chain=selected_chain,
             rotamer_resolution=rotamer_resolution,
             exclude_terminal_rotamers=exclude_terminal_rotamers,
             allow_undefined_stereo=allow_undefined_stereo,
             core_constraints=core_constraints)
 
-        if len(molecules) == 1:
-            return molecules[0]
-        else:
-            log = Logger()
-            log.warning(' - This chain contains more than one molecule.' +
-                        ' A list of molecules is returned.')
-            return molecules
+        return molecules

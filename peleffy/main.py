@@ -180,14 +180,14 @@ def run_peleffy(pdb_file,
     # Initialize molecule
     if chain is not None:
         PDBreader = PDBFile(pdb_file)
-        molecule = \
-        PDBreader.get_molecule_from_chain(selected_chain=chain,
-                                          rotamer_resolution=resolution,
-                                          exclude_terminal_rotamers=
-                                          exclude_terminal_rotamers)
+        molecule = PDBreader.get_molecules_from_chain(
+            selected_chain=chain,
+            rotamer_resolution=resolution,
+            exclude_terminal_rotamers=exclude_terminal_rotamers)
     else:
-        molecule = Molecule(pdb_file, rotamer_resolution=resolution,
-                            exclude_terminal_rotamers=exclude_terminal_rotamers)
+        molecule = Molecule(
+            pdb_file, rotamer_resolution=resolution,
+            exclude_terminal_rotamers=exclude_terminal_rotamers)
 
     # Initialize force field
     ff_selector = ForceFieldSelector()

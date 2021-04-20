@@ -724,39 +724,43 @@ class TestPDBFile(object):
 
         # Test method get_molecule_from_chain
         PDBreader = PDBFile(PATH_COMPLEX_PDB)
-        molecule = PDBreader.get_molecule_from_chain(selected_chain='L')
-        assert compare_molecules(molecule, Molecule(PATH_LIGAND_PDB)) is True
+        molecules = PDBreader.get_molecules_from_chain(selected_chain='L')
+        assert len(molecules) == 1, 'Unexpected number of molecules'
+        assert compare_molecules(molecules[0], Molecule(PATH_LIGAND_PDB)) is True
 
         # Test allow_undefined_stereo flag
         PDBreader = PDBFile(PATH_COMPLEX_PDB)
-        molecule = \
-            PDBreader.get_molecule_from_chain(selected_chain='L',
-                                              allow_undefined_stereo=True)
-        assert compare_molecules(molecule,
+        molecules = \
+            PDBreader.get_molecules_from_chain(selected_chain='L',
+                                               allow_undefined_stereo=True)
+        assert len(molecules) == 1, 'Unexpected number of molecules'
+        assert compare_molecules(molecules[0],
                                  Molecule(PATH_LIGAND_PDB,
                                           allow_undefined_stereo=True)) is True
 
         # Test exclude_terminal_rotamers flag
         PDBreader = PDBFile(PATH_COMPLEX_PDB)
-        molecule = \
-            PDBreader.get_molecule_from_chain(selected_chain='L',
-                                              exclude_terminal_rotamers=False)
-        assert compare_molecules(molecule, Molecule(
+        molecules = \
+            PDBreader.get_molecules_from_chain(selected_chain='L',
+                                               exclude_terminal_rotamers=False)
+        assert len(molecules) == 1, 'Unexpected number of molecules'
+        assert compare_molecules(molecules[0], Molecule(
             PATH_LIGAND_PDB, exclude_terminal_rotamers=False)) is True
 
         # Test rotamer_resolution flag
         PDBreader = PDBFile(PATH_COMPLEX_PDB)
-        molecule = PDBreader.get_molecule_from_chain(selected_chain='L',
-                                                     rotamer_resolution=10)
-        assert compare_molecules(molecule,
+        molecules = PDBreader.get_molecules_from_chain(selected_chain='L',
+                                                       rotamer_resolution=10)
+        assert compare_molecules(molecules[0],
                                  Molecule(PATH_LIGAND_PDB,
                                           rotamer_resolution=10)) is True
 
         # Test core_constraints flag
         PDBreader = PDBFile(PATH_COMPLEX_PDB)
-        molecule = PDBreader.get_molecule_from_chain(selected_chain='L',
-                                                     core_constraints=[1,2])
-        assert molecule.core_constraints == [1,2]
+        molecules = PDBreader.get_molecules_from_chain(selected_chain='L',
+                                                       core_constraints=[1,2])
+        assert len(molecules) == 1, 'Unexpected number of molecules'
+        assert molecules[0].core_constraints == [1,2]
 
 
     def test_get_hetero_molecules(self):
@@ -834,10 +838,9 @@ class TestPDBFile(object):
         # The chain selected does not exist in the PDB file
         with pytest.raises(ValueError):
             PDBreader = PDBFile(PATH_COMPLEX_PDB)
-            _ = PDBreader.get_molecule_from_chain(selected_chain='F')
+            _ = PDBreader.get_molecules_from_chain(selected_chain='F')
 
         # The chain selected is not an hetero molecule
         with pytest.raises(ValueError):
             PDBreader = PDBFile(PATH_COMPLEX_PDB)
-            _ = PDBreader.get_molecule_from_chain(selected_chain='A')
-
+            _ = PDBreader.get_molecules_from_chain(selected_chain='A')
