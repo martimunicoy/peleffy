@@ -10,6 +10,8 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 1.3.0 - BCE conformations and automatic heteromolecules extraction
 ------------------------------------------------------------------
 
+This is a minor release of peleffy that includes a new method to read ligand conformations from the BCE server and prepare the input files for PELE. It also contains a new PDBFile class that allows the user to automatically load all the heteromolecules from a PDB file.
+
 New features
 """"""""""""
 - `PR #135 <https://github.com/martimunicoy/peleffy/pull/135>`_: New class to load conformations from the BCE server (Bioactive Conformational Ensemble) and generate the required input files for PELE.
