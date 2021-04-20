@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.g22fb641
+                0+untagged.1.gba7cad2
               </div>
             
           
@@ -100,6 +100,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#save-output-as-datalocal">Save output as DataLocal</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#charge-method">Charge method</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#charge-from-file">Charge from file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#chain">Chain</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#include-terminal-rotamers">Include terminal rotamers</a></li>
 </ul>
 </li>
@@ -264,6 +265,7 @@ arguments. To obtain the full list of flags you can type:</p>
                         <span class="n">The</span> <span class="n">name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">method</span> <span class="n">to</span> <span class="n">use</span> <span class="n">to</span> <span class="n">compute</span> <span class="n">charges</span>
   <span class="o">--</span><span class="n">charges_from_file</span> <span class="n">PATH</span>
                         <span class="n">The</span> <span class="n">path</span> <span class="n">to</span> <span class="n">the</span> <span class="n">file</span> <span class="k">with</span> <span class="n">charges</span>
+  <span class="o">--</span><span class="n">chain</span> <span class="n">CHAIN</span>         <span class="n">Chain</span> <span class="n">of</span> <span class="n">the</span> <span class="n">molecule</span> <span class="n">to</span> <span class="n">parameterize</span>
   <span class="o">--</span><span class="n">include_terminal_rotamers</span>
                         <span class="n">Not</span> <span class="n">exclude</span> <span class="n">terminal</span> <span class="n">rotamers</span> <span class="n">when</span> <span class="n">building</span> <span class="n">the</span>
                         <span class="n">rotamer</span> <span class="n">library</span>
@@ -387,6 +389,19 @@ installation path.</p>
 <li><p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 <li><p>Example: the code below will load the partial charges from a MAE file</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m peleffy.main path/to/my_ligand.pdb --charges_from_file path/to/my_ligand.mae
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="chain">
+<h3>Chain<a class="headerlink" href="#chain" title="Permalink to this headline">¶</a></h3>
+<p>It defines the chain of the molecule to parameterize from the input PDB file. This flag has to be used if the input PDB file contains multiple chains, if no chain is supplied a PDB with a single chain is expected.</p>
+<ul>
+<li><p>Flag: <code class="docutils literal notranslate"><span class="pre">--chain</span></code></p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p>Example: the code below will parameterize the hetero molecule in the chain L of the input file</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m peleffy.main path/to/my_system.pdb --chain L
 </pre></div>
 </div>
 </li>
