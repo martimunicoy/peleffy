@@ -282,6 +282,54 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         return atom_names
 
+    def get_dihedral(self, mol, atom1, atom2, atom3, atom4, units="radians"):
+        """
+        It calculates the value of the dihedral angle in the specified units
+            (default radians)
+
+        Parameters
+        ----------
+        molecule : an offpele.topology.Molecule
+            The offpele's Molecule object
+        atom1 : int
+            Index of the first atom in the dihedral
+        atom2 : int
+            Index of the second atom in the dihedral
+        atom3 : int
+            Index of the third atom in the dihedral
+        atom4 : int
+            Index of the fourth atom in the dihedral
+        units : str
+            The units in which to calculate the angle (default is radians, can
+            be radians or degrees)
+        """
+        from rdkit.Chem import rdMolTransforms
+        if units == "degrees":
+            angle = rdMolTransforms.GetDihedralDeg(mol.rdkit_molecule.GetConformer(), atom1, atom2, atom3, atom4)
+        else:
+            angle = rdMolTransforms.GetDihedralRad(mol.rdkit_molecule.GetConformer(), atom1, atom2, atom3, atom4)
+        return angle
+
+    def get_substruct_match(self, mol1, mol2):
+        """
+        It returns the atoms in mol2 that match those of mol1
+
+        Parameters
+        ----------
+        mol1 : an offpele.topology.Molecule
+            Molecule to match atoms from
+        mol2 : an offpele.topology.Molecule
+            Molecule with the atoms to match
+
+        Returns
+        -------
+        mol2_atoms : tuple[int]
+            The tuple of atom indices from mol2 that match those in mol1
+        """
+        mol2_atoms = mol1.rdkit_molecule.GetSubstructMatch(mol2.rdkit_molecule)
+
+        return mol2_atoms
+
     def get_atom_degrees(self, molecule):
         """
         It returns the ordered list of atom degrees. The degree of an atom
@@ -526,6 +574,28 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         AllChem.Compute2DCoords(representation_2D)
         return representation_2D
+
+    def get_rmsd(self, molecule, molecule_2):
+        """
+        It returns the RMSD between two RDKit molecules.
+
+        Parameters
+        ----------
+        molecule : an peleffy.topology.Molecule
+            The peleffy's Molecule object
+        molecule_2 : an peleffy.topology.Molecule
+            The peleffy's Molecule object
+
+        Returns
+        -------
+        rmsd_value : float
+            RMSD between two RDKit molecules
+        """
+        from rdkit.Chem import rdMolAlign
+
+        rmsd_value = rdMolAlign.AlignMol(molecule.rdkit_molecule,
+                                         molecule_2.rdkit_molecule)
+        return rmsd_value
 
     def draw_molecule(self, representation, atom_indexes=list(),
                       radii_dict=dict(), atom_color_dict=dict(),

@@ -104,6 +104,7 @@ arguments. To obtain the full list of flags you can type:
                              The name of the method to use to compute charges
        --charges_from_file PATH
                              The path to the file with charges
+       --chain CHAIN         Chain of the molecule to parameterize
        --include_terminal_rotamers
                              Not exclude terminal rotamers when building the
                              rotamer library
@@ -221,6 +222,18 @@ It sets the method to load external partial charges.
 
         $ python -m peleffy.main path/to/my_ligand.pdb --charges_from_file path/to/my_ligand.mae
 
+Chain
+-----
+It defines the chain of the molecule to parameterize from the input PDB file. This flag has to be used if the input PDB file contains multiple chains, if no chain is supplied a PDB with a single chain is expected. 
+
+- Flag: ``--chain``
+- Default: ``None``
+- Example: the code below will parameterize the hetero molecule in the chain L of the input file
+
+  .. code-block:: bash
+
+        $ python -m peleffy.main path/to/my_system.pdb --chain L
+        
 Include terminal rotamers
 -------------------------
 It always includes terminal rotamers, even if they belong to a terminal methyl group whose rotation is trivial in PELE.

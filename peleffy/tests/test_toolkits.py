@@ -2,6 +2,7 @@
 This module contains the tests to check the peleffy's toolkits.
 """
 
+import numpy as np
 import pytest
 
 from peleffy.forcefield.parameters import OPLS2005ParameterWrapper
@@ -270,3 +271,50 @@ class TestRDKitToolkitWrapper(object):
         block2 = MolToPDBBlock(rdkit_mol2)
 
         assert block1 == block2, 'Unexpected pair of RDKit molecules'
+
+    def test_dihedral_angle(self):
+        """It checks that the dihedral angle calculator works well."""
+
+        from peleffy.topology import Molecule
+        from peleffy.utils.toolkits import RDKitToolkitWrapper
+        from peleffy.utils import get_data_file_path
+
+        wrapper = RDKitToolkitWrapper()
+
+        pdb_path = get_data_file_path('ligands/trimethylglycine.pdb')
+        m = Molecule(pdb_path)
+        dihedral_degrees = wrapper.get_dihedral(m, 2, 1, 4, 5, units="degrees")
+        dihedral_rad = wrapper.get_dihedral(m, 2, 1, 4, 5)
+        np.testing.assert_almost_equal(dihedral_degrees, -176.348, decimal=2)
+        np.testing.assert_almost_equal(dihedral_degrees, np.rad2deg(dihedral_rad), decimal=3)
+
+    def test_dihedral_angle_2(self):
+        """It checks that the dihedral angle calculator works well."""
+
+        from peleffy.topology import Molecule
+        from peleffy.utils.toolkits import RDKitToolkitWrapper
+        from peleffy.utils import get_data_file_path
+
+        wrapper = RDKitToolkitWrapper()
+
+        pdb_path = get_data_file_path('ligands/trimethylglycine.pdb')
+        m = Molecule(pdb_path)
+        dihedral_degrees = wrapper.get_dihedral(m, 17, 4, 5, 6, units="degrees")
+        dihedral_rad = wrapper.get_dihedral(m, 17, 4, 5, 6)
+        np.testing.assert_almost_equal(dihedral_degrees, 54.828, decimal=2)
+        np.testing.assert_almost_equal(dihedral_degrees, np.rad2deg(dihedral_rad), decimal=3)
+
+    def test_rmsd(self):
+        """It checks that the rmsd calculator works well."""
+
+        from peleffy.topology import Molecule
+        from peleffy.utils.toolkits import RDKitToolkitWrapper
+        from peleffy.utils import get_data_file_path
+
+        wrapper = RDKitToolkitWrapper()
+
+        pdb_path = get_data_file_path('ligands/trimethylglycine.pdb')
+        m = Molecule(pdb_path)
+        pdb_path2 = get_data_file_path('ligands/trimethylglycine_moved.pdb')
+        m2 = Molecule(pdb_path2)
+        np.testing.assert_almost_equal(wrapper.get_rmsd(m, m2), 0.3346, decimal=3)

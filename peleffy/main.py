@@ -55,6 +55,9 @@ def parse_args(args):
     parser.add_argument("-o", "--output", metavar="PATH",
                         help="Output path. Default is the current working "
                         + "directory")
+    parser.add_argument("--conformations_info_path", default=None, type=str,
+                        help="Path to the folder containing the BCE output"
+                        + " used to collect conformations for PELE")
     parser.add_argument('--with_solvent', dest='with_solvent',
                         help="Generate solvent parameters for OBC",
                         action='store_true')
@@ -67,6 +70,9 @@ def parse_args(args):
                         choices=AVAILABLE_CHARGE_METHODS)
     parser.add_argument('--charges_from_file', metavar="PATH",
                         type=str, help="The path to the file with charges",
+                        default=None)
+    parser.add_argument("--chain", metavar="CHAIN",
+                        type=str, help="Chain of the molecule to parameterize",
                         default=None)
     parser.add_argument('--include_terminal_rotamers',
                         dest="include_terminal_rotamers",
@@ -98,9 +104,10 @@ def run_peleffy(pdb_file,
                 resolution=DEFAULT_RESOLUTION,
                 charge_method=DEFAULT_CHARGE_METHOD,
                 charges_from_file=None,
+                chain=None,
                 exclude_terminal_rotamers=True,
-                output=None, with_solvent=False,
-                as_datalocal=False):
+                output=None, with_solvent=False, as_datalocal=False,
+                conformation_path=None):
     """
     It runs peleffy.
 
@@ -118,6 +125,8 @@ def run_peleffy(pdb_file,
     charges_from_file : str
         The file containing the partial charges to assign to the
         molecule. Default is None
+    chain : str
+        Chain to the molecule if the PDB contains multiple molecules.
     exclude_terminal_rotamers : bool
         Whether to exclude terminal rotamers or not
     output : str
@@ -128,6 +137,10 @@ def run_peleffy(pdb_file,
     as_datalocal : bool
         Whether to save output files following PELE's DataLocal hierarchy or
         not
+    conformation_path: str
+        Path to the BCE server outupt to use to extract dihedral angles
+    dihedral_mode: str
+        Select what kind of dihedrals to extract (all or only flexible)
     """
     if charges_from_file is not None:
         charge_method_str = 'file\n' \
@@ -153,19 +166,28 @@ def run_peleffy(pdb_file,
     log.info('   - Exclude terminal rotamers:', exclude_terminal_rotamers)
     log.info('-' * 60)
 
-    from peleffy.topology import Molecule
+    from peleffy.topology import Molecule, BCEConformations
     from peleffy.template import Impact
     from peleffy.solvent import OBC2
     from peleffy.forcefield import ForceFieldSelector
     from peleffy.topology import Topology
     from peleffy.utils import parse_charges_from_mae
+    from peleffy.utils.input import PDBFile
 
     if not output:
         output = os.getcwd()
 
     # Initialize molecule
-    molecule = Molecule(pdb_file, rotamer_resolution=resolution,
-                        exclude_terminal_rotamers=exclude_terminal_rotamers)
+    if chain is not None:
+        PDBreader = PDBFile(pdb_file)
+        molecule = PDBreader.get_molecules_from_chain(
+            selected_chain=chain,
+            rotamer_resolution=resolution,
+            exclude_terminal_rotamers=exclude_terminal_rotamers)
+    else:
+        molecule = Molecule(
+            pdb_file, rotamer_resolution=resolution,
+            exclude_terminal_rotamers=exclude_terminal_rotamers)
 
     # Initialize force field
     ff_selector = ForceFieldSelector()
@@ -175,8 +197,10 @@ def run_peleffy(pdb_file,
                                        output_path=output,
                                        as_datalocal=as_datalocal)
 
-    rotamer_library = peleffy.topology.RotamerLibrary(molecule)
-    rotamer_library.to_file(output_handler.get_rotamer_library_path())
+    # if conformation_path is set, we don't want a rotamer library
+    if conformation_path is None:
+        rotamer_library = peleffy.topology.RotamerLibrary(molecule)
+        rotamer_library.to_file(output_handler.get_rotamer_library_path())
 
     # Parameterize molecule with the selected force field
     log.info(' - Parameterizing molecule')
@@ -205,9 +229,17 @@ def run_peleffy(pdb_file,
         solvent = OBC2(topology)
         solvent.to_file(output_handler.get_solvent_template_path())
 
+    if conformation_path is not None:
+        conformations = BCEConformations(topology, conformation_path)
+        conformations.calculate()
+        conformations.save(output_handler.get_conformation_library_path())
+
     log.info(' - All files were generated successfully:')
-    log.info('   - {}'.format(output_handler.get_rotamer_library_path()))
+    if conformation_path is None:
+        log.info('   - {}'.format(output_handler.get_rotamer_library_path()))
     log.info('   - {}'.format(output_handler.get_impact_template_path()))
+    if conformation_path is not None:
+        log.info('   - {}'.format(output_handler.get_conformation_library_path()))
     if with_solvent:
         log.info('   - {}'.format(output_handler.get_solvent_template_path()))
 
@@ -256,6 +288,8 @@ def main(args):
                 output=args.output,
                 with_solvent=args.with_solvent,
                 as_datalocal=args.as_datalocal,
+                chain=args.chain,
+                conformation_path=args.conformations_info_path,
                 charges_from_file=args.charges_from_file)
 
 
