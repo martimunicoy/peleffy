@@ -16,9 +16,9 @@ class Molecule(object):
     the OpenForceField toolkit for PELE.
     """
 
-    def __init__(self, path=None, smiles=None, rotamer_resolution=30,
-                 exclude_terminal_rotamers=True, name='', tag='UNK',
-                 connectivity_template=None, core_constraints=[],
+    def __init__(self, path=None, smiles=None, pdb_block=None,
+                 rotamer_resolution=30,exclude_terminal_rotamers=True, name='',
+                 tag='UNK', connectivity_template=None, core_constraints=[],
                  allow_undefined_stereo=False, fix_pdb=True):
         """
         It initializes a Molecule object through a PDB file or a SMILES
@@ -134,7 +134,6 @@ class Molecule(object):
         # Deactivate OpenForceField toolkit warnings
         import logging
         logging.getLogger().setLevel(logging.ERROR)
-
         if isinstance(path, str):
             from pathlib import Path
             extension = Path(path).suffix
@@ -146,7 +145,8 @@ class Molecule(object):
                     '{} is not a valid extension'.format(extension))
         elif isinstance(smiles, str):
             self._initialize_from_smiles(smiles)
-
+        elif isinstance(pdb_block, str):
+            self._initialize_from_pdb_block(pdb_block)
         else:
             self._initialize()
 
@@ -355,6 +355,46 @@ class Molecule(object):
         if self.name == '':
             logger.info('   - Setting molecule name to \'{}\''.format(smiles))
             self.set_name(smiles)
+
+        logger.info('   - Representing molecule with the Open Force Field '
+                    + 'Toolkit')
+        openforcefield_toolkit = OpenForceFieldToolkitWrapper()
+        self._off_molecule = openforcefield_toolkit.from_rdkit(self)
+
+    def _initialize_from_pdb_block(self, pdb_block):
+        """
+        It initializes a molecule with the molecule structure fetch in a PDB
+        block.
+
+        Parameters
+        ----------
+        pdb_block : str
+            PDB block with the molecule structure
+        """
+        logger = Logger()
+        logger.info(' - Initializing molecule from PDB')
+        self._initialize()
+
+        logger.info('   - Loading molecule from RDKit')
+        rdkit_toolkit = RDKitToolkitWrapper()
+        self._rdkit_molecule = rdkit_toolkit.from_pdb_block(pdb_block)
+
+        # Use RDKit template, if any, to assign the connectivity to
+        # the current Molecule object
+        if self.connectivity_template is not None:
+            logger.info('   - Assigning connectivity from template')
+            rdkit_toolkit.assign_connectivity_from_template(self)
+
+        if not self.allow_undefined_stereo:
+            # RDKit must generate stereochemistry specifically from 3D coords
+            logger.info('   - Assigning stereochemistry from 3D coordinates')
+            rdkit_toolkit.assign_stereochemistry_from_3D(self)
+
+        # Set molecule tag according to PDB's residue name
+        if self.tag == 'UNK':
+            tag = rdkit_toolkit.get_residue_name(self)
+            logger.info('   - Setting molecule tag to \'{}\''.format(tag))
+            self.set_tag(tag)
 
         logger.info('   - Representing molecule with the Open Force Field '
                     + 'Toolkit')

@@ -71,6 +71,9 @@ def parse_args(args):
     parser.add_argument('--charges_from_file', metavar="PATH",
                         type=str, help="The path to the file with charges",
                         default=None)
+    parser.add_argument("--chain", metavar="CHAIN",
+                        type=str, help="Chain of the molecule to parameterize",
+                        default=None)
     parser.add_argument('--include_terminal_rotamers',
                         dest="include_terminal_rotamers",
                         action='store_true',
@@ -101,6 +104,7 @@ def run_peleffy(pdb_file,
                 resolution=DEFAULT_RESOLUTION,
                 charge_method=DEFAULT_CHARGE_METHOD,
                 charges_from_file=None,
+                chain=None,
                 exclude_terminal_rotamers=True,
                 output=None, with_solvent=False, as_datalocal=False,
                 conformation_path=None):
@@ -121,6 +125,8 @@ def run_peleffy(pdb_file,
     charges_from_file : str
         The file containing the partial charges to assign to the
         molecule. Default is None
+    chain : str
+        Chain to the molecule if the PDB contains multiple molecules.
     exclude_terminal_rotamers : bool
         Whether to exclude terminal rotamers or not
     output : str
@@ -166,13 +172,22 @@ def run_peleffy(pdb_file,
     from peleffy.forcefield import ForceFieldSelector
     from peleffy.topology import Topology
     from peleffy.utils import parse_charges_from_mae
+    from peleffy.utils.input import PDBFile
 
     if not output:
         output = os.getcwd()
 
     # Initialize molecule
-    molecule = Molecule(pdb_file, rotamer_resolution=resolution,
-                        exclude_terminal_rotamers=exclude_terminal_rotamers)
+    if chain is not None:
+        PDBreader = PDBFile(pdb_file)
+        molecule = PDBreader.get_molecules_from_chain(
+            selected_chain=chain,
+            rotamer_resolution=resolution,
+            exclude_terminal_rotamers=exclude_terminal_rotamers)
+    else:
+        molecule = Molecule(
+            pdb_file, rotamer_resolution=resolution,
+            exclude_terminal_rotamers=exclude_terminal_rotamers)
 
     # Initialize force field
     ff_selector = ForceFieldSelector()
@@ -273,6 +288,7 @@ def main(args):
                 output=args.output,
                 with_solvent=args.with_solvent,
                 as_datalocal=args.as_datalocal,
+                chain=args.chain,
                 conformation_path=args.conformations_info_path,
                 charges_from_file=args.charges_from_file)
 
