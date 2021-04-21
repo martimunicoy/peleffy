@@ -35,7 +35,7 @@ class PDBFile(object):
         >>> from peleffy.utils.input import PDBFile
 
         >>> PDBreader = PDBFile('/path/to/pdb.pdb')
-        >>> molecule  = PDBreader.get_molecule_from_chain(selected_chain = 'L')
+        >>> molecules = PDBreader.get_molecules_from_chain(selected_chain = 'L')
 
         """
         with open(path, 'r') as pdb_file:

@@ -7,3 +7,4 @@ The following examples are available in the [peleffy repository](https://github.
 - [OFF_parameterization](https://github.com/martimunicoy/peleffy/tree/master/examples/OFF_parameterization): it shows how to use `peleffy` to assign parameters with the `Open Force Field Toolkit`.
 - [OPLS_parameterization](https://github.com/martimunicoy/peleffy/tree/master/examples/OPLS_parameterization): it shows how to use `peleffy` to combine parameters from Schrodinger's `OPLS2005` force field with the ones from the `Open Force Field Toolkit`.
 - [rotamers](https://github.com/martimunicoy/peleffy/tree/master/examples/rotamers): it shows how to use `peleffy` to generate rotamer libraries in different scenarios.
+- [conformers](https://github.com/martimunicoy/peleffy/tree/master/examples/conformers): it shows how to use `peleffy` to generate conformations libraries.
