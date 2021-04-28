@@ -13,13 +13,11 @@ build:
 
 requirements:
   build:
-    # Note that rdkit does not support Python 3.8 yet
-    - python 3.6|3.7
+    - python
     - setuptools
 
   run:
-    # Note that rdkit does not support Python 3.8 yet
-    - python 3.6|3.7
+    - python
     - numpy
     - matplotlib
     - pytest
