@@ -517,6 +517,8 @@ class BaseParameterWrapper(dict):
                         type_info = 'phi'
                     elif 'IPHI' in line:
                         type_info = 'iphi'
+                    elif 'END' in line:
+                        break
                     else:
                         if type_info == 'tag':
                             tag.append(line)
