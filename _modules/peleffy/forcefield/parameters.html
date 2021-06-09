@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0+untagged.1.g377862a
+                0+untagged.1.gd21a852
               </div>
             
           
@@ -667,6 +667,8 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">impact_template_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
             <span class="n">type_info</span> <span class="o">=</span> <span class="s1">&#39;tag&#39;</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Skip empty lines</span>
+                    <span class="k">continue</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">):</span>
                     <span class="k">if</span> <span class="s1">&#39;NBON&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                         <span class="n">type_info</span> <span class="o">=</span> <span class="s1">&#39;nbon&#39;</span>
@@ -678,6 +680,8 @@
                         <span class="n">type_info</span> <span class="o">=</span> <span class="s1">&#39;phi&#39;</span>
                     <span class="k">elif</span> <span class="s1">&#39;IPHI&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
                         <span class="n">type_info</span> <span class="o">=</span> <span class="s1">&#39;iphi&#39;</span>
+                    <span class="k">elif</span> <span class="s1">&#39;END&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                        <span class="k">break</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">type_info</span> <span class="o">==</span> <span class="s1">&#39;tag&#39;</span><span class="p">:</span>
                             <span class="n">tag</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
@@ -755,7 +759,7 @@
 
         <span class="c1"># Impropers</span>
         <span class="n">impropers_list</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">iphi</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">iphi</span><span class="p">:</span>
             <span class="n">info</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
             <span class="n">case</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;atom1_idx&#39;</span><span class="p">:</span> <span class="n">index</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
                     <span class="s1">&#39;atom2_idx&#39;</span><span class="p">:</span> <span class="n">index</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
