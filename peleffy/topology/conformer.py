@@ -16,10 +16,9 @@ from peleffy.utils.toolkits import RDKitToolkitWrapper
 
 class BCEConformations(object):
     """
-    A class to produce a library of conformations from the output
-    of the BCE server.
+    A class to produce a library of conformations from a set of ligand PDB files.
     """
-    def __init__(self, topology_obj, bce_output_path):
+    def __init__(self, topology_obj, bce_output_path, from_bce=True):
         """
         Initializes a BCEConformations object.
 
@@ -29,11 +28,15 @@ class BCEConformations(object):
             A Topology object that contains the ligand's information
         bce_output_path: str
             Path where the output from the BCE server is stored
+        from_bce : bool
+            Whether the ligand clusters originate from the BCE server or not. Affects cluster search path in
+            _calculate_all_conformations method.
         """
         self._topology = topology_obj
         self._molecule = topology_obj.molecule
         self.bce_path = bce_output_path
         self.conformations_library = {}
+        self.from_bce = from_bce
 
     def calculate(self):
         """
@@ -44,9 +47,11 @@ class BCEConformations(object):
         self._calculate_all_conformations()
 
     def _calculate_all_conformations(self):
-        clusters = sorted(glob.glob(os.path.join(self.bce_path,
-                                                 "CLUSTERS", "CL*",
-                                                 "cluster*.min.imaged.pdb")))
+        if self.from_bce:
+            clusters = sorted(glob.glob(os.path.join(self.bce_path, "CLUSTERS", "CL*", "cluster*.min.imaged.pdb")))
+        else:
+            clusters = sorted(glob.glob(os.path.join(self.bce_path, "*.pdb")))
+
         if not clusters:
             raise ValueError("Path to the BCE output does not contain a "
                              + "CLUSTERS folder, please check if the path "
@@ -55,7 +60,6 @@ class BCEConformations(object):
         ordered_clusters = [clusters[x] for x in clusters_order]
         for cluster in ordered_clusters:
             self.calculate_cluster_offsets(cluster)
-
 
     def calculate_cluster_offsets(self, cluster_pdb):
         """
@@ -71,7 +75,8 @@ class BCEConformations(object):
         # Use the input molecule as template since the cluster structures
         # probably will not have proper stereochemistry
         mol = molecule.Molecule(
-            cluster_pdb, connectivity_template=self._molecule.rdkit_molecule)
+            cluster_pdb, connectivity_template=self._molecule.rdkit_molecule,
+            allow_undefined_stereo=self._molecule.allow_undefined_stereo)
         cluster_coordinates = mol.get_conformer()
         topology_to_cluster = {
             i: x for i, x
@@ -136,7 +141,8 @@ class BCEConformations(object):
             # probably will not have proper stereochemistry
             cluster_molecules.append(molecule.Molecule(
                 cluster,
-                connectivity_template=self._molecule.rdkit_molecule))
+                connectivity_template=self._molecule.rdkit_molecule,
+                allow_undefined_stereo=self._molecule.allow_undefined_stereo))
         for i, cluster_mol in enumerate(cluster_molecules):
             for j, cluster_mol_2 in enumerate(cluster_molecules[i+1:],
                                               start=i+1):
@@ -178,6 +184,7 @@ def find_optimal_path_from_matrix(distances):
             min_path = path
 
     return min_path
+
 
 def find_heuristic_path(graph, distances, start_node):
     """
@@ -222,13 +229,13 @@ def find_heuristic_path(graph, distances, start_node):
 def find_index_root(sorted_topology, topology):
     """
     It finds the index of the root atom in the original topology
-    that matches with the one from the topology that fullfills the Impact
+    that matches with the one from the topology that fulfills the Impact
     template rules.
 
     Parameters
     ----------
     sorted_topology : a peleffy.topology.Topology object
-        The topology sorted to fullfill the Impact template format
+        The topology sorted to fulfill the Impact template format
     topology : a peleffy.topology.Topology object
         The original topology object
 

@@ -506,6 +506,8 @@ class BaseParameterWrapper(dict):
         with open(impact_template_path, 'r') as fd:
             type_info = 'tag'
             for line in fd.readlines():
+                if len(line.strip()) == 0:  # Skip empty lines
+                    continue
                 if not line.startswith('*'):
                     if 'NBON' in line:
                         type_info = 'nbon'
@@ -517,6 +519,8 @@ class BaseParameterWrapper(dict):
                         type_info = 'phi'
                     elif 'IPHI' in line:
                         type_info = 'iphi'
+                    elif 'END' in line:
+                        break
                     else:
                         if type_info == 'tag':
                             tag.append(line)
@@ -594,7 +598,7 @@ class BaseParameterWrapper(dict):
 
         # Impropers
         impropers_list = []
-        for line in iphi[:-1]:
+        for line in iphi:
             info = line.split()
             case = {'atom1_idx': index(info[0]),
                     'atom2_idx': index(info[1]),

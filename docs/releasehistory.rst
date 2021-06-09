@@ -7,6 +7,21 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``minor`` increments add features but do not break API compatibility
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
+
+1.3.1 - PELE Platform support
+-----------------------------
+
+This is a micro release of peleffy that includes minor adjustments for the PELE Platform and other small fixes.
+
+New features
+""""""""""""
+- `PR #142 <https://github.com/martimunicoy/peleffy/pull/142>`_: Minor adjustments to facilitate platform compatibility.
+
+Bugfixes
+""""""""
+- Minor error when parsing Impact templates.
+
+
 1.3.0 - BCE conformations and automatic heteromolecules extraction
 ------------------------------------------------------------------
 
