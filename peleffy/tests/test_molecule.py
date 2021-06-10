@@ -276,7 +276,7 @@ class TestMolecule(object):
         It checks the behaviour when ignoring the stereochemistry
         in the Molecule initialization.
         """
-        from openforcefield.utils.toolkits import UndefinedStereochemistryError
+        from openff.toolkit.utils.toolkits import UndefinedStereochemistryError
         from peleffy.forcefield import OpenForceField
 
         # This should crash due to an undefined stereochemistry error
@@ -328,7 +328,7 @@ class TestMolecule(object):
         It checks the initialization of a peleffy Molecule from an OpenFF
         molecular representation.
         """
-        from openforcefield.topology import Molecule as OpenFFMolecule
+        from openff.toolkit.topology import Molecule as OpenFFMolecule
 
         openff_molecule = OpenFFMolecule.from_smiles('C(C(=O)[O-])C(=O)[OH]')
 
