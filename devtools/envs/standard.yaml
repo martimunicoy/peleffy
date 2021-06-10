@@ -1,7 +1,6 @@
 name: standard
 channels:
   - conda-forge
-  - omnia
 
 dependencies:
   - python
@@ -11,6 +10,7 @@ dependencies:
   - pytest-cov
   - codecov
   - coverage < 5.0
+  - ipython
   - ambertools
   - rdkit
   - openff-toolkit==0.9.2
