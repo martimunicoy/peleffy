@@ -782,7 +782,7 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
             True if OpenForceField is installed, False otherwise.
         """
         try:
-            importlib.import_module('openforcefield')
+            importlib.import_module('openff.toolkit')
             return True
         except ImportError:
             return False
@@ -802,7 +802,7 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
         molecule : an openforcefield.topology.Molecule object
             The OpenForceField's Molecule
         """
-        from openforcefield.topology.molecule import Molecule
+        from openff.toolkit.topology.molecule import Molecule
 
         rdkit_molecule = molecule.rdkit_molecule
         return Molecule.from_rdkit(
@@ -825,7 +825,7 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
                      object
             The OpenForceField's forcefield
         """
-        from openforcefield.typing.engines.smirnoff import ForceField
+        from openff.toolkit.typing.engines.smirnoff import ForceField
 
         if isinstance(forcefield_name, str):
             forcefield = ForceField(forcefield_name)
@@ -852,8 +852,8 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
         openforcefield_parameters : dict
             The OpenFF parameters stored in a dict keyed by parameter type
         """
-        from openforcefield.typing.engines.smirnoff import ForceField
-        from openforcefield.topology import Topology
+        from openff.toolkit.typing.engines.smirnoff import ForceField
+        from openff.toolkit.topology import Topology
 
         off_molecule = molecule.off_molecule
         topology = Topology.from_molecules([off_molecule])
@@ -892,7 +892,7 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
                             object
             The ParameterHandler that was requested
         """
-        from openforcefield.typing.engines.smirnoff import ForceField
+        from openff.toolkit.typing.engines.smirnoff import ForceField
 
         if isinstance(forcefield, str):
             forcefield = ForceField(forcefield)

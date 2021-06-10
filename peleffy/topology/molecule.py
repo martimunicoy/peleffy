@@ -79,7 +79,7 @@ class Molecule(object):
         from qcportal and the Open Force Field Toolkit)
 
         >>> import qcportal as ptl
-        >>> from openforcefield.topology import Molecule as OFFMolecule
+        >>> from openff.toolkit.topology import Molecule as OFFMolecule
 
         >>> ds = client.get_collection('OptimizationDataset',
                                        'Kinase Inhibitors: WBO Distributions')
