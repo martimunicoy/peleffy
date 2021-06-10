@@ -8,6 +8,16 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
+1.3.2 - Migration and support for openff.toolkit
+---------------------------------------------------------
+
+This is a micro release of peleffy that includes a migration to openff.toolkit to support future releases.
+
+New features
+""""""""""""
+- `PR #144 <https://github.com/martimunicoy/peleffy/pull/144>`_: Migrated openforcefield imports to openff.toolkit
+
+
 1.3.1 - PELE Platform support
 -----------------------------
 
@@ -19,7 +29,7 @@ New features
 
 Bugfixes
 """"""""
-- Minor error when parsing Impact templates.
+- `PR #143 <https://github.com/martimunicoy/peleffy/pull/143>`_: Minor error when parsing Impact templates.
 
 
 1.3.0 - BCE conformations and automatic heteromolecules extraction
