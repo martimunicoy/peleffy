@@ -404,9 +404,7 @@ class OpenFFOPLS2005ForceField(_BaseForceField):
 
         openff_parameters = self._openff.parameterize(molecule,
                                                       charge_method='dummy')
-        print(openff_parameters['sigmas'])
         oplsff_parameters = self._oplsff.parameterize(molecule)
-        print(oplsff_parameters['sigmas'])
 
         if self._nonbonding == 'openff':
             hybrid_parameters['atom_names'] = openff_parameters['atom_names']
