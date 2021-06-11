@@ -98,7 +98,7 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         except ImportError:
             return False
 
-    def from_pdb(self, path):
+    def from_pdb(self, path, hydrogens_are_explicit=True):
         """
         It initializes an RDKit's Molecule object from a PDB file.
 
@@ -106,6 +106,10 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         ----------
         path : str
             The path to the molecule's PDB file
+        hydrogens_are_explicit : bool
+            Whether the SMILES tag has explicit information about
+            hydrogen atoms or not. Otherwise, they will be added when
+            the molecule is built. Default is True
 
         Returns
         -------
@@ -114,9 +118,15 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         """
         from rdkit import Chem
 
-        return Chem.rdmolfiles.MolFromPDBFile(path, removeHs=False)
+        molecule = Chem.rdmolfiles.MolFromPDBFile(path, removeHs=False)
 
-    def from_pdb_block(self, pdb_block):
+        # Add hydrogens to molecule
+        if not hydrogens_are_explicit:
+            molecule = Chem.AddHs(molecule)
+
+        return molecule
+
+    def from_pdb_block(self, pdb_block, hydrogens_are_explicit=True):
         """
         It initializes an RDKit's Molecule object from a PDB block.
 
@@ -124,6 +134,10 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         ----------
         pdb_block : str
             The PDB block to built the molecule with
+        hydrogens_are_explicit : bool
+            Whether the SMILES tag has explicit information about
+            hydrogen atoms or not. Otherwise, they will be added when
+            the molecule is built. Default is True
 
         Returns
         -------
@@ -132,16 +146,26 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         """
         from rdkit import Chem
 
-        return Chem.rdmolfiles.MolFromPDBBlock(pdb_block, removeHs=False)
+        molecule = Chem.rdmolfiles.MolFromPDBBlock(pdb_block, removeHs=False)
 
-    def from_smiles(self, smiles):
+        # Add hydrogens to molecule
+        if not hydrogens_are_explicit:
+            molecule = Chem.AddHs(molecule)
+
+        return molecule
+
+    def from_smiles(self, smiles, hydrogens_are_explicit=True):
         """
         It initializes an RDKit's Molecule object from a SMILES tag.
 
         Parameters
         ----------
         smiles : str
-            The SMILES tag to construct the molecule structure with.
+            The SMILES tag to construct the molecule structure with
+        hydrogens_are_explicit : bool
+            Whether the SMILES tag has explicit information about
+            hydrogen atoms or not. Otherwise, they will be added when
+            the molecule is built. Default is True
 
         Returns
         -------
@@ -150,10 +174,14 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         """
         from rdkit.Chem import AllChem as Chem
 
-        molecule = Chem.MolFromSmiles(smiles)
+        molecule = Chem.MolFromSmiles(smiles, sanitize=False)
+
+        Chem.SanitizeMol(molecule,
+                         Chem.SANITIZE_ALL ^ Chem.SANITIZE_ADJUSTHS ^ Chem.SANITIZE_SETAROMATICITY)
 
         # Add hydrogens to molecule
-        molecule = Chem.AddHs(molecule)
+        if not hydrogens_are_explicit:
+            molecule = Chem.AddHs(molecule)
 
         # Generate 3D coordinates
         Chem.EmbedMolecule(molecule)
@@ -787,7 +815,7 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
         except ImportError:
             return False
 
-    def from_rdkit(self, molecule):
+    def from_rdkit(self, molecule, hydrogens_are_explicit=True):
         """
         It initializes an OpenForceField's Molecule object from an RDKit
         molecule.
@@ -796,6 +824,10 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
         ----------
         molecule : an peleffy.topology.Molecule
             The peleffy's Molecule object
+        hydrogens_are_explicit : bool
+            Whether the SMILES tag has explicit information about
+            hydrogen atoms or not. Otherwise, they will be added when
+            the molecule is built. Default is True
 
         Returns
         -------
@@ -807,7 +839,8 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
         rdkit_molecule = molecule.rdkit_molecule
         return Molecule.from_rdkit(
             rdkit_molecule,
-            allow_undefined_stereo=molecule.allow_undefined_stereo)
+            allow_undefined_stereo=molecule.allow_undefined_stereo,
+            hydrogens_are_explicit=molecule.hydrogens_are_explicit)
 
     def get_forcefield(self, forcefield_name):
         """

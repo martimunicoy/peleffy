@@ -314,7 +314,7 @@ class TestBonds(object):
         MAX_THRESHOLD = 1e-3
 
         # Load benzene ring
-        molecule = Molecule(smiles='c1ccccc1')
+        molecule = Molecule(smiles='c1ccccc1', hydrogens_are_explicit=False)
 
         # Parameterize
         ff = OpenForceField(FORCEFIELD_NAME)
@@ -369,7 +369,7 @@ class TestBonds(object):
         """
 
         # Load benzene ring
-        molecule = Molecule(smiles='CC=O')
+        molecule = Molecule(smiles='CC=O', hydrogens_are_explicit=False)
 
         # Parameterize
         ff = OpenForceField(FORCEFIELD_NAME)
@@ -407,7 +407,7 @@ class TestAngles(object):
         MAX_THRESHOLD = 1e-3
 
         # Load benzene ring
-        molecule = Molecule(smiles='c1ccccc1')
+        molecule = Molecule(smiles='c1ccccc1', hydrogens_are_explicit=False)
 
         # Parameterize
         ff = OpenForceField(FORCEFIELD_NAME)
@@ -475,7 +475,7 @@ class TestAngles(object):
         """
 
         # Load benzene ring
-        molecule = Molecule(smiles='CC=O')
+        molecule = Molecule(smiles='CC=O', hydrogens_are_explicit=False)
 
         # Parameterize
         ff = OpenForceField(FORCEFIELD_NAME)
@@ -515,7 +515,7 @@ class TestDihedrals(object):
         """
 
         # Load molecule
-        molecule = Molecule(smiles='C=CC(=O)O')
+        molecule = Molecule(smiles='C=CC(=O)O', hydrogens_are_explicit=False)
 
         # Parameterize
         ff = OpenForceField(FORCEFIELD_NAME)
@@ -635,7 +635,7 @@ class TestDihedrals(object):
         """
 
         # Load benzene ring
-        molecule = Molecule(smiles='CC=O')
+        molecule = Molecule(smiles='CC=O', hydrogens_are_explicit=False)
 
         # Parameterize
         ff = OpenForceField(FORCEFIELD_NAME)
@@ -793,7 +793,8 @@ class TestDihedrals(object):
         It checks the writable representation of non standard dihedrals.
         """
         # Load molecule
-        molecule = Molecule(smiles='c1c(c(n(n1)S(=O)(=O)C))O')
+        molecule = Molecule(smiles='c1c(c(n(n1)S(=O)(=O)C))O',
+                            hydrogens_are_explicit=False)
 
         # Parameterize
         ff = OpenForceField(FORCEFIELD_NAME)

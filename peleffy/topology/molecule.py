@@ -19,7 +19,8 @@ class Molecule(object):
     def __init__(self, path=None, smiles=None, pdb_block=None,
                  rotamer_resolution=30,exclude_terminal_rotamers=True, name='',
                  tag='UNK', connectivity_template=None, core_constraints=[],
-                 allow_undefined_stereo=False, fix_pdb=True):
+                 allow_undefined_stereo=False, hydrogens_are_explicit=True,
+                 fix_pdb=True):
         """
         It initializes a Molecule object through a PDB file or a SMILES
         tag.
@@ -52,6 +53,10 @@ class Molecule(object):
             Whether to allow a molecule with undefined stereochemistry
             to be defined or try to assign the stereochemistry and
             raise a complaint if not possible. Default is False
+        hydrogens_are_explicit : bool
+            Whether the input molecule has explicit information about
+            hydrogen atoms or not. Otherwise, they will be added when
+            the molecule is built. Default is True
         fix_pdb : bool
             Activates or deactivate the PDB fixer that is executed
             prior parsing it
@@ -113,6 +118,14 @@ class Molecule(object):
         >>> molecule = Molecule('molecule_with_undefined_stereochemistry.pdb',
                                 allow_undefined_stereo=True)
 
+        Load a molecule with no explicit hydrogen atoms and ask the builder
+        to add them
+
+        >>> from peleffy.topology import Molecule
+
+        >>> molecule = Molecule('molecule_with_implicit_hydrogen.pdb',
+                                hydrogens_are_explicit=False)
+
         Display the molecular representation in a Jupyter Notebook
 
         >>> from peleffy.topology import Molecule
@@ -129,6 +142,7 @@ class Molecule(object):
         self._connectivity_template = connectivity_template
         self._core_constraints = core_constraints
         self._allow_undefined_stereo = allow_undefined_stereo
+        self._hydrogens_are_explicit = hydrogens_are_explicit
         self._fix_pdb = fix_pdb
 
         # Deactivate OpenForceField toolkit warnings
@@ -299,7 +313,9 @@ class Molecule(object):
 
         logger.info('   - Loading molecule from RDKit')
         rdkit_toolkit = RDKitToolkitWrapper()
-        self._rdkit_molecule = rdkit_toolkit.from_pdb_block(pdb_block)
+        self._rdkit_molecule = \
+            rdkit_toolkit.from_pdb_block(pdb_block,
+                                         self.hydrogens_are_explicit)
 
         # Use RDKit template, if any, to assign the connectivity to
         # the current Molecule object
@@ -328,7 +344,9 @@ class Molecule(object):
         logger.info('   - Representing molecule with the Open Force Field '
                     + 'Toolkit')
         openforcefield_toolkit = OpenForceFieldToolkitWrapper()
-        self._off_molecule = openforcefield_toolkit.from_rdkit(self)
+        self._off_molecule = \
+            openforcefield_toolkit.from_rdkit(self,
+                                              self.hydrogens_are_explicit)
 
     def _initialize_from_smiles(self, smiles):
         """
@@ -345,7 +363,8 @@ class Molecule(object):
 
         logger.info('   - Loading molecule from RDKit')
         rdkit_toolkit = RDKitToolkitWrapper()
-        self._rdkit_molecule = rdkit_toolkit.from_smiles(smiles)
+        self._rdkit_molecule = \
+            rdkit_toolkit.from_smiles(smiles, self.hydrogens_are_explicit)
 
         # TODO not sure if stereochemistry assignment from 3D is still necessary
         # RDKit must generate stereochemistry specifically from 3D coords
@@ -359,7 +378,9 @@ class Molecule(object):
         logger.info('   - Representing molecule with the Open Force Field '
                     + 'Toolkit')
         openforcefield_toolkit = OpenForceFieldToolkitWrapper()
-        self._off_molecule = openforcefield_toolkit.from_rdkit(self)
+        self._off_molecule = \
+            openforcefield_toolkit.from_rdkit(self,
+                                              self.hydrogens_are_explicit)
 
     def _initialize_from_pdb_block(self, pdb_block):
         """
@@ -377,7 +398,9 @@ class Molecule(object):
 
         logger.info('   - Loading molecule from RDKit')
         rdkit_toolkit = RDKitToolkitWrapper()
-        self._rdkit_molecule = rdkit_toolkit.from_pdb_block(pdb_block)
+        self._rdkit_molecule = \
+            rdkit_toolkit.from_pdb_block(pdb_block,
+                                         self.hydrogens_are_explicit)
 
         # Use RDKit template, if any, to assign the connectivity to
         # the current Molecule object
@@ -399,7 +422,9 @@ class Molecule(object):
         logger.info('   - Representing molecule with the Open Force Field '
                     + 'Toolkit')
         openforcefield_toolkit = OpenForceFieldToolkitWrapper()
-        self._off_molecule = openforcefield_toolkit.from_rdkit(self)
+        self._off_molecule = \
+            openforcefield_toolkit.from_rdkit(self,
+                                              self.hydrogens_are_explicit)
 
     def _build_rotamers(self):
         """It builds the rotamers of the molecule."""
@@ -508,7 +533,8 @@ class Molecule(object):
     def from_rdkit(rdkit_molecule, rotamer_resolution=30,
                    exclude_terminal_rotamers=True, name='', tag='UNK',
                    connectivity_template=None, core_constraints=[],
-                   allow_undefined_stereo=False):
+                   allow_undefined_stereo=False,
+                   hydrogens_are_explicit=True):
         """
         It initializes and returns a peleffy Molecule representation
         from an RDKit molecular representation.
@@ -540,6 +566,10 @@ class Molecule(object):
             Whether to allow a molecule with undefined stereochemistry
             to be defined or try to assign the stereochemistry and
             raise a complaint if not possible. Default is False
+        hydrogens_are_explicit : bool
+            Whether the input molecule has explicit information about
+            hydrogen atoms or not. Otherwise, they will be added when
+            the molecule is built. Default is True
 
         Returns
         -------
@@ -566,7 +596,8 @@ class Molecule(object):
             name=name, tag=tag,
             connectivity_template=connectivity_template,
             core_constraints=core_constraints,
-            allow_undefined_stereo=allow_undefined_stereo)
+            allow_undefined_stereo=allow_undefined_stereo,
+            hydrogens_are_explicit=hydrogens_are_explicit)
 
         logger = Logger()
 
@@ -578,7 +609,9 @@ class Molecule(object):
         logger.info('   - Representing molecule with the Open Force Field '
                     + 'Toolkit')
         openforcefield_toolkit = OpenForceFieldToolkitWrapper()
-        molecule._off_molecule = openforcefield_toolkit.from_rdkit(molecule)
+        molecule._off_molecule = \
+            openforcefield_toolkit.from_rdkit(molecule,
+                                              hydrogens_are_explicit)
 
         molecule._build_rotamers()
 
@@ -588,7 +621,8 @@ class Molecule(object):
     def from_openff(openff_molecule, rotamer_resolution=30,
                     exclude_terminal_rotamers=True, name='', tag='UNK',
                     connectivity_template=None, core_constraints=[],
-                    allow_undefined_stereo=False):
+                    allow_undefined_stereo=False,
+                    hydrogens_are_explicit=True):
         """
         It initializes and returns a peleffy Molecule representation
         from an OpenForceField molecular representation.
@@ -620,6 +654,10 @@ class Molecule(object):
             Whether to allow a molecule with undefined stereochemistry
             to be defined or try to assign the stereochemistry and
             raise a complaint if not possible. Default is False
+        hydrogens_are_explicit : bool
+            Whether the input molecule has explicit information about
+            hydrogen atoms or not. Otherwise, they will be added when
+            the molecule is built. Default is True
 
         Returns
         -------
@@ -649,7 +687,8 @@ class Molecule(object):
             name=name, tag=tag,
             connectivity_template=connectivity_template,
             core_constraints=core_constraints,
-            allow_undefined_stereo=allow_undefined_stereo)
+            allow_undefined_stereo=allow_undefined_stereo,
+            hydrogens_are_explicit=hydrogens_are_explicit)
 
         logger = Logger()
 
@@ -721,6 +760,21 @@ class Molecule(object):
             behaviour of this molecule
         """
         return self._allow_undefined_stereo
+
+    @property
+    def hydrogens_are_explicit(self):
+        """
+        Whether the input molecule has explicit information about
+        hydrogen atoms or not. Otherwise, they will be added when
+        the molecule is built
+
+        Returns
+        -------
+        allow_undefined_stereo : bool
+            The current configuration towards the hydrogen treatment
+            of this molecule
+        """
+        return self._hydrogens_are_explicit
 
     @property
     def fix_pdb(self):

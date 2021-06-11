@@ -32,7 +32,7 @@ class TestMolecule(object):
         """
         It checks the initialization from a SMILES tag.
         """
-        molecule = Molecule(smiles='c1ccccc1')
+        molecule = Molecule(smiles='c1ccccc1', hydrogens_are_explicit=False)
 
         # Save it
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -59,12 +59,13 @@ class TestMolecule(object):
         assert molecule.name == 'benzene', 'Unexpected atom name'
 
         # Look for the SMILES name when a Molecule is loaded from a SMILES tag
-        molecule = Molecule(smiles='c1ccccc1')
+        molecule = Molecule(smiles='c1ccccc1', hydrogens_are_explicit=False)
         assert molecule.name == 'c1ccccc1', 'Unexpected atom name'
 
         # Look for benzene name when a Molecule is loaded from a SMILES tag
         # with a custom name
-        molecule = Molecule(smiles='c1ccccc1', name='benzene')
+        molecule = Molecule(smiles='c1ccccc1', name='benzene',
+                            hydrogens_are_explicit=False)
         assert molecule.name == 'benzene', 'Unexpected atom name'
 
     def test_molecule_tag_assignment(self):
@@ -88,12 +89,13 @@ class TestMolecule(object):
         assert molecule.tag == 'BEN', 'Unexpected atom tag'
 
         # Look for UNK tag when a Molecule is loaded from a SMILES tag
-        molecule = Molecule(smiles='c1ccccc1')
+        molecule = Molecule(smiles='c1ccccc1', hydrogens_are_explicit=False)
         assert molecule.tag == 'UNK', 'Unexpected atom tag'
 
         # Look for BNZ tag when a Molecule is loaded from a SMILES tag with
         # a custom tag
-        molecule = Molecule(smiles='c1ccccc1', tag='BNZ')
+        molecule = Molecule(smiles='c1ccccc1', tag='BNZ',
+                            hydrogens_are_explicit=False)
         assert molecule.tag == 'BNZ', 'Unexpected atom tag'
 
     def test_PDB_connectivity_template(self):
@@ -198,7 +200,7 @@ class TestMolecule(object):
                 check_residue_name('TAG')
 
         # Checking default tag assignment from SMILES
-        molecule = Molecule(smiles='c1ccccc1')
+        molecule = Molecule(smiles='c1ccccc1', hydrogens_are_explicit=False)
         with tempfile.TemporaryDirectory() as tmpdir:
             with temporary_cd(tmpdir):
                 assert molecule.tag == 'UNK', 'Unexpected molecule tag'
@@ -206,7 +208,8 @@ class TestMolecule(object):
                 check_residue_name('UNK')
 
         # Checking custom tag assignment from SMILES
-        molecule = Molecule(smiles='c1ccccc1', tag='BEN')
+        molecule = Molecule(smiles='c1ccccc1', tag='BEN',
+                            hydrogens_are_explicit=False)
         with tempfile.TemporaryDirectory() as tmpdir:
             with temporary_cd(tmpdir):
                 assert molecule.tag == 'BEN', 'Unexpected molecule tag'
@@ -214,7 +217,7 @@ class TestMolecule(object):
                 check_residue_name('BEN')
 
         # Checking second custom tag assignment from SMILES
-        molecule = Molecule(smiles='c1ccccc1')
+        molecule = Molecule(smiles='c1ccccc1', hydrogens_are_explicit=False)
         with tempfile.TemporaryDirectory() as tmpdir:
             with temporary_cd(tmpdir):
                 molecule.set_tag('BNZ')
@@ -281,11 +284,13 @@ class TestMolecule(object):
 
         # This should crash due to an undefined stereochemistry error
         with pytest.raises(UndefinedStereochemistryError):
-            mol = Molecule(smiles='CN(C)CCC=C1c2ccccc2CCc3c1cccc3')
+            mol = Molecule(smiles='CN(C)CCC=C1c2ccccc2CCc3c1cccc3',
+                           hydrogens_are_explicit=False)
 
         # This now should work
         mol = Molecule(smiles='CN(C)CCC=C1c2ccccc2CCc3c1cccc3',
-                       allow_undefined_stereo=True)
+                       allow_undefined_stereo=True,
+                       hydrogens_are_explicit=False)
 
         # And we can parameterize it
         ff = OpenForceField('openff_unconstrained-1.2.1.offxml')
@@ -330,7 +335,9 @@ class TestMolecule(object):
         """
         from openff.toolkit.topology import Molecule as OpenFFMolecule
 
-        openff_molecule = OpenFFMolecule.from_smiles('C(C(=O)[O-])C(=O)[OH]')
+        openff_molecule = \
+            OpenFFMolecule.from_smiles('C(C(=O)[O-])C(=O)[OH]',
+                                       hydrogens_are_explicit=False)
 
         molecule = Molecule.from_openff(openff_molecule)
 
@@ -349,6 +356,75 @@ class TestMolecule(object):
 
         assert molecule.graph is not None, \
             'Molecule\' graph should be initialized'
+
+    def test_explicit_hydrogens(self):
+        """
+        It checks initialization of a Molecule with the explicit hydrogens
+        flag.
+        """
+
+        # Load ethane from SMILES with implicit hydrogen atoms
+        molecule = Molecule(smiles='CC')
+        atom_names = molecule.get_pdb_atom_names()
+
+        for atom_name in atom_names:
+            assert 'H' not in atom_name, 'Unexpected H in molecule without ' \
+                + 'explicit hydrogen atoms and hydrogens_are_explicit ' \
+                + 'set to True'
+
+        # Load ethane from SMILES without explicit hydrogen atoms
+        molecule = Molecule(smiles='CC', hydrogens_are_explicit=False)
+        atom_names = molecule.get_pdb_atom_names()
+
+        found_hydrogen = False
+        for atom_name in atom_names:
+            if 'H' in atom_name:
+                found_hydrogen = True
+                break
+        
+        assert found_hydrogen, 'Hydrogen not found regardless of setting ' \
+            + 'hydrogens_are_explicit to False'
+
+        # Load ethane from SMILES with explicit hydrogen atoms
+        molecule = Molecule(smiles='[H]C([H])([H])C([H])([H])([H])',
+                            hydrogens_are_explicit=True)
+        atom_names = molecule.get_pdb_atom_names()
+
+        found_hydrogen = False
+        for atom_name in atom_names:
+            if 'H' in atom_name:
+                found_hydrogen = True
+                break
+
+        assert found_hydrogen, 'Hydrogen not found regardless of being ' \
+                               + 'explicitly defined in the SMILES tag'
+
+        # Load ethane from PDB with implicit hydrogen atoms
+        pdb_path = get_data_file_path('tests/ethane_noH.pdb')
+        molecule = Molecule(pdb_path,
+                            hydrogens_are_explicit=True)
+        atom_names = molecule.get_pdb_atom_names()
+
+        for atom_name in atom_names:
+            assert 'H' not in atom_name, 'Unexpected H in molecule without ' \
+                + 'explicit hydrogen atoms and hydrogens_are_explicit ' \
+                + 'set to True'
+
+        # Load ethane from PDB without explicit hydrogen atoms
+        pdb_path = get_data_file_path('tests/ethane_noH.pdb')
+        molecule = Molecule(pdb_path,
+                            hydrogens_are_explicit=False)
+        atom_names = molecule.get_pdb_atom_names()
+
+        found_hydrogen = False
+        for atom_name in atom_names:
+            if 'H' in atom_name:
+                found_hydrogen = True
+                break
+
+        assert found_hydrogen, 'Hydrogen not found regardless of setting ' \
+            + 'hydrogens_are_explicit to False'
+
 
     def test_pdb_fixer(self):
         """
@@ -443,7 +519,7 @@ class TestMolecule(object):
 
         from IPython.display import display
 
-        molecule = Molecule(smiles='c1ccccc1')
+        molecule = Molecule(smiles='c1ccccc1', hydrogens_are_explicit=False)
 
         # This should not raise any Exception
         display(molecule)
