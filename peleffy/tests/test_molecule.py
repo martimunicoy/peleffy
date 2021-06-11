@@ -350,6 +350,75 @@ class TestMolecule(object):
         assert molecule.graph is not None, \
             'Molecule\' graph should be initialized'
 
+    def test_explicit_hydrogens(self):
+        """
+        It checks initialization of a Molecule with the explicit hydrogens
+        flag.
+        """
+
+        # Load ethane from SMILES with implicit hydrogen atoms
+        molecule = Molecule(smiles='CC')
+        atom_names = molecule.get_pdb_atom_names()
+
+        for atom_name in atom_names:
+            assert 'H' not in atom_name, 'Unexpected H in molecule without ' \
+                + 'explicit hydrogen atoms and hydrogens_are_explicit ' \
+                + 'set to True'
+
+        # Load ethane from SMILES without explicit hydrogen atoms
+        molecule = Molecule(smiles='CC', hydrogens_are_explicit=False)
+        atom_names = molecule.get_pdb_atom_names()
+
+        found_hydrogen = False
+        for atom_name in atom_names:
+            if 'H' in atom_name:
+                found_hydrogen = True
+                break
+        
+        assert found_hydrogen, 'Hydrogen not found regardless of setting ' \
+            + 'hydrogens_are_explicit to False'
+
+        # Load ethane from SMILES with explicit hydrogen atoms
+        molecule = Molecule(smiles='[H]C([H])([H])C([H])([H])([H])',
+                            hydrogens_are_explicit=True)
+        atom_names = molecule.get_pdb_atom_names()
+
+        found_hydrogen = False
+        for atom_name in atom_names:
+            if 'H' in atom_name:
+                found_hydrogen = True
+                break
+
+        assert found_hydrogen, 'Hydrogen not found regardless of being ' \
+                               + 'explicitly defined in the SMILES tag'
+
+        # Load ethane from PDB with implicit hydrogen atoms
+        pdb_path = get_data_file_path('tests/ethane_noH.pdb')
+        molecule = Molecule(pdb_path,
+                            hydrogens_are_explicit=True)
+        atom_names = molecule.get_pdb_atom_names()
+
+        for atom_name in atom_names:
+            assert 'H' not in atom_name, 'Unexpected H in molecule without ' \
+                + 'explicit hydrogen atoms and hydrogens_are_explicit ' \
+                + 'set to True'
+
+        # Load ethane from PDB without explicit hydrogen atoms
+        pdb_path = get_data_file_path('tests/ethane_noH.pdb')
+        molecule = Molecule(pdb_path,
+                            hydrogens_are_explicit=False)
+        atom_names = molecule.get_pdb_atom_names()
+
+        found_hydrogen = False
+        for atom_name in atom_names:
+            if 'H' in atom_name:
+                found_hydrogen = True
+                break
+
+        assert found_hydrogen, 'Hydrogen not found regardless of setting ' \
+            + 'hydrogens_are_explicit to False'
+
+
     def test_pdb_fixer(self):
         """
         It checks the PDB fixer prior parsing a PDB input file for
