@@ -172,7 +172,8 @@ class TestOutputPathHandler(object):
         from peleffy.forcefield import OpenForceField
 
         # Load benzene molecule
-        molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ')
+        molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ',
+                            hydrogens_are_explicit=False)
 
         # Load force field
         openff = OpenForceField('openff_unconstrained-1.2.1.offxml')
@@ -225,7 +226,8 @@ class TestOutputPathHandler(object):
         from peleffy.forcefield import OpenForceField
 
         # Load benzene molecule
-        molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ')
+        molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ',
+                            hydrogens_are_explicit=False)
 
         # Load force field
         openff = OpenForceField('openff_unconstrained-1.2.1.offxml')
@@ -289,7 +291,8 @@ class TestOutputPathHandler(object):
         from peleffy.forcefield import OPLS2005ForceField
 
         # Load benzene molecule
-        molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ')
+        molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ',
+                            hydrogens_are_explicit=False)
 
         # Load force field
         opls2005 = OPLS2005ForceField()
@@ -358,7 +361,8 @@ class TestOutputPathHandler(object):
         from peleffy.forcefield import OpenFFOPLS2005ForceField
 
         # Load benzene molecule
-        molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ')
+        molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ',
+                            hydrogens_are_explicit=False)
         molecule._forcefield = OpenFFOPLS2005ForceField('OPLS2005')
 
         # Load force field
@@ -484,7 +488,8 @@ class TestOutputPathHandler(object):
         from peleffy.forcefield import OpenForceField
 
         # Load benzene molecule
-        molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ')
+        molecule = Molecule(smiles='c1ccccc1', name='benzene', tag='BNZ',
+                            hydrogens_are_explicit=False)
 
         # Load force field
         openff = OpenForceField('openff_unconstrained-1.2.1.offxml')
