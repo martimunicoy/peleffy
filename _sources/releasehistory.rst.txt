@@ -7,6 +7,19 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``minor`` increments add features but do not break API compatibility
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
+1.3.3 - Explicit hydrogens support
+---------------------------------------------------------
+
+This is a micro release of peleffy that includes support for the new OpenFF flag to manage explicit and implicit hydrogen atoms.
+
+New features
+""""""""""""
+- `PR #146 <https://github.com/martimunicoy/peleffy/pull/146>`_: Adds support for the new explicit hydrogens flag
+
+Tests added
+"""""""""""
+- `PR #146 <https://github.com/martimunicoy/peleffy/pull/146>`_: New test to check new explicit hydrogens flag
+
 
 1.3.2 - Migration and support for openff.toolkit
 ---------------------------------------------------------

@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0+untagged.1.g9b6110a
+                0+untagged.1.gfe4308c
               </div>
             
           
@@ -565,9 +565,7 @@
 
         <span class="n">openff_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_openff</span><span class="o">.</span><span class="n">parameterize</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span>
                                                       <span class="n">charge_method</span><span class="o">=</span><span class="s1">&#39;dummy&#39;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">openff_parameters</span><span class="p">[</span><span class="s1">&#39;sigmas&#39;</span><span class="p">])</span>
         <span class="n">oplsff_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_oplsff</span><span class="o">.</span><span class="n">parameterize</span><span class="p">(</span><span class="n">molecule</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">oplsff_parameters</span><span class="p">[</span><span class="s1">&#39;sigmas&#39;</span><span class="p">])</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nonbonding</span> <span class="o">==</span> <span class="s1">&#39;openff&#39;</span><span class="p">:</span>
             <span class="n">hybrid_parameters</span><span class="p">[</span><span class="s1">&#39;atom_names&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">openff_parameters</span><span class="p">[</span><span class="s1">&#39;atom_names&#39;</span><span class="p">]</span>

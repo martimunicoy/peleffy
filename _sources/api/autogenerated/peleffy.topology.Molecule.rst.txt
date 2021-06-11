@@ -32,6 +32,7 @@ peleffy.topology.Molecule
       ~Molecule.exclude_terminal_rotamers
       ~Molecule.fix_pdb
       ~Molecule.graph
+      ~Molecule.hydrogens_are_explicit
       ~Molecule.name
       ~Molecule.off_molecule
       ~Molecule.rdkit_molecule
