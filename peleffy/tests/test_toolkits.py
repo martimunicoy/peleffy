@@ -110,7 +110,7 @@ class TestSchrodingerToolkitWrapper(object):
         from peleffy.utils.toolkits import ToolkitUnavailableException
 
         # Load benzene ring
-        molecule = Molecule(smiles='c1ccccc1')
+        molecule = Molecule(smiles='c1ccccc1', hydrogens_are_explicit=False)
 
         # Load OPLS2005 force field
         opls2005 = OPLS2005ForceField()

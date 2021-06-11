@@ -611,7 +611,7 @@ class Molecule(object):
         openforcefield_toolkit = OpenForceFieldToolkitWrapper()
         molecule._off_molecule = \
             openforcefield_toolkit.from_rdkit(molecule,
-                                              self.hydrogens_are_explicit)
+                                              hydrogens_are_explicit)
 
         molecule._build_rotamers()
 
