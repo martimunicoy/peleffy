@@ -330,6 +330,7 @@ class BaseParameterWrapper(dict):
             It is an iterator that returns all atom parameters following
             their order
         """
+        print(len(self['sigmas']))
         assert len(self['atom_names']) == len(self['atom_types']) \
             and len(self['atom_names']) == len(self['sigmas']) \
             and len(self['atom_names']) == len(self['epsilons']) \
@@ -1057,7 +1058,7 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                 assert len(fields) > 7, 'Unexpected number of fields ' \
                     + 'found at line {}'.format(line)
 
-                name_to_index[line[0:8]] = len(name_to_index)
+                name_to_index[fields[0]] = len(name_to_index)
 
                 params['atom_types'].append(fields[3])
                 params['charges'].append(
@@ -1076,8 +1077,8 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                     + 'found at line {}'.format(line)
 
                 params['bonds'].append(
-                    {'atom1_idx': name_to_index[line[0:8]],
-                     'atom2_idx': name_to_index[line[8:16]],
+                    {'atom1_idx': name_to_index[fields[0]],
+                     'atom2_idx': name_to_index[fields[1]],
                      'spring_constant': unit.Quantity(
                         float(fields[2]), unit.kilocalorie
                         / (unit.angstrom ** 2 * unit.mole)),
@@ -1091,9 +1092,9 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                     + 'found at line {}'.format(line)
 
                 params['angles'].append(
-                    {'atom1_idx': name_to_index[line[0:8]],
-                     'atom2_idx': name_to_index[line[8:16]],
-                     'atom3_idx': name_to_index[line[16:24]],
+                    {'atom1_idx': name_to_index[fields[0]],
+                     'atom2_idx': name_to_index[fields[1]],
+                     'atom3_idx': name_to_index[fields[2]],
                      'spring_constant': unit.Quantity(
                         float(fields[3]), unit.kilocalorie
                         / (unit.radian ** 2 * unit.mole)),
@@ -1106,10 +1107,10 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                 assert len(fields) > 9, 'Unexpected number of fields ' \
                     + 'found at line {}'.format(line)
 
-                atom1_idx = name_to_index[line[0:8]]
-                atom2_idx = name_to_index[line[8:16]]
-                atom3_idx = name_to_index[line[16:24]]
-                atom4_idx = name_to_index[line[24:32]]
+                atom1_idx = name_to_index[fields[0]]
+                atom2_idx = name_to_index[fields[1]]
+                atom3_idx = name_to_index[fields[2]]
+                atom4_idx = name_to_index[fields[3]]
 
                 for k, periodicity, phase in zip(
                         fields[4:8], [1, 2, 3, 4],
@@ -1156,10 +1157,10 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                                   unit.kilocalorie / unit.mole)
 
                 params['impropers'].append(
-                    {'atom1_idx': name_to_index[line[0:8]],
-                     'atom2_idx': name_to_index[line[8:16]],
-                     'atom3_idx': name_to_index[line[16:24]],
-                     'atom4_idx': name_to_index[line[24:32]],
+                    {'atom1_idx': name_to_index[fields[0]],
+                     'atom2_idx': name_to_index[fields[1]],
+                     'atom3_idx': name_to_index[fields[2]],
+                     'atom4_idx': name_to_index[fields[3]],
                      'periodicity': 2,
                      'phase': unit.Quantity(180.0, unit.degree),
                      'k': k / 2.0,  # PELE works with half of Schrodinger's force constant
