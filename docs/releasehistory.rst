@@ -7,6 +7,16 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``minor`` increments add features but do not break API compatibility
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
+1.3.4 - Current development
+---------------------------------------------------------
+
+This is a micro release of peleffy that includes ...
+
+Bugfixes
+""""""""
+- `PR #149 <https://github.com/martimunicoy/peleffy/pull/149>`_: Minor error when parsing ffld output file.
+
+
 1.3.3 - Explicit hydrogens support
 ---------------------------------------------------------
 
