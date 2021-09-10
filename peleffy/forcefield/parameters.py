@@ -330,7 +330,6 @@ class BaseParameterWrapper(dict):
             It is an iterator that returns all atom parameters following
             their order
         """
-        print(len(self['sigmas']))
         assert len(self['atom_names']) == len(self['atom_types']) \
             and len(self['atom_names']) == len(self['sigmas']) \
             and len(self['atom_names']) == len(self['epsilons']) \
