@@ -447,7 +447,12 @@ class TestForceFieldSelector(object):
 
         assert isinstance(forcefield, OpenForceField), \
             'Unexpected force field type'
+        
+        forcefield = selector.get_by_name('openff_unconstrained-2.0.0.offxml')
 
+        assert isinstance(forcefield, OpenForceField), \
+            'Unexpected force field type'
+            
         forcefield = selector.get_by_name('OPLS2005')
 
         assert isinstance(forcefield, OPLS2005ForceField), \
