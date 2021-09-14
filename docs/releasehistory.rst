@@ -13,7 +13,6 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 
 This is a micro release of peleffy that solves a minor bug in the OPLS2005 parametrization. It also adds support for the new openff-2.0.0.
 
-
 New features
 """"""""""""
 - `PR #151 <https://github.com/martimunicoy/peleffy/pull/151>`_: Add support for openff-2.0.0.
