@@ -20,6 +20,7 @@ New features
 Bugfixes
 """"""""
 - `PR #149 <https://github.com/martimunicoy/peleffy/pull/149>`_: Minor error when parsing ffld output file.
+- `PR #153 <https://github.com/martimunicoy/peleffy/pull/153>`_: Fix parameters inconsistencies.
 
 
 1.3.3 - Explicit hydrogens support
