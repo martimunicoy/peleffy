@@ -221,7 +221,7 @@ class TestOPLS2005ForceField(object):
         with open(reference_file) as f:
             compare_dicts(writable_parameters, json.load(f))
 
-        # Load molecule 1
+        # Load molecule 2
         molecule = Molecule(get_data_file_path('ligands/ethylene.pdb'))
         oplsff = OPLS2005ForceField()
         ffld_file = get_data_file_path('tests/ETL_ffld_output.txt')
