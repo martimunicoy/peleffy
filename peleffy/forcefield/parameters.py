@@ -78,8 +78,26 @@ class BaseParameterWrapper(dict):
         if not isinstance(other, BaseParameterWrapper):
             return False
 
-        return super().__eq__(other) and \
-            self.forcefield_name == other.forcefield_name
+        if self.forcefield_name != other.forcefield_name:
+            return False
+
+        k1 = set(self.keys())
+        k2 = set(other.keys())
+
+        if k1 != k2:
+            return False
+
+        for k in self.keys():
+            v1 = self[k]
+            v2 = other[k]
+            for v in v1:
+                if v not in v2:
+                    return False
+            for v in v2:
+                if v not in v1:
+                    return False
+
+        return True
 
     def __ne__(self, other):
         """
@@ -212,10 +230,13 @@ class BaseParameterWrapper(dict):
         from peleffy.utils import convert_all_quantities_to_string
 
         with open(output_path, 'w') as f:
+            if self.forcefield_name != '':
+                f.write('#' + self.forcefield_name + '\n')
             json.dump(convert_all_quantities_to_string(self), f,
                       indent=4, sort_keys=True)
 
-    def from_json(self, input_path):
+    @staticmethod
+    def from_json(input_path):
         """
         It loads a json file containing the parameters into the parameter
         wrapper.
@@ -227,7 +248,7 @@ class BaseParameterWrapper(dict):
 
         Returns
         -------
-        self : a BaseParameterWrapper object
+        parameters : a BaseParameterWrapper object
             The resulting parameters wrapper
         """
         import json
@@ -255,12 +276,12 @@ class BaseParameterWrapper(dict):
             dict_units = {
                 'alphas': float, 'gammas': float,
                 'charges':  simtk.unit.quantity.Quantity,
-                'sigmas' : 'list_Quantity', 'epsilons' : 'list_Quantity',
-                'SGB_radii' : 'list_Quantity','vdW_radii' : 'list_Quantity',
+                'sigmas': 'list_Quantity', 'epsilons': 'list_Quantity',
+                'SGB_radii': 'list_Quantity', 'vdW_radii': 'list_Quantity',
                 'angles': dict, 'bonds': dict, 'impropers': dict,
                 'propers': dict, 'GBSA_radii': 'list_Quantity',
-                'GBSA_scales': 'list_Quantity',
-                'atom_names': str, 'atom_types' : str
+                'GBSA_scales': float,
+                'atom_names': str, 'atom_types': str
                 }
 
             # Skip data type transformation if the list is empty or None values
@@ -307,14 +328,23 @@ class BaseParameterWrapper(dict):
 
         # Load the dict from the JSON file
         with open(input_path) as f:
+            first_line = f.readline()
+            if first_line.startswith('#'):
+                forcefield_name = first_line.strip('# \n')
+            else:
+                forcefield_name = ''
+                f.seek(0)
+
             data = json.load(f)
 
         # Correct the data type format and fetch the BaseParameterWrapper
+        parameters = BaseParameterWrapper(forcefield_name=forcefield_name)
         for key, value in data.items():
             value_correct = correct_type(key, value)
             if not value_correct is None:
-                self.add_parameters(key, value_correct)
-        return self
+                parameters.add_parameters(key, value_correct)
+
+        return parameters
 
     @property
     def atom_iterator(self):
@@ -1025,6 +1055,9 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
 
         lines_iterator = iter(ffld_output.split('\n'))
 
+        # Charges will be temporarily stored in an external list
+        charges = []
+
         for line in lines_iterator:
             if line.startswith('OPLSAA FORCE FIELD TYPE ASSIGNED'):
                 section = 'atoms'
@@ -1060,9 +1093,8 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                 name_to_index[fields[0]] = len(name_to_index)
 
                 params['atom_types'].append(fields[3])
-                params['charges'].append(
-                    unit.Quantity(float(fields[4]),
-                                  unit.elementary_charge))
+                charges.append(float(fields[4]))
+
                 params['sigmas'].append(
                     unit.Quantity(float(fields[5]),
                                   unit.angstrom))
@@ -1165,6 +1197,8 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
                      'k': k / 2.0,  # PELE works with half of Schrodinger's force constant
                      'idivf': 1.0
                      })
+
+        params['charges'] = unit.Quantity(charges, unit.elementary_charge)
 
         opls_parameters_wrapper = OPLS2005ParameterWrapper(params)
         OPLS2005ParameterWrapper._add_SGBNP_solvent_parameters(
