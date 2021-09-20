@@ -172,7 +172,7 @@ class DummyChargeCalculator(_PartialChargeCalculator):
         # Extract number of atoms in molecule
         n_atoms = len(self.molecule.get_pdb_atom_names())
 
-        return [unit.Quantity(0.0, unit.elementary_charge), ] * n_atoms
+        return unit.Quantity([0.0, ] * n_atoms, unit.elementary_charge)
 
     def assign_partial_charges(self, parameters):
         """
