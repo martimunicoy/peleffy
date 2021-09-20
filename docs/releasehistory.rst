@@ -7,6 +7,22 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``minor`` increments add features but do not break API compatibility
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
+
+1.3.4 - OpenFF-2.0 Support
+---------------------------------------------------------
+
+This is a micro release of peleffy that adds support for the new openff-2.0.0. It also solves minor bugs in the OPLS2005 parametrization.
+
+New features
+""""""""""""
+- `PR #151 <https://github.com/martimunicoy/peleffy/pull/151>`_: Add support for openff-2.0.0.
+
+Bugfixes
+""""""""
+- `PR #149 <https://github.com/martimunicoy/peleffy/pull/149>`_: Minor error when parsing ffld output file.
+- `PR #153 <https://github.com/martimunicoy/peleffy/pull/153>`_: Fix parameters inconsistencies.
+
+
 1.3.3 - Explicit hydrogens support
 ---------------------------------------------------------
 

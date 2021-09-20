@@ -1,3 +1,4 @@
+#openff_unconstrained-2.0.0.offxml
 {
     "GBSA_radii": [],
     "GBSA_scales": [],
@@ -20,43 +21,43 @@
             "atom1_idx": 1,
             "atom2_idx": 0,
             "atom3_idx": 2,
-            "eq_angle": "110.2468561538 * degree",
-            "spring_constant": "33.78875634641 * mole**-1 * radian**-2 * kilocalorie"
+            "eq_angle": "115.6030999533 * degree",
+            "spring_constant": "48.776492647595 * mole**-1 * radian**-2 * kilocalorie"
         },
         {
             "atom1_idx": 1,
             "atom2_idx": 0,
             "atom3_idx": 3,
-            "eq_angle": "110.2468561538 * degree",
-            "spring_constant": "33.78875634641 * mole**-1 * radian**-2 * kilocalorie"
+            "eq_angle": "115.6030999533 * degree",
+            "spring_constant": "48.776492647595 * mole**-1 * radian**-2 * kilocalorie"
         },
         {
             "atom1_idx": 1,
             "atom2_idx": 0,
             "atom3_idx": 4,
-            "eq_angle": "110.2468561538 * degree",
-            "spring_constant": "33.78875634641 * mole**-1 * radian**-2 * kilocalorie"
+            "eq_angle": "115.6030999533 * degree",
+            "spring_constant": "48.776492647595 * mole**-1 * radian**-2 * kilocalorie"
         },
         {
             "atom1_idx": 2,
             "atom2_idx": 0,
             "atom3_idx": 3,
-            "eq_angle": "110.2468561538 * degree",
-            "spring_constant": "33.78875634641 * mole**-1 * radian**-2 * kilocalorie"
+            "eq_angle": "115.6030999533 * degree",
+            "spring_constant": "48.776492647595 * mole**-1 * radian**-2 * kilocalorie"
         },
         {
             "atom1_idx": 2,
             "atom2_idx": 0,
             "atom3_idx": 4,
-            "eq_angle": "110.2468561538 * degree",
-            "spring_constant": "33.78875634641 * mole**-1 * radian**-2 * kilocalorie"
+            "eq_angle": "115.6030999533 * degree",
+            "spring_constant": "48.776492647595 * mole**-1 * radian**-2 * kilocalorie"
         },
         {
             "atom1_idx": 3,
             "atom2_idx": 0,
             "atom3_idx": 4,
-            "eq_angle": "110.2468561538 * degree",
-            "spring_constant": "33.78875634641 * mole**-1 * radian**-2 * kilocalorie"
+            "eq_angle": "115.6030999533 * degree",
+            "spring_constant": "48.776492647595 * mole**-1 * radian**-2 * kilocalorie"
         }
     ],
     "atom_names": [
@@ -77,35 +78,35 @@
         {
             "atom1_idx": 0,
             "atom2_idx": 1,
-            "eq_dist": "1.094223427522 * angstrom",
-            "spring_constant": "376.8940758588 * angstrom**-2 * mole**-1 * kilocalorie"
+            "eq_dist": "1.093899492634 * angstrom",
+            "spring_constant": "370.04670688625 * angstrom**-2 * mole**-1 * kilocalorie"
         },
         {
             "atom1_idx": 0,
             "atom2_idx": 2,
-            "eq_dist": "1.094223427522 * angstrom",
-            "spring_constant": "376.8940758588 * angstrom**-2 * mole**-1 * kilocalorie"
+            "eq_dist": "1.093899492634 * angstrom",
+            "spring_constant": "370.04670688625 * angstrom**-2 * mole**-1 * kilocalorie"
         },
         {
             "atom1_idx": 0,
             "atom2_idx": 3,
-            "eq_dist": "1.094223427522 * angstrom",
-            "spring_constant": "376.8940758588 * angstrom**-2 * mole**-1 * kilocalorie"
+            "eq_dist": "1.093899492634 * angstrom",
+            "spring_constant": "370.04670688625 * angstrom**-2 * mole**-1 * kilocalorie"
         },
         {
             "atom1_idx": 0,
             "atom2_idx": 4,
-            "eq_dist": "1.094223427522 * angstrom",
-            "spring_constant": "376.8940758588 * angstrom**-2 * mole**-1 * kilocalorie"
+            "eq_dist": "1.093899492634 * angstrom",
+            "spring_constant": "370.04670688625 * angstrom**-2 * mole**-1 * kilocalorie"
         }
     ],
     "charges": "[-0.077576, 0.019394, 0.019394, 0.019394, 0.019394] * elementary_charge",
     "epsilons": [
-        "0.1094 * mole**-1 * kilocalorie",
-        "0.0157 * mole**-1 * kilocalorie",
-        "0.0157 * mole**-1 * kilocalorie",
-        "0.0157 * mole**-1 * kilocalorie",
-        "0.0157 * mole**-1 * kilocalorie"
+        "0.1088406109251 * mole**-1 * kilocalorie",
+        "0.01577948280971 * mole**-1 * kilocalorie",
+        "0.01577948280971 * mole**-1 * kilocalorie",
+        "0.01577948280971 * mole**-1 * kilocalorie",
+        "0.01577948280971 * mole**-1 * kilocalorie"
     ],
     "gammas": [
         null,
@@ -117,17 +118,17 @@
     "impropers": [],
     "propers": [],
     "sigmas": [
-        "3.3996695084235347 * angstrom",
-        "2.649532787749369 * angstrom",
-        "2.649532787749369 * angstrom",
-        "2.649532787749369 * angstrom",
-        "2.649532787749369 * angstrom"
+        "3.3795317616266205 * angstrom",
+        "2.6445434132681247 * angstrom",
+        "2.6445434132681247 * angstrom",
+        "2.6445434132681247 * angstrom",
+        "2.6445434132681247 * angstrom"
     ],
     "vdW_radii": [
-        "1.6998347542117673 * angstrom",
-        "1.3247663938746845 * angstrom",
-        "1.3247663938746845 * angstrom",
-        "1.3247663938746845 * angstrom",
-        "1.3247663938746845 * angstrom"
+        "1.6897658808133103 * angstrom",
+        "1.3222717066340623 * angstrom",
+        "1.3222717066340623 * angstrom",
+        "1.3222717066340623 * angstrom",
+        "1.3222717066340623 * angstrom"
     ]
 }

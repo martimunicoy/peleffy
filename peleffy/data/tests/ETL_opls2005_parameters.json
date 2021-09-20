@@ -123,14 +123,7 @@
             "spring_constant": "340.0 * angstrom**-2 * mole**-1 * kilocalorie"
         }
     ],
-    "charges": [
-        "-0.23 * elementary_charge",
-        "-0.23 * elementary_charge",
-        "0.115 * elementary_charge",
-        "0.115 * elementary_charge",
-        "0.115 * elementary_charge",
-        "0.115 * elementary_charge"
-    ],
+    "charges": "[-0.23, -0.23, 0.115, 0.115, 0.115, 0.115] * elementary_charge",
     "epsilons": [
         "0.076 * mole**-1 * kilocalorie",
         "0.076 * mole**-1 * kilocalorie",

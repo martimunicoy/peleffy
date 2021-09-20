@@ -136,7 +136,7 @@ class TestWrapper(object):
             with temporary_cd(tmpdir):
                 pdb_path = get_data_file_path('ligands/methane.pdb')
                 molecule = Molecule(pdb_path)
-                ff = OpenForceField('openff_unconstrained-1.2.1.offxml')
+                ff = OpenForceField('openff_unconstrained-2.0.0.offxml')
                 parameters = ff.parameterize(molecule,
                                              charge_method='gasteiger')
                 parameters.to_json('parameters_to_check.json')
