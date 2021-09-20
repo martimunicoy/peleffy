@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.gfe4308c
+                0+untagged.1.gc3874d4
               </div>
             
           
@@ -213,7 +213,7 @@ accessing the edge’s attribute dictionary. See examples below.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>u, v</strong> (<em>nodes</em>) – Nodes can be, for example, strings or numbers.
+<li><p><strong>u_of_edge, v_of_edge</strong> (<em>nodes</em>) – Nodes can be, for example, strings or numbers.
 Nodes must be hashable (and not None) Python objects.</p></li>
 <li><p><strong>attr</strong> (<em>keyword arguments, optional</em>) – Edge data (or labels or objects) can be assigned using
 keyword arguments.</p></li>
@@ -261,7 +261,7 @@ an edge attribute (by default <cite>weight</cite>) to hold a numerical value.</p
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ebunch_to_add</strong> (<em>container of edges</em>) – Each edge given in the container will be added to the
-graph. The edges must be given as as 2-tuples (u, v) or
+graph. The edges must be given as 2-tuples (u, v) or
 3-tuples (u, v, d) where d is a dictionary containing edge data.</p></li>
 <li><p><strong>attr</strong> (<em>keyword arguments, optional</em>) – Edge data (or labels or objects) can be assigned using
 keyword arguments.</p></li>
@@ -570,7 +570,7 @@ view are references to the corresponding attributes in the original
 graph. The view is read-only.</p>
 <p>To create a full graph version of the subgraph with its own copy
 of the edge or node attributes, use:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="n">edges</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </pre></div>
 </div>
 <p class="rubric">Examples</p>
@@ -756,7 +756,7 @@ If nbunch is None, iterate over all nodes in the graph.</p>
 <dd class="field-odd"><p>iterator</p>
 </dd>
 <dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>NetworkXError</strong> – If nbunch is not a node or or sequence of nodes.
+<dd class="field-even"><p><strong>NetworkXError</strong> – If nbunch is not a node or sequence of nodes.
     If a node in nbunch is not hashable.</p>
 </dd>
 </dl>
@@ -874,7 +874,12 @@ directed edges from <cite>u</cite> to <cite>v</cite>:</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#peleffy.topology.rotamer.MolecularGraph.order" title="peleffy.topology.rotamer.MolecularGraph.order"><code class="xref py py-meth docutils literal notranslate"><span class="pre">order()</span></code></a>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">__len__()</span></code></p>
+<dl class="simple">
+<dt><a class="reference internal" href="#peleffy.topology.rotamer.MolecularGraph.order" title="peleffy.topology.rotamer.MolecularGraph.order"><code class="xref py py-meth docutils literal notranslate"><span class="pre">order()</span></code></a></dt><dd><p>identical method</p>
+</dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">__len__()</span></code></dt><dd><p>identical method</p>
+</dd>
+</dl>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># or DiGraph, MultiGraph, MultiDiGraph, etc</span>
@@ -898,7 +903,12 @@ directed edges from <cite>u</cite> to <cite>v</cite>:</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#peleffy.topology.rotamer.MolecularGraph.number_of_nodes" title="peleffy.topology.rotamer.MolecularGraph.number_of_nodes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">number_of_nodes()</span></code></a>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">__len__()</span></code></p>
+<dl class="simple">
+<dt><a class="reference internal" href="#peleffy.topology.rotamer.MolecularGraph.number_of_nodes" title="peleffy.topology.rotamer.MolecularGraph.number_of_nodes"><code class="xref py py-meth docutils literal notranslate"><span class="pre">number_of_nodes()</span></code></a></dt><dd><p>identical method</p>
+</dd>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">__len__()</span></code></dt><dd><p>identical method</p>
+</dd>
+</dl>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">path_graph</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># or DiGraph, MultiGraph, MultiDiGraph, etc</span>
@@ -1268,8 +1278,8 @@ If the first parameter is a Graph, then <cite>nodes</cite> is ignored.</p></li>
 <p>It you want to update the graph using an adjacency structure
 it is straightforward to obtain the edges/nodes from adjacency.
 The following examples provide common cases, your adjacency may
-be slightly different and require tweaks of these examples.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># dict-of-set/list/tuple</span>
+be slightly different and require tweaks of these examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># dict-of-set/list/tuple</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">adj</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="mi">2</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">},</span> <span class="mi">3</span><span class="p">:</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">}}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">e</span> <span class="o">=</span> <span class="p">[(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">nbrs</span> <span class="ow">in</span> <span class="n">adj</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nbrs</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">edges</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="n">adj</span><span class="p">)</span>
