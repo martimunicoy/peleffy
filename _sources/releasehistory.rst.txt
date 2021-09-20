@@ -8,10 +8,10 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
-1.3.4 - Current development
+1.3.4 - OpenFF-2.0 Support
 ---------------------------------------------------------
 
-This is a micro release of peleffy that solves a minor bug in the OPLS2005 parametrization. It also adds support for the new openff-2.0.0.
+This is a micro release of peleffy that adds support for the new openff-2.0.0. It also solves minor bugs in the OPLS2005 parametrization.
 
 New features
 """"""""""""
