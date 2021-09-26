@@ -231,7 +231,7 @@ class MolecularGraph(nx.Graph):
 
         Parameters
         ----------
-        molecule : An peleffy.topology.Molecule
+        molecule : a peleffy.topology.Molecule
             A Molecule object to be written as an Impact file
         """
         super().__init__(self)
@@ -704,7 +704,7 @@ class MolecularGraphWithConstrainedCore(MolecularGraph):
 
         Parameters
         ----------
-        molecule : An peleffy.topology.Molecule
+        molecule : a peleffy.topology.Molecule
             A Molecule object to be written as an Impact file
         atom_constraint : list[int or str]
             It defines the list of atoms to constrain in the core, thus,

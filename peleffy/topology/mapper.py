@@ -50,6 +50,26 @@ class Mapper(object):
         self._molecule2 = molecule2
         self._include_hydrogens = include_hydrogens
 
+    def get_mcs(self):
+        """
+        It returns the Maximum Common Substructure (MCS) between
+        both molecules.
+
+        Parameters
+        ----------
+        mcs_mol : an RDKit.molecule object
+            The resulting MCS molecule
+        """
+        from peleffy.utils.toolkits import RDKitToolkitWrapper
+
+        rdkit_toolkit = RDKitToolkitWrapper()
+
+        mcs_mol = rdkit_toolkit.get_mcs(self.molecule1, self.molecule2,
+                                        self._include_hydrogens,
+                                        self._TIMEOUT)
+
+        return mcs_mol
+
     def get_mapping(self):
         """
         It returns the mapping between both molecules.
@@ -60,14 +80,11 @@ class Mapper(object):
             The list of atom pairs between both molecules, represented
             with tuples
         """
-
         from peleffy.utils.toolkits import RDKitToolkitWrapper
 
         rdkit_toolkit = RDKitToolkitWrapper()
 
-        mcs_mol = rdkit_toolkit.get_mcs(self.molecule1, self.molecule2,
-                                        self._include_hydrogens,
-                                        self._TIMEOUT)
+        mcs_mol = self.get_mcs()
 
         mapping = rdkit_toolkit.get_atom_mapping(self.molecule1,
                                                  self.molecule2,
