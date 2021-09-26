@@ -2763,3 +2763,28 @@ class TestAlchemy(object):
             'Unexpected proper constants'
         assert improper_constants == golden_improper_constants, \
             'Unexpected improper constants'
+
+    def test_to_pdb(self):
+        """
+        It validates the method to write the alchemical structure
+        to a PDB file.
+        """
+        import os
+        import tempfile
+        from peleffy.utils import get_data_file_path, temporary_cd
+        from peleffy.topology import Alchemizer
+        from peleffy.tests.utils import compare_files
+
+        mol1, mol2, top1, top2 = generate_molecules_and_topologies_from_pdb(
+            'ligands/trimethylglycine.pdb', 'ligands/benzamidine.pdb')
+
+        reference = get_data_file_path('tests/alchemical_structure.pdb')
+
+        alchemizer = Alchemizer(top1, top2)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                output_path = os.path.join(tmpdir, 'alchemical_structure.pdb')
+                alchemizer.to_pdb(output_path)
+
+                compare_files(reference, output_path)

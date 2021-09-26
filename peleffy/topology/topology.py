@@ -101,6 +101,7 @@ class Topology(object):
         """It builds the atoms of the molecule."""
 
         from peleffy.utils import Logger
+        from peleffy.topology.rotamer import CoreLessMolecularGraph
         logger = Logger()
 
         coords = RDKitToolkitWrapper().get_coordinates(self.molecule)
@@ -122,6 +123,13 @@ class Topology(object):
                         nonpolar_gamma=gamma,
                         nonpolar_alpha=alpha)
             self.add_atom(atom)
+
+        if isinstance(self.molecule.graph, CoreLessMolecularGraph):
+            message = f'Error: core-less molecular graph cannot be ' + \
+                f'used to build a non-alchemic topology for ' + \
+                f'molecule {self.molecule.name}'
+            logger.error([message])
+            raise TypeError(message)
 
         for atom in self.atoms:
             if atom.index in self.molecule.graph.core_nodes:

@@ -853,6 +853,77 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         return image
 
+    def alchemical_combination(self, mol1, mol2, atom_mapping,
+                               connections, mcs_mol):
+        """
+        Given two molecules, it return the alchemical combination of
+        them. Both molecules are superposed taking the first one
+        as the reference.
+
+        Parameters
+        ----------
+        mol1 : an RDKit.molecule object
+            The first molecule to combine. It will be used as reference
+            during the superposition
+        mol2 : an RDKit.molecule object
+            The second molecule to combine
+        atom_mapping : list[tuple[int, int]]
+            The list containing the mapping between atoms of both
+            molecules. First index of each pair belongs to molecule
+            1, the second one belongs to molecule 2
+        connections : list[tuple[int, int]]
+            The list of connections between molecule 1 and non
+            native atoms of molecule 2
+        mcs_mol : an RDKit.molecule object
+            The molecule representinc the MCS substructure of both
+            molecules
+
+        Returns
+        -------
+        mol_combo : an RDKit.molecule object
+            The resulting molecule after combining both supplied
+            molecules
+        """
+        from rdkit import Chem
+        from copy import deepcopy
+
+        # Make a copy of molecule 2
+        mol2 = deepcopy(mol2)
+
+        # Generate inverse mapping
+        inverse_mapping = [(idxs[1], idxs[0]) for idxs in atom_mapping]
+
+        # Align molecule 2 to molecule 1
+        Chem.rdMolAlign.AlignMol(mol2, mol1,
+                                 atomMap=inverse_mapping)
+
+        # Remove common substructure from molecule 2
+        mol2_truncated = Chem.DeleteSubstructs(mol2, mcs_mol)
+
+        # Combine molecule1 with truncated molecule 2
+        mol_combo = Chem.CombineMols(mol1,
+                                     mol2_truncated)
+
+        # Editable molecule
+        mol_combo = Chem.EditableMol(mol_combo)
+        for connection in connections:
+            mol_combo.AddBond(*connection)
+
+        mol_combo = mol_combo.GetMol()
+
+        # Set PDB information
+        pdb_info = Chem.AtomPDBResidueInfo()
+        pdb_info.SetResidueName('HYB')
+        pdb_info.SetResidueNumber(1)
+        pdb_info.SetChainId('L')
+        pdb_info.SetIsHeteroAtom(True)
+        for atom in mol_combo.GetAtoms():
+            atom_name = atom.GetPDBResidueInfo().GetName()
+            pdb_info.SetName(atom_name)
+            atom.SetPDBResidueInfo(pdb_info)
+
+        return mol_combo
+
 
 class AmberToolkitWrapper(ToolkitWrapper):
     """

@@ -2,6 +2,7 @@
 This module contains the tests to check all available force fields in
 peleffy.
 """
+import pytest
 
 
 class TestTopology(object):
@@ -476,3 +477,31 @@ class TestTopology(object):
                          expected_angles=expected_off_angles,
                          expected_propers=expected_opls_propers,
                          expected_impropers=expected_opls_impropers)
+
+    def test_coreless_graph_error(self):
+        """
+        It checks that the error when using a core-less molecular
+         graph is prompted.
+         """
+        from peleffy.topology import Molecule
+        from peleffy.forcefield import OpenForceField
+        from peleffy.topology import Topology
+        from peleffy.utils import get_data_file_path
+        from peleffy.topology.rotamer import (MolecularGraph,
+                                              CoreLessMolecularGraph)
+
+        pdb_path = get_data_file_path('ligands/ethylene.pdb')
+        molecule = Molecule(pdb_path)
+        openff = OpenForceField('openff_unconstrained-2.0.0.offxml')
+        parameters = openff.parameterize(molecule, charge_method='gasteiger')
+
+        # Set a core-less molecular graph to molecule
+        molecule._graph = CoreLessMolecularGraph(molecule)
+
+        with pytest.raises(TypeError):
+            _ = Topology(molecule, parameters)
+
+        # With a regular molecular graph, it should not complain
+        molecule._graph = MolecularGraph(molecule)
+
+        _ = Topology(molecule, parameters)

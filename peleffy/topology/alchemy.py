@@ -56,13 +56,19 @@ class Alchemizer(object):
         # Join the two topologies
         self._joint_topology, self._non_native_atoms, \
             self._non_native_bonds, self._non_native_angles, \
-            self._non_native_propers, self._non_native_impropers = \
-            self._join_topologies()
+            self._non_native_propers, self._non_native_impropers,\
+            self._mol2_to_alc_map = self._join_topologies()
 
         # Get exclusive topological elements in topology 1
         self._exclusive_atoms, self._exclusive_bonds, \
         self._exclusive_angles, self._exclusive_propers, \
         self._exclusive_impropers = self._get_exclusive_elements()
+
+        # Find connections
+        self._connections = self._find_connections()
+
+        # Fix graph of molecule 2
+        self._fix_molecule2_graph()
 
     @property
     def topology1(self):
@@ -137,6 +143,20 @@ class Alchemizer(object):
             The resulting MCS molecule
         """
         return self._mcs_mol
+
+    @property
+    def connections(self):
+        """
+        It returns the list of connections between molecule 1 and non
+        native atoms of molecule 2.
+
+        Returns
+        -------
+        connections : list[tuple[int, int]]
+            The list of connections between molecule 1 and non
+            native atoms of molecule 2
+        """
+        return self._connections
 
     def get_alchemical_topology(self, fep_lambda=None, coul1_lambda=None,
                                 coul2_lambda=None, vdw_lambda=None,
@@ -295,6 +315,9 @@ class Alchemizer(object):
             The list of proper indices that were added to topology 1
         non_native_impropers : list[int]
             The list of improper indices that were added to topology 1
+        mol2_to_alc_map : dict[int, int]]
+            The dictionary that pairs molecule 2 indices with alchemical
+            molecule indices
         """
         from copy import deepcopy
         from peleffy.topology import Topology
@@ -307,6 +330,9 @@ class Alchemizer(object):
 
         # First initialize the joint topology with topology 1
         joint_topology = deepcopy(self.topology1)
+
+        # Change molecule tag
+        joint_topology.molecule.set_tag('HYB')
 
         # Initialize list of non native topological elements
         non_native_atoms = list()
@@ -475,7 +501,8 @@ class Alchemizer(object):
                 joint_topology.add_improper(new_improper)
 
         return joint_topology, non_native_atoms, non_native_bonds, \
-            non_native_angles, non_native_propers, non_native_impropers
+            non_native_angles, non_native_propers, non_native_impropers, \
+            mol2_to_alc_map
 
     def _get_exclusive_elements(self):
         """
@@ -559,6 +586,125 @@ class Alchemizer(object):
 
         return exclusive_atoms, exclusive_bonds, exclusive_angles, \
                exclusive_propers, exclusive_impropers
+
+    def _find_connections(self):
+        """
+        It finds the connections between molecule 1 and molecule2.
+
+        Returns
+        -------
+        connections : list[tuple[int, int]]
+            The list of connections between molecule 1 and non
+            native atoms of molecule 2
+        """
+        # TODO move to rdkit toolkit
+        mol2_mapped_atoms = [atom_pair[1] for atom_pair in self.mapping]
+
+        connections = list()
+        for atom in self.molecule2.rdkit_molecule.GetAtoms():
+            if atom.GetIdx() in mol2_mapped_atoms:
+                for bond in atom.GetBonds():
+                    index1 = self._mol2_to_alc_map[bond.GetBeginAtomIdx()]
+                    index2 = self._mol2_to_alc_map[bond.GetEndAtomIdx()]
+                    if index1 in self._non_native_atoms:
+                        connections.append((index1, index2))
+                    elif index2 in self._non_native_atoms:
+                        connections.append((index1, index2))
+
+        return connections
+
+    def _fix_molecule2_graph(self):
+        """
+        If fixes the graph of molecule 2 to ensure that it has no core.
+        """
+        from peleffy.topology.rotamer import CoreLessMolecularGraph
+
+        self.molecule2._graph = CoreLessMolecularGraph(self.molecule2)
+        self.molecule2._rotamers = self.molecule2.graph.get_rotamers()
+
+    def to_pdb(self, path):
+        """
+        Writes the alchemical molecule to a PDB file.
+
+        Parameters
+        ----------
+        path : str
+            The path where to save the PDB file
+        """
+        from copy import deepcopy
+        from peleffy.topology import Molecule
+
+        from peleffy.utils.toolkits import RDKitToolkitWrapper
+
+        rdkit_wrapper = RDKitToolkitWrapper()
+
+        # Combine molecules
+        mol_combo = \
+            rdkit_wrapper.alchemical_combination(self.molecule1.rdkit_molecule,
+                                                 self.molecule2.rdkit_molecule,
+                                                 self.mapping,
+                                                 self.connections,
+                                                 self.mcs_mol)
+
+        # Generate a dummy peleffy Molecule with the required information
+        # to write it as a PDB file
+        molecule = Molecule()
+        molecule._rdkit_molecule = mol_combo
+        molecule.set_tag('HYB')
+
+        rdkit_wrapper.to_pdb_file(molecule, path)
+
+    def rotamer_library_to_file(self, path):
+        """
+        It saves the alchemical rotamer library, which is the combination
+        of the rotamer libraries of both molecules, to the path that
+        is supplied.
+
+        Parameters
+        ----------
+        path : str
+            The path where to save the rotamer library
+        """
+        # TODO build common graph and it should depend on the lambda too --> some bonds might be rotatable after the alchemical change
+        # TODO maybe PELE can accept multiple rotamer branches with duplicated atoms (unlikely but we should try it)
+        # Initial definitions
+        pdb_atom_names = [atom.PDB_name.replace(' ', '_',)
+                          for atom in self._joint_topology.atoms]
+        molecule_tag = self._joint_topology.molecule.tag
+        mol2_mapped_atoms = [atom_pair[1] for atom_pair in self.mapping]
+
+        with open(path, 'w') as file:
+            file.write('rot assign res {} &\n'.format(molecule_tag))
+            for i, rotamer_branches in enumerate(self.molecule1.rotamers):
+                if i > 0:
+                    file.write('     newgrp &\n')
+                for rotamer in rotamer_branches:
+                    index1 = rotamer.index1
+                    index2 = rotamer.index2
+                    atom_name1 = pdb_atom_names[index1]
+                    atom_name2 = pdb_atom_names[index2]
+                    file.write('   sidelib FREE{} {} {} &\n'.format(
+                        rotamer.resolution, atom_name1, atom_name2))
+            for rotamer_branches in self.molecule2.rotamers:
+                file.write('     newgrp &\n')
+                for rotamer in rotamer_branches:
+                    index1 = rotamer.index1
+                    index2 = rotamer.index2
+                    # We need to prevent adding atoms that have been already added
+                    if (index1 in mol2_mapped_atoms and
+                            index2 in mol2_mapped_atoms):
+                        continue
+
+                    if index1 in self._non_native_atoms:
+                        index1 = self._mol2_to_alc_map[index1]
+
+                    if index2 in self._non_native_atoms:
+                        index2 = self._mol2_to_alc_map[index2]
+
+                    atom_name1 = pdb_atom_names[index1]
+                    atom_name2 = pdb_atom_names[index2]
+                    file.write('   sidelib FREE{} {} {} &\n'.format(
+                        rotamer.resolution, atom_name1, atom_name2))
 
 
 class Lambda(ABC):
