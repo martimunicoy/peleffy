@@ -254,23 +254,23 @@ class Alchemizer(object):
 
         for proper_idx, proper in enumerate(alchemical_topology.propers):
             if proper_idx in self._exclusive_propers:
-                proper.apply_lambda(["spring_constant"],
+                proper.apply_lambda(["constant"],
                                     lambda_set.get_lambda_for_bonded(),
                                     reverse=False)
 
             if proper_idx in self._non_native_propers:
-                proper.apply_lambda(["spring_constant"],
+                proper.apply_lambda(["constant"],
                                     lambda_set.get_lambda_for_bonded(),
                                     reverse=True)
 
         for improper_idx, improper in enumerate(alchemical_topology.impropers):
             if improper_idx in self._exclusive_propers:
-                improper.apply_lambda(["spring_constant"],
+                improper.apply_lambda(["constant"],
                                       lambda_set.get_lambda_for_bonded(),
                                       reverse=False)
 
             if improper_idx in self._non_native_propers:
-                improper.apply_lambda(["spring_constant"],
+                improper.apply_lambda(["constant"],
                                       lambda_set.get_lambda_for_bonded(),
                                       reverse=True)
 

@@ -70,8 +70,10 @@ def generate_molecules_and_topologies_from_smiles(smiles1, smiles2):
     from peleffy.topology import Molecule, Topology
     from peleffy.forcefield import OpenForceField
 
-    mol1 = Molecule(smiles=smiles1, hydrogens_are_explicit=False)
-    mol2 = Molecule(smiles=smiles2, hydrogens_are_explicit=False)
+    mol1 = Molecule(smiles=smiles1, hydrogens_are_explicit=False,
+                    allow_undefined_stereo=True)
+    mol2 = Molecule(smiles=smiles2, hydrogens_are_explicit=False,
+                    allow_undefined_stereo=True)
 
     openff = OpenForceField('openff_unconstrained-2.0.0.offxml')
 
@@ -1695,13 +1697,366 @@ class TestAlchemy(object):
             assert improper_c2 - improper_c1 < 1e-5, \
                 'Unexpected ratio between improper constants'
 
+    def test_bonded_lambda(self):
+        """
+        It validates the effects of bonded lambda on atom parameters.
+        """
+        from peleffy.topology import Alchemizer
+        from peleffy.template.impact import (WritableAtom, WritableBond,
+                                             WritableAngle, WritableProper,
+                                             WritableImproper)
+
+        mol1, mol2, top1, top2 = \
+            generate_molecules_and_topologies_from_smiles('C=C',
+                                                          'C(Cl)(Cl)(Cl)')
+
+        alchemizer = Alchemizer(top1, top2)
+
+        top = alchemizer.get_alchemical_topology(fep_lambda=0,
+                                                 bonded_lambda=0)
+
+        sigmas1 = list()
+        epsilons1 = list()
+        SASA_radii1 = list()
+        charges1 = list()
+        bond_spring_constants1 = list()
+        angle_spring_constants1 = list()
+        proper_constants1 = list()
+        improper_constants1 = list()
+
+        for atom_idx in alchemizer._exclusive_atoms:
+            atom = WritableAtom(top.atoms[atom_idx])
+            sigmas1.append(atom.sigma)
+            epsilons1.append(atom.epsilon)
+            SASA_radii1.append(atom.SASA_radius)
+            charges1.append(atom.charge)
+
+        for bond_idx in alchemizer._exclusive_bonds:
+            bond = WritableBond(top.bonds[bond_idx])
+            bond_spring_constants1.append(bond.spring_constant)
+
+        for angle_idx in alchemizer._exclusive_angles:
+            angle = WritableAngle(top.angles[angle_idx])
+            angle_spring_constants1.append(angle.spring_constant)
+
+        for proper_idx in alchemizer._exclusive_propers:
+            proper = WritableProper(top.propers[proper_idx])
+            proper_constants1.append(proper.spring_constant)
+
+        for improper_idx in alchemizer._exclusive_propers:
+            improper = WritableImproper(top.impropers[improper_idx])
+            improper_constants1.append(improper.spring_constant)
+
+        top = alchemizer.get_alchemical_topology(fep_lambda=0.0,
+                                                 bonded_lambda=0.2)
+
+        sigmas2 = list()
+        epsilons2 = list()
+        SASA_radii2 = list()
+        charges2 = list()
+        bond_spring_constants2 = list()
+        angle_spring_constants2 = list()
+        proper_constants2 = list()
+        improper_constants2 = list()
+
+        for atom_idx in alchemizer._exclusive_atoms:
+            atom = WritableAtom(top.atoms[atom_idx])
+            sigmas2.append(atom.sigma)
+            epsilons2.append(atom.epsilon)
+            SASA_radii2.append(atom.SASA_radius)
+            charges2.append(atom.charge)
+
+        for bond_idx in alchemizer._exclusive_bonds:
+            bond = WritableBond(top.bonds[bond_idx])
+            bond_spring_constants2.append(bond.spring_constant)
+
+        for angle_idx in alchemizer._exclusive_angles:
+            angle = WritableAngle(top.angles[angle_idx])
+            angle_spring_constants2.append(angle.spring_constant)
+
+        for proper_idx in alchemizer._exclusive_propers:
+            proper = WritableProper(top.propers[proper_idx])
+            proper_constants2.append(proper.spring_constant)
+
+        for improper_idx in alchemizer._exclusive_propers:
+            improper = WritableImproper(top.impropers[improper_idx])
+            improper_constants2.append(improper.spring_constant)
+
+        for sigma1, sigma2 in zip(sigmas1, sigmas2):
+            assert sigma2 - sigma1 < 1e-5, \
+                'Unexpected ratio between sigmas'
+
+        for epsilon1, epsilon2 in zip(epsilons1, epsilons2):
+            assert epsilon2 - epsilon1 < 1e-5, \
+                'Unexpected ratio between epsilons'
+
+        for SASA_radius1, SASA_radius2 in zip(SASA_radii1, SASA_radii2):
+            assert SASA_radius2 - SASA_radius1 < 1e-5, \
+                'Unexpected ratio between SASA radii'
+
+        for charge1, charge2 in zip(charges1, charges2):
+            assert charge2 - charge1 < 1e-5, \
+                'Unexpected ratio between charges'
+
+        for bond_sc1, bond_sc2 in zip(bond_spring_constants1,
+                                      bond_spring_constants2):
+            assert (bond_sc2 / bond_sc1) - (1 - 0.2) < 1e-5, \
+                'Unexpected ratio between bond spring constants'
+
+        for angle_sc1, angle_sc2 in zip(angle_spring_constants1,
+                                        angle_spring_constants2):
+            assert (angle_sc2 / angle_sc1) - (1 - 0.2) < 1e-5, \
+                'Unexpected ratio between angle spring constants'
+
+        for proper_c1, proper_c2 in zip(proper_constants1,
+                                        proper_constants2):
+            assert (proper_c2 / proper_c1) - (1 - 0.2) < 1e-5, \
+                'Unexpected ratio between proper constants'
+
+        for improper_c1, improper_c2 in zip(improper_constants1,
+                                            improper_constants2):
+            assert (improper_c2 / improper_c1) - (1 - 0.2) < 1e-5, \
+                'Unexpected ratio between improper constants'
+
+        top = alchemizer.get_alchemical_topology(fep_lambda=0.0,
+                                                 bonded_lambda=1.0)
+
+        sigmas1 = list()
+        epsilons1 = list()
+        SASA_radii1 = list()
+        charges1 = list()
+        bond_spring_constants1 = list()
+        angle_spring_constants1 = list()
+        proper_constants1 = list()
+        improper_constants1 = list()
+
+        for atom_idx in alchemizer._non_native_atoms:
+            atom = WritableAtom(top.atoms[atom_idx])
+            sigmas1.append(atom.sigma)
+            epsilons1.append(atom.epsilon)
+            SASA_radii1.append(atom.SASA_radius)
+            charges1.append(atom.charge)
+
+        for bond_idx in alchemizer._non_native_bonds:
+            bond = WritableBond(top.bonds[bond_idx])
+            bond_spring_constants1.append(bond.spring_constant)
+
+        for angle_idx in alchemizer._non_native_angles:
+            angle = WritableAngle(top.angles[angle_idx])
+            angle_spring_constants1.append(angle.spring_constant)
+
+        for proper_idx in alchemizer._non_native_propers:
+            proper = WritableProper(top.propers[proper_idx])
+            proper_constants1.append(proper.spring_constant)
+
+        for improper_idx in alchemizer._non_native_impropers:
+            improper = WritableImproper(top.impropers[improper_idx])
+            improper_constants1.append(improper.spring_constant)
+
+        top = alchemizer.get_alchemical_topology(fep_lambda=0.0,
+                                                 bonded_lambda=0.2)
+
+        sigmas2 = list()
+        epsilons2 = list()
+        SASA_radii2 = list()
+        charges2 = list()
+        bond_spring_constants2 = list()
+        angle_spring_constants2 = list()
+        proper_constants2 = list()
+        improper_constants2 = list()
+
+        for atom_idx in alchemizer._non_native_atoms:
+            atom = WritableAtom(top.atoms[atom_idx])
+            sigmas2.append(atom.sigma)
+            epsilons2.append(atom.epsilon)
+            SASA_radii2.append(atom.SASA_radius)
+            charges2.append(atom.charge)
+
+        for bond_idx in alchemizer._non_native_bonds:
+            bond = WritableBond(top.bonds[bond_idx])
+            bond_spring_constants2.append(bond.spring_constant)
+
+        for angle_idx in alchemizer._non_native_angles:
+            angle = WritableAngle(top.angles[angle_idx])
+            angle_spring_constants2.append(angle.spring_constant)
+
+        for proper_idx in alchemizer._non_native_propers:
+            proper = WritableProper(top.propers[proper_idx])
+            proper_constants2.append(proper.spring_constant)
+
+        for improper_idx in alchemizer._non_native_impropers:
+            improper = WritableImproper(top.impropers[improper_idx])
+            improper_constants2.append(improper.spring_constant)
+
+        for sigma1, sigma2 in zip(sigmas1, sigmas2):
+            assert sigma2 - sigma1 < 1e-5, \
+                'Unexpected ratio between sigmas'
+
+        for epsilon1, epsilon2 in zip(epsilons1, epsilons2):
+            assert epsilon2 - epsilon1 < 1e-5, \
+                'Unexpected ratio between epsilons'
+
+        for SASA_radius1, SASA_radius2 in zip(SASA_radii1, SASA_radii2):
+            assert SASA_radius2 - SASA_radius1 < 1e-5, \
+                'Unexpected ratio between SASA radii'
+
+        for charge1, charge2 in zip(charges1, charges2):
+            assert charge2 - charge1 < 1e-5, \
+                'Unexpected ratio between charges'
+
+        for bond_sc1, bond_sc2 in zip(bond_spring_constants1,
+                                      bond_spring_constants2):
+            assert (bond_sc2 / bond_sc1) - 0.2 < 1e-5, \
+                'Unexpected ratio between bond spring constants'
+
+        for angle_sc1, angle_sc2 in zip(angle_spring_constants1,
+                                        angle_spring_constants2):
+            assert (angle_sc2 / angle_sc1) - 0.2 < 1e-5, \
+                'Unexpected ratio between angle spring constants'
+
+        for proper_c1, proper_c2 in zip(proper_constants1,
+                                        proper_constants2):
+            assert (proper_c2 / proper_c1) - 0.2 < 1e-5, \
+                'Unexpected ratio between proper constants'
+
+        for improper_c1, improper_c2 in zip(improper_constants1,
+                                            improper_constants2):
+            assert (improper_c2 / improper_c1) - 0.2 < 1e-5, \
+                'Unexpected ratio between improper constants'
+
+        top = alchemizer.get_alchemical_topology(fep_lambda=0.0,
+                                                 bonded_lambda=0.0)
+
+        sigmas1 = list()
+        epsilons1 = list()
+        SASA_radii1 = list()
+        charges1 = list()
+        bond_spring_constants1 = list()
+        angle_spring_constants1 = list()
+        proper_constants1 = list()
+        improper_constants1 = list()
+
+        for atom_idx in range(0, len(top.atoms)):
+            if (atom_idx not in alchemizer._exclusive_atoms and
+                    atom_idx not in alchemizer._non_native_atoms):
+                atom = WritableAtom(top.atoms[atom_idx])
+                sigmas1.append(atom.sigma)
+                epsilons1.append(atom.epsilon)
+                SASA_radii1.append(atom.SASA_radius)
+                charges1.append(atom.charge)
+
+        for bond_idx in range(0, len(top.bonds)):
+            if (bond_idx not in alchemizer._exclusive_bonds and
+                    bond_idx not in alchemizer._non_native_bonds):
+                bond = WritableBond(top.bonds[bond_idx])
+                bond_spring_constants1.append(bond.spring_constant)
+
+        for angle_idx in range(0, len(top.angles)):
+            if (angle_idx not in alchemizer._exclusive_angles and
+                    angle_idx not in alchemizer._non_native_angles):
+                angle = WritableAngle(top.angles[angle_idx])
+                angle_spring_constants1.append(angle.spring_constant)
+
+        for proper_idx in range(0, len(top.propers)):
+            if (proper_idx not in alchemizer._exclusive_propers and
+                    proper_idx not in alchemizer._non_native_propers):
+                proper = WritableProper(top.propers[proper_idx])
+                proper_constants1.append(proper.constant)
+
+        for improper_idx in range(0, len(top.impropers)):
+            if (improper_idx not in alchemizer._exclusive_impropers and
+                    improper_idx not in alchemizer._non_native_impropers):
+                improper = WritableImproper(top.impropers[improper_idx])
+                improper_constants1.append(improper.constant)
+
+        top = alchemizer.get_alchemical_topology(fep_lambda=1.0,
+                                                 bonded_lambda=1.0)
+
+        sigmas2 = list()
+        epsilons2 = list()
+        SASA_radii2 = list()
+        charges2 = list()
+        bond_spring_constants2 = list()
+        angle_spring_constants2 = list()
+        proper_constants2 = list()
+        improper_constants2 = list()
+
+        for atom_idx in range(0, len(top.atoms)):
+            if (atom_idx not in alchemizer._exclusive_atoms and
+                    atom_idx not in alchemizer._non_native_atoms):
+                atom = WritableAtom(top.atoms[atom_idx])
+                sigmas2.append(atom.sigma)
+                epsilons2.append(atom.epsilon)
+                SASA_radii2.append(atom.SASA_radius)
+                charges2.append(atom.charge)
+
+        for bond_idx in range(0, len(top.bonds)):
+            if (bond_idx not in alchemizer._exclusive_bonds and
+                    bond_idx not in alchemizer._non_native_bonds):
+                bond = WritableBond(top.bonds[bond_idx])
+                bond_spring_constants2.append(bond.spring_constant)
+
+        for angle_idx in range(0, len(top.angles)):
+            if (angle_idx not in alchemizer._exclusive_angles and
+                    angle_idx not in alchemizer._non_native_angles):
+                angle = WritableAngle(top.angles[angle_idx])
+                angle_spring_constants2.append(angle.spring_constant)
+
+        for proper_idx in range(0, len(top.propers)):
+            if (proper_idx not in alchemizer._exclusive_propers and
+                    proper_idx not in alchemizer._non_native_propers):
+                proper = WritableProper(top.propers[proper_idx])
+                proper_constants2.append(proper.constant)
+
+        for improper_idx in range(0, len(top.impropers)):
+            if (improper_idx not in alchemizer._exclusive_impropers and
+                    improper_idx not in alchemizer._non_native_impropers):
+                improper = WritableImproper(top.impropers[improper_idx])
+                improper_constants2.append(improper.constant)
+
+        for sigma1, sigma2 in zip(sigmas1, sigmas2):
+            assert sigma2 - sigma1 < 1e-5, \
+                'Unexpected ratio between sigmas'
+
+        for epsilon1, epsilon2 in zip(epsilons1, epsilons2):
+            assert epsilon2 - epsilon1 < 1e-5, \
+                'Unexpected ratio between epsilons'
+
+        for SASA_radius1, SASA_radius2 in zip(SASA_radii1, SASA_radii2):
+            assert SASA_radius2 - SASA_radius1 < 1e-5, \
+                'Unexpected ratio between SASA radii'
+
+        for charge1, charge2 in zip(charges1, charges2):
+            assert charge2 - charge1 < 1e-5, \
+                'Unexpected ratio between charges'
+
+        for bond_sc1, bond_sc2 in zip(bond_spring_constants1,
+                                      bond_spring_constants2):
+            assert bond_sc2 - bond_sc1 < 1e-5, \
+                'Unexpected ratio between bond spring constants'
+
+        for angle_sc1, angle_sc2 in zip(angle_spring_constants1,
+                                        angle_spring_constants2):
+            assert angle_sc2 - angle_sc1 < 1e-5, \
+                'Unexpected ratio between angle spring constants'
+
+        for proper_c1, proper_c2 in zip(proper_constants1,
+                                        proper_constants2):
+            assert proper_c2 - proper_c1 < 1e-5, \
+                'Unexpected ratio between proper constants'
+
+        for improper_c1, improper_c2 in zip(improper_constants1,
+                                            improper_constants2):
+            assert improper_c2 - improper_c1 < 1e-5, \
+                'Unexpected ratio between improper constants'
+
     @pytest.mark.parametrize("pdb1, pdb2, smiles1, smiles2, " +
                              "fep_lambda, coul1_lambda, coul2_lambda, " +
                              "vdw_lambda, bonded_lambda, " +
                              "golden_sigmas, golden_epsilons, " +
                              "golden_born_radii, golden_SASA_radii, " +
                              "golden_nonpolar_gammas, " +
-                             "golden_nonpolar_alphas",
+                             "golden_nonpolar_alphas, golden_charges",
                              [(None,
                                None,
                                'C=C',
@@ -1722,7 +2077,9 @@ class TestAlchemy(object):
                                 1.2862907675316397, 1.2862907675316397,
                                 1.2862907675316397, 1.2862907675316397, 0.0],
                                [0, 0, 0, 0, 0, 0, 0],
-                               [0, 0, 0, 0, 0, 0, 0]
+                               [0, 0, 0, 0, 0, 0, 0],
+                               [-0.106311, -0.106311, 0.053156, 0.053156,
+                                0.053156, 0.053156, -0.0]
                                ),
                               (None,
                                None,
@@ -1747,7 +2104,9 @@ class TestAlchemy(object):
                                 1.0290326140253119, 1.0290326140253119,
                                 0.33075278064606245],
                                [0, 0, 0, 0, 0, 0, 0],
-                               [0, 0, 0, 0, 0, 0, 0]
+                               [0, 0, 0, 0, 0, 0, 0],
+                               [-0.106311, -0.106311, 0.053156, 0.053156,
+                                0.0425248, 0.0425248, -0.017483000000000002]
                                ),
                               (None,
                                None,
@@ -1772,7 +2131,10 @@ class TestAlchemy(object):
                                 0.2572581535063279, 0.2572581535063279,
                                 1.3230111225842498],
                                [0, 0, 0, 0, 0, 0, 0],
-                               [0, 0, 0, 0, 0, 0, 0]
+                               [0, 0, 0, 0, 0, 0, 0],
+                               [-0.106311, -0.106311, 0.053156, 0.053156,
+                                0.010631199999999999, 0.010631199999999999,
+                                -0.06993200000000001]
                                ),
                               (None,
                                None,
@@ -1795,7 +2157,108 @@ class TestAlchemy(object):
                                 1.2862907675316397, 1.2862907675316397, 0.0,
                                 0.0, 1.6537639032303122],
                                [0, 0, 0, 0, 0, 0, 0],
-                               [0, 0, 0, 0, 0, 0, 0]
+                               [0, 0, 0, 0, 0, 0, 0],
+                               [-0.106311, -0.106311, 0.053156, 0.053156,
+                                0.0, 0.0, -0.087415]
+                               ),
+                              (None,
+                               None,
+                               'C=C',
+                               'C(Cl)(Cl)(Cl)',
+                               0.0,
+                               0.0,
+                               0.0,
+                               None,
+                               None,
+                               [3.480646886945065, 3.480646886945065,
+                                2.5725815350632795, 2.5725815350632795,
+                                2.5725815350632795, 2.5725815350632795, 0.0],
+                               [0.0868793154488, 0.0868793154488,
+                                0.01561134320353, 0.01561134320353,
+                                0.01561134320353,
+                                0.01561134320353, 0.0],
+                               [0, 0, 0, 0, 0, 0, 0],
+                               [1.7403234434725325, 1.7403234434725325,
+                                1.2862907675316397, 1.2862907675316397,
+                                1.2862907675316397, 1.2862907675316397, 0.0],
+                               [0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 0],
+                               [-0.106311, -0.106311, 0.053156, 0.053156,
+                                0.053156, 0.053156, -0.0]
+                               ),
+                              (None,
+                               None,
+                               'C=C',
+                               'C(Cl)(Cl)(Cl)',
+                               0.0,
+                               1.0,
+                               0.0,
+                               None,
+                               None,
+                               [3.480646886945065, 3.480646886945065,
+                                2.5725815350632795, 2.5725815350632795,
+                                2.5725815350632795, 2.5725815350632795, 0.0],
+                               [0.0868793154488, 0.0868793154488,
+                                0.01561134320353, 0.01561134320353,
+                                0.01561134320353,
+                                0.01561134320353, 0.0],
+                               [0, 0, 0, 0, 0, 0, 0],
+                               [1.7403234434725325, 1.7403234434725325,
+                                1.2862907675316397, 1.2862907675316397,
+                                1.2862907675316397, 1.2862907675316397, 0.0],
+                               [0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 0],
+                               [-0.106311, -0.106311, 0.053156, 0.053156,
+                                0.0, 0.0, -0.0]
+                               ),
+                              (None,
+                               None,
+                               'C=C',
+                               'C(Cl)(Cl)(Cl)',
+                               1.0,
+                               1.0,
+                               0.0,
+                               None,
+                               None,
+                               [3.480646886945065, 3.480646886945065,
+                                2.5725815350632795, 2.5725815350632795, 0.0, 0.0,
+                                3.3075278064606244],
+                               [0.0868793154488, 0.0868793154488,
+                                0.01561134320353, 0.01561134320353, 0.0, 0.0,
+                                0.2656001046527],
+                               [0, 0, 0, 0, 0, 0, 0],
+                               [1.7403234434725325, 1.7403234434725325,
+                                1.2862907675316397, 1.2862907675316397, 0.0,
+                                0.0, 1.6537639032303122],
+                               [0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 0],
+                               [-0.106311, -0.106311, 0.053156, 0.053156,
+                                0.0, 0.0, -0.0]
+                               ),
+                              (None,
+                               None,
+                               'C=C',
+                               'C(Cl)(Cl)(Cl)',
+                               1.0,
+                               1.0,
+                               1.0,
+                               None,
+                               None,
+                               [3.480646886945065, 3.480646886945065,
+                                2.5725815350632795, 2.5725815350632795,
+                                0.0, 0.0,
+                                3.3075278064606244],
+                               [0.0868793154488, 0.0868793154488,
+                                0.01561134320353, 0.01561134320353, 0.0, 0.0,
+                                0.2656001046527],
+                               [0, 0, 0, 0, 0, 0, 0],
+                               [1.7403234434725325, 1.7403234434725325,
+                                1.2862907675316397, 1.2862907675316397, 0.0,
+                                0.0, 1.6537639032303122],
+                               [0, 0, 0, 0, 0, 0, 0],
+                               [0, 0, 0, 0, 0, 0, 0],
+                               [-0.106311, -0.106311, 0.053156, 0.053156,
+                                0.0, 0.0, -0.087415]
                                ),
                               ])
     def test_atoms_in_alchemical_topology(self, pdb1, pdb2, smiles1, smiles2,
@@ -1807,7 +2270,8 @@ class TestAlchemy(object):
                                           golden_born_radii,
                                           golden_SASA_radii,
                                           golden_nonpolar_gammas,
-                                          golden_nonpolar_alphas):
+                                          golden_nonpolar_alphas,
+                                          golden_charges):
         """
         It validates the effects of lambda on atom parameters.
         """
@@ -1849,3 +2313,453 @@ class TestAlchemy(object):
             'Unexpected non polar gammas'
         assert nonpolar_alphas == golden_nonpolar_alphas, \
             'Unexpected non polar alphas'
+
+    @pytest.mark.parametrize("pdb1, pdb2, smiles1, smiles2, " +
+                             "fep_lambda, coul1_lambda, coul2_lambda, " +
+                             "vdw_lambda, bonded_lambda, " +
+                             "golden_bond_spring_constants",
+                             [(None,
+                               None,
+                               'C=C',
+                               'C(Cl)(Cl)(Cl)',
+                               0.0,
+                               None,
+                               None,
+                               None,
+                               None,
+                               [399.1592953295, 397.2545789619,
+                                397.2545789619, 397.2545789619,
+                                397.2545789619, 172.40622182]
+                               ),
+                              (None,
+                               None,
+                               'C=C',
+                               'C(Cl)(Cl)(Cl)',
+                               0.5,
+                               None,
+                               None,
+                               None,
+                               None,
+                               [399.1592953295, 397.2545789619,
+                                397.2545789619, 198.62728948095,
+                                198.62728948095, 172.40622182]
+                               ),
+                              (None,
+                               None,
+                               'C=C',
+                               'C(Cl)(Cl)(Cl)',
+                               1.0,
+                               None,
+                               None,
+                               None,
+                               None,
+                               [399.1592953295, 397.2545789619,
+                                397.2545789619, 0.0, 0.0, 172.40622182]
+                               ),
+                              (None,
+                               None,
+                               'C=C',
+                               'C(Cl)(Cl)(Cl)',
+                               1.0,
+                               1.0,
+                               1.0,
+                               1.0,
+                               0.0,
+                               [399.1592953295, 397.2545789619,
+                                397.2545789619, 397.2545789619,
+                                397.2545789619, 172.40622182]
+                               ),
+                              (None,
+                               None,
+                               'C=C',
+                               'C(Cl)(Cl)(Cl)',
+                               0.0,
+                               0.0,
+                               0.0,
+                               0.0,
+                               1.0,
+                               [399.1592953295, 397.2545789619,
+                                397.2545789619, 0.0, 0.0, 172.40622182]
+                               )
+                             ])
+    def test_bonds_in_alchemical_topology(self, pdb1, pdb2, smiles1, smiles2,
+                                          fep_lambda, coul1_lambda,
+                                          coul2_lambda, vdw_lambda,
+                                          bonded_lambda,
+                                          golden_bond_spring_constants):
+        """
+        It validates the effects of lambda on atom parameters.
+        """
+        from peleffy.topology import Alchemizer
+        from peleffy.template.impact import WritableBond
+
+        mol1, mol2, top1, top2 = \
+            generate_molecules_and_topologies_from_smiles(smiles1, smiles2)
+
+        alchemizer = Alchemizer(top1, top2)
+
+        top = alchemizer.get_alchemical_topology(fep_lambda=fep_lambda,
+                                                 coul1_lambda=coul1_lambda,
+                                                 coul2_lambda=coul2_lambda,
+                                                 vdw_lambda=vdw_lambda,
+                                                 bonded_lambda=bonded_lambda)
+
+        bond_spring_constants = list()
+
+        for bond in top.bonds:
+            bond = WritableBond(bond)
+            bond_spring_constants.append(bond.spring_constant)
+
+        assert bond_spring_constants == golden_bond_spring_constants, \
+            'Unexpected spring constants'
+
+    @pytest.mark.parametrize("pdb1, pdb2, smiles1, smiles2, " +
+                             "fep_lambda, coul1_lambda, coul2_lambda, " +
+                             "vdw_lambda, bonded_lambda, " +
+                             "golden_angle_spring_constants",
+                             [(None,
+                               None,
+                               'C=C',
+                               'C(Cl)(Cl)(Cl)',
+                               0.0,
+                               None,
+                               None,
+                               None,
+                               None,
+                               [34.066775159195, 34.066775159195,
+                                34.066775159195, 34.066775159195,
+                                22.69631544292, 22.69631544292,
+                                0.0, 0.0, 0.0]
+                               ),
+                              (None,
+                               None,
+                               'C=C',
+                               'C(Cl)(Cl)(Cl)',
+                               0.5,
+                               None,
+                               None,
+                               None,
+                               None,
+                               [17.0333875795975, 17.0333875795975,
+                                34.066775159195, 34.066775159195,
+                                22.69631544292, 11.34815772146,
+                                26.602658132725, 26.602658132725,
+                                26.602658132725]
+                               ),
+                              (None,
+                               None,
+                               'C=C',
+                               'C(Cl)(Cl)(Cl)',
+                               1.0,
+                               None,
+                               None,
+                               None,
+                               None,
+                               [0.0, 0.0, 34.066775159195, 34.066775159195,
+                                22.69631544292, 0.0, 53.20531626545,
+                                53.20531626545, 53.20531626545]
+                               ),
+                              (None,
+                               None,
+                               'C=C',
+                               'C(Cl)(Cl)(Cl)',
+                               1.0,
+                               1.0,
+                               1.0,
+                               1.0,
+                               0.0,
+                               [34.066775159195, 34.066775159195,
+                                34.066775159195, 34.066775159195,
+                                22.69631544292, 22.69631544292,
+                                0.0, 0.0, 0.0]
+                               ),
+                              (None,
+                               None,
+                               'C=C',
+                               'C(Cl)(Cl)(Cl)',
+                               0.0,
+                               0.0,
+                               0.0,
+                               0.0,
+                               1.0,
+                               [0.0, 0.0, 34.066775159195, 34.066775159195,
+                                22.69631544292, 0.0, 53.20531626545,
+                                53.20531626545, 53.20531626545]
+                               )
+                             ])
+    def test_angles_in_alchemical_topology(self, pdb1, pdb2, smiles1, smiles2,
+                                           fep_lambda, coul1_lambda,
+                                           coul2_lambda, vdw_lambda,
+                                           bonded_lambda,
+                                           golden_angle_spring_constants):
+        """
+        It validates the effects of lambda on atom parameters.
+        """
+        from peleffy.topology import Alchemizer
+        from peleffy.template.impact import WritableAngle
+
+        mol1, mol2, top1, top2 = \
+            generate_molecules_and_topologies_from_smiles(smiles1, smiles2)
+
+        alchemizer = Alchemizer(top1, top2)
+
+        top = alchemizer.get_alchemical_topology(fep_lambda=fep_lambda,
+                                                 coul1_lambda=coul1_lambda,
+                                                 coul2_lambda=coul2_lambda,
+                                                 vdw_lambda=vdw_lambda,
+                                                 bonded_lambda=bonded_lambda)
+
+        angle_spring_constants = list()
+
+        for angle in top.angles:
+            angle = WritableAngle(angle)
+            angle_spring_constants.append(angle.spring_constant)
+
+        assert angle_spring_constants == golden_angle_spring_constants, \
+            'Unexpected spring constants'
+
+    @pytest.mark.parametrize("pdb1, pdb2, smiles1, smiles2, " +
+                             "fep_lambda, coul1_lambda, coul2_lambda, " +
+                             "vdw_lambda, bonded_lambda, " +
+                             "golden_proper_constants, "
+                             "golden_improper_constants",
+                             [(None,
+                               None,
+                               'C[N+](C)(C)CC(=O)[O-]',
+                               '[NH]=C(N)c1ccccc1',
+                               0.0,
+                               None,
+                               None,
+                               None,
+                               None,
+                               [0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, -0.3703352413219,
+                                0.02664938770063, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.4541676554336, 0.4541676554336,
+                                0.02664938770063, 0.02664938770063,
+                                0.1489710476446, 0.1489710476446,
+                                0.02960027280666, 0.02960027280666,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0,
+                                -0.0],
+                               [10.5, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1]
+                               ),
+                              (None,
+                               None,
+                               'C[N+](C)(C)CC(=O)[O-]',
+                               '[NH]=C(N)c1ccccc1',
+                               0.5,
+                               None,
+                               None,
+                               None,
+                               None,
+                               [0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.033486877933675,
+                                0.033486877933675, 0.033486877933675,
+                                0.033486877933675, 0.033486877933675,
+                                0.033486877933675, -0.18516762066095,
+                                0.013324693850315, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.033486877933675, 0.033486877933675,
+                                0.033486877933675, 0.033486877933675,
+                                0.033486877933675, 0.033486877933675,
+                                0.033486877933675, 0.033486877933675,
+                                0.033486877933675, 0.033486877933675,
+                                0.033486877933675, 0.033486877933675,
+                                0.033486877933675, 0.033486877933675,
+                                0.033486877933675, 0.033486877933675,
+                                0.033486877933675, 0.033486877933675,
+                                0.033486877933675, 0.033486877933675,
+                                0.033486877933675, 0.033486877933675,
+                                0.033486877933675, 0.033486877933675,
+                                0.2270838277168, 0.2270838277168,
+                                0.013324693850315, 0.013324693850315,
+                                0.0744855238223, 0.0744855238223,
+                                0.01480013640333, 0.01480013640333,
+                                0.4987082803621, 0.4987082803621,
+                                1.830965049538, 1.830965049538,
+                                1.830965049538, 1.830965049538,
+                                0.4987082803621, 0.4987082803621,
+                                3.368381238827, 0.9045236950015,
+                                0.9045236950015, 1.830965049538,
+                                1.830965049538, 1.830965049538,
+                                1.830965049538, 1.830965049538,
+                                1.830965049538, 1.830965049538,
+                                1.830965049538, 1.830965049538,
+                                1.830965049538, 1.830965049538,
+                                1.830965049538, 1.830965049538,
+                                1.830965049538, 1.830965049538,
+                                1.830965049538, 1.830965049538,
+                                1.830965049538, 1.830965049538,
+                                1.830965049538, -0.02408138896296,
+                                -0.02408138896296],
+                               [10.5, 1.1, 1.1, 0.55, 0.55, 0.55, 0.55]
+                               ),
+                              (None,
+                               None,
+                               'C[N+](C)(C)CC(=O)[O-]',
+                               '[NH]=C(N)c1ccccc1',
+                               1.0,
+                               None,
+                               None,
+                               None,
+                               None,
+                               [0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, -0.0, 0.0, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.9974165607242, 0.9974165607242,
+                                3.661930099076, 3.661930099076,
+                                3.661930099076, 3.661930099076,
+                                0.9974165607242, 0.9974165607242,
+                                6.736762477654, 1.809047390003,
+                                1.809047390003, 3.661930099076,
+                                3.661930099076, 3.661930099076,
+                                3.661930099076, 3.661930099076,
+                                3.661930099076, 3.661930099076,
+                                3.661930099076, 3.661930099076,
+                                3.661930099076, 3.661930099076,
+                                3.661930099076, 3.661930099076,
+                                3.661930099076, 3.661930099076,
+                                3.661930099076, 3.661930099076,
+                                3.661930099076, 3.661930099076,
+                                3.661930099076, -0.04816277792592,
+                                -0.04816277792592],
+                               [10.5, 1.1, 1.1, 0.0, 0.0, 0.0, 0.0]
+                               ),
+                              (None,
+                               None,
+                               'C[N+](C)(C)CC(=O)[O-]',
+                               '[NH]=C(N)c1ccccc1',
+                               1.0,
+                               1.0,
+                               1.0,
+                               1.0,
+                               0.0,
+                               [0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, -0.3703352413219,
+                                0.02664938770063, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.4541676554336, 0.4541676554336,
+                                0.02664938770063, 0.02664938770063,
+                                0.1489710476446, 0.1489710476446,
+                                0.02960027280666, 0.02960027280666,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0,
+                                -0.0],
+                               [10.5, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1]
+                               ),
+                              (None,
+                               None,
+                               'C[N+](C)(C)CC(=O)[O-]',
+                               '[NH]=C(N)c1ccccc1',
+                               0.0,
+                               0.0,
+                               0.0,
+                               0.0,
+                               1.0,
+                               [0.06697375586735, 0.06697375586735,
+                                0.06697375586735, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, -0.0, 0.0, 0.06697375586735,
+                                0.06697375586735, 0.06697375586735,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.9974165607242, 0.9974165607242,
+                                3.661930099076, 3.661930099076,
+                                3.661930099076, 3.661930099076,
+                                0.9974165607242, 0.9974165607242,
+                                6.736762477654, 1.809047390003,
+                                1.809047390003, 3.661930099076,
+                                3.661930099076, 3.661930099076,
+                                3.661930099076, 3.661930099076,
+                                3.661930099076, 3.661930099076,
+                                3.661930099076, 3.661930099076,
+                                3.661930099076, 3.661930099076,
+                                3.661930099076, 3.661930099076,
+                                3.661930099076, 3.661930099076,
+                                3.661930099076, 3.661930099076,
+                                3.661930099076, 3.661930099076,
+                                3.661930099076, -0.04816277792592,
+                                -0.04816277792592],
+                               [10.5, 1.1, 1.1, 0.0, 0.0, 0.0, 0.0]
+                               )
+                             ])
+    def test_dihedrals_in_alchemical_topology(self, pdb1, pdb2, smiles1, smiles2,
+                                           fep_lambda, coul1_lambda,
+                                           coul2_lambda, vdw_lambda,
+                                           bonded_lambda,
+                                           golden_proper_constants,
+                                           golden_improper_constants):
+        """
+        It validates the effects of lambda on atom parameters.
+        """
+        from peleffy.topology import Alchemizer
+        from peleffy.template.impact import WritableProper, WritableImproper
+
+        mol1, mol2, top1, top2 = \
+            generate_molecules_and_topologies_from_smiles(smiles1, smiles2)
+
+        alchemizer = Alchemizer(top1, top2)
+
+        top = alchemizer.get_alchemical_topology(fep_lambda=fep_lambda,
+                                                 coul1_lambda=coul1_lambda,
+                                                 coul2_lambda=coul2_lambda,
+                                                 vdw_lambda=vdw_lambda,
+                                                 bonded_lambda=bonded_lambda)
+
+        proper_constants = list()
+        improper_constants = list()
+
+        for proper in top.propers:
+            proper = WritableProper(proper)
+            proper_constants.append(proper.constant)
+
+        for improper in top.impropers:
+            improper = WritableImproper(improper)
+            improper_constants.append(improper.constant)
+
+        assert proper_constants == golden_proper_constants, \
+            'Unexpected proper constants'
+        assert improper_constants == golden_improper_constants, \
+            'Unexpected improper constants'
