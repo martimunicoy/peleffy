@@ -4,7 +4,6 @@ This module contains classes and methods related with alchemical modifications f
 
 
 from abc import ABC
-from dataclasses import dataclass
 
 
 class Alchemizer(object):
