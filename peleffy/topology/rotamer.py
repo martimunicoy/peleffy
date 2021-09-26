@@ -241,7 +241,7 @@ class MolecularGraph(nx.Graph):
 
     def _compute_rotamer_graph(self):
         """
-        It initializes the netwrokx.Graph with a Molecule object.
+        It initializes the network.Graph with a Molecule object.
         """
         rdkit_toolkit = RDKitToolkitWrapper()
         rot_bonds_atom_ids = \

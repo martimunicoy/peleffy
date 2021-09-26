@@ -47,11 +47,11 @@ class Alchemizer(object):
         from peleffy.topology import Mapper
 
         # Map atoms from both molecules
-        mapper = Mapper(self.molecule1, self.molecule2,
-                        include_hydrogens=True)
+        self._mapper = Mapper(self.molecule1, self.molecule2,
+                              include_hydrogens=True)
 
-        self._mapping = mapper.get_mapping()
-        self._mcs_mol = mapper.get_mcs()
+        self._mapping = self._mapper.get_mapping()
+        self._mcs_mol = self._mapper.get_mcs()
 
         # Join the two topologies
         self._joint_topology, self._non_native_atoms, \
@@ -67,8 +67,8 @@ class Alchemizer(object):
         # Find connections
         self._connections = self._find_connections()
 
-        # Fix graph of molecule 2
-        self._fix_molecule2_graph()
+        # Generate alchemical graph
+        self._graph, self._rotamers = self._generate_alchemical_graph()
 
     @property
     def topology1(self):
@@ -613,14 +613,92 @@ class Alchemizer(object):
 
         return connections
 
-    def _fix_molecule2_graph(self):
+    def _generate_alchemical_graph(self):
         """
-        If fixes the graph of molecule 2 to ensure that it has no core.
-        """
-        from peleffy.topology.rotamer import CoreLessMolecularGraph
+        If generates the alchemical graph and rotamers.
 
-        self.molecule2._graph = CoreLessMolecularGraph(self.molecule2)
-        self.molecule2._rotamers = self.molecule2.graph.get_rotamers()
+        Returns
+        -------
+        alchemical_graph : a peleffy.topology.rotamer.MolecularGraph object
+            The molecular graph containing the alchemical structure
+        rotamers : list[list]
+            The list of rotamers grouped by the branch they belong to
+        """
+        from copy import deepcopy
+
+        # Define mappers
+        mol1_mapped_atoms = [atom_pair[0] for atom_pair in self.mapping]
+        mol2_mapped_atoms = [atom_pair[1] for atom_pair in self.mapping]
+        mol2_to_mol1_map = dict(zip(mol2_mapped_atoms, mol1_mapped_atoms))
+
+        # Copy graph of molecule 1
+        alchemical_graph = deepcopy(self.molecule1._graph)
+
+        # Fix conflicts on common edges of both molecules
+        for mol2_edge in self.molecule2.graph.edges:
+            if (mol2_edge[0] in mol2_to_mol1_map.keys() and
+                    mol2_edge[1] in mol2_to_mol1_map.keys()):
+                # Get indices of both atoms of this edge
+                index1 = mol2_to_mol1_map[mol2_edge[0]]
+                index2 = mol2_to_mol1_map[mol2_edge[1]]
+
+                # Get weights in each graph
+                weight1 = alchemical_graph[index1][index2]['weight']
+                weight2 = \
+                    self.molecule2.graph[mol2_edge[0]][mol2_edge[1]]['weight']
+
+                # We keep the higher weight, so in case that a bond is
+                # rotatable in one molecule but not in the order
+                # one, it will be defined as rotatable
+                weight = int(max((weight1, weight2)))
+                alchemical_graph[index1][index2]['weight'] = weight
+
+                # Update nrot_neighbors list
+                node1 = alchemical_graph.nodes[index1]
+                node2 = alchemical_graph.nodes[index2]
+                if weight == 1:  # Rotatable
+                    if index2 in node1['nrot_neighbors']:
+                        node1['nrot_neighbors'].remove(index2)
+                    if index1 in node2['nrot_neighbors']:
+                        node2['nrot_neighbors'].remove(index1)
+                else:  # Non rotatable
+                    if index2 not in node1['nrot_neighbors']:
+                        node1['nrot_neighbors'].append(index2)
+                    if index1 not in node2['nrot_neighbors']:
+                        node2['nrot_neighbors'].append(index1)
+
+        # Add non native nodes
+        for mol2_node1 in self.molecule2.graph.nodes:
+            index1 = self._mol2_to_alc_map[mol2_node1]
+            if index1 in self._non_native_atoms:
+                name = self.molecule2.graph.nodes[mol2_node1]['pdb_name']
+                nrot_neighbors = \
+                    self.molecule2.graph.nodes[mol2_node1]['nrot_neighbors']
+                nrot_neighbors = [self._mol2_to_alc_map[neighbor]
+                                  for neighbor in nrot_neighbors]
+                alchemical_graph.add_node(index1, pdb_name=name,
+                                          nrot_neighbors=nrot_neighbors)
+
+                for mol2_node2 in self.molecule2.graph[mol2_node1]:
+                    index2 = self._mol2_to_alc_map[mol2_node2]
+                    if not alchemical_graph.has_edge(index1, index2):
+                        rotatable = \
+                            self.molecule2.graph[mol2_node1][mol2_node2]['weight']
+                        alchemical_graph.add_edge(index1, index2,
+                                                  weight=int(rotatable))
+
+        alchemical_graph._build_core_nodes()
+
+        rotamers = alchemical_graph.get_rotamers()
+
+        # Update core/branch location
+        for atom in self._joint_topology.atoms:
+            if atom.index in alchemical_graph.core_nodes:
+                atom.set_as_core()
+            else:
+                atom.set_as_branch()
+
+        return alchemical_graph, rotamers
 
     def to_pdb(self, path):
         """
@@ -654,19 +732,79 @@ class Alchemizer(object):
 
         rdkit_wrapper.to_pdb_file(molecule, path)
 
-    def rotamer_library_to_file(self, path):
+    def rotamer_library_to_file(self, path, fep_lambda=None,
+                                coul1_lambda=None, coul2_lambda=None,
+                                vdw_lambda=None, bonded_lambda=None):
         """
         It saves the alchemical rotamer library, which is the combination
         of the rotamer libraries of both molecules, to the path that
         is supplied.
+
+        Returns
+        -------
+        fep_lambda : float
+            The value to define an FEP lambda. This lambda affects
+            all the parameters. It needs to be contained between
+            0 and 1. Default is None
+        coul1_lambda : float
+            The value to define a coulombic lambda for exclusive atoms
+            of molecule 1. This lambda only affects coulombic parameters
+            of exclusive atoms of molecule 1. It needs to be contained
+            between 0 and 1. Default is None
+        coul2_lambda : float
+            The value to define a coulombic lambda for exclusive atoms
+            of molecule 2. This lambda only affects coulombic parameters
+            of exclusive atoms of molecule 2. It needs to be contained
+            between 0 and 1. Default is None
+        vdw_lambda : float
+            The value to define a vdw lambda. This lambda only
+            affects van der Waals parameters. It needs to be contained
+            between 0 and 1. Default is None
+        bonded_lambda : float
+            The value to define a coulombic lambda. This lambda only
+            affects bonded parameters. It needs to be contained
+            between 0 and 1. Default is None
 
         Parameters
         ----------
         path : str
             The path where to save the rotamer library
         """
-        # TODO build common graph and it should depend on the lambda too --> some bonds might be rotatable after the alchemical change
-        # TODO maybe PELE can accept multiple rotamer branches with duplicated atoms (unlikely but we should try it)
+
+        at_least_one = fep_lambda is not None or \
+            coul1_lambda is not None or coul2_lambda is not None or \
+            vdw_lambda is not None or bonded_lambda is not None
+
+        # Define lambdas
+        fep_lambda = FEPLambda(fep_lambda)
+        coul1_lambda = Coulombic1Lambda(coul1_lambda)
+        coul2_lambda = Coulombic2Lambda(coul2_lambda)
+        vdw_lambda = VanDerWaalsLambda(vdw_lambda)
+        bonded_lambda = BondedLambda(bonded_lambda)
+
+        lambda_set = LambdaSet(fep_lambda, coul1_lambda, coul2_lambda,
+                               vdw_lambda, bonded_lambda)
+
+        if (at_least_one and
+            lambda_set.get_lambda_for_bonded() == 0.0 and
+            lambda_set.get_lambda_for_vdw() == 0.0 and
+            lambda_set.get_lambda_for_coulomb1() == 0.0 and
+                lambda_set.get_lambda_for_coulomb2() == 0.0):
+            rotamers = self.molecule1.rotamers
+            mapping = False
+
+        elif (at_least_one and
+              lambda_set.get_lambda_for_bonded() == 1.0 and
+              lambda_set.get_lambda_for_vdw() == 1.0 and
+              lambda_set.get_lambda_for_coulomb1() == 1.0 and
+                  lambda_set.get_lambda_for_coulomb2() == 1.0):
+            rotamers = self.molecule2.rotamers
+            mapping = True
+
+        else:
+            rotamers = self._rotamers
+            mapping = False
+
         # Initial definitions
         pdb_atom_names = [atom.PDB_name.replace(' ', '_',)
                           for atom in self._joint_topology.atoms]
@@ -675,36 +813,34 @@ class Alchemizer(object):
 
         with open(path, 'w') as file:
             file.write('rot assign res {} &\n'.format(molecule_tag))
-            for i, rotamer_branches in enumerate(self.molecule1.rotamers):
+            for i, rotamer_branches in enumerate(rotamers):
                 if i > 0:
                     file.write('     newgrp &\n')
                 for rotamer in rotamer_branches:
                     index1 = rotamer.index1
                     index2 = rotamer.index2
-                    atom_name1 = pdb_atom_names[index1]
-                    atom_name2 = pdb_atom_names[index2]
-                    file.write('   sidelib FREE{} {} {} &\n'.format(
-                        rotamer.resolution, atom_name1, atom_name2))
-            for rotamer_branches in self.molecule2.rotamers:
-                file.write('     newgrp &\n')
-                for rotamer in rotamer_branches:
-                    index1 = rotamer.index1
-                    index2 = rotamer.index2
-                    # We need to prevent adding atoms that have been already added
-                    if (index1 in mol2_mapped_atoms and
-                            index2 in mol2_mapped_atoms):
-                        continue
 
-                    if index1 in self._non_native_atoms:
+                    if mapping:
                         index1 = self._mol2_to_alc_map[index1]
-
-                    if index2 in self._non_native_atoms:
                         index2 = self._mol2_to_alc_map[index2]
 
                     atom_name1 = pdb_atom_names[index1]
                     atom_name2 = pdb_atom_names[index2]
                     file.write('   sidelib FREE{} {} {} &\n'.format(
                         rotamer.resolution, atom_name1, atom_name2))
+
+    def _ipython_display_(self):
+        """
+        It returns a representation of the alchemical mapping.
+
+        Returns
+        -------
+        mapping_representation : a IPython display object
+            Displayable RDKit molecules with mapping information
+        """
+        from IPython.display import display
+
+        return display(self._mapper)
 
 
 class Lambda(ABC):
