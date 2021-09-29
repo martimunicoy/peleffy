@@ -69,6 +69,9 @@ class Alchemizer(object):
         # Generate alchemical graph
         self._graph, self._rotamers = self._generate_alchemical_graph()
 
+        # Assign PDB atom names
+        self._assign_pdb_atom_names()
+
     @property
     def topology1(self):
         """
@@ -436,7 +439,6 @@ class Alchemizer(object):
 
         # General initializers
         logger = Logger()
-        rdkit_wrapper = RDKitToolkitWrapper()
 
         # First initialize the joint topology with topology 1
         joint_topology = deepcopy(self.topology1)
@@ -457,8 +459,6 @@ class Alchemizer(object):
         mol2_to_mol1_map = dict(zip(mol2_mapped_atoms, mol1_mapped_atoms))
 
         # Add atoms from topology 2 that are missing in topology 1
-        atom_names = self.molecule1.get_pdb_atom_names()
-        mol2_elements = rdkit_wrapper.get_elements(self.molecule2)
         mol2_to_alc_map = dict()
         for atom_idx, atom in enumerate(self.topology2.atoms):
             if atom_idx not in mol2_mapped_atoms:
@@ -468,17 +468,6 @@ class Alchemizer(object):
                 new_index = len(joint_topology.atoms)
                 new_atom.set_index(new_index)
                 mol2_to_alc_map[atom_idx] = new_index
-
-                # Handle name of new atom
-                counter = 1
-                new_name = '{:^4}'.format(str(mol2_elements[atom_idx]) +
-                                          str(counter))
-                while new_name in atom_names:
-                    counter += 1
-                    new_name = '{:^4}'.format(str(mol2_elements[atom_idx]) +
-                                              str(counter))
-                atom_names.append(new_name)
-                new_atom.set_PDB_name(new_name)
 
                 # Handle core allocation of new atom
                 new_atom.set_as_branch()
@@ -810,6 +799,35 @@ class Alchemizer(object):
                 atom.set_as_branch()
 
         return alchemical_graph, rotamers
+
+    def _assign_pdb_atom_names(self):
+        """
+        It assigns consistent PDB atom names to the alchemical molecule.
+        """
+        from peleffy.topology import Molecule
+        from peleffy.utils.toolkits import RDKitToolkitWrapper
+
+        rdkit_wrapper = RDKitToolkitWrapper()
+
+        # Combine molecules
+        mol_combo = \
+            rdkit_wrapper.alchemical_combination(self.molecule1.rdkit_molecule,
+                                                 self.molecule2.rdkit_molecule,
+                                                 self.mapping,
+                                                 self.connections)
+
+        # Generate a dummy peleffy Molecule with the required information
+        # to extract PDB atom names
+        molecule = Molecule()
+        molecule._rdkit_molecule = mol_combo
+        molecule.set_tag('HYB')
+
+        # Extract PDB atom names
+        atom_names = rdkit_wrapper.get_atom_names(molecule)
+
+        # Assign PDB atom names
+        for atom_idx, atom in enumerate(self._joint_topology.atoms):
+            atom.set_PDB_name(atom_names[atom_idx].replace(' ', '_'))
 
     def hybrid_to_pdb(self, path):
         """
