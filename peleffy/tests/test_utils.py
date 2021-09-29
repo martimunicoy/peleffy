@@ -158,6 +158,39 @@ class TestLogger(object):
             assert output == 'Critical message\n', \
                 'Unexpected logger message at standard output'
 
+    def test_get_logger_level(self):
+        """
+        It tests the level getter of peleffy's logger.
+        """
+        from peleffy.utils import Logger
+
+        logger = Logger()
+
+        # Check debug level
+        logger.set_level('DEBUG')
+        level = logger.get_level()
+        assert level == 'DEBUG', 'Unexpected Logger level'
+
+        # Check info level
+        logger.set_level('INFO')
+        level = logger.get_level()
+        assert level == 'INFO', 'Unexpected Logger level'
+
+        # Check warning level
+        logger.set_level('WARNING')
+        level = logger.get_level()
+        assert level == 'WARNING', 'Unexpected Logger level'
+
+        # Check error level
+        logger.set_level('ERROR')
+        level = logger.get_level()
+        assert level == 'ERROR', 'Unexpected Logger level'
+
+        # Check critical level
+        logger.set_level('CRITICAL')
+        level = logger.get_level()
+        assert level == 'CRITICAL', 'Unexpected Logger level'
+
 
 class TestOutputPathHandler(object):
     """
@@ -849,3 +882,25 @@ class TestPDBFile(object):
         with pytest.raises(ValueError):
             PDBreader = PDBFile(PATH_COMPLEX_PDB)
             _ = PDBreader.get_molecules_from_chain(selected_chain='A')
+
+
+class TestGeneralUtils(object):
+    """
+    It contains all the tests to validate general util methods.
+    """
+    def test_path_exists(self):
+        """
+        It tests the method to check if a path exists.
+        """
+
+        from peleffy.utils import check_if_path_exists
+        from peleffy.utils import temporary_cd
+
+        # Initialize temporary directory to check the method
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                check_if_path_exists(tmpdir)
+
+        # It should no longer work once the directory is removed
+        with pytest.raises(ValueError):
+            check_if_path_exists(tmpdir)

@@ -8,6 +8,20 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
+1.4.0 - Alchemistry and AMBER support
+---------------------------------------------------------
+
+This is a minor release of peleffy that adds a new module to generate alchemical templates. It also adds support for AMBER's implementation in PELE.
+
+New features
+""""""""""""
+- `PR #155 <https://github.com/martimunicoy/peleffy/pull/155>`_: Adds support for PELE's AMBER with a new Impact template
+
+Tests added
+"""""""""""
+- `PR #155 <https://github.com/martimunicoy/peleffy/pull/155>`_: Extends the tests for utils module and introduces new tests for the new AMBER-compatible Impact template
+
+
 1.3.4 - OpenFF-2.0 Support
 ---------------------------------------------------------
 
