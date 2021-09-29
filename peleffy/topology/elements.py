@@ -80,7 +80,7 @@ class _TopologyElement(object):
         return len(self._writable_attrs)
 
     def apply_lambda(self, attributes_to_modify, lambda_value,
-                     reverse=False):
+                     reverse=False, final_state=None):
         """
         Given a lambda value, it modifies a set of attributes of
         this topological element. A lambda equal to 0 will keep the
@@ -99,10 +99,26 @@ class _TopologyElement(object):
         reverse : bool
             When set to true the effects of lambda will be the
             opposite
+        final_state : a peleffy.topology.topology._TopologyElement object
+            The topology element that represents the final state when
+            lambda equals 1.0. Default is None, which means that the
+            final state is not defined and therefore the topological
+            element will disappear or will start from scratch
         """
         from peleffy.utils import Logger
 
         logger = Logger()
+
+        # Check final_state
+        if final_state is not None:
+            if type(final_state) != type(self):
+                logger.error([f'Final state must belong to the ' +
+                              f'same topological element as ' +
+                              f'the element that wants to be ' +
+                              f'modified with a lambda value. ' +
+                              f'It will not be changed.'])
+
+                return
 
         if not reverse:
             lambda_value = 1.0 - lambda_value
@@ -118,6 +134,12 @@ class _TopologyElement(object):
 
             if value is not None:
                 value = value * lambda_value
+
+            if final_state is not None:
+                final_value = getattr(final_state, '_' + attribute)
+
+                if final_value is not None:
+                    value = value + (1.0 - lambda_value) * final_value
 
             setattr(self, '_' + attribute, value)
 
@@ -612,7 +634,7 @@ class Bond(_TopologyElement):
 
     _name = 'Bond'
     _writable_attrs = ['atom1_idx', 'atom2_idx', 'spring_constant', 'eq_dist']
-    _lambda_changeable = ['spring_constant']
+    _lambda_changeable = ['spring_constant', 'eq_dist']
 
     def __init__(self, index=-1, atom1_idx=None, atom2_idx=None,
                  spring_constant=None, eq_dist=None):
@@ -740,7 +762,7 @@ class Angle(_TopologyElement):
     _name = 'Angle'
     _writable_attrs = ['atom1_idx', 'atom2_idx', 'atom3_idx',
                        'spring_constant', 'eq_angle']
-    _lambda_changeable = ['spring_constant']
+    _lambda_changeable = ['spring_constant', 'eq_angle']
 
     def __init__(self, index=-1, atom1_idx=None, atom2_idx=None,
                  atom3_idx=None, spring_constant=None, eq_angle=None):

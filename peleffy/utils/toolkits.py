@@ -853,8 +853,45 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         return image
 
+    def align_molecules(self, mol1, mol2, atom_mapping=None):
+        """
+        It aligns the two molecules that are given, taking the first
+        one as reference.
+
+        Parameters
+        ----------
+        mol1 : an RDKit.molecule object
+            The first molecule to use as reference in the alignment
+        mol2 : an RDKit.molecule object
+            The second molecule which will be aligned over the first one
+        atom_mapping : list[tuple[int, int]]
+            The list containing the mapping between atoms of both
+            molecules. First index of each pair belongs to molecule
+            1, the second one belongs to molecule 2
+
+        Returns
+        -------
+        aligned_mol2 : an RDKit.molecule object
+            The resulting mol2 after the alignment. It is a new copy
+            of the original mol2
+        """
+        from copy import deepcopy
+        from rdkit import Chem
+
+        # Make a copy of molecule 2
+        mol2 = deepcopy(mol2)
+
+        # Generate inverse mapping
+        inverse_mapping = [(idxs[1], idxs[0]) for idxs in atom_mapping]
+
+        # Align molecule 2 to molecule 1
+        Chem.rdMolAlign.AlignMol(mol2, mol1,
+                                 atomMap=inverse_mapping)
+
+        return mol2
+
     def alchemical_combination(self, mol1, mol2, atom_mapping,
-                               connections, mcs_mol):
+                               connections):
         """
         Given two molecules, it return the alchemical combination of
         them. Both molecules are superposed taking the first one
@@ -874,9 +911,6 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         connections : list[tuple[int, int]]
             The list of connections between molecule 1 and non
             native atoms of molecule 2
-        mcs_mol : an RDKit.molecule object
-            The molecule representinc the MCS substructure of both
-            molecules
 
         Returns
         -------
@@ -885,20 +919,18 @@ class RDKitToolkitWrapper(ToolkitWrapper):
             molecules
         """
         from rdkit import Chem
-        from copy import deepcopy
 
-        # Make a copy of molecule 2
-        mol2 = deepcopy(mol2)
-
-        # Generate inverse mapping
-        inverse_mapping = [(idxs[1], idxs[0]) for idxs in atom_mapping]
-
-        # Align molecule 2 to molecule 1
-        Chem.rdMolAlign.AlignMol(mol2, mol1,
-                                 atomMap=inverse_mapping)
+        # Align mol2 to mol1
+        mol2_aligned = self.align_molecules(mol1, mol2, atom_mapping)
 
         # Remove common substructure from molecule 2
-        mol2_truncated = Chem.DeleteSubstructs(mol2, mcs_mol)
+        mol2_truncated = Chem.EditableMol(mol2_aligned)
+        atom_ids_to_remove = [pair[1] for pair in atom_mapping]
+
+        for atom in sorted(atom_ids_to_remove, reverse=True):
+            mol2_truncated.RemoveAtom(atom)
+
+        mol2_truncated = mol2_truncated.GetMol()
 
         # Combine molecule1 with truncated molecule 2
         mol_combo = Chem.CombineMols(mol1,
@@ -917,10 +949,6 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         pdb_info.SetResidueNumber(1)
         pdb_info.SetChainId('L')
         pdb_info.SetIsHeteroAtom(True)
-        for atom in mol_combo.GetAtoms():
-            atom_name = atom.GetPDBResidueInfo().GetName()
-            pdb_info.SetName(atom_name)
-            atom.SetPDBResidueInfo(pdb_info)
 
         return mol_combo
 

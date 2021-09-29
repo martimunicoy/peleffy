@@ -5,4 +5,4 @@ from .zmatrix import ZMatrix
 from .rotamer import RotamerLibrary
 from .conformer import BCEConformations
 from .mapper import Mapper
-from .alchemy import Alchemizer
+from .alchemistry import Alchemizer
