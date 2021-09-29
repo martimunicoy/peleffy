@@ -3617,7 +3617,7 @@ class TestAlchemistry(object):
 
         with tempfile.TemporaryDirectory() as tmpdir:
             with temporary_cd(tmpdir):
-                output_path = os.path.join(tmpdir, 'alchemical_structure.pdb')
+                output_path = os.path.join(tmpdir, 'hybrid.pdb')
                 alchemizer.hybrid_to_pdb(output_path)
 
                 compare_files(reference, output_path)

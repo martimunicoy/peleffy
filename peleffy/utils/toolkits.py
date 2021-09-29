@@ -299,7 +299,7 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         for atom in rdkit_molecule.GetAtoms():
             pdb_info = atom.GetPDBResidueInfo()
 
-            if pdb_info is not None:
+            if pdb_info is not None and pdb_info.GetName() != '':
                 atom_names.append(pdb_info.GetName())
             else:
                 element = atom.GetSymbol()
@@ -460,27 +460,28 @@ class RDKitToolkitWrapper(ToolkitWrapper):
             Path to write to
         """
         from rdkit import Chem
+        from copy import deepcopy
 
         assert Path(path).suffix == '.pdb', 'Wrong extension'
 
-        rdkit_molecule = molecule.rdkit_molecule
+        rdkit_molecule = deepcopy(molecule.rdkit_molecule)
 
-        pdb_block = Chem.rdmolfiles.MolToPDBBlock(rdkit_molecule)
         names = molecule.get_pdb_atom_names()
         tag = molecule.tag
 
-        renamed_pdb_block = ''
-        atom_counter = 0
-        for line in pdb_block.split('\n'):
-            if line.startswith('HETATM'):
-                renamed_pdb_block += line[:12] + names[atom_counter] \
-                                     + ' ' + tag + line[20:] + '\n'
-                atom_counter += 1
-            else:
-                renamed_pdb_block += line + '\n'
+        for idx, atom in enumerate(rdkit_molecule.GetAtoms()):
+            pdb_info = atom.GetPDBResidueInfo()
+            if pdb_info is None:
+                pdb_info = Chem.AtomPDBResidueInfo()
+                pdb_info.SetResidueNumber(1)
+                pdb_info.SetIsHeteroAtom(True)
+            pdb_info.SetResidueName(tag)
+            pdb_info.SetName(names[idx])
+            if pdb_info.GetChainId() in (' ', ''):
+                pdb_info.SetChainId('L')
+            atom.SetPDBResidueInfo(pdb_info)
 
-        with open(path, 'w') as f:
-            f.write(renamed_pdb_block)
+        Chem.rdmolfiles.MolToPDBFile(rdkit_molecule, path)
 
     def to_sdf_file(self, molecule, path):
         """
@@ -949,6 +950,12 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         pdb_info.SetResidueNumber(1)
         pdb_info.SetChainId('L')
         pdb_info.SetIsHeteroAtom(True)
+        for atom in mol_combo.GetAtoms():
+            atom.SetPDBResidueInfo(pdb_info)
+
+        # Set all atoms as non-aromatic to avoid problems when kekulizing
+        for atom in mol_combo.GetAtoms():
+            atom.SetIsAromatic(False)
 
         return mol_combo
 
