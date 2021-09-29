@@ -17,7 +17,9 @@ class Impact(object):
     template.
     """
 
-    def __init__(self, topology):
+    H_6R_OF_2 = 0.5612310241546865  # The half of the sixth root of 2
+
+    def __init__(self, topology, for_amber=False):
         """
         Initializes an Impact object.
 
@@ -26,6 +28,11 @@ class Impact(object):
         topology : a Topology object
             The molecular topology representation to write as a
             Impact template
+        for_amber : bool
+            Whether to save an Impact file compatible with PELE's
+            Amber force field implementation or not. Default is
+            False which will create an Impact file compatible
+            with OPLS2005
 
         Examples
         --------
@@ -38,7 +45,7 @@ class Impact(object):
 
         >>> from peleffy.forcefield import OpenForceField
 
-        >>> openff = OpenForceField('openff_unconstrained-1.2.1.offxml')
+        >>> openff = OpenForceField('openff_unconstrained-2.0.0.offxml')
         >>> parameters = openff.parameterize(molecule)
 
         >>> from peleffy.topology import Topology
@@ -50,6 +57,26 @@ class Impact(object):
         >>> impact = Impact(topology)
         >>> impact.to_file('molz')
 
+        Write the Impact template of a peleffy's molecule compatible with PELE's Amber forcefield implementation
+
+        >>> from peleffy.topology import Molecule
+
+        >>> molecule = Molecule('molecule.pdb')
+
+        >>> from peleffy.forcefield import OpenForceField
+
+        >>> openff = OpenForceField('openff_unconstrained-2.0.0.offxml')
+        >>> parameters = openff.parameterize(molecule)
+
+        >>> from peleffy.topology import Topology
+
+        >>> topology = Topology(molecule, parameters)
+
+        >>> from peleffy.template import Impact
+
+        >>> impact = Impact(topology, for_amber=True)
+        >>> impact.to_file('molz')
+
         """
         import peleffy
 
@@ -59,6 +86,7 @@ class Impact(object):
                 isinstance(topology, peleffy.topology.topology.Topology)):
             raise TypeError('Invalid input molecule for Impact template')
 
+        self._for_amber = for_amber
         self._topology = deepcopy(topology)
         self._molecule = self._topology.molecule
         self._sort()
@@ -231,6 +259,10 @@ class Impact(object):
         file.write('\n')
         file.write('* File generated with peleffy-{}\n'.format(
             peleffy.__version__))
+        if self._for_amber:
+            file.write('* Compatible with PELE\'s AMBER implementation\n')
+        else:
+            file.write('* Compatible with PELE\'s OPLS implementation\n')
         file.write('*\n')
 
     def _write_resx(self, file):
@@ -303,7 +335,10 @@ class Impact(object):
             file.write('{:5d}'.format(w_atom.index))
             file.write(' ')
             # Sigma
-            file.write('{: 8.4f}'.format(w_atom.sigma))
+            if self._for_amber:
+                file.write('{: 8.4f}'.format(w_atom.sigma * self.H_6R_OF_2))
+            else:
+                file.write('{: 8.4f}'.format(w_atom.sigma))
             file.write(' ')
             # Epsilon
             file.write('{: 8.4f}'.format(w_atom.epsilon))

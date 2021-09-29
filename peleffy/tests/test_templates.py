@@ -100,9 +100,65 @@ class TestImpactTemplate(object):
                 # Compare the reference template and the generated template
                 compare_files(file1=TEMPLATE_ETLZ, file2='etlz')
 
+    def test_writer_OFF_for_AMBER(self):
+        """
+        It tests the writer attribute of the Impact class using OFF
+        to parameterize and the compatibility mode for PELE's AMBER
+        implementation.
+        """
+
+        TEMPLATE_METZ = get_data_file_path('tests/metz_amber')
+        TEMPLATE_MATZ = get_data_file_path('tests/malz_amber')
+        TEMPLATE_ETLZ = get_data_file_path('tests/etlz_amber')
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                # Generates the template for methane
+                pdb_path = get_data_file_path('ligands/methane.pdb')
+                molecule = Molecule(pdb_path)
+                openff = OpenForceField(self.OPENFF_FORCEFIELD)
+                parameters = openff.parameterize(molecule)
+                topology = Topology(molecule, parameters)
+
+                # Generates the impact template for methane
+                impact = Impact(topology, for_amber=True)
+                impact.to_file('metz')
+
+                # Compare the reference template and the generated template
+                compare_files(file1=TEMPLATE_METZ, file2='metz')
+
+                # Generates the template for malonate
+                pdb_path = get_data_file_path('ligands/malonate.pdb')
+                molecule = Molecule(pdb_path)
+                openff = OpenForceField(self.OPENFF_FORCEFIELD)
+                parameters = openff.parameterize(molecule)
+                topology = Topology(molecule, parameters)
+
+                # Generates the impact template for malonate
+                impact = Impact(topology, for_amber=True)
+                impact.to_file('malz')
+
+                # Compare the reference template and the generated template
+                compare_files(file1=TEMPLATE_MATZ, file2='malz')
+
+                # Generates the template for ethylene
+                pdb_path = get_data_file_path('ligands/ethylene.pdb')
+                molecule = Molecule(pdb_path, tag='ETL')  # Note that in this case we are assigning a tag to the molecule which will be used in the Impact template
+                openff = OpenForceField(self.OPENFF_FORCEFIELD)
+                parameters = openff.parameterize(molecule)
+                topology = Topology(molecule, parameters)
+
+                # Generates the impact template for ethylene
+                impact = Impact(topology, for_amber=True)
+                impact.to_file('etlz')
+
+                # Compare the reference template and the generated template
+                compare_files(file1=TEMPLATE_ETLZ, file2='etlz')
+
     def test_writer_OPLS(self):
         """
-        It tests the writer attribute of the Impact class using OPLS to parameterize.
+        It tests the writer attribute of the Impact class using OPLS
+        to parameterize.
         """
         from .utils import parameterize_opls2005
 
@@ -158,6 +214,71 @@ class TestImpactTemplate(object):
 
                 # Generates the impact template for ethylene
                 impact = Impact(topology)
+                impact.to_file('etlz')
+
+                # Compare the reference template and the generated template
+                compare_files(file1=TEMPLATE_ETLZ_OPLS, file2='etlz')
+
+    def test_writer_OPLS_for_AMBER(self):
+        """
+        It tests the writer attribute of the Impact class using OPLS
+        to parameterize and the compatibility mode for PELE's AMBER
+        implementation.
+        """
+        from .utils import parameterize_opls2005
+
+        TEMPLATE_METZ_OPLS = get_data_file_path('tests/OPLS_metz_amber')
+        TEMPLATE_MALZ_OPLS = get_data_file_path('tests/OPLS_malz_amber')
+        TEMPLATE_ETLZ_OPLS = get_data_file_path('tests/OPLS_etlz_amber')
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                # Generates the template for methane using OPLS
+                opls2005 = OPLS2005ForceField()
+                pdb_path = get_data_file_path('ligands/methane.pdb')
+                molecule = Molecule(pdb_path)
+                ffld_file = get_data_file_path('tests/MET_ffld_output.txt')
+                parameters = parameterize_opls2005(opls2005,
+                                                   molecule,
+                                                   ffld_file)
+                topology = Topology(molecule, parameters)
+
+                # Generates the impact template for methane
+                impact = Impact(topology, for_amber=True)
+                impact.to_file('metz')
+
+                # Compare the reference template and the generated template
+                compare_files(file1=TEMPLATE_METZ_OPLS, file2='metz')
+
+                # Generates the template for malonate using OPLS
+                opls2005 = OPLS2005ForceField()
+                pdb_path = get_data_file_path('ligands/malonate.pdb')
+                molecule = Molecule(pdb_path)
+                ffld_file = get_data_file_path('tests/MAL_ffld_output.txt')
+                parameters = parameterize_opls2005(opls2005,
+                                                   molecule,
+                                                   ffld_file)
+                topology = Topology(molecule, parameters)
+
+                # Generates the impact template for malonate
+                impact = Impact(topology, for_amber=True)
+                impact.to_file('malz')
+
+                # Compare the reference template and the generated template
+                compare_files(file1=TEMPLATE_MALZ_OPLS, file2='malz')
+
+                # Generates the template for ethylene using OPLS
+                opls2005 = OPLS2005ForceField()
+                pdb_path = get_data_file_path('ligands/ethylene.pdb')
+                molecule = Molecule(pdb_path, tag='ETL')
+                ffld_file = get_data_file_path('tests/ETL_ffld_output.txt')
+                parameters = parameterize_opls2005(opls2005,
+                                                   molecule,
+                                                   ffld_file)
+                topology = Topology(molecule, parameters)
+
+                # Generates the impact template for ethylene
+                impact = Impact(topology, for_amber=True)
                 impact.to_file('etlz')
 
                 # Compare the reference template and the generated template
