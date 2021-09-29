@@ -45,28 +45,28 @@ def parse_args(args):
     parser.add_argument("pdb_file", metavar="PDB FILE", type=str,
                         help="Path PDB file to parameterize")
     parser.add_argument("-f", "--forcefield", metavar="NAME",
-                        type=str, help="OpenForceField's forcefield name. "
-                        + "Default is " + str(DEFAULT_OFF_FORCEFIELD),
+                        type=str, help="OpenForceField's forcefield name. " +
+                        "Default is " + str(DEFAULT_OFF_FORCEFIELD),
                         default=DEFAULT_OFF_FORCEFIELD)
     parser.add_argument("-r", "--resolution", metavar="INT", type=int,
-                        help="Rotamer library resolution in degrees. "
-                        + "Default is " + str(DEFAULT_RESOLUTION),
+                        help="Rotamer library resolution in degrees. " +
+                        "Default is " + str(DEFAULT_RESOLUTION),
                         default=DEFAULT_RESOLUTION)
     parser.add_argument("-o", "--output", metavar="PATH",
-                        help="Output path. Default is the current working "
-                        + "directory")
+                        help="Output path. Default is the current working " +
+                        "directory")
     parser.add_argument("--conformations_info_path", default=None, type=str,
-                        help="Path to the folder containing the BCE output"
-                        + " used to collect conformations for PELE")
+                        help="Path to the folder containing the BCE output" +
+                        " used to collect conformations for PELE")
     parser.add_argument('--with_solvent', dest='with_solvent',
                         help="Generate solvent parameters for OBC",
                         action='store_true')
     parser.add_argument('--as_datalocal', dest='as_datalocal',
-                        help="Output will be saved following PELE's DataLocal "
-                        + "hierarchy", action='store_true')
+                        help="Output will be saved following PELE's " +
+                        "DataLocal hierarchy", action='store_true')
     parser.add_argument('-c', '--charge_method', metavar="NAME",
-                        type=str, help="The name of the method to use to "
-                        + "compute charges", default=DEFAULT_CHARGE_METHOD,
+                        type=str, help="The name of the method to use to " +
+                        "compute charges", default=DEFAULT_CHARGE_METHOD,
                         choices=AVAILABLE_CHARGE_METHODS)
     parser.add_argument('--charges_from_file', metavar="PATH",
                         type=str, help="The path to the file with charges",
@@ -77,8 +77,8 @@ def parse_args(args):
     parser.add_argument('--include_terminal_rotamers',
                         dest="include_terminal_rotamers",
                         action='store_true',
-                        help="Not exclude terminal rotamers "
-                        + "when building the rotamer library")
+                        help="Not exclude terminal rotamers " +
+                        "when building the rotamer library")
     parser.add_argument('-s', '--silent',
                         dest="silent",
                         action='store_true',
@@ -87,12 +87,18 @@ def parse_args(args):
                         dest="debug",
                         action='store_true',
                         help="Activate debug mode")
+    parser.add_argument('--for_amber',
+                        dest="for_amber",
+                        action='store_true',
+                        help="Generate Impact template compatible with " +
+                             "PELE\'s AMBER implementation")
 
     parser.set_defaults(as_datalocal=False)
     parser.set_defaults(with_solvent=False)
     parser.set_defaults(include_terminal_rotamers=False)
     parser.set_defaults(silent=False)
     parser.set_defaults(debug=False)
+    parser.set_defaults(for_amber=False)
 
     parsed_args = parser.parse_args(args)
 
@@ -107,7 +113,8 @@ def run_peleffy(pdb_file,
                 chain=None,
                 exclude_terminal_rotamers=True,
                 output=None, with_solvent=False, as_datalocal=False,
-                conformation_path=None):
+                conformation_path=None,
+                for_amber=False):
     """
     It runs peleffy.
 
@@ -139,8 +146,11 @@ def run_peleffy(pdb_file,
         not
     conformation_path: str
         Path to the BCE server outupt to use to extract dihedral angles
-    dihedral_mode: str
-        Select what kind of dihedrals to extract (all or only flexible)
+    for_amber : bool
+        Whether to generate an Impact template compatible with
+        PELE's AMBER implementation or not. Default is not, which
+        will create a template compatible with the standard OPLS2005
+        force field of PELE
     """
     if charges_from_file is not None:
         charge_method_str = 'file\n' \
@@ -161,6 +171,7 @@ def run_peleffy(pdb_file,
     log.info(' - Parameterization:')
     log.info('   - Force field:', forcefield_name)
     log.info('   - Charge method:', charge_method_str)
+    log.info('   - For AMBER:', for_amber)
     log.info(' - Rotamer library:')
     log.info('   - Resolution:', resolution)
     log.info('   - Exclude terminal rotamers:', exclude_terminal_rotamers)
@@ -221,7 +232,7 @@ def run_peleffy(pdb_file,
     log.info('   - {} impropers'.format(len(topology.impropers)))
 
     # Generate the impact template
-    impact = Impact(topology)
+    impact = Impact(topology, for_amber=for_amber)
     impact.to_file(output_handler.get_impact_template_path())
 
     # Generate the solvent template
@@ -290,7 +301,8 @@ def main(args):
                 as_datalocal=args.as_datalocal,
                 chain=args.chain,
                 conformation_path=args.conformations_info_path,
-                charges_from_file=args.charges_from_file)
+                charges_from_file=args.charges_from_file,
+                for_amber=args.for_amber)
 
 
 if __name__ == '__main__':
