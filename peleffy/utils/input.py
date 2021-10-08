@@ -234,3 +234,39 @@ class PDBFile(object):
             core_constraints=core_constraints)
 
         return molecules
+
+    @property
+    def is_complex(self):
+        """
+        Check whether the PDB fetched corresponds to a protein-ligand complex 
+        or not.
+
+        Returns
+        -------
+        is_complex : bool
+            True if it is a protein-ligand complex.
+        """
+
+        if any(line.startswith('ATOM') for line in self.pdb_content) and \
+           any(line.startswith('HETATM') for line in self.pdb_content):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def is_unique(molecules):
+        """
+        Check whether a list of molecules contains only one or multiple 
+        elements. 
+
+        Parameters
+        ----------
+        molecule : list[peleffy.topology.Molecule]
+            A list of peleffy's Molecule object.
+
+        Returns
+        -------
+        is_unique : bool
+            True if it only contains one molecule.
+        """
+        return len(molecules) == 1
