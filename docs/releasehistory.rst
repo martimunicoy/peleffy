@@ -17,10 +17,14 @@ New features
 """"""""""""
 - `PR #155 <https://github.com/martimunicoy/peleffy/pull/155>`_: Adds support for PELE's AMBER with a new Impact template
 
+Bugfixes
+""""""""
+- `PR #158 <https://github.com/martimunicoy/peleffy/pull/155>`_: Fix minor bug when using the --chain flag and introduces checks for the input PDB in the peleffy.main module. 
+
 Tests added
 """""""""""
 - `PR #155 <https://github.com/martimunicoy/peleffy/pull/155>`_: Extends the tests for utils module and introduces new tests for the new AMBER-compatible Impact template
-
+- `PR #158 <https://github.com/martimunicoy/peleffy/pull/155>`_: Extends the tests for the new checks in the peleffy.main module.
 
 1.3.4 - OpenFF-2.0 Support
 ---------------------------------------------------------
