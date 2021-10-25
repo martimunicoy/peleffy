@@ -337,6 +337,7 @@ class Alchemizer(object):
                                            reverse=False,
                                            final_state=mol2_angle)
 
+        # Joint topology cannot have mutual propers
         for proper_idx, proper in enumerate(alchemical_topology.propers):
             if proper_idx in self._exclusive_propers:
                 proper.apply_lambda(["constant"],
@@ -348,30 +349,7 @@ class Alchemizer(object):
                                     lambda_set.get_lambda_for_bonded(),
                                     reverse=True)
 
-            # TODO dihedrals cannot have mutual propers, all of them need to be non native or exclusive
-            atom1_idx = proper.atom1_idx
-            atom2_idx = proper.atom2_idx
-            atom3_idx = proper.atom3_idx
-            atom4_idx = proper.atom4_idx
-            if (atom1_idx in mol1_mapped_atoms and
-                atom2_idx in mol1_mapped_atoms and
-                atom3_idx in mol1_mapped_atoms and
-                    atom4_idx in mol1_mapped_atoms):
-                mol_ids = (mol1_to_mol2_map[atom1_idx],
-                           mol1_to_mol2_map[atom2_idx],
-                           mol1_to_mol2_map[atom3_idx],
-                           mol1_to_mol2_map[atom4_idx])
-
-                for mol2_proper in self.topology2.propers:
-                    if (mol2_proper.atom1_idx in mol_ids and
-                        mol2_proper.atom2_idx in mol_ids and
-                        mol2_proper.atom3_idx in mol_ids and
-                            mol2_proper.atom4_idx in mol_ids):
-                        proper.apply_lambda(["constant"],
-                                           lambda_set.get_lambda_for_bonded(),
-                                           reverse=False,
-                                           final_state=mol2_proper)
-
+        # Joint topology cannot have mutual impropers
         for improper_idx, improper in enumerate(alchemical_topology.impropers):
             if improper_idx in self._exclusive_impropers:
                 improper.apply_lambda(["constant"],
@@ -382,30 +360,6 @@ class Alchemizer(object):
                 improper.apply_lambda(["constant"],
                                       lambda_set.get_lambda_for_bonded(),
                                       reverse=True)
-
-            # TODO dihedrals cannot have mutual propers, all of them need to be non native or exclusive
-            atom1_idx = improper.atom1_idx
-            atom2_idx = improper.atom2_idx
-            atom3_idx = improper.atom3_idx
-            atom4_idx = improper.atom4_idx
-            if (atom1_idx in mol1_mapped_atoms and
-                atom2_idx in mol1_mapped_atoms and
-                atom3_idx in mol1_mapped_atoms and
-                    atom4_idx in mol1_mapped_atoms):
-                mol_ids = (mol1_to_mol2_map[atom1_idx],
-                           mol1_to_mol2_map[atom2_idx],
-                           mol1_to_mol2_map[atom3_idx],
-                           mol1_to_mol2_map[atom4_idx])
-
-                for mol2_improper in self.topology2.impropers:
-                    if (mol2_improper.atom1_idx in mol_ids and
-                        mol2_improper.atom2_idx in mol_ids and
-                        mol2_improper.atom3_idx in mol_ids and
-                            mol2_improper.atom4_idx in mol_ids):
-                        improper.apply_lambda(["constant"],
-                                              lambda_set.get_lambda_for_bonded(),
-                                              reverse=False,
-                                              final_state=mol2_improper)
 
         return alchemical_topology
 
@@ -553,25 +507,22 @@ class Alchemizer(object):
             atom3_idx = proper.atom3_idx
             atom4_idx = proper.atom1_idx
 
-            if (atom1_idx not in mol2_mapped_atoms or
-                atom2_idx not in mol2_mapped_atoms or
-                atom3_idx not in mol2_mapped_atoms or
-                    atom4_idx not in mol2_mapped_atoms):
-                new_proper = deepcopy(proper)
+            # Add a copy of the proper
+            new_proper = deepcopy(proper)
 
-                # Handle index of new atom
-                new_index = len(joint_topology.propers)
-                new_proper.set_index(new_index)
+            # Handle index of new atom
+            new_index = len(joint_topology.propers)
+            new_proper.set_index(new_index)
 
-                # Handle atom indices
-                new_proper.set_atom1_idx(mol2_to_alc_map[atom1_idx])
-                new_proper.set_atom2_idx(mol2_to_alc_map[atom2_idx])
-                new_proper.set_atom3_idx(mol2_to_alc_map[atom3_idx])
-                new_proper.set_atom4_idx(mol2_to_alc_map[atom4_idx])
+            # Handle atom indices
+            new_proper.set_atom1_idx(mol2_to_alc_map[atom1_idx])
+            new_proper.set_atom2_idx(mol2_to_alc_map[atom2_idx])
+            new_proper.set_atom3_idx(mol2_to_alc_map[atom3_idx])
+            new_proper.set_atom4_idx(mol2_to_alc_map[atom4_idx])
 
-                # Add new proper to the alchemical topology
-                non_native_propers.append(new_index)
-                joint_topology.add_proper(new_proper)
+            # Add new proper to the alchemical topology
+            non_native_propers.append(new_index)
+            joint_topology.add_proper(new_proper)
 
         # Add impropers
         for improper in self.topology2.impropers:
@@ -580,25 +531,22 @@ class Alchemizer(object):
             atom3_idx = improper.atom3_idx
             atom4_idx = improper.atom1_idx
 
-            if (atom1_idx not in mol2_mapped_atoms or
-                atom2_idx not in mol2_mapped_atoms or
-                atom3_idx not in mol2_mapped_atoms or
-                    atom4_idx not in mol2_mapped_atoms):
-                new_improper = deepcopy(improper)
+            # Add a copy of the improper
+            new_improper = deepcopy(improper)
 
-                # Handle index of new atom
-                new_index = len(joint_topology.impropers)
-                new_improper.set_index(new_index)
+            # Handle index of new atom
+            new_index = len(joint_topology.impropers)
+            new_improper.set_index(new_index)
 
-                # Handle atom indices
-                new_improper.set_atom1_idx(mol2_to_alc_map[atom1_idx])
-                new_improper.set_atom2_idx(mol2_to_alc_map[atom2_idx])
-                new_improper.set_atom3_idx(mol2_to_alc_map[atom3_idx])
-                new_improper.set_atom4_idx(mol2_to_alc_map[atom4_idx])
+            # Handle atom indices
+            new_improper.set_atom1_idx(mol2_to_alc_map[atom1_idx])
+            new_improper.set_atom2_idx(mol2_to_alc_map[atom2_idx])
+            new_improper.set_atom3_idx(mol2_to_alc_map[atom3_idx])
+            new_improper.set_atom4_idx(mol2_to_alc_map[atom4_idx])
 
-                # Add new improper to the alchemical topology
-                non_native_impropers.append(new_index)
-                joint_topology.add_improper(new_improper)
+            # Add new improper to the alchemical topology
+            non_native_impropers.append(new_index)
+            joint_topology.add_improper(new_improper)
 
         return joint_topology, non_native_atoms, non_native_bonds, \
             non_native_angles, non_native_propers, non_native_impropers, \
@@ -660,29 +608,11 @@ class Alchemizer(object):
 
        # Identify propers
         for proper_idx, proper in enumerate(self.topology1.propers):
-            atom1_idx = proper.atom1_idx
-            atom2_idx = proper.atom2_idx
-            atom3_idx = proper.atom3_idx
-            atom4_idx = proper.atom3_idx
-
-            if (atom1_idx not in mol1_mapped_atoms or
-                atom2_idx not in mol1_mapped_atoms or
-                atom3_idx not in mol1_mapped_atoms or
-                    atom4_idx not in mol1_mapped_atoms):
-                exclusive_propers.append(proper_idx)
+            exclusive_propers.append(proper_idx)
 
        # Identify impropers
         for improper_idx, improper in enumerate(self.topology1.impropers):
-            atom1_idx = improper.atom1_idx
-            atom2_idx = improper.atom2_idx
-            atom3_idx = improper.atom3_idx
-            atom4_idx = improper.atom3_idx
-
-            if (atom1_idx not in mol1_mapped_atoms or
-                atom2_idx not in mol1_mapped_atoms or
-                atom3_idx not in mol1_mapped_atoms or
-                    atom4_idx not in mol1_mapped_atoms):
-                exclusive_impropers.append(improper_idx)
+            exclusive_impropers.append(improper_idx)
 
         return exclusive_atoms, exclusive_bonds, exclusive_angles, \
                exclusive_propers, exclusive_impropers
@@ -798,6 +728,31 @@ class Alchemizer(object):
             else:
                 atom.set_as_branch()
 
+        # Find absolute parent atom
+        absolute_parent = None
+        for atom in self._joint_topology.atoms:
+            if atom.core:
+                absolute_parent = atom.index
+                break
+        else:
+            logger.error(['Error: no core atom found in hybrid molecule'])
+
+        # Get parent indexes from the molecular graph
+        parent_idxs = alchemical_graph.get_parents(absolute_parent)
+
+        # Assert parent_idxs has right length
+        if len(parent_idxs) != len(self._joint_topology.atoms):
+            logger.error(['Error: invalid number of parents obtained for ' +
+                          'the hybrid molecule'])
+
+        # Assign parent atoms
+        for atom in self._joint_topology.atoms:
+            parent_idx = parent_idxs[atom.index]
+            if parent_idx is not None:
+                atom.set_parent(self._joint_topology.atoms[parent_idx])
+            else:
+                atom.set_parent(None)
+
         return alchemical_graph, rotamers
 
     def _assign_pdb_atom_names(self):
@@ -912,8 +867,10 @@ class Alchemizer(object):
         of the rotamer libraries of both molecules, to the path that
         is supplied.
 
-        Returns
-        -------
+        Parameters
+        ----------
+        path : str
+            The path where to save the rotamer library
         fep_lambda : float
             The value to define an FEP lambda. This lambda affects
             all the parameters. It needs to be contained between
@@ -945,11 +902,6 @@ class Alchemizer(object):
             affects bonded parameters. It needs to be contained
             between 0 and 1. It has precedence over fep_lambda.
             Default is None
-
-        Parameters
-        ----------
-        path : str
-            The path where to save the rotamer library
         """
 
         at_least_one = fep_lambda is not None or \
@@ -1013,13 +965,136 @@ class Alchemizer(object):
                     file.write('   sidelib FREE{} {} {} &\n'.format(
                         rotamer.resolution, atom_name1, atom_name2))
 
+    def obc_parameters_to_file(self, path, fep_lambda=None,
+                               coul_lambda=None, coul1_lambda=None,
+                               coul2_lambda=None, vdw_lambda=None,
+                               bonded_lambda=None):
+        """
+        It saves the alchemical OBC parameters, which is the combination
+        of the OBC parameters of both molecules, to the path that
+        is supplied.
+
+        Parameters
+        ----------
+        path : str
+            The path where to save the OBC parameters template
+        fep_lambda : float
+            The value to define an FEP lambda. This lambda affects
+            all the parameters. It needs to be contained between
+            0 and 1. Default is None
+        coul_lambda : float
+            The value to define a general coulombic lambda. This lambda
+            only affects coulombic parameters of both molecules. It needs
+            to be contained between 0 and 1. It has precedence over
+            fep_lambda. Default is None
+        coul1_lambda : float
+            The value to define a coulombic lambda for exclusive atoms
+            of molecule 1. This lambda only affects coulombic parameters
+            of exclusive atoms of molecule 1. It needs to be contained
+            between 0 and 1. It has precedence over coul_lambda or
+            fep_lambda. Default is None
+        coul2_lambda : float
+            The value to define a coulombic lambda for exclusive atoms
+            of molecule 2. This lambda only affects coulombic parameters
+            of exclusive atoms of molecule 2. It needs to be contained
+            between 0 and 1. It has precedence over coul_lambda or
+            fep_lambda. Default is None
+        vdw_lambda : float
+            The value to define a vdw lambda. This lambda only
+            affects van der Waals parameters. It needs to be contained
+            between 0 and 1. It has precedence over fep_lambda.
+            Default is None
+        bonded_lambda : float
+            The value to define a coulombic lambda. This lambda only
+            affects bonded parameters. It needs to be contained
+            between 0 and 1. It has precedence over fep_lambda.
+            Default is None
+
+        Returns
+        -------
+        path : str
+            The path where to save the rotamer library
+        """
+
+        # Handle peleffy Logger
+        from peleffy.utils import Logger
+
+        logger = Logger()
+        log_level = logger.get_level()
+        logger.set_level('CRITICAL')
+
+        at_least_one = fep_lambda is not None or \
+            coul_lambda is not None or coul1_lambda is not None or \
+            coul2_lambda is not None or vdw_lambda is not None or \
+            bonded_lambda is not None
+
+        # Define lambdas
+        fep_lambda = FEPLambda(fep_lambda)
+        coul_lambda = CoulombicLambda(coul_lambda)
+        coul1_lambda = Coulombic1Lambda(coul1_lambda)
+        coul2_lambda = Coulombic2Lambda(coul2_lambda)
+        vdw_lambda = VanDerWaalsLambda(vdw_lambda)
+        bonded_lambda = BondedLambda(bonded_lambda)
+
+        lambda_set = LambdaSet(fep_lambda, coul_lambda, coul1_lambda,
+                               coul2_lambda, vdw_lambda, bonded_lambda)
+
+        # Define mappers
+        mol1_mapped_atoms = [atom_pair[0] for atom_pair in self.mapping]
+        mol2_mapped_atoms = [atom_pair[1] for atom_pair in self.mapping]
+        mol1_to_mol2_map = dict(zip(mol1_mapped_atoms, mol2_mapped_atoms))
+
+        # Generate individual OBC parameters
+        from copy import deepcopy
+        from peleffy.solvent import OBC2
+
+        mol1_obc_params = OBC2(self.topology1)
+        mol2_obc_params = OBC2(self.topology2)
+
+        # Generate alchemical OBC parameters object
+        alchemical_obc_params = deepcopy(mol1_obc_params)
+        alchemical_obc_params._topologies = [self._joint_topology, ]
+
+        # Get OBC parameters of molecule 1
+        radii1 = alchemical_obc_params._radii[0]
+        scales1 = alchemical_obc_params._scales[0]
+
+        for atom_idx, atom in enumerate(self._joint_topology.atoms):
+            if atom_idx in self._exclusive_atoms:
+                lambda_value = 1.0 - lambda_set.get_lambda_for_coulomb1()
+                radius = radii1[(atom_idx, )] * lambda_value
+                scale = scales1[(atom_idx, )] * lambda_value
+
+            elif atom_idx in self._non_native_atoms:
+                lambda_value = lambda_set.get_lambda_for_coulomb2()
+                radius = radii1[(atom_idx, )] * lambda_value
+                scale = scales1[(atom_idx, )] * lambda_value
+
+            elif atom_idx in mol1_mapped_atoms:
+                mol2_idx = mol1_to_mol2_map[atom_idx]
+                radius2 = mol2_obc_params._radii[0][(mol2_idx, )]
+                scale2 = mol2_obc_params._scales[0][(mol2_idx, )]
+
+                lambda_value = 1.0 - lambda_set.get_lambda_for_coulomb2()
+                radius = radii1[(atom_idx, )] * lambda_value \
+                    + (1.0 - lambda_value) * radius2
+                scale = scales1[(atom_idx, )] * lambda_value \
+                    + (1.0 - lambda_value) * scale2
+
+            alchemical_obc_params._radii[0][(atom_idx, )] = radius
+            alchemical_obc_params._scales[0][(atom_idx, )] = scale
+
+        alchemical_obc_params.to_file(path)
+
+        logger.set_level(log_level)
+
     def _ipython_display_(self):
         """
         It returns a representation of the alchemical mapping.
 
         Returns
         -------
-        mapping_representation : a IPython display object
+        mapping_representation : an IPython display object
             Displayable RDKit molecules with mapping information
         """
         from IPython.display import display

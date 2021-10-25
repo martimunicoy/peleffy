@@ -118,16 +118,16 @@ class TestAlchemistry(object):
                                'C=C',
                                'C(Cl)(Cl)(Cl)',
                                [(0, 0), (1, 1), (2, 2), (3, 4)],
-                               [6, ],
-                               [5, ],
+                               [6],
+                               [5],
                                [6, 7, 8],
                                [],
                                [],
                                [4, 5],
                                [3, 4],
                                [0, 1, 5],
-                               [],
-                               [0, ]
+                               [0, 1, 2, 3],
+                               [0, 1]
                                ),
                               (None,
                                None,
@@ -139,13 +139,16 @@ class TestAlchemistry(object):
                                [12, 13, 14],
                                [12, 13, 14],
                                [18, 19, 20, 21, 22, 23],
+                               [24, 25, 26, 27, 28, 29, 30, 31, 32, 33,
+                                34, 35, 36, 37, 38, 39, 40, 41, 42, 43,
+                                44, 45, 46, 47, 48, 49, 50, 51, 52, 53],
+                               [6, 7, 8, 9, 10, 11],
                                [],
                                [],
                                [],
-                               [],
-                               [],
-                               [],
-                               []
+                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                                13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+                               [0, 1, 2, 3, 4, 5]
                                ),
                               (None,
                                None,
@@ -157,13 +160,17 @@ class TestAlchemistry(object):
                                [],
                                [],
                                [],
-                               [],
-                               [],
+                               [30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+                                40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+                                50, 51, 52, 53],
+                               [6, 7, 8, 9, 10, 11],
                                [12, 13, 14],
                                [12, 13, 14],
                                [18, 19, 20, 21, 22, 23],
-                               [],
-                               []
+                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+                                12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+                                22, 23, 24, 25, 26, 27, 28, 29],
+                               [0, 1, 2, 3, 4, 5]
                                ),
                               ('ligands/acetylene.pdb',
                                'ligands/ethylene.pdb',
@@ -173,12 +180,12 @@ class TestAlchemistry(object):
                                [4, 5],
                                [3, 4],
                                [2, 3, 4, 5],
-                               [1, 2],
+                               [1, 2, 3, 4],
+                               [0, 1],
                                [],
                                [],
                                [],
-                               [],
-                               [],
+                               [0],
                                []
                                ),
                               ('ligands/malonate.pdb',
@@ -190,13 +197,17 @@ class TestAlchemistry(object):
                                [10, ],
                                [9, ],
                                [13, 14, 15],
-                               [23, 24],
+                               [23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                                33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
+                                43, 44],
+                               [2],
                                [],
                                [],
                                [],
-                               [],
-                               [],
-                               []
+                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+                                12, 13, 14, 15, 16, 17, 18, 19, 20,
+                                21, 22],
+                               [0, 1]
                                ),
                               ('ligands/trimethylglycine.pdb',
                                'ligands/propionic_acid.pdb',
@@ -208,14 +219,20 @@ class TestAlchemistry(object):
                                [],
                                [],
                                [],
-                               [],
-                               [],
+                               [46, 47, 48, 49, 50, 51, 52, 53, 54, 55,
+                                56, 57, 58, 59, 60, 61, 62, 63, 64, 65,
+                                66, 67],
+                               [1],
                                [7, 11, 12, 13, 14, 15, 16, 18],
                                [7, 8, 9, 10, 11, 12, 15, 17],
-                               [6, 7, 8, 9, 10, 11, 14, 19, 21, 22, 26, 27,
-                                28, 29, 30, 31, 32],
-                               [40, 41],
-                               []
+                               [6, 7, 8, 9, 10, 11, 14, 19, 21, 22, 26,
+                                27, 28, 29, 30, 31, 32],
+                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+                                12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+                                22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
+                                32, 33, 34, 35, 36, 37, 38, 39, 40, 41,
+                                42, 43, 44, 45],
+                               [0]
                                ),
                               ('ligands/trimethylglycine.pdb',
                                'ligands/benzamidine.pdb',
@@ -230,17 +247,21 @@ class TestAlchemistry(object):
                                 44, 45, 46, 47, 48, 49, 50, 51, 52],
                                [46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56,
                                 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67,
-                                68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78],
-                               [1, 2, 3, 4, 5, 6, 7],
-                               [3, 4, 5, 6, 7, 10, 12, 13, 14, 15, 16, 17, 18],
-                               [3, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+                                68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78,
+                                79, 80, 81, 82, 83],
+                               [1, 2, 3, 4, 5, 6, 7, 8],
+                               [3, 4, 5, 6, 7, 10, 12, 13, 14, 15, 16, 17,
+                                18],
+                               [3, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                                17],
                                [1, 2, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-                                16, 17, 18, 19, 20, 21, 22, 24, 25, 26, 27,
-                                28, 29, 30, 31, 32],
-                               [3, 4, 5, 6, 7, 8, 9, 10, 14, 15, 16, 17,
-                                18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
-                                29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
-                                39, 40, 41, 42, 43, 44, 45],
+                                16, 17, 18, 19, 20, 21, 22, 24, 25, 26,
+                                27, 28, 29, 30, 31, 32],
+                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+                                13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
+                                23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                                33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
+                                43, 44, 45],
                                [0]
                                )
                               ])
@@ -335,11 +356,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._exclusive_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants1.append(proper.spring_constant)
+            proper_constants1.append(proper.constant)
 
-        for improper_idx in alchemizer._exclusive_propers:
+        for improper_idx in alchemizer._exclusive_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants1.append(improper.spring_constant)
+            improper_constants1.append(improper.constant)
 
         top = alchemizer.get_alchemical_topology(fep_lambda=0.2)
 
@@ -369,11 +390,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._exclusive_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants2.append(proper.spring_constant)
+            proper_constants2.append(proper.constant)
 
-        for improper_idx in alchemizer._exclusive_propers:
+        for improper_idx in alchemizer._exclusive_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants2.append(improper.spring_constant)
+            improper_constants2.append(improper.constant)
 
         for sigma1, sigma2 in zip(sigmas1, sigmas2):
             assert (sigma2 / sigma1) - (1 - 0.2) < 1e-5, \
@@ -439,11 +460,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._non_native_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants1.append(proper.spring_constant)
+            proper_constants1.append(proper.constant)
 
         for improper_idx in alchemizer._non_native_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants1.append(improper.spring_constant)
+            improper_constants1.append(improper.constant)
 
         top = alchemizer.get_alchemical_topology(fep_lambda=0.4)
 
@@ -473,11 +494,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._non_native_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants2.append(proper.spring_constant)
+            proper_constants2.append(proper.constant)
 
         for improper_idx in alchemizer._non_native_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants2.append(improper.spring_constant)
+            improper_constants2.append(improper.constant)
 
         for sigma1, sigma2 in zip(sigmas1, sigmas2):
             assert (sigma2 / sigma1) - 0.4 < 1e-5, \
@@ -742,11 +763,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._exclusive_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants1.append(proper.spring_constant)
+            proper_constants1.append(proper.constant)
 
-        for improper_idx in alchemizer._exclusive_propers:
+        for improper_idx in alchemizer._exclusive_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants1.append(improper.spring_constant)
+            improper_constants1.append(improper.constant)
 
         top = alchemizer.get_alchemical_topology(fep_lambda=0.0,
                                                  coul_lambda=0.2)
@@ -777,11 +798,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._exclusive_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants2.append(proper.spring_constant)
+            proper_constants2.append(proper.constant)
 
-        for improper_idx in alchemizer._exclusive_propers:
+        for improper_idx in alchemizer._exclusive_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants2.append(improper.spring_constant)
+            improper_constants2.append(improper.constant)
 
         for sigma1, sigma2 in zip(sigmas1, sigmas2):
             assert sigma2 - sigma1 < 1e-5, \
@@ -848,11 +869,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._non_native_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants1.append(proper.spring_constant)
+            proper_constants1.append(proper.constant)
 
         for improper_idx in alchemizer._non_native_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants1.append(improper.spring_constant)
+            improper_constants1.append(improper.constant)
 
         top = alchemizer.get_alchemical_topology(fep_lambda=0.0,
                                                  coul_lambda=0.5)
@@ -883,11 +904,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._non_native_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants2.append(proper.spring_constant)
+            proper_constants2.append(proper.constant)
 
         for improper_idx in alchemizer._non_native_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants2.append(improper.spring_constant)
+            improper_constants2.append(improper.constant)
 
         for sigma1, sigma2 in zip(sigmas1, sigmas2):
             assert sigma2 - sigma1 < 1e-5, \
@@ -1161,11 +1182,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._exclusive_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants1.append(proper.spring_constant)
+            proper_constants1.append(proper.constant)
 
-        for improper_idx in alchemizer._exclusive_propers:
+        for improper_idx in alchemizer._exclusive_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants1.append(improper.spring_constant)
+            improper_constants1.append(improper.constant)
 
         top = alchemizer.get_alchemical_topology(fep_lambda=0.0,
                                                  coul1_lambda=0.2)
@@ -1196,11 +1217,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._exclusive_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants2.append(proper.spring_constant)
+            proper_constants2.append(proper.constant)
 
-        for improper_idx in alchemizer._exclusive_propers:
+        for improper_idx in alchemizer._exclusive_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants2.append(improper.spring_constant)
+            improper_constants2.append(improper.constant)
 
         for sigma1, sigma2 in zip(sigmas1, sigmas2):
             assert sigma2 - sigma1 < 1e-5, \
@@ -1267,11 +1288,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._non_native_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants1.append(proper.spring_constant)
+            proper_constants1.append(proper.constant)
 
         for improper_idx in alchemizer._non_native_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants1.append(improper.spring_constant)
+            improper_constants1.append(improper.constant)
 
         top = alchemizer.get_alchemical_topology(fep_lambda=0.0,
                                                  coul1_lambda=0.2)
@@ -1302,11 +1323,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._non_native_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants2.append(proper.spring_constant)
+            proper_constants2.append(proper.constant)
 
         for improper_idx in alchemizer._non_native_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants2.append(improper.spring_constant)
+            improper_constants2.append(improper.constant)
 
         for sigma1, sigma2 in zip(sigmas1, sigmas2):
             assert sigma2 - sigma1 < 1e-5, \
@@ -1580,11 +1601,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._exclusive_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants1.append(proper.spring_constant)
+            proper_constants1.append(proper.constant)
 
-        for improper_idx in alchemizer._exclusive_propers:
+        for improper_idx in alchemizer._exclusive_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants1.append(improper.spring_constant)
+            improper_constants1.append(improper.constant)
 
         top = alchemizer.get_alchemical_topology(fep_lambda=0.0,
                                                  coul2_lambda=0.2)
@@ -1615,11 +1636,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._exclusive_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants2.append(proper.spring_constant)
+            proper_constants2.append(proper.constant)
 
-        for improper_idx in alchemizer._exclusive_propers:
+        for improper_idx in alchemizer._exclusive_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants2.append(improper.spring_constant)
+            improper_constants2.append(improper.constant)
 
         for sigma1, sigma2 in zip(sigmas1, sigmas2):
             assert sigma2 - sigma1 < 1e-5, \
@@ -1686,11 +1707,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._non_native_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants1.append(proper.spring_constant)
+            proper_constants1.append(proper.constant)
 
         for improper_idx in alchemizer._non_native_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants1.append(improper.spring_constant)
+            improper_constants1.append(improper.constant)
 
         top = alchemizer.get_alchemical_topology(fep_lambda=0.0,
                                                  coul2_lambda=0.2)
@@ -1721,11 +1742,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._non_native_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants2.append(proper.spring_constant)
+            proper_constants2.append(proper.constant)
 
         for improper_idx in alchemizer._non_native_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants2.append(improper.spring_constant)
+            improper_constants2.append(improper.constant)
 
         for sigma1, sigma2 in zip(sigmas1, sigmas2):
             assert sigma2 - sigma1 < 1e-5, \
@@ -1999,11 +2020,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._exclusive_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants1.append(proper.spring_constant)
+            proper_constants1.append(proper.constant)
 
-        for improper_idx in alchemizer._exclusive_propers:
+        for improper_idx in alchemizer._exclusive_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants1.append(improper.spring_constant)
+            improper_constants1.append(improper.constant)
 
         top = alchemizer.get_alchemical_topology(fep_lambda=0.0,
                                                  vdw_lambda=0.2)
@@ -2034,11 +2055,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._exclusive_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants2.append(proper.spring_constant)
+            proper_constants2.append(proper.constant)
 
-        for improper_idx in alchemizer._exclusive_propers:
+        for improper_idx in alchemizer._exclusive_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants2.append(improper.spring_constant)
+            improper_constants2.append(improper.constant)
 
         for sigma1, sigma2 in zip(sigmas1, sigmas2):
             assert (sigma2 / sigma1) - (1 - 0.2) < 1e-5, \
@@ -2105,11 +2126,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._non_native_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants1.append(proper.spring_constant)
+            proper_constants1.append(proper.constant)
 
         for improper_idx in alchemizer._non_native_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants1.append(improper.spring_constant)
+            improper_constants1.append(improper.constant)
 
         top = alchemizer.get_alchemical_topology(fep_lambda=0.0,
                                                  vdw_lambda=0.2)
@@ -2140,11 +2161,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._non_native_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants2.append(proper.spring_constant)
+            proper_constants2.append(proper.constant)
 
         for improper_idx in alchemizer._non_native_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants2.append(improper.spring_constant)
+            improper_constants2.append(improper.constant)
 
         for sigma1, sigma2 in zip(sigmas1, sigmas2):
             assert (sigma2 / sigma1) - 0.2 < 1e-5, \
@@ -2416,11 +2437,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._exclusive_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants1.append(proper.spring_constant)
+            proper_constants1.append(proper.constant)
 
-        for improper_idx in alchemizer._exclusive_propers:
+        for improper_idx in alchemizer._exclusive_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants1.append(improper.spring_constant)
+            improper_constants1.append(improper.constant)
 
         top = alchemizer.get_alchemical_topology(fep_lambda=0.0,
                                                  bonded_lambda=0.2)
@@ -2451,11 +2472,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._exclusive_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants2.append(proper.spring_constant)
+            proper_constants2.append(proper.constant)
 
-        for improper_idx in alchemizer._exclusive_propers:
+        for improper_idx in alchemizer._exclusive_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants2.append(improper.spring_constant)
+            improper_constants2.append(improper.constant)
 
         for sigma1, sigma2 in zip(sigmas1, sigmas2):
             assert sigma2 - sigma1 < 1e-5, \
@@ -2522,11 +2543,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._non_native_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants1.append(proper.spring_constant)
+            proper_constants1.append(proper.constant)
 
         for improper_idx in alchemizer._non_native_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants1.append(improper.spring_constant)
+            improper_constants1.append(improper.constant)
 
         top = alchemizer.get_alchemical_topology(fep_lambda=0.0,
                                                  bonded_lambda=0.2)
@@ -2557,11 +2578,11 @@ class TestAlchemistry(object):
 
         for proper_idx in alchemizer._non_native_propers:
             proper = WritableProper(top.propers[proper_idx])
-            proper_constants2.append(proper.spring_constant)
+            proper_constants2.append(proper.constant)
 
         for improper_idx in alchemizer._non_native_impropers:
             improper = WritableImproper(top.impropers[improper_idx])
-            improper_constants2.append(improper.spring_constant)
+            improper_constants2.append(improper.constant)
 
         for sigma1, sigma2 in zip(sigmas1, sigmas2):
             assert sigma2 - sigma1 < 1e-5, \
@@ -3386,8 +3407,10 @@ class TestAlchemistry(object):
                                 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                                 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                                 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                0.0, 0.0, 0.0, -0.0, -0.0],
-                               [10.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, -0.0, -0.0],
+                               [10.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0]
                                ),
                               (None,
                                None,
@@ -3399,22 +3422,20 @@ class TestAlchemistry(object):
                                None,
                                None,
                                None,
-                               [1.256156174911, 1.256156174911,
-                                0.06697375586735, 0.0, 0.0, 0.0,
-                                0.0, 0.0, 0.0, -0.0, 0.0,
-                                6.736762477654, 0.06697375586735,
-                                0.06697375586735, 0.0, 0.0, 0.0,
+                               [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, -0.0, 0.0, 0.0, 0.0, 0.0,
                                 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                                 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                                 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                                 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                0.0, 0.9974165607242,
+                                0.0, 0.0, 0.0, 0.0, 2.348375642009,
+                                2.348375642009, 0.9974165607242,
                                 0.9974165607242, 3.661930099076,
                                 3.661930099076, 3.661930099076,
-                                3.661930099076, 0.9974165607242,
-                                0.9974165607242, 6.736762477654,
-                                1.809047390003, 1.809047390003,
-                                3.661930099076,3.661930099076,
+                                3.661930099076, 6.736762477654,
+                                0.9974165607242, 0.9974165607242,
+                                6.736762477654, 1.809047390003,
+                                1.809047390003, 3.661930099076,
                                 3.661930099076, 3.661930099076,
                                 3.661930099076, 3.661930099076,
                                 3.661930099076, 3.661930099076,
@@ -3424,8 +3445,11 @@ class TestAlchemistry(object):
                                 3.661930099076, 3.661930099076,
                                 3.661930099076, 3.661930099076,
                                 3.661930099076, 3.661930099076,
-                                -0.04816277792592, -0.04816277792592],
-                               [0.0, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1]
+                                3.661930099076, 1.256156174911,
+                                1.256156174911, -0.04816277792592,
+                                -0.04816277792592],
+                               [0.0, 10.5, 1.0, 1.1, 1.1, 1.1,
+                                1.1, 1.1, 1.1]
                                ),
                               (None,
                                None,
@@ -3437,13 +3461,13 @@ class TestAlchemistry(object):
                                None,
                                None,
                                None,
-                               [1.2319154369245875, 1.2319154369245875,
-                                0.06697375586735, 0.033486877933675,
+                               [0.033486877933675, 0.033486877933675,
+                                0.033486877933675, 0.033486877933675,
                                 0.033486877933675, 0.033486877933675,
                                 0.033486877933675, 0.033486877933675,
                                 0.033486877933675, -0.18516762066095,
-                                0.013324693850315, 3.401868116760675,
-                                0.06697375586735, 0.06697375586735,
+                                0.013324693850315, 0.033486877933675,
+                                0.033486877933675, 0.033486877933675,
                                 0.033486877933675, 0.033486877933675,
                                 0.033486877933675, 0.033486877933675,
                                 0.033486877933675, 0.033486877933675,
@@ -3460,12 +3484,13 @@ class TestAlchemistry(object):
                                 0.013324693850315, 0.013324693850315,
                                 0.0744855238223, 0.0744855238223,
                                 0.01480013640333, 0.01480013640333,
+                                1.1741878210045, 1.1741878210045,
                                 0.4987082803621, 0.4987082803621,
                                 1.830965049538, 1.830965049538,
                                 1.830965049538, 1.830965049538,
-                                0.4987082803621, 0.4987082803621,
-                                3.368381238827, 0.9045236950015,
-                                0.9045236950015, 1.830965049538,
+                                3.368381238827, 0.4987082803621,
+                                0.4987082803621, 3.368381238827,
+                                0.9045236950015, 0.9045236950015,
                                 1.830965049538, 1.830965049538,
                                 1.830965049538, 1.830965049538,
                                 1.830965049538, 1.830965049538,
@@ -3475,10 +3500,11 @@ class TestAlchemistry(object):
                                 1.830965049538, 1.830965049538,
                                 1.830965049538, 1.830965049538,
                                 1.830965049538, 1.830965049538,
-                                1.830965049538, -0.02408138896296,
-                                -0.02408138896296],
-                               [5.25, 0.55, 0.55, 0.55, 0.55, 0.55, 0.55]
-                               ),
+                                1.830965049538, 1.830965049538,
+                                0.6280780874555, 0.6280780874555,
+                                -0.02408138896296, -0.02408138896296],
+                               [5.25, 5.25, 0.5, 0.55, 0.55, 0.55, 0.55,
+                                0.55, 0.55]                               ),
                               (None,
                                None,
                                'C[N+](C)(C)CC(=O)[O-]',
@@ -3516,8 +3542,10 @@ class TestAlchemistry(object):
                                 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                                 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                                 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                0.0, 0.0, 0.0, -0.0, -0.0],
-                               [10.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, -0.0, -0.0],
+                               [10.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0]
                                ),
                               (None,
                                None,
@@ -3529,17 +3557,17 @@ class TestAlchemistry(object):
                                0.0,
                                0.0,
                                1.0,
-                               [1.256156174911, 1.256156174911,
-                                0.06697375586735, 0.0, 0.0, 0.0, 0.0,
-                                0.0, 0.0, -0.0, 0.0, 6.736762477654,
-                                0.06697375586735, 0.06697375586735,
-                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                0.9974165607242, 0.9974165607242,
+                               [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, -0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0, 0.0, 2.348375642009,
+                                2.348375642009, 0.9974165607242,
+                                0.9974165607242, 3.661930099076,
                                 3.661930099076, 3.661930099076,
-                                3.661930099076, 3.661930099076,
+                                3.661930099076, 6.736762477654,
                                 0.9974165607242, 0.9974165607242,
                                 6.736762477654, 1.809047390003,
                                 1.809047390003, 3.661930099076,
@@ -3552,9 +3580,11 @@ class TestAlchemistry(object):
                                 3.661930099076, 3.661930099076,
                                 3.661930099076, 3.661930099076,
                                 3.661930099076, 3.661930099076,
-                                3.661930099076, -0.04816277792592,
+                                3.661930099076, 1.256156174911,
+                                1.256156174911, -0.04816277792592,
                                 -0.04816277792592],
-                               [0.0, 1.1, 1.1, 1.1, 1.1, 1.1, 1.1]
+                               [0.0, 10.5, 1.0, 1.1, 1.1, 1.1, 1.1,
+                                1.1, 1.1]
                                )
                              ])
     def test_dihedrals_in_alchemical_topology(self, pdb1, pdb2, smiles1,
@@ -3597,7 +3627,7 @@ class TestAlchemistry(object):
         assert improper_constants == golden_improper_constants, \
             'Unexpected improper constants'
 
-    def test_to_pdb(self):
+    def test_hybrid_to_pdb(self):
         """
         It validates the method to write the alchemical structure
         to a PDB file.
@@ -3619,6 +3649,56 @@ class TestAlchemistry(object):
             with temporary_cd(tmpdir):
                 output_path = os.path.join(tmpdir, 'hybrid.pdb')
                 alchemizer.hybrid_to_pdb(output_path)
+
+                compare_files(reference, output_path)
+
+    def test_molecule1_to_pdb(self):
+        """
+        It validates the method to write the first molecule structure
+        to a PDB file.
+        """
+        import os
+        import tempfile
+        from peleffy.utils import get_data_file_path, temporary_cd
+        from peleffy.topology import Alchemizer
+        from peleffy.tests.utils import compare_files
+
+        mol1, mol2, top1, top2 = generate_molecules_and_topologies_from_pdb(
+            'ligands/trimethylglycine.pdb', 'ligands/benzamidine.pdb')
+
+        reference = get_data_file_path('tests/alchemical_mol1.pdb')
+
+        alchemizer = Alchemizer(top1, top2)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                output_path = os.path.join(tmpdir, 'mol1.pdb')
+                alchemizer.molecule1_to_pdb(output_path)
+
+                compare_files(reference, output_path)
+
+    def test_molecule2_to_pdb(self):
+        """
+        It validates the method to write the second molecule structure
+        to a PDB file.
+        """
+        import os
+        import tempfile
+        from peleffy.utils import get_data_file_path, temporary_cd
+        from peleffy.topology import Alchemizer
+        from peleffy.tests.utils import compare_files
+
+        mol1, mol2, top1, top2 = generate_molecules_and_topologies_from_pdb(
+            'ligands/trimethylglycine.pdb', 'ligands/benzamidine.pdb')
+
+        reference = get_data_file_path('tests/alchemical_mol2.pdb')
+
+        alchemizer = Alchemizer(top1, top2)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                output_path = os.path.join(tmpdir, 'mol2.pdb')
+                alchemizer.molecule2_to_pdb(output_path)
 
                 compare_files(reference, output_path)
 
@@ -3644,3 +3724,30 @@ class TestAlchemistry(object):
             with temporary_cd(tmpdir):
                 # TODO
                 pass
+
+        assert False
+
+    def test_obc_parameters_to_file(self):
+        """
+        It validates the method to write the OBC parameters
+        template.
+        """
+        import os
+        import tempfile
+        from peleffy.utils import get_data_file_path, temporary_cd
+        from peleffy.topology import Alchemizer
+        from peleffy.tests.utils import compare_files
+
+        mol1, mol2, top1, top2 = generate_molecules_and_topologies_from_pdb(
+            'ligands/trimethylglycine.pdb', 'ligands/benzamidine.pdb')
+
+        reference = get_data_file_path('tests/alchemical_structure.pdb')
+
+        alchemizer = Alchemizer(top1, top2)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                # TODO
+                pass
+
+        assert False

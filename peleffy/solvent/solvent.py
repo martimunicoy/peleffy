@@ -179,12 +179,10 @@ class _OpenFFCompatibleSolvent(_SolventWrapper):
                                            self._radii, self._scales):
             data['SolventParameters'][topology.molecule.tag] = dict()
 
-            atom_names = topology.molecule.get_pdb_atom_names()
+            atom_names = [atom.PDB_name for atom in topology.atoms]
 
-            for atom, name in zip(topology.molecule.rdkit_molecule.GetAtoms(),
-                                  atom_names):
+            for index, name in enumerate(atom_names):
                 name = name.replace(' ', '_')
-                index = atom.GetIdx()
                 data['SolventParameters'][topology.molecule.tag][name] = \
                     {'radius': round(radii[tuple((index, ))]
                                      .value_in_unit(unit.angstrom), 5),

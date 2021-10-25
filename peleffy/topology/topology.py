@@ -144,16 +144,16 @@ class Topology(object):
                 absolute_parent = atom.index
                 break
         else:
-            logger.error('Error: no core atom found in molecule '
-                         + '{}'.format(self.molecule.name))
+            logger.error(['Error: no core atom found in molecule ' +
+                          f'{self.molecule.name}'])
 
         # Get parent indexes from the molecular graph
         parent_idxs = self.molecule.graph.get_parents(absolute_parent)
 
         # Assert parent_idxs has right length
         if len(parent_idxs) != len(self.atoms):
-            logger.error('Error: no core atom found in molecule '
-                         + '{}'.format(self.molecule.name))
+            logger.error(['Error: invalid number of parents obtained for ' +
+                          f'{self.molecule.name}'])
 
         for atom in self.atoms:
             parent_idx = parent_idxs[atom.index]

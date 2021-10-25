@@ -1,0 +1,28 @@
+COMPND    HYDROLASE (SERINE PROTEINASE)
+HETATM    1  C1  BEN A   1      -0.779   0.348   1.160  1.00 19.86           C  
+HETATM    2  C2  BEN A   1      -0.825  -0.520   2.218  1.00 19.86           C  
+HETATM    3  C3  BEN A   1      -0.996  -0.028   3.518  1.00 19.86           C  
+HETATM    4  C4  BEN A   1      -1.127   1.352   3.741  1.00 19.86           C  
+HETATM    5  C5  BEN A   1      -1.087   2.225   2.651  1.00 19.86           C  
+HETATM    6  C6  BEN A   1      -0.914   1.710   1.369  1.00 19.86           C  
+HETATM    7  C   BEN A   1      -0.600  -0.141  -0.129  1.00 19.86           C  
+HETATM    8  N1  BEN A   1      -0.430  -1.431  -0.359  1.00 19.86           N  
+HETATM    9  N2  BEN A   1      -0.767   0.660  -1.167  1.00 19.86           N  
+HETATM   10  H2  BEN A   1      -0.729  -1.582   2.050  1.00  0.00           H  
+HETATM   11  H3  BEN A   1      -1.027  -0.710   4.355  1.00  0.00           H  
+HETATM   12  H4  BEN A   1      -1.256   1.727   4.746  1.00  0.00           H  
+HETATM   13  H5  BEN A   1      -1.191   3.289   2.807  1.00  0.00           H  
+HETATM   14  H6  BEN A   1      -0.885   2.390   0.531  1.00  0.00           H  
+HETATM   15 H1 1 BEN A   1      -0.302  -1.763  -1.304  1.00  0.00           H  
+HETATM   16 H1 2 BEN A   1      -0.429  -2.085   0.411  1.00  0.00           H  
+HETATM   17  HN2 BEN A   1      -0.637   0.307  -2.104  1.00  0.00           H  
+CONECT    1    2    2    6    7
+CONECT    2    3   10
+CONECT    3    4    4   11
+CONECT    4    5   12
+CONECT    5    6    6   13
+CONECT    6   14
+CONECT    7    8    9    9
+CONECT    8   15   16
+CONECT    9   17
+END
