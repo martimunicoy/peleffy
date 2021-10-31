@@ -673,7 +673,14 @@ class Alchemizer(object):
                 index2 = mol2_to_mol1_map[mol2_edge[1]]
 
                 # Get weights in each graph
-                weight1 = alchemical_graph[index1][index2]['weight']
+                # Maybe the edge is not defined yet in the alchemical graph
+                if index2 not in alchemical_graph[index1]:
+                    weight1 = 0
+                    alchemical_graph.add_edge(index1, index2,
+                                              weight=weight1)
+                else:
+                    weight1 = alchemical_graph[index1][index2]['weight']
+
                 weight2 = \
                     self.molecule2.graph[mol2_edge[0]][mol2_edge[1]]['weight']
 
@@ -1021,7 +1028,7 @@ class Alchemizer(object):
 
         logger = Logger()
         log_level = logger.get_level()
-        logger.set_level('CRITICAL')
+        logger.set_level('ERROR')
 
         at_least_one = fep_lambda is not None or \
             coul_lambda is not None or coul1_lambda is not None or \
@@ -1058,6 +1065,8 @@ class Alchemizer(object):
         # Get OBC parameters of molecule 1
         radii1 = alchemical_obc_params._radii[0]
         scales1 = alchemical_obc_params._scales[0]
+        radii2 = mol2_obc_params._radii[0]
+        scales2 = mol2_obc_params._scales[0]
 
         for atom_idx, atom in enumerate(self._joint_topology.atoms):
             if atom_idx in self._exclusive_atoms:
@@ -1066,9 +1075,18 @@ class Alchemizer(object):
                 scale = scales1[(atom_idx, )] * lambda_value
 
             elif atom_idx in self._non_native_atoms:
-                lambda_value = lambda_set.get_lambda_for_coulomb2()
-                radius = radii1[(atom_idx, )] * lambda_value
-                scale = scales1[(atom_idx, )] * lambda_value
+                for mol2_index, alc_index in self._mol2_to_alc_map.items():
+                    if alc_index == atom_idx:
+                        lambda_value = lambda_set.get_lambda_for_coulomb2()
+                        radius = radii2[(mol2_index, )] * lambda_value
+                        scale = scales2[(mol2_index, )] * lambda_value
+                        break
+                else:
+                    logger.error(['Error: mapping for atom index ' +
+                                  f'{atom_idx} not found in the ' +
+                                  'hybrid molecule'])
+                    radius = 0
+                    scale = 0
 
             elif atom_idx in mol1_mapped_atoms:
                 mol2_idx = mol1_to_mol2_map[atom_idx]
