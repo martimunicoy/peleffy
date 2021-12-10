@@ -96,10 +96,18 @@ class PDBFile(object):
                         and line[22:26].strip() == residue_id]
 
             # Extract the PDB block of the molecule
-            pdb_block = [line for line in self.pdb_content
-                         if (line.startswith('HETATM') or
-                             line.startswith('CONECT'))
-                         and any(' {} '.format(a) in line for a in atom_ids)]
+            pdb_block = []
+            for line in self.pdb_content:
+
+                if line.startswith('HETATM') and line[6:11].strip() in atom_ids:
+                    pdb_block.append(line)
+
+                if line.startswith('CONECT'):
+                    stripped_line = line.replace("CONECT", "")
+                    ids_in_line = [stripped_line[i:i + 5] for i in range(0, len(stripped_line), 5)]
+
+                    if any([atom_id in ids_in_line for atom_id in atom_ids]):
+                        pdb_block.append(line)
 
             try:
                 molecules.append(
