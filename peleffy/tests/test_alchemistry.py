@@ -3702,7 +3702,12 @@ class TestAlchemistry(object):
 
                 compare_files(reference, output_path)
 
-    def test_rotamer_library_to_file(self):
+    @pytest.mark.parametrize("fep_lambda, reference_path",
+                             [(0.0, 'tests/alchemical_0.rot.assign'),
+                              (0.5, 'tests/alchemical_1.rot.assign'),
+                              (1.0, 'tests/alchemical_2.rot.assign')
+                              ])
+    def test_rotamer_library_to_file(self, fep_lambda, reference_path):
         """
         It validates the method to write the alchemical rotamer
         library.
@@ -3716,18 +3721,24 @@ class TestAlchemistry(object):
         mol1, mol2, top1, top2 = generate_molecules_and_topologies_from_pdb(
             'ligands/trimethylglycine.pdb', 'ligands/benzamidine.pdb')
 
-        reference = get_data_file_path('tests/alchemical_structure.pdb')
+        reference = get_data_file_path(reference_path)
 
         alchemizer = Alchemizer(top1, top2)
 
         with tempfile.TemporaryDirectory() as tmpdir:
             with temporary_cd(tmpdir):
-                # TODO
-                pass
+                output_path = os.path.join(tmpdir, 'HYB.rot.assign')
+                alchemizer.rotamer_library_to_file(output_path,
+                                                   fep_lambda=fep_lambda)
 
-        assert False
+                compare_files(reference, output_path)
 
-    def test_obc_parameters_to_file(self):
+    @pytest.mark.parametrize("fep_lambda, reference_path",
+                             [(0.0, 'tests/alchemical_ligandParams_0.txt'),
+                              (0.5, 'tests/alchemical_ligandParams_1.txt'),
+                              (1.0, 'tests/alchemical_ligandParams_2.txt')
+                              ])
+    def test_obc_parameters_to_file(self, fep_lambda, reference_path):
         """
         It validates the method to write the OBC parameters
         template.
@@ -3741,13 +3752,14 @@ class TestAlchemistry(object):
         mol1, mol2, top1, top2 = generate_molecules_and_topologies_from_pdb(
             'ligands/trimethylglycine.pdb', 'ligands/benzamidine.pdb')
 
-        reference = get_data_file_path('tests/alchemical_structure.pdb')
+        reference = get_data_file_path(reference_path)
 
         alchemizer = Alchemizer(top1, top2)
 
         with tempfile.TemporaryDirectory() as tmpdir:
             with temporary_cd(tmpdir):
-                # TODO
-                pass
+                output_path = os.path.join(tmpdir, 'ligandParams.txt')
+                alchemizer.obc_parameters_to_file(output_path,
+                                                  fep_lambda=fep_lambda)
 
-        assert False
+                compare_files(reference, output_path)

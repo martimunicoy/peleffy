@@ -1,0 +1,133 @@
+{
+    "SolventParameters": {
+        "Name": "OBC2",
+        "General": {
+            "solvent_dielectric": 78.5,
+            "solute_dielectric": 1,
+            "solvent_radius": 1.4,
+            "surface_area_penalty": 0.0054
+        },
+        "HYB": {
+            "_C1_": {
+                "radius": 1.625,
+                "scale": 0.755
+            },
+            "_N1_": {
+                "radius": 1.625,
+                "scale": 0.755
+            },
+            "_C2_": {
+                "radius": 1.625,
+                "scale": 0.755
+            },
+            "_C3_": {
+                "radius": 0.85,
+                "scale": 0.36
+            },
+            "_C4_": {
+                "radius": 0.85,
+                "scale": 0.36
+            },
+            "_C5_": {
+                "radius": 0.85,
+                "scale": 0.36
+            },
+            "_O1_": {
+                "radius": 0.75,
+                "scale": 0.425
+            },
+            "_O2_": {
+                "radius": 0.75,
+                "scale": 0.425
+            },
+            "_H1_": {
+                "radius": 1.25,
+                "scale": 0.85
+            },
+            "_H2_": {
+                "radius": 1.25,
+                "scale": 0.85
+            },
+            "_H3_": {
+                "radius": 0.6,
+                "scale": 0.425
+            },
+            "_H4_": {
+                "radius": 1.25,
+                "scale": 0.85
+            },
+            "_H5_": {
+                "radius": 0.6,
+                "scale": 0.425
+            },
+            "_H6_": {
+                "radius": 0.6,
+                "scale": 0.425
+            },
+            "_H7_": {
+                "radius": 0.6,
+                "scale": 0.425
+            },
+            "_H8_": {
+                "radius": 0.6,
+                "scale": 0.425
+            },
+            "_H9_": {
+                "radius": 0.6,
+                "scale": 0.425
+            },
+            "H10_": {
+                "radius": 0.6,
+                "scale": 0.425
+            },
+            "H11_": {
+                "radius": 0.6,
+                "scale": 0.425
+            },
+            "_C6_": {
+                "radius": 0.85,
+                "scale": 0.36
+            },
+            "_C7_": {
+                "radius": 0.85,
+                "scale": 0.36
+            },
+            "_C8_": {
+                "radius": 0.85,
+                "scale": 0.36
+            },
+            "_C9_": {
+                "radius": 0.85,
+                "scale": 0.36
+            },
+            "C10_": {
+                "radius": 0.85,
+                "scale": 0.36
+            },
+            "C11_": {
+                "radius": 0.85,
+                "scale": 0.36
+            },
+            "H12_": {
+                "radius": 0.6,
+                "scale": 0.425
+            },
+            "H13_": {
+                "radius": 0.6,
+                "scale": 0.425
+            },
+            "H14_": {
+                "radius": 0.6,
+                "scale": 0.425
+            },
+            "H15_": {
+                "radius": 0.6,
+                "scale": 0.425
+            },
+            "H16_": {
+                "radius": 0.6,
+                "scale": 0.425
+            }
+        }
+    }
+}
