@@ -656,6 +656,11 @@ class Alchemizer(object):
         """
         from copy import deepcopy
 
+        # Handle peleffy Logger
+        from peleffy.utils import Logger
+
+        logger = Logger()
+        
         # Define mappers
         mol1_mapped_atoms = [atom_pair[0] for atom_pair in self.mapping]
         mol2_mapped_atoms = [atom_pair[1] for atom_pair in self.mapping]
