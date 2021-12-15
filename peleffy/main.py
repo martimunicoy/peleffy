@@ -189,14 +189,25 @@ def run_peleffy(pdb_file,
         output = os.getcwd()
 
     # Initialize molecule
+    PDBreader = PDBFile(pdb_file)
     if chain is not None:
-        PDBreader = PDBFile(pdb_file)
-        molecule = PDBreader.get_molecules_from_chain(
+        molecules = PDBreader.get_molecules_from_chain(
             selected_chain=chain,
             rotamer_resolution=resolution,
             exclude_terminal_rotamers=exclude_terminal_rotamers)
+        
+        if PDBreader.is_unique(molecules): 
+            molecule, = molecules 
+        else: 
+            raise ValueError('The selected chain must only contain a single '
+                             + 'molecule to be parameterized.')
+
     else:
-        molecule = Molecule(
+        if PDBreader.is_complex:
+            raise ValueError('To parameterize a ligand from a protein-ligand '
+                             + 'complex PDB, a chain must be especified.')
+        else:    
+            molecule = Molecule(
             pdb_file, rotamer_resolution=resolution,
             exclude_terminal_rotamers=exclude_terminal_rotamers)
 

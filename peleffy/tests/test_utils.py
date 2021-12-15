@@ -884,6 +884,46 @@ class TestPDBFile(object):
             _ = PDBreader.get_molecules_from_chain(selected_chain='A')
 
 
+    def test_is_complex(self): 
+        """
+        It tests the is_complex property of a PDBFile object.
+        """
+        from peleffy.utils.input import PDBFile
+        from peleffy.utils import get_data_file_path
+
+        # The PDB fetched is a complex
+        PATH_COMPLEX_PDB = get_data_file_path('complexes/LYS_BNZ.pdb')
+        PDBreader = PDBFile(PATH_COMPLEX_PDB)
+        assert(PDBreader.is_complex)
+
+        # The PDB fetched is a ligand
+        PATH_LIGAND_PDB = get_data_file_path('ligands/benzene.pdb')
+        PDBreader = PDBFile(PATH_LIGAND_PDB)
+        assert not (PDBreader.is_complex) 
+
+    
+    def test_is_unique(self): 
+        """
+        It tests the static method is_unique. 
+        """               
+        from peleffy.utils.input import PDBFile
+        from peleffy.utils import get_data_file_path
+
+        PATH_COMPLEX_PDB = get_data_file_path('complexes/complex_test.pdb')
+        PDBreader = PDBFile(PATH_COMPLEX_PDB)
+
+        # Chain with a single molecule
+        molecules = PDBreader.get_molecules_from_chain(
+                selected_chain='L',
+                allow_undefined_stereo = True)
+        assert(PDBreader.is_unique(molecules))
+
+        # Chain with multiple molecules
+        molecules = PDBreader.get_molecules_from_chain(
+                selected_chain='C',
+                allow_undefined_stereo = True)
+        assert not(PDBreader.is_unique(molecules))
+
 class TestGeneralUtils(object):
     """
     It contains all the tests to validate general util methods.

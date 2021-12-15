@@ -425,3 +425,22 @@ class TestMain(object):
                 logger = Logger()
                 for handler in logger._logger.handlers:
                     assert handler.level == logging.DEBUG
+
+    def test_PDB_checks(self): 
+        """
+        It tests all the checks done when parsing a PDB to parameterize a molecule via the main module. 
+        """
+        from peleffy.main import run_peleffy
+
+        # Protein-ligand PDB files requiere chain especification.
+        complex_path = get_data_file_path('complexes/LYS_BNZ.pdb')
+        with pytest.raises(ValueError):
+            _ = run_peleffy(complex_path, chain = None)
+
+        # Multiple molecules on the same chain can not be parameterized
+        complex_path = get_data_file_path('complexes/complex_test.pdb')
+        with pytest.raises(ValueError):
+            _ = run_peleffy(complex_path, chain = 'C')
+
+
+
