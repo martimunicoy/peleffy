@@ -20,6 +20,7 @@ New features
 Bugfixes
 """"""""
 - `PR #158 <https://github.com/martimunicoy/peleffy/pull/158>`_: Fix minor bug when using the --chain flag and introduces checks for the input PDB in the peleffy.main module. 
+- `PR #159 <https://github.com/martimunicoy/peleffy/pull/159>`_: Fix issues with long atom numbers and heteromolecules extraction.
 
 Tests added
 """""""""""
