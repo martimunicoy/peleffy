@@ -34,14 +34,15 @@ setup(
     + 'a Python package that builds PELE-compatible force '
     + 'field templates.',
     classifiers=[
-        "Development Status :: 1 - Planning",
+        "Development Status :: 5 - Production/Stable",
         "Natural Language :: English",
         "Environment :: Console",
         "Intended Audience :: Science/Research",
         "Topic :: Utilities",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
-        "Operating System :: Unix"
+        "Operating System :: Unix",
+        "Operating System :: MacOS"
     ],
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
