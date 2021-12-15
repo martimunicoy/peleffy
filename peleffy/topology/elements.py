@@ -13,6 +13,7 @@ class _TopologyElement(object):
 
     _name = None
     _writable_attrs = []
+    _lambda_changeable = []
 
     class TopologyIterator(object):
         """
@@ -78,6 +79,70 @@ class _TopologyElement(object):
         """
         return len(self._writable_attrs)
 
+    def apply_lambda(self, attributes_to_modify, lambda_value,
+                     reverse=False, final_state=None):
+        """
+        Given a lambda value, it modifies a set of attributes of
+        this topological element. A lambda equal to 0 will keep the
+        original attributes of this topological element. A lambda
+        equal to 1 will remove completely the effects of the
+        attributes. This behavior will be the opposite when reverse
+        is set to True.
+
+        Parameters
+        ----------
+        attributes_to_modify : list[str]
+            The list attribute names that will be modified
+        lambda_value : float
+            A value between 0 and 1 that defined the lambda to
+            apply to the attributes
+        reverse : bool
+            When set to true the effects of lambda will be the
+            opposite
+        final_state : a peleffy.topology.topology._TopologyElement object
+            The topology element that represents the final state when
+            lambda equals 1.0. Default is None, which means that the
+            final state is not defined and therefore the topological
+            element will disappear or will start from scratch
+        """
+        from peleffy.utils import Logger
+
+        logger = Logger()
+
+        # Check final_state
+        if final_state is not None:
+            if type(final_state) != type(self):
+                logger.error([f'Final state must belong to the ' +
+                              f'same topological element as ' +
+                              f'the element that wants to be ' +
+                              f'modified with a lambda value. ' +
+                              f'It will not be changed.'])
+
+                return
+
+        if not reverse:
+            lambda_value = 1.0 - lambda_value
+
+        for attribute in attributes_to_modify:
+            if attribute not in self._lambda_changeable:
+                logger.error([f'Attribute {attribute} is not an '
+                              f'attribute that can be changed with '
+                              f'a lambda. It will not be changed.'])
+                continue
+
+            value = getattr(self, '_' + attribute)
+
+            if value is not None:
+                value = value * lambda_value
+
+            if final_state is not None:
+                final_value = getattr(final_state, '_' + attribute)
+
+                if final_value is not None:
+                    value = value + (1.0 - lambda_value) * final_value
+
+            setattr(self, '_' + attribute, value)
+
     def __iter__(self):
         """
         It returns an instance of the TopologyIterator.
@@ -126,6 +191,8 @@ class Atom(_TopologyElement):
 
     _name = 'Atom'
     _writable_attrs = ['index', 'PDB_name', 'OPLS_type']
+    _lambda_changeable = ['sigma', 'epsilon', 'charge', 'born_radius',
+                          'SASA_radius', 'nonpolar_gamma', 'nonpolar_alpha']
 
     def __init__(self, index=-1, core=None, OPLS_type=None, PDB_name=None,
                  unknown=None, x=None, y=None, z=None, sigma=None,
@@ -198,12 +265,23 @@ class Atom(_TopologyElement):
         self._index = index
 
     def set_as_core(self):
-        """It sets the atom as core"""
+        """It sets the atom as core."""
         self._core = True
 
     def set_as_branch(self):
-        """It sets the atom as branch"""
+        """It sets the atom as branch."""
         self._core = False
+
+    def set_PDB_name(self, pdb_name):
+        """
+        It sets the PDB atom name.
+
+        Parameters
+        ----------
+        pdb_name : str
+            The PDB atom name to be set
+        """
+        self._PDB_name = pdb_name
 
     def set_parent(self, parent):
         """
@@ -518,8 +596,9 @@ class Atom(_TopologyElement):
 
         Returns
         -------
-        parent : simtk.unit.Quantity
-            The nonpolar gamma parameter of this Atom object
+        parent : a peleffy.topology.Atom or None
+            The parent of the atom. If it is the absolute parent, it
+            will return a None
         """
         return self._parent
 
@@ -555,6 +634,7 @@ class Bond(_TopologyElement):
 
     _name = 'Bond'
     _writable_attrs = ['atom1_idx', 'atom2_idx', 'spring_constant', 'eq_dist']
+    _lambda_changeable = ['spring_constant', 'eq_dist']
 
     def __init__(self, index=-1, atom1_idx=None, atom2_idx=None,
                  spring_constant=None, eq_dist=None):
@@ -579,6 +659,17 @@ class Bond(_TopologyElement):
         self._atom2_idx = atom2_idx
         self._spring_constant = spring_constant
         self._eq_dist = eq_dist
+
+    def set_index(self, index):
+        """
+        It sets the index of the bond.
+
+        Parameters
+        ----------
+        index : int
+            The index of this Bond object
+        """
+        self._index = index
 
     def set_atom1_idx(self, index):
         """
@@ -671,6 +762,7 @@ class Angle(_TopologyElement):
     _name = 'Angle'
     _writable_attrs = ['atom1_idx', 'atom2_idx', 'atom3_idx',
                        'spring_constant', 'eq_angle']
+    _lambda_changeable = ['spring_constant', 'eq_angle']
 
     def __init__(self, index=-1, atom1_idx=None, atom2_idx=None,
                  atom3_idx=None, spring_constant=None, eq_angle=None):
@@ -698,6 +790,17 @@ class Angle(_TopologyElement):
         self._atom3_idx = atom3_idx
         self._spring_constant = spring_constant
         self._eq_angle = eq_angle
+
+    def set_index(self, index):
+        """
+        It sets the index of the angle.
+
+        Parameters
+        ----------
+        index : int
+            The index of this Angle object
+        """
+        self._index = index
 
     def set_atom1_idx(self, index):
         """
@@ -850,6 +953,17 @@ class Dihedral(_TopologyElement):
         self._prefactor = prefactor
         self._constant = constant
         self._phase = phase
+
+    def set_index(self, index):
+        """
+        It sets the index of the dihedral.
+
+        Parameters
+        ----------
+        index : int
+            The index of this Dihedral object
+        """
+        self._index = index
 
     def set_atom1_idx(self, index):
         """
@@ -1028,6 +1142,7 @@ class Proper(Dihedral):
     exclude = False
     _writable_attrs = ['atom1_idx', 'atom2_idx', 'atom3_idx', 'atom4_idx',
                        'constant', 'prefactor', 'periodicity', 'phase']
+    _lambda_changeable = ['constant']
 
     def include_in_14_list(self):
         """
@@ -1051,6 +1166,7 @@ class Improper(Dihedral):
     _name = 'Improper'
     _writable_attrs = ['atom1_idx', 'atom2_idx', 'atom3_idx', 'atom4_idx',
                        'constant', 'prefactor', 'periodicity']
+    _lambda_changeable = ['constant']
 
 
 class OFFDihedral(_TopologyElement):
@@ -1061,6 +1177,7 @@ class OFFDihedral(_TopologyElement):
     _name = 'OFFDihedral'
     _writable_attrs = ['atom1_idx', 'atom2_idx', 'atom3_idx', 'atom4_idx',
                        'periodicity', 'phase', 'k', 'idivf']
+    _lambda_changeable = ['k']
     _to_PELE_class = Dihedral
 
     def __init__(self, index=-1, atom1_idx=None, atom2_idx=None,

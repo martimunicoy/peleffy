@@ -299,7 +299,7 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         for atom in rdkit_molecule.GetAtoms():
             pdb_info = atom.GetPDBResidueInfo()
 
-            if pdb_info is not None:
+            if pdb_info is not None and pdb_info.GetName() != '':
                 atom_names.append(pdb_info.GetName())
             else:
                 element = atom.GetSymbol()
@@ -460,27 +460,28 @@ class RDKitToolkitWrapper(ToolkitWrapper):
             Path to write to
         """
         from rdkit import Chem
+        from copy import deepcopy
 
         assert Path(path).suffix == '.pdb', 'Wrong extension'
 
-        rdkit_molecule = molecule.rdkit_molecule
+        rdkit_molecule = deepcopy(molecule.rdkit_molecule)
 
-        pdb_block = Chem.rdmolfiles.MolToPDBBlock(rdkit_molecule)
         names = molecule.get_pdb_atom_names()
         tag = molecule.tag
 
-        renamed_pdb_block = ''
-        atom_counter = 0
-        for line in pdb_block.split('\n'):
-            if line.startswith('HETATM'):
-                renamed_pdb_block += line[:12] + names[atom_counter] \
-                    + ' ' + tag + line[20:] + '\n'
-                atom_counter += 1
-            else:
-                renamed_pdb_block += line + '\n'
+        for idx, atom in enumerate(rdkit_molecule.GetAtoms()):
+            pdb_info = atom.GetPDBResidueInfo()
+            if pdb_info is None:
+                pdb_info = Chem.AtomPDBResidueInfo()
+                pdb_info.SetResidueNumber(1)
+                pdb_info.SetIsHeteroAtom(True)
+            pdb_info.SetResidueName(tag)
+            pdb_info.SetName(names[idx])
+            if pdb_info.GetChainId() in (' ', ''):
+                pdb_info.SetChainId('L')
+            atom.SetPDBResidueInfo(pdb_info)
 
-        with open(path, 'w') as f:
-            f.write(renamed_pdb_block)
+        Chem.rdmolfiles.MolToPDBFile(rdkit_molecule, path)
 
     def to_sdf_file(self, molecule, path):
         """
@@ -548,7 +549,7 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         # Include missing rotatable bonds for amide groups
         for atom_pair in [frozenset(atom_pair) for atom_pair in
                           rdkit_molecule.GetSubstructMatches(
-                          Chem.MolFromSmarts('[$(N!@C(=O))]-&!@[!$(C(=O))&!D1&!$(*#*)]'))]:
+                              Chem.MolFromSmarts('[$(N!@C(=O))]-&!@[!$(C(=O))&!D1&!$(*#*)]'))]:
             rot_bonds_atom_ids.add(atom_pair)
 
         # Remove bonds to terminal -CH3
@@ -634,7 +635,7 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         Parameters
         ----------
         representation : an RDKit.molecule object
-            It is an RDKit molecule with an embeded 2D representation
+            It is an RDKit molecule with an embedded 2D representation
 
         Returns
         -------
@@ -658,6 +659,305 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         image = SVG(draw.GetDrawingText())
 
         return image
+
+    def get_mcs(self, molecule1, molecule2, include_hydrogens,
+                timeout):
+        """
+        Given two molecules, it finds the maximum common substructure
+        (MCS).
+
+        Inspired by LOMAP repository, written by Gaetano Calabro and
+        David Mobley (https://github.com/MobleyLab/Lomap)
+
+        Parameters
+        ----------
+        molecule1 : a peleffy.topology.Molecule
+            The first molecule to map
+        molecule2 : a peleffy.topology.Molecule
+            The second molecule to map
+        include_hydrogens : bool
+            Whether to include hydrogen atoms in the mapping or not
+        timeout : int
+            The maximum time in seconds to compute the MCS
+
+        Returns
+        -------
+        mcs_mol : an RDKit.molecule object
+            The MCS molecule
+        """
+        from rdkit import Chem
+        from rdkit.Chem import AllChem
+        from rdkit.Chem import rdFMCS
+
+        rdkit_mol1 = deepcopy(molecule1.rdkit_molecule)
+        rdkit_mol2 = deepcopy(molecule2.rdkit_molecule)
+
+        if not include_hydrogens:
+            rdkit_mol1 = AllChem.RemoveHs(rdkit_mol1)
+            rdkit_mol2 = AllChem.RemoveHs(rdkit_mol2)
+
+        mcs = rdFMCS.FindMCS([rdkit_mol1, rdkit_mol2],
+                             timeout=timeout,
+                             atomCompare=rdFMCS.AtomCompare.CompareAny,
+                             bondCompare=rdFMCS.BondCompare.CompareAny,
+                             matchValences=False,
+                             ringMatchesRingOnly=True,
+                             completeRingsOnly=False,
+                             matchChiralTag=False)
+
+        # Checking
+        if mcs.canceled:
+            raise ValueError('Timeout! No MCS found between passed molecules')
+
+        if mcs.numAtoms == 0:
+            raise ValueError('No MCS was found between the molecules')
+
+        # The found MCS pattern (smart strings) is converted to a RDKit molecule
+        mcs_mol = Chem.MolFromSmarts(mcs.smartsString)
+
+        try:
+            Chem.SanitizeMol(mcs_mol)
+        # if not, try to recover the atom aromaticity which is
+        # important for the ring counter
+        except Exception:
+            sanitize_failed = Chem.SanitizeMol(
+                mcs_mol,
+                sanitizeOps=Chem.SanitizeFlags.SANITIZE_SETAROMATICITY,
+                catchErrors=True)
+            if sanitize_failed:  # if not, the MCS is skipped
+                raise ValueError('Sanitization Failed.')
+
+        return mcs_mol
+
+    def get_atom_mapping(self, molecule1, molecule2, mcs_mol,
+                         include_hydrogens):
+        """
+        Given two molecules and a third molecule representing their
+        maximum common substructure, it returns the atom mapping.
+
+        Inspired by LOMAP repository, written by Gaetano Calabro and
+        David Mobley (https://github.com/MobleyLab/Lomap)
+
+        Parameters
+        ----------
+        molecule1 : a peleffy.topology.Molecule
+            The first molecule to map
+        molecule2 : a peleffy.topology.Molecule
+            The second molecule to map
+        mcs_mol : an RDKit.molecule object
+            The molecule representing the maximum common substructure
+            between molecule1 and molecule2
+        include_hydrogens : bool
+            Whether to include hydrogen atoms in the mapping or not
+
+        Returns
+        -------
+        mapping : list[tuple]
+            The list of atom pairs between both molecules, represented
+            with tuples
+        """
+        from rdkit.Chem import AllChem
+
+        rdkit_mol1 = deepcopy(molecule1.rdkit_molecule)
+        rdkit_mol2 = deepcopy(molecule2.rdkit_molecule)
+
+        if not include_hydrogens:
+            rdkit_mol1 = AllChem.RemoveHs(rdkit_mol1)
+            rdkit_mol2 = AllChem.RemoveHs(rdkit_mol2)
+            mcs_mol = AllChem.RemoveHs(mcs_mol)
+
+        # Map atoms between mol1 and MCS mol
+        if rdkit_mol1.HasSubstructMatch(mcs_mol):
+            mol1_sub = rdkit_mol1.GetSubstructMatch(mcs_mol)
+        else:
+            raise ValueError('RDKit MCS Subgraph molecule 1 search failed')
+
+        # Map atoms between mol2 and MCS mol
+        if rdkit_mol2.HasSubstructMatch(mcs_mol):
+            mol2_sub = rdkit_mol2.GetSubstructMatch(mcs_mol)
+        else:
+            raise ValueError('RDKit MCS Subgraph molecule 2 search failed')
+
+        """
+        if mcs_mol.HasSubstructMatch(mcs_mol):
+            _ = mcs_mol.GetSubstructMatch(mcs_mol)
+        else:
+            raise ValueError('RDKit MCS Subgraph search failed')
+        """
+
+        # Map between the two molecules
+        mapping = list(zip(mol1_sub, mol2_sub))
+
+        return mapping
+
+    def draw_mapping(self, molecule1, molecule2, mcs_mol,
+                     include_hydrogens):
+        """
+        Given an atom mapping, it returns its representation.
+
+        Parameters
+        ----------
+        molecule1 : a peleffy.topology.Molecule
+            The first molecule to map
+        molecule2 : a peleffy.topology.Molecule
+            The second molecule to map
+        mcs_mol : an RDKit.molecule object
+            The MCS molecule
+        include_hydrogens : bool
+            Whether to include hydrogen atoms in the mapping or not
+
+        Returns
+        -------
+        image : an IPython's display object
+            The image of the atom mapping to display
+        """
+        from rdkit import Chem
+        from rdkit.Chem import AllChem
+        from rdkit.Chem.Draw import rdMolDraw2D
+        from rdkit.Chem import Draw
+        from rdkit.Chem import rdFMCS
+
+        rdkit_mol1 = deepcopy(molecule1.rdkit_molecule)
+        rdkit_mol2 = deepcopy(molecule2.rdkit_molecule)
+
+        if not include_hydrogens:
+            rdkit_mol1 = AllChem.RemoveHs(rdkit_mol1)
+            rdkit_mol2 = AllChem.RemoveHs(rdkit_mol2)
+
+        AllChem.Compute2DCoords(rdkit_mol1)
+        AllChem.Compute2DCoords(rdkit_mol2)
+
+        mol1_name = '1: ' + molecule1.tag
+        mol2_name = '2: ' + molecule2.tag
+
+        # Map atoms between mol1 and MCS mol
+        if rdkit_mol1.HasSubstructMatch(mcs_mol):
+            mol1_sub = rdkit_mol1.GetSubstructMatch(mcs_mol)
+        else:
+            raise ValueError('RDKit MCS Subgraph molecule 1 search failed')
+
+        # Map atoms between mol2 and MCS mol
+        if rdkit_mol2.HasSubstructMatch(mcs_mol):
+            mol2_sub = rdkit_mol2.GetSubstructMatch(mcs_mol)
+        else:
+            raise ValueError('RDKit MCS Subgraph molecule 2 search failed')
+
+        for atom in rdkit_mol1.GetAtoms():
+            atom.SetProp('atomLabel', str(atom.GetIdx()))
+        for atom in rdkit_mol2.GetAtoms():
+            atom.SetProp('atomLabel', str(atom.GetIdx()))
+
+        image = Draw.MolsToGridImage([rdkit_mol1, rdkit_mol2],
+                                     molsPerRow=2, subImgSize=(300, 300),
+                                     legends=[mol1_name, mol2_name],
+                                     highlightAtomLists=[mol1_sub, mol2_sub])
+
+        return image
+
+    def align_molecules(self, mol1, mol2, atom_mapping=None):
+        """
+        It aligns the two molecules that are given, taking the first
+        one as reference.
+
+        Parameters
+        ----------
+        mol1 : an RDKit.molecule object
+            The first molecule to use as reference in the alignment
+        mol2 : an RDKit.molecule object
+            The second molecule which will be aligned over the first one
+        atom_mapping : list[tuple[int, int]]
+            The list containing the mapping between atoms of both
+            molecules. First index of each pair belongs to molecule
+            1, the second one belongs to molecule 2
+
+        Returns
+        -------
+        aligned_mol2 : an RDKit.molecule object
+            The resulting mol2 after the alignment. It is a new copy
+            of the original mol2
+        """
+        from copy import deepcopy
+        from rdkit import Chem
+
+        # Make a copy of molecule 2
+        mol2 = deepcopy(mol2)
+
+        # Generate inverse mapping
+        inverse_mapping = [(idxs[1], idxs[0]) for idxs in atom_mapping]
+
+        # Align molecule 2 to molecule 1
+        Chem.rdMolAlign.AlignMol(mol2, mol1,
+                                 atomMap=inverse_mapping)
+
+        return mol2
+
+    def alchemical_combination(self, mol1, mol2, atom_mapping,
+                               connections):
+        """
+        Given two molecules, it return the alchemical combination of
+        them. Both molecules are superposed taking the first one
+        as the reference.
+
+        Parameters
+        ----------
+        mol1 : an RDKit.molecule object
+            The first molecule to combine. It will be used as reference
+            during the superposition
+        mol2 : an RDKit.molecule object
+            The second molecule to combine
+        atom_mapping : list[tuple[int, int]]
+            The list containing the mapping between atoms of both
+            molecules. First index of each pair belongs to molecule
+            1, the second one belongs to molecule 2
+        connections : list[tuple[int, int]]
+            The list of connections between molecule 1 and non
+            native atoms of molecule 2
+
+        Returns
+        -------
+        mol_combo : an RDKit.molecule object
+            The resulting molecule after combining both supplied
+            molecules
+        """
+        from rdkit import Chem
+
+        # Align mol2 to mol1
+        mol2_aligned = self.align_molecules(mol1, mol2, atom_mapping)
+
+        # Remove common substructure from molecule 2
+        mol2_truncated = Chem.EditableMol(mol2_aligned)
+        atom_ids_to_remove = [pair[1] for pair in atom_mapping]
+
+        for atom in sorted(atom_ids_to_remove, reverse=True):
+            mol2_truncated.RemoveAtom(atom)
+
+        mol2_truncated = mol2_truncated.GetMol()
+
+        # Combine molecule1 with truncated molecule 2
+        mol_combo = Chem.CombineMols(mol1,
+                                     mol2_truncated)
+
+        # Editable molecule
+        mol_combo = Chem.EditableMol(mol_combo)
+        for connection in connections:
+            mol_combo.AddBond(*connection)
+
+        mol_combo = mol_combo.GetMol()
+
+        # Set PDB information
+        pdb_info = Chem.AtomPDBResidueInfo()
+        pdb_info.SetResidueName('HYB')
+        pdb_info.SetResidueNumber(1)
+        pdb_info.SetChainId('L')
+        pdb_info.SetIsHeteroAtom(True)
+        for atom in mol_combo.GetAtoms():
+            atom.SetPDBResidueInfo(pdb_info)
+
+        # Set all atoms as non-aromatic to avoid problems when kekulizing
+        for atom in mol_combo.GetAtoms():
+            atom.SetIsAromatic(False)
+
+        return mol_combo
 
 
 class AmberToolkitWrapper(ToolkitWrapper):
@@ -693,7 +993,7 @@ class AmberToolkitWrapper(ToolkitWrapper):
         ANTECHAMBER_PATH = find_executable("antechamber")
         if ANTECHAMBER_PATH is None:
             return False
-        if not(RDKitToolkitWrapper.is_available()):
+        if not (RDKitToolkitWrapper.is_available()):
             return False
         return True
 
@@ -738,7 +1038,7 @@ class AmberToolkitWrapper(ToolkitWrapper):
         with tempfile.TemporaryDirectory() as tmpdir:
             with temporary_cd(tmpdir):
                 net_charge = off_molecule.total_charge / \
-                    unit.elementary_charge
+                             unit.elementary_charge
 
                 self._rdkit_toolkit_wrapper.to_sdf_file(
                     molecule, tmpdir + '/molecule.sdf')
@@ -901,7 +1201,7 @@ class OpenForceFieldToolkitWrapper(ToolkitWrapper):
         molecule_parameters_list = forcefield.label_molecules(topology)
 
         assert len(molecule_parameters_list) == 1, 'A single molecule is ' \
-            'expected'
+                                                   'expected'
 
         return molecule_parameters_list[0]
 
@@ -976,7 +1276,7 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
         is_installed : bool
             True if OpenForceField is installed, False otherwise.
         """
-        if not(RDKitToolkitWrapper.is_available()):
+        if not (RDKitToolkitWrapper.is_available()):
             return False
 
         if SchrodingerToolkitWrapper.path_to_ffld_server() is None:
@@ -1010,7 +1310,7 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
 
         Parameters
         ----------
-        molecule : an peleffy.topology.Molecule
+        molecule : a peleffy.topology.Molecule
             The peleffy's Molecule object
 
         Returns
@@ -1023,7 +1323,6 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
 
         with tempfile.TemporaryDirectory() as tmpdir:
             with temporary_cd(tmpdir):
-
                 self._rdkit_toolkit_wrapper.to_pdb_file(
                     molecule, tmpdir + '/molecule.pdb')
 

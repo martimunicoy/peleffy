@@ -96,10 +96,18 @@ class PDBFile(object):
                         and line[22:26].strip() == residue_id]
 
             # Extract the PDB block of the molecule
-            pdb_block = [line for line in self.pdb_content
-                         if (line.startswith('HETATM') or
-                             line.startswith('CONECT'))
-                         and any(' {} '.format(a) in line for a in atom_ids)]
+            pdb_block = []
+            for line in self.pdb_content:
+
+                if line.startswith('HETATM') and line[6:11].strip() in atom_ids:
+                    pdb_block.append(line)
+
+                if line.startswith('CONECT'):
+                    stripped_line = line.replace("CONECT", "")
+                    ids_in_line = [stripped_line[i:i + 5] for i in range(0, len(stripped_line), 5)]
+
+                    if any([atom_id in ids_in_line for atom_id in atom_ids]):
+                        pdb_block.append(line)
 
             try:
                 molecules.append(
@@ -234,3 +242,39 @@ class PDBFile(object):
             core_constraints=core_constraints)
 
         return molecules
+
+    @property
+    def is_complex(self):
+        """
+        Check whether the PDB fetched corresponds to a protein-ligand complex 
+        or not.
+
+        Returns
+        -------
+        is_complex : bool
+            True if it is a protein-ligand complex.
+        """
+
+        if any(line.startswith('ATOM') for line in self.pdb_content) and \
+           any(line.startswith('HETATM') for line in self.pdb_content):
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def is_unique(molecules):
+        """
+        Check whether a list of molecules contains only one or multiple 
+        elements. 
+
+        Parameters
+        ----------
+        molecule : list[peleffy.topology.Molecule]
+            A list of peleffy's Molecule object.
+
+        Returns
+        -------
+        is_unique : bool
+            True if it only contains one molecule.
+        """
+        return len(molecules) == 1

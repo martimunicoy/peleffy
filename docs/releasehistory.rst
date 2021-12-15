@@ -8,6 +8,29 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
+1.4.0 - Alchemistry and AMBER support
+---------------------------------------------------------
+
+This is a minor release of peleffy that adds a new module to generate alchemical templates. It also adds support for AMBER's implementation in PELE.
+
+New features
+""""""""""""
+- `PR #154 <https://github.com/martimunicoy/peleffy/pull/154>`_: Introduces Alchemizer module to generate hybrid topologies
+- `PR #155 <https://github.com/martimunicoy/peleffy/pull/155>`_: Adds support for PELE's AMBER with a new Impact template
+- `PR #162 <https://github.com/martimunicoy/peleffy/pull/162>`_: Upgrade to openff-toolkit 0.10.1
+
+Bugfixes
+""""""""
+- `PR #158 <https://github.com/martimunicoy/peleffy/pull/158>`_: Fix minor bug when using the --chain flag and introduces checks for the input PDB in the peleffy.main module
+- `PR #159 <https://github.com/martimunicoy/peleffy/pull/159>`_: Fix issues with long atom numbers and heteromolecules extraction
+
+Tests added
+"""""""""""
+- `PR #154 <https://github.com/martimunicoy/peleffy/pull/154>`_: Adds a collection of tests for Alchemizer module
+- `PR #155 <https://github.com/martimunicoy/peleffy/pull/155>`_: Extends the tests for utils module and introduces new tests for the new AMBER-compatible Impact template
+- `PR #158 <https://github.com/martimunicoy/peleffy/pull/158>`_: Extends the tests for the new checks in the peleffy.main module
+
+
 1.3.4 - OpenFF-2.0 Support
 ---------------------------------------------------------
 
