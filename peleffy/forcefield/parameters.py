@@ -285,7 +285,7 @@ class BaseParameterWrapper(dict):
                 }
 
             # Skip data type transformation if the list is empty or None values
-            if value == [None,] * len(value):
+            if value == [None, ] * len(value):
                 return value
             if value == []:
                 return None
@@ -296,8 +296,8 @@ class BaseParameterWrapper(dict):
                     correct_value = value
 
                 if dict_units[label] is float:
-                    correct_value  = [float(v) if not v is None else v
-                    for v in value]
+                    correct_value = [float(v) if not v is None else v
+                                     for v in value]
 
                 if dict_units[label] is simtk.unit.quantity.Quantity:
                     correct_value = string_to_quantity(value)

@@ -83,6 +83,8 @@ class TestMain(object):
             'Unexpected with_solvent settings were parsed'
         assert parsed_args.conformations_info_path is None, \
             'Unexpected conformations_path settings were parsed'
+        assert parsed_args.for_amber is False, \
+            'Unexpected for_amber settings were parsed'
 
         # Test custom shorts
         parsed_args = parse_args(['toluene.pdb',
@@ -113,6 +115,8 @@ class TestMain(object):
             'Unexpected with_solvent settings were parsed'
         assert parsed_args.conformations_info_path is None, \
             'Unexpected conformations_path settings were parsed'
+        assert parsed_args.for_amber is False, \
+            'Unexpected for_amber settings were parsed'
 
         # Test custom longs
         parsed_args = parse_args(['methane.pdb',
@@ -144,6 +148,8 @@ class TestMain(object):
             'Unexpected with_solvent settings were parsed'
         assert parsed_args.conformations_info_path is None, \
             'Unexpected conformations_path settings were parsed'
+        assert parsed_args.for_amber is False, \
+            'Unexpected for_amber settings were parsed'
 
         # Test unexpected charge method
         with pytest.raises(SystemExit) as pytest_wrapped_e:
@@ -178,8 +184,10 @@ class TestMain(object):
             'Unexpected with_solvent settings were parsed'
         assert parsed_args.conformations_info_path is None, \
             'Unexpected conformations_path settings were parsed'
+        assert parsed_args.for_amber is False, \
+            'Unexpected for_amber settings were parsed'
 
-        # Test charges_from_file argument
+        #  Test charges_from_file argument
         parsed_args = parse_args(['BHP.pdb',
                                   '--charges_from_file', 'BHP.mae'])
 
@@ -207,6 +215,8 @@ class TestMain(object):
             'Unexpected with_solvent settings were parsed'
         assert parsed_args.conformations_info_path is None, \
             'Unexpected conformations_path settings were parsed'
+        assert parsed_args.for_amber is False, \
+            'Unexpected for_amber settings were parsed'
 
         # Test include_terminal_rotamers argument
         parsed_args = parse_args(['methane.pdb',
@@ -234,6 +244,8 @@ class TestMain(object):
             'Unexpected with_solvent settings were parsed'
         assert parsed_args.conformations_info_path is None, \
             'Unexpected conformations_path settings were parsed'
+        assert parsed_args.for_amber is False, \
+            'Unexpected for_amber settings were parsed'
 
         # Test chain argument
         parsed_args = parse_args(['LYS_BNZ.pdb',
@@ -261,6 +273,8 @@ class TestMain(object):
             'Unexpected with_solvent settings were parsed'
         assert parsed_args.chain == 'L',\
             'Unexpected chain settings were parsed'
+        assert parsed_args.for_amber is False, \
+            'Unexpected for_amber settings were parsed'
 
         # Test silent argument
         parsed_args = parse_args(['methane.pdb',
@@ -288,9 +302,8 @@ class TestMain(object):
             'Unexpected with_solvent settings were parsed'
         assert parsed_args.conformations_info_path is None, \
             'Unexpected conformations_path settings were parsed'
-
-        parse_args(['methane.pdb', '-s']) == parse_args(['methane.pdb',
-                                                         '--silent'])
+        assert parsed_args.for_amber is False, \
+            'Unexpected for_amber settings were parsed'
 
         # Test debug argument
         parsed_args = parse_args(['methane.pdb',
@@ -318,9 +331,8 @@ class TestMain(object):
             'Unexpected with_solvent settings were parsed'
         assert parsed_args.conformations_info_path is None, \
             'Unexpected conformations_path settings were parsed'
-
-        parse_args(['methane.pdb', '-d']) == parse_args(['methane.pdb',
-                                                         '--debug'])
+        assert parsed_args.for_amber is False, \
+            'Unexpected for_amber settings were parsed'
 
         # Test dihedral library arguments
         parsed_args = parse_args(['methane.pdb',
@@ -348,6 +360,37 @@ class TestMain(object):
             'Unexpected with_solvent settings were parsed'
         assert parsed_args.conformations_info_path == "test_path", \
             'Unexpected conformations_path settings were parsed'
+        assert parsed_args.for_amber is False, \
+            'Unexpected for_amber settings were parsed'
+
+        # Test for_amber argument
+        parsed_args = parse_args(['methane.pdb',
+                                  '--for_amber'])
+
+        assert parsed_args.as_datalocal is False, \
+            'Unexpected as_datalocal settings were parsed'
+        assert parsed_args.charge_method == 'am1bcc', \
+            'Unexpected charge_method settings were parsed'
+        assert parsed_args.debug is False, \
+            'Unexpected debug settings were parsed'
+        assert parsed_args.forcefield == 'openff_unconstrained-1.3.0.offxml', \
+            'Unexpected forcefield settings were parsed'
+        assert parsed_args.include_terminal_rotamers is False, \
+            'Unexpected include_terminal_rotamers settings were parsed'
+        assert parsed_args.output is None, \
+            'Unexpected output settings were parsed'
+        assert parsed_args.pdb_file == 'methane.pdb', \
+            'Unexpected pdb_file settings were parsed'
+        assert parsed_args.resolution == 30, \
+            'Unexpected resolution settings were parsed'
+        assert parsed_args.silent is False, \
+            'Unexpected silent settings were parsed'
+        assert parsed_args.with_solvent is False, \
+            'Unexpected with_solvent settings were parsed'
+        assert parsed_args.conformations_info_path is None, \
+            'Unexpected conformations_path settings were parsed'
+        assert parsed_args.for_amber is True, \
+            'Unexpected for_amber settings were parsed'
 
     def test_peleffy_main(self):
         """It checks the main function of peleffy."""
@@ -382,3 +425,22 @@ class TestMain(object):
                 logger = Logger()
                 for handler in logger._logger.handlers:
                     assert handler.level == logging.DEBUG
+
+    def test_PDB_checks(self): 
+        """
+        It tests all the checks done when parsing a PDB to parameterize a molecule via the main module. 
+        """
+        from peleffy.main import run_peleffy
+
+        # Protein-ligand PDB files requiere chain especification.
+        complex_path = get_data_file_path('complexes/LYS_BNZ.pdb')
+        with pytest.raises(ValueError):
+            _ = run_peleffy(complex_path, chain = None)
+
+        # Multiple molecules on the same chain can not be parameterized
+        complex_path = get_data_file_path('complexes/complex_test.pdb')
+        with pytest.raises(ValueError):
+            _ = run_peleffy(complex_path, chain = 'C')
+
+
+

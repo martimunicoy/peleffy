@@ -24,7 +24,7 @@ requirements:
     - networkx
     - rdkit
     - ambertools
-    - openff-toolkit==0.10.0
+    - openff-toolkit==0.10.1
 
 about:
   home: https://github.com/martimunicoy/peleffy

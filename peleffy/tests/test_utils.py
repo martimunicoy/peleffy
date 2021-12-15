@@ -158,6 +158,39 @@ class TestLogger(object):
             assert output == 'Critical message\n', \
                 'Unexpected logger message at standard output'
 
+    def test_get_logger_level(self):
+        """
+        It tests the level getter of peleffy's logger.
+        """
+        from peleffy.utils import Logger
+
+        logger = Logger()
+
+        # Check debug level
+        logger.set_level('DEBUG')
+        level = logger.get_level()
+        assert level == 'DEBUG', 'Unexpected Logger level'
+
+        # Check info level
+        logger.set_level('INFO')
+        level = logger.get_level()
+        assert level == 'INFO', 'Unexpected Logger level'
+
+        # Check warning level
+        logger.set_level('WARNING')
+        level = logger.get_level()
+        assert level == 'WARNING', 'Unexpected Logger level'
+
+        # Check error level
+        logger.set_level('ERROR')
+        level = logger.get_level()
+        assert level == 'ERROR', 'Unexpected Logger level'
+
+        # Check critical level
+        logger.set_level('CRITICAL')
+        level = logger.get_level()
+        assert level == 'CRITICAL', 'Unexpected Logger level'
+
 
 class TestOutputPathHandler(object):
     """
@@ -849,3 +882,65 @@ class TestPDBFile(object):
         with pytest.raises(ValueError):
             PDBreader = PDBFile(PATH_COMPLEX_PDB)
             _ = PDBreader.get_molecules_from_chain(selected_chain='A')
+
+
+    def test_is_complex(self): 
+        """
+        It tests the is_complex property of a PDBFile object.
+        """
+        from peleffy.utils.input import PDBFile
+        from peleffy.utils import get_data_file_path
+
+        # The PDB fetched is a complex
+        PATH_COMPLEX_PDB = get_data_file_path('complexes/LYS_BNZ.pdb')
+        PDBreader = PDBFile(PATH_COMPLEX_PDB)
+        assert(PDBreader.is_complex)
+
+        # The PDB fetched is a ligand
+        PATH_LIGAND_PDB = get_data_file_path('ligands/benzene.pdb')
+        PDBreader = PDBFile(PATH_LIGAND_PDB)
+        assert not (PDBreader.is_complex) 
+
+    
+    def test_is_unique(self): 
+        """
+        It tests the static method is_unique. 
+        """               
+        from peleffy.utils.input import PDBFile
+        from peleffy.utils import get_data_file_path
+
+        PATH_COMPLEX_PDB = get_data_file_path('complexes/complex_test.pdb')
+        PDBreader = PDBFile(PATH_COMPLEX_PDB)
+
+        # Chain with a single molecule
+        molecules = PDBreader.get_molecules_from_chain(
+                selected_chain='L',
+                allow_undefined_stereo = True)
+        assert(PDBreader.is_unique(molecules))
+
+        # Chain with multiple molecules
+        molecules = PDBreader.get_molecules_from_chain(
+                selected_chain='C',
+                allow_undefined_stereo = True)
+        assert not(PDBreader.is_unique(molecules))
+
+class TestGeneralUtils(object):
+    """
+    It contains all the tests to validate general util methods.
+    """
+    def test_path_exists(self):
+        """
+        It tests the method to check if a path exists.
+        """
+
+        from peleffy.utils import check_if_path_exists
+        from peleffy.utils import temporary_cd
+
+        # Initialize temporary directory to check the method
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                check_if_path_exists(tmpdir)
+
+        # It should no longer work once the directory is removed
+        with pytest.raises(ValueError):
+            check_if_path_exists(tmpdir)

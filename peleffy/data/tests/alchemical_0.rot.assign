@@ -1,0 +1,4 @@
+rot assign res HYB &
+   sidelib FREE30 _N1_ _C4_ &
+     newgrp &
+   sidelib FREE30 _C5_ _C4_ &

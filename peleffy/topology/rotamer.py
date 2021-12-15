@@ -231,7 +231,7 @@ class MolecularGraph(nx.Graph):
 
         Parameters
         ----------
-        molecule : An peleffy.topology.Molecule
+        molecule : a peleffy.topology.Molecule
             A Molecule object to be written as an Impact file
         """
         super().__init__(self)
@@ -241,7 +241,7 @@ class MolecularGraph(nx.Graph):
 
     def _compute_rotamer_graph(self):
         """
-        It initializes the netwrokx.Graph with a Molecule object.
+        It initializes the network.Graph with a Molecule object.
         """
         rdkit_toolkit = RDKitToolkitWrapper()
         rot_bonds_atom_ids = \
@@ -704,7 +704,7 @@ class MolecularGraphWithConstrainedCore(MolecularGraph):
 
         Parameters
         ----------
-        molecule : An peleffy.topology.Molecule
+        molecule : a peleffy.topology.Molecule
             A Molecule object to be written as an Impact file
         atom_constraint : list[int or str]
             It defines the list of atoms to constrain in the core, thus,
@@ -819,3 +819,55 @@ class MolecularGraphWithConstrainedCore(MolecularGraph):
             constraint_names.append(atom_names[index])
 
         return constraint_names
+
+
+class CoreLessMolecularGraph(MolecularGraph):
+    """
+    It represents the structure of a Molecule as a networkx.Graph with
+    an empty atom core. This molecular graph is only valid for
+    alchemy applications.
+    """
+
+    def __init__(self, molecule):
+        """
+        It initializes a CoreLessMolecularGraph object.
+
+        Parameters
+        ----------
+        molecule : a peleffy.topology.Molecule
+            A Molecule object to be written as an Impact file
+        """
+        nx.Graph.__init__(self)
+        self._molecule = molecule
+        self._compute_rotamer_graph()
+        self._core_nodes = []
+
+    def get_rotamers(self):
+        """
+        It builds the RotamerLibrary object.
+
+        Returns
+        -------
+        rotamers : list[list]
+            The list of rotamers grouped by the branch they belong to
+        """
+        resolution = self.molecule.rotamer_resolution
+
+        branch_graph = deepcopy(self)
+
+        branch_groups = list(nx.connected_components(branch_graph))
+
+        rot_bonds_per_group = self._get_rot_bonds_per_group(branch_groups)
+
+        rotamers = list()
+
+        for group_id, rot_bonds in enumerate(rot_bonds_per_group):
+            branch_rotamers = list()
+            for (atom1_index, atom2_index) in rot_bonds:
+                rotamer = Rotamer(atom1_index, atom2_index, resolution)
+                branch_rotamers.append(rotamer)
+
+            if len(branch_rotamers) > 0:
+                rotamers.append(branch_rotamers)
+
+        return rotamers
