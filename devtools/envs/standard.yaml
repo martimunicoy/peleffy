@@ -13,4 +13,4 @@ dependencies:
   - ipython
   - ambertools
   - rdkit
-  - openff-toolkit==0.10.0
+  - openff-toolkit==0.10.1
