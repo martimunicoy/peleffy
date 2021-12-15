@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.ge91a3a1
+                0+untagged.1.gd296dbe
               </div>
             
           
@@ -214,6 +214,32 @@
 </dd></dl>
 
 <dl class="py method">
+<dt id="peleffy.topology.Dihedral.apply_lambda">
+<code class="sig-name descname">apply_lambda</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attributes_to_modify</span></em>, <em class="sig-param"><span class="n">lambda_value</span></em>, <em class="sig-param"><span class="n">reverse</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">final_state</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.Dihedral.apply_lambda" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a lambda value, it modifies a set of attributes of
+this topological element. A lambda equal to 0 will keep the
+original attributes of this topological element. A lambda
+equal to 1 will remove completely the effects of the
+attributes. This behavior will be the opposite when reverse
+is set to True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attributes_to_modify</strong> (<em>list[str]</em>) – The list attribute names that will be modified</p></li>
+<li><p><strong>lambda_value</strong> (<em>float</em>) – A value between 0 and 1 that defined the lambda to
+apply to the attributes</p></li>
+<li><p><strong>reverse</strong> (<em>bool</em>) – When set to true the effects of lambda will be the
+opposite</p></li>
+<li><p><strong>final_state</strong> (<em>a peleffy.topology.topology._TopologyElement object</em>) – The topology element that represents the final state when
+lambda equals 1.0. Default is None, which means that the
+final state is not defined and therefore the topological
+element will disappear or will start from scratch</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="peleffy.topology.Dihedral.plot">
 <code class="sig-name descname">plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/topology/elements.html#Dihedral.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.topology.Dihedral.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>It plots this Dihedral as a function of phi angle.</p>
@@ -259,6 +285,17 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – The index of the fourth atom involved in this Dihedral</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.Dihedral.set_index">
+<code class="sig-name descname">set_index</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/topology/elements.html#Dihedral.set_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.topology.Dihedral.set_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>It sets the index of the dihedral.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – The index of this Dihedral object</p>
 </dd>
 </dl>
 </dd></dl>

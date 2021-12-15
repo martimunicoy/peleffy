@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.ge91a3a1
+                0+untagged.1.gd296dbe
               </div>
             
           
@@ -220,12 +220,49 @@
 </dd></dl>
 
 <dl class="py method">
+<dt id="peleffy.topology.Atom.apply_lambda">
+<code class="sig-name descname">apply_lambda</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attributes_to_modify</span></em>, <em class="sig-param"><span class="n">lambda_value</span></em>, <em class="sig-param"><span class="n">reverse</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">final_state</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.topology.Atom.apply_lambda" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a lambda value, it modifies a set of attributes of
+this topological element. A lambda equal to 0 will keep the
+original attributes of this topological element. A lambda
+equal to 1 will remove completely the effects of the
+attributes. This behavior will be the opposite when reverse
+is set to True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attributes_to_modify</strong> (<em>list[str]</em>) – The list attribute names that will be modified</p></li>
+<li><p><strong>lambda_value</strong> (<em>float</em>) – A value between 0 and 1 that defined the lambda to
+apply to the attributes</p></li>
+<li><p><strong>reverse</strong> (<em>bool</em>) – When set to true the effects of lambda will be the
+opposite</p></li>
+<li><p><strong>final_state</strong> (<em>a peleffy.topology.topology._TopologyElement object</em>) – The topology element that represents the final state when
+lambda equals 1.0. Default is None, which means that the
+final state is not defined and therefore the topological
+element will disappear or will start from scratch</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="peleffy.topology.Atom.set_OPLS_type">
 <code class="sig-name descname">set_OPLS_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">OPLS_type</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/topology/elements.html#Atom.set_OPLS_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.topology.Atom.set_OPLS_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>It sets the OPLS type of the atom.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>OPLS_type</strong> (<em>str</em>) – The OPLS type to set to this Atom object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.topology.Atom.set_PDB_name">
+<code class="sig-name descname">set_PDB_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pdb_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/topology/elements.html#Atom.set_PDB_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.topology.Atom.set_PDB_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>It sets the PDB atom name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pdb_name</strong> (<em>str</em>) – The PDB atom name to be set</p>
 </dd>
 </dl>
 </dd></dl>
@@ -244,13 +281,13 @@
 <dl class="py method">
 <dt id="peleffy.topology.Atom.set_as_branch">
 <code class="sig-name descname">set_as_branch</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/topology/elements.html#Atom.set_as_branch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.topology.Atom.set_as_branch" title="Permalink to this definition">¶</a></dt>
-<dd><p>It sets the atom as branch</p>
+<dd><p>It sets the atom as branch.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="peleffy.topology.Atom.set_as_core">
 <code class="sig-name descname">set_as_core</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/topology/elements.html#Atom.set_as_core"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.topology.Atom.set_as_core" title="Permalink to this definition">¶</a></dt>
-<dd><p>It sets the atom as core</p>
+<dd><p>It sets the atom as core.</p>
 </dd></dl>
 
 <dl class="py method">

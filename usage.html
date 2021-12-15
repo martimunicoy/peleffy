@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0+untagged.1.ge91a3a1
+                0+untagged.1.gd296dbe
               </div>
             
           
@@ -102,6 +102,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#charge-from-file">Charge from file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#chain">Chain</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#include-terminal-rotamers">Include terminal rotamers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#amber-compatible-template">AMBER-compatible template</a></li>
 </ul>
 </li>
 </ul>
@@ -415,6 +416,19 @@ installation path.</p>
 <li><p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>, exclude terminal rotamers</p></li>
 <li><p>Example: the code below will generate a rotamer library including all terminal rotamers</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m peleffy.main path/to/my_ligand.pdb --include_terminal_rotamers
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="amber-compatible-template">
+<h3>AMBER-compatible template<a class="headerlink" href="#amber-compatible-template" title="Permalink to this headline">¶</a></h3>
+<p>It generates an Impact template that will be compatible with PELE’s AMBER force field implementation. The default template is compatible with OPLS’s implementation.</p>
+<ul>
+<li><p>Flag: <code class="docutils literal notranslate"><span class="pre">--for_amber</span></code></p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>, compatible with OPLS</p></li>
+<li><p>Example: the code below will generate an Impact template compatible with PELE’S AMBER</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -m peleffy.main path/to/my_ligand.pdb --for_amber
 </pre></div>
 </div>
 </li>

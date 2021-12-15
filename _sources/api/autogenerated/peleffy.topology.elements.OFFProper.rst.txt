@@ -9,6 +9,7 @@ peleffy.topology.elements.OFFProper
    
    
       .. automethod:: __init__
+      .. automethod:: apply_lambda
       .. automethod:: plot
       .. automethod:: to_PELE
    

@@ -9,6 +9,7 @@ peleffy.template.impact.WritableProper
    
    
       .. automethod:: __init__
+      .. automethod:: apply_lambda
       .. automethod:: dummy_to_writable
       .. automethod:: exclude_from_14_list
       .. automethod:: in_angstrom
@@ -25,6 +26,7 @@ peleffy.template.impact.WritableProper
       .. automethod:: set_atom2_idx
       .. automethod:: set_atom3_idx
       .. automethod:: set_atom4_idx
+      .. automethod:: set_index
    
    
 

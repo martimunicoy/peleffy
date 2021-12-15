@@ -245,3 +245,15 @@ It always includes terminal rotamers, even if they belong to a terminal methyl g
   .. code-block:: bash
 
         $ python -m peleffy.main path/to/my_ligand.pdb --include_terminal_rotamers
+
+AMBER-compatible template
+-------------------------
+It generates an Impact template that will be compatible with PELE's AMBER force field implementation. The default template is compatible with OPLS's implementation.
+
+- Flag: ``--for_amber``
+- Default: ``False``, compatible with OPLS
+- Example: the code below will generate an Impact template compatible with PELE'S AMBER
+
+  .. code-block:: bash
+
+        $ python -m peleffy.main path/to/my_ligand.pdb --for_amber

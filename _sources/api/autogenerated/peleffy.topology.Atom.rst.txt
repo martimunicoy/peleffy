@@ -9,7 +9,9 @@ peleffy.topology.Atom
    
    
       .. automethod:: __init__
+      .. automethod:: apply_lambda
       .. automethod:: set_OPLS_type
+      .. automethod:: set_PDB_name
       .. automethod:: set_SASA_radius
       .. automethod:: set_as_branch
       .. automethod:: set_as_core

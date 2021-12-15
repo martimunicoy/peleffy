@@ -9,11 +9,13 @@ peleffy.topology.Dihedral
    
    
       .. automethod:: __init__
+      .. automethod:: apply_lambda
       .. automethod:: plot
       .. automethod:: set_atom1_idx
       .. automethod:: set_atom2_idx
       .. automethod:: set_atom3_idx
       .. automethod:: set_atom4_idx
+      .. automethod:: set_index
    
    
 

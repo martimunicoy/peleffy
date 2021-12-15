@@ -9,6 +9,7 @@ peleffy.template.impact.WritableImproper
    
    
       .. automethod:: __init__
+      .. automethod:: apply_lambda
       .. automethod:: dummy_to_writable
       .. automethod:: in_angstrom
       .. automethod:: in_deg
@@ -23,6 +24,7 @@ peleffy.template.impact.WritableImproper
       .. automethod:: set_atom2_idx
       .. automethod:: set_atom3_idx
       .. automethod:: set_atom4_idx
+      .. automethod:: set_index
    
    
 

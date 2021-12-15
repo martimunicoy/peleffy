@@ -9,6 +9,7 @@ peleffy.topology.Proper
    
    
       .. automethod:: __init__
+      .. automethod:: apply_lambda
       .. automethod:: exclude_from_14_list
       .. automethod:: include_in_14_list
       .. automethod:: plot
@@ -16,6 +17,7 @@ peleffy.topology.Proper
       .. automethod:: set_atom2_idx
       .. automethod:: set_atom3_idx
       .. automethod:: set_atom4_idx
+      .. automethod:: set_index
    
    
 

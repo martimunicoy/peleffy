@@ -9,6 +9,7 @@ peleffy.template.impact.WritableAngle
    
    
       .. automethod:: __init__
+      .. automethod:: apply_lambda
       .. automethod:: dummy_to_writable
       .. automethod:: in_angstrom
       .. automethod:: in_deg
@@ -21,6 +22,7 @@ peleffy.template.impact.WritableAngle
       .. automethod:: set_atom1_idx
       .. automethod:: set_atom2_idx
       .. automethod:: set_atom3_idx
+      .. automethod:: set_index
    
    
 

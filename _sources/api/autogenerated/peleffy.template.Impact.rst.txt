@@ -19,6 +19,7 @@ peleffy.template.Impact
 
    .. autosummary::
    
+      ~Impact.H_6R_OF_2
       ~Impact.molecule
       ~Impact.topology
    

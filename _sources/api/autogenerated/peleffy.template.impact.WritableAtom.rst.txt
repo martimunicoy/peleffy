@@ -9,6 +9,7 @@ peleffy.template.impact.WritableAtom
    
    
       .. automethod:: __init__
+      .. automethod:: apply_lambda
       .. automethod:: dummy_to_writable
       .. automethod:: in_angstrom
       .. automethod:: in_deg
@@ -19,6 +20,7 @@ peleffy.template.impact.WritableAtom
       .. automethod:: none_to_dummy
       .. automethod:: none_to_zero
       .. automethod:: set_OPLS_type
+      .. automethod:: set_PDB_name
       .. automethod:: set_SASA_radius
       .. automethod:: set_as_branch
       .. automethod:: set_as_core

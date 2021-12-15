@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0+untagged.1.ge91a3a1
+                0+untagged.1.gd296dbe
               </div>
             
           
@@ -262,6 +262,7 @@
         <span class="sd">&quot;&quot;&quot;It builds the atoms of the molecule.&quot;&quot;&quot;</span>
 
         <span class="kn">from</span> <span class="nn">peleffy.utils</span> <span class="kn">import</span> <span class="n">Logger</span>
+        <span class="kn">from</span> <span class="nn">peleffy.topology.rotamer</span> <span class="kn">import</span> <span class="n">CoreLessMolecularGraph</span>
         <span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span>
 
         <span class="n">coords</span> <span class="o">=</span> <span class="n">RDKitToolkitWrapper</span><span class="p">()</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="p">)</span>
@@ -284,6 +285,13 @@
                         <span class="n">nonpolar_alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_atom</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">graph</span><span class="p">,</span> <span class="n">CoreLessMolecularGraph</span><span class="p">):</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Error: core-less molecular graph cannot be &#39;</span> <span class="o">+</span> \
+                <span class="sa">f</span><span class="s1">&#39;used to build a non-alchemic topology for &#39;</span> <span class="o">+</span> \
+                <span class="sa">f</span><span class="s1">&#39;molecule </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">([</span><span class="n">message</span><span class="p">])</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
         <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">core_nodes</span><span class="p">:</span>
                 <span class="n">atom</span><span class="o">.</span><span class="n">set_as_core</span><span class="p">()</span>
@@ -297,16 +305,16 @@
                 <span class="n">absolute_parent</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">index</span>
                 <span class="k">break</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error: no core atom found in molecule &#39;</span>
-                         <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">([</span><span class="s1">&#39;Error: no core atom found in molecule &#39;</span> <span class="o">+</span>
+                          <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">])</span>
 
         <span class="c1"># Get parent indexes from the molecular graph</span>
         <span class="n">parent_idxs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get_parents</span><span class="p">(</span><span class="n">absolute_parent</span><span class="p">)</span>
 
         <span class="c1"># Assert parent_idxs has right length</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parent_idxs</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Error: no core atom found in molecule &#39;</span>
-                         <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">([</span><span class="s1">&#39;Error: invalid number of parents obtained for &#39;</span> <span class="o">+</span>
+                          <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">])</span>
 
         <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
             <span class="n">parent_idx</span> <span class="o">=</span> <span class="n">parent_idxs</span><span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
