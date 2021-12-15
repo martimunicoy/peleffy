@@ -1030,11 +1030,6 @@ class Alchemizer(object):
         log_level = logger.get_level()
         logger.set_level('ERROR')
 
-        at_least_one = fep_lambda is not None or \
-            coul_lambda is not None or coul1_lambda is not None or \
-            coul2_lambda is not None or vdw_lambda is not None or \
-            bonded_lambda is not None
-
         # Define lambdas
         fep_lambda = FEPLambda(fep_lambda)
         coul_lambda = CoulombicLambda(coul_lambda)
@@ -1149,7 +1144,6 @@ class Lambda(ABC):
                                  "It has to be between 0 and 1")
 
         self._value = value
-        pass
 
     @property
     def value(self):
