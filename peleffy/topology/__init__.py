@@ -4,3 +4,5 @@ from .molecule import Molecule
 from .zmatrix import ZMatrix
 from .rotamer import RotamerLibrary
 from .conformer import BCEConformations
+from .mapper import Mapper
+from .alchemistry import Alchemizer

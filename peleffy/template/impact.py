@@ -25,7 +25,7 @@ class Impact(object):
 
         Parameters
         ----------
-        topology : a Topology object
+        topology : a peleffy.topology.Topology object
             The molecular topology representation to write as a
             Impact template
         for_amber : bool
