@@ -720,7 +720,14 @@ class TestPDBFile(object):
     """
     It contains all the tests to validate the PDBFile class.
     """
-    def test_get_molecule_from_chain(self):
+
+    @pytest.mark.parametrize(("complex_path", "ligand_path", "chain"),
+                             [
+                                 ('complexes/LYS_BNZ.pdb', 'ligands/BNZ.pdb', "L"),
+                                 ('complexes/5XXD_SAM.pdb', 'ligands/SAM.pdb', "A")
+                             ]
+                             )
+    def test_get_molecule_from_chain(self, complex_path, ligand_path, chain):
         """
         It tests the method that returns a molecule from a selected chain from
         an input PDB file.
@@ -757,19 +764,19 @@ class TestPDBFile(object):
         from peleffy.utils import get_data_file_path
         from peleffy.topology import Molecule
 
-        PATH_COMPLEX_PDB = get_data_file_path('complexes/LYS_BNZ.pdb')
-        PATH_LIGAND_PDB = get_data_file_path('ligands/BNZ.pdb')
+        PATH_COMPLEX_PDB = get_data_file_path(complex_path)
+        PATH_LIGAND_PDB = get_data_file_path(ligand_path)
 
         # Test method get_molecule_from_chain
         PDBreader = PDBFile(PATH_COMPLEX_PDB)
-        molecules = PDBreader.get_molecules_from_chain(selected_chain='L')
+        molecules = PDBreader.get_molecules_from_chain(selected_chain=chain)
         assert len(molecules) == 1, 'Unexpected number of molecules'
         assert compare_molecules(molecules[0], Molecule(PATH_LIGAND_PDB)) is True
 
         # Test allow_undefined_stereo flag
         PDBreader = PDBFile(PATH_COMPLEX_PDB)
         molecules = \
-            PDBreader.get_molecules_from_chain(selected_chain='L',
+            PDBreader.get_molecules_from_chain(selected_chain=chain,
                                                allow_undefined_stereo=True)
         assert len(molecules) == 1, 'Unexpected number of molecules'
         assert compare_molecules(molecules[0],
@@ -779,7 +786,7 @@ class TestPDBFile(object):
         # Test exclude_terminal_rotamers flag
         PDBreader = PDBFile(PATH_COMPLEX_PDB)
         molecules = \
-            PDBreader.get_molecules_from_chain(selected_chain='L',
+            PDBreader.get_molecules_from_chain(selected_chain=chain,
                                                exclude_terminal_rotamers=False)
         assert len(molecules) == 1, 'Unexpected number of molecules'
         assert compare_molecules(molecules[0], Molecule(
@@ -787,7 +794,7 @@ class TestPDBFile(object):
 
         # Test rotamer_resolution flag
         PDBreader = PDBFile(PATH_COMPLEX_PDB)
-        molecules = PDBreader.get_molecules_from_chain(selected_chain='L',
+        molecules = PDBreader.get_molecules_from_chain(selected_chain=chain,
                                                        rotamer_resolution=10)
         assert compare_molecules(molecules[0],
                                  Molecule(PATH_LIGAND_PDB,
@@ -795,7 +802,7 @@ class TestPDBFile(object):
 
         # Test core_constraints flag
         PDBreader = PDBFile(PATH_COMPLEX_PDB)
-        molecules = PDBreader.get_molecules_from_chain(selected_chain='L',
+        molecules = PDBreader.get_molecules_from_chain(selected_chain=chain,
                                                        core_constraints=[1,2])
         assert len(molecules) == 1, 'Unexpected number of molecules'
         assert molecules[0].core_constraints == [1,2]
