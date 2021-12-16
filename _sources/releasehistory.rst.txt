@@ -8,6 +8,20 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
+1.4.1 - Bug fixes for heteromolecules extraction
+---------------------------------------------------------
+
+This is a micro release of peleffy that fixes a bug that affected heteromolecules extraction.
+
+Bugfixes
+""""""""
+- `PR #163 <https://github.com/martimunicoy/peleffy/pull/163>`_: Fix problem when extracting heteromolecules from a specific chain
+
+Tests added
+"""""""""""
+- `PR #163 <https://github.com/martimunicoy/peleffy/pull/163>`_: Adds a test to validate heteromolecule extraction
+
+
 1.4.0 - Alchemistry and AMBER support
 ---------------------------------------------------------
 
