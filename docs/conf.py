@@ -83,8 +83,9 @@ autodoc_member_order = 'bysource'
 source_suffix = ['.rst', '.md']
 master_doc = 'index'
 
-import peleffy
-version = peleffy.__version__
+#import peleffy
+#version = peleffy.__version__
+version = '1.4.1'
 
 pygments_style = 'sphinx'
 
