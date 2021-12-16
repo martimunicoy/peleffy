@@ -104,10 +104,15 @@ class PDBFile(object):
 
                 if line.startswith('CONECT'):
                     stripped_line = line.replace("CONECT", "")
-                    ids_in_line = [stripped_line[i:i + 5] for i in range(0, len(stripped_line), 5)]
-                    stripped_ids_in_line = [element.strip() for element in ids_in_line]
+                    ids_in_line = [stripped_line[i:i + 5] for i in
+                                   range(0, len(stripped_line), 5)]
 
-                    if any([atom_id in stripped_ids_in_line for atom_id in atom_ids]):
+                    # Strip out whitespaces from ids
+                    stripped_ids_in_line = [element.strip() for
+                                            element in ids_in_line]
+
+                    if any([atom_id in stripped_ids_in_line for
+                            atom_id in atom_ids]):
                         pdb_block.append(line)
 
             try:
