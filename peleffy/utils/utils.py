@@ -378,16 +378,74 @@ class Logger(object):
         if 'peleffy_log' not in logging.root.manager.loggerDict:
             self._logger = logging.getLogger('peleffy_log')
             self._logger.setLevel(self.DEFAULT_LEVEL)
+
+            # Add stream handler
+            self.set_stdout_handler()
         else:
             self._logger = logging.getLogger('peleffy_log')
 
-        # If no handler is found add stream handler
-        if not len(self._logger.handlers):
-            ch = logging.StreamHandler()
-            ch.setLevel(self.DEFAULT_LEVEL)
-            formatter = logging.Formatter('%(message)s')
-            ch.setFormatter(formatter)
-            self._logger.addHandler(ch)
+    def set_stdout_handler(self):
+        """
+        It unsets current Logger's handlers and sets the stream handler
+        that points to the standard output.
+        """
+        import sys
+        import logging
+
+        # Unset current file handlers
+        self._unset_handlers()
+
+        # Initialize stream handler
+        stream_handler = logging.StreamHandler(sys.stdout)
+
+        # Assign logger's level
+        level = self.get_level()
+        stream_handler.setLevel(level)
+
+        # Set up logger's format
+        stream_handler.setFormatter(logging.Formatter('%(message)s'))
+
+        # Add handler
+        self._logger.addHandler(stream_handler)
+
+    def set_file_handler(self, log_file):
+        """
+        It unsets current Logger's handlers and sets the file handler
+        that points to the supplied path.
+
+        Parameters
+        ----------
+        log_file : str
+            Path where to save logger's output
+        """
+        import os
+        import logging
+
+        # Unset current file handlers
+        self._unset_handlers()
+
+        # Initialize file handler
+        if not os.path.isfile(log_file):
+            file_handler = logging.FileHandler(log_file, mode="w+")
+        else:
+            file_handler = logging.FileHandler(log_file, mode="a")
+
+        # Assign logger's level
+        level = self.get_level()
+        file_handler.setLevel(level)
+
+        # Set up logger's format
+        file_handler.setFormatter(logging.Formatter('%(message)s'))
+
+        # Add handler
+        self._logger.addHandler(file_handler)
+
+    def _unset_handlers(self):
+        """
+        It removes any handler of this Logger.
+        """
+        for handler in self._logger.handlers:
+            self._logger.removeHandler(handler)
 
     def set_level(self, level):
         """
@@ -400,6 +458,7 @@ class Logger(object):
             CRITICAL]
         """
         import logging
+        logging.basicConfig()
 
         if level.upper() == 'DEBUG':
             logging_level = logging.DEBUG
