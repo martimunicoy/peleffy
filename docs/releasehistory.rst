@@ -8,6 +8,16 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
+1.4.2 - Bug fixes for rotamer libraries
+---------------------------------------
+
+This is a micro release of peleffy that fixes a bug that affected the order of atom pairs in the rotamer libraries which caused problems of performance in PELE.
+
+Bugfixes
+""""""""
+- `PR #167 <https://github.com/martimunicoy/peleffy/pull/167>`_: Bug fixes for rotamer libraries and affected tests
+
+
 1.4.1 - Bug fixes for heteromolecules extraction
 ---------------------------------------------------------
 
