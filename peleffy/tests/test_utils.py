@@ -191,6 +191,61 @@ class TestLogger(object):
         level = logger.get_level()
         assert level == 'CRITICAL', 'Unexpected Logger level'
 
+    def test_stdout_handler(self):
+        """
+        It tests the stdout handler of peleffy's logger.
+        """
+        import io
+        import logging
+        from contextlib import redirect_stdout
+        from peleffy.utils import Logger
+
+        # Force a hard reset of logging library and the logger it manages
+        from importlib import reload
+        logging.shutdown()
+        reload(logging)
+
+        logger = Logger()
+
+        with io.StringIO() as buf:
+            with redirect_stdout(buf):
+                logger.set_stdout_handler()
+
+                logger.debug('This message must not be printed')
+                logger.info('This message must be printed')
+
+            output = buf.getvalue()
+
+        assert output.strip() == 'This message must be printed', \
+            'Unexpected logger message'
+
+    def test_file_handler(self):
+        """
+        It tests the file handler of peleffy's logger.
+        """
+        import logging
+        from peleffy.utils import Logger
+        from peleffy.utils import temporary_cd
+
+        # Force a hard reset of logging library and the logger it manages
+        from importlib import reload
+        logging.shutdown()
+        reload(logging)
+
+        logger = Logger()
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                logger.set_file_handler('log.txt')
+
+                logger.debug('This message must not be printed')
+                logger.info('This message must be printed')
+
+                with open('log.txt') as f:
+                    output = '\n'.join(f.readlines())
+
+                assert output.strip() == 'This message must be printed', \
+                    'Unexpected logger message'
 
 class TestOutputPathHandler(object):
     """

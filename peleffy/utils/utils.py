@@ -13,6 +13,7 @@ __all__ = ["get_data_file_path",
            "convert_all_quantities_to_string",
            "string_to_quantity",
            "parse_charges_from_mae",
+           "rotation_matrix",
            "Logger"
            ]
 
@@ -313,7 +314,7 @@ def parse_charges_from_mae(path, parameters):
     import re
 
     # Read external file containing the partial charges information
-    params_info, params_list = ([] for i in range(2))
+    params_info, params_list = ([], [])
     copy = False
     with open(path, 'r') as file:
         for line in file.readlines():
@@ -332,15 +333,21 @@ def parse_charges_from_mae(path, parameters):
         params_list = [l.replace('"', '').split() for l in params_list[1:-1]]
 
     # Get the index of the atom name and charge from the parameter's list
-    idx_charges, idx_atom_name = (None for i in range(2))
+    idx_charges, idx_atom_name = (None, None)
     for idx, line in enumerate(params_info):
+        # Get PDB atom name
         if 's_m_pdb_atom_name' in line:
             idx_atom_name = idx
+
+        # Get precomputed charges
         if 'r_m_charge1' in line:
             idx_charges = idx
-    if idx_charges is None or idx_atom_name is None:
-        raise ValueError(
-            " {} does not contain charges information. ".format(path))
+
+    if idx_charges is None:
+        raise ValueError(f"{path} does not contain charges information")
+
+    if idx_atom_name is None:
+        raise ValueError(f"{path} does not contain PDB atom names information")
 
     # Creates a charges by atom name dictionary
     d = {}
@@ -363,6 +370,38 @@ def parse_charges_from_mae(path, parameters):
     return parameters
 
 
+def rotation_matrix(axis, angle):
+    """
+    It applies the Euler-Rodrigues formula to generate the rotation
+    matrix.
+
+    Parameters
+    ----------
+    axis : Union[List, Tuple, np.array]
+        The 3D array that defines the rotation axis
+    angle : float
+        The rotation angle, in radians
+
+    Returns
+    -------
+    rotation_matrix : np.array
+        The resulting rotation matrix
+    """
+    import numpy as np
+    
+    # Normalize axis
+    axis = axis / np.sqrt(np.dot(axis, axis))
+    
+    a = np.cos(angle / 2)
+    b, c, d = -axis * np.sin(angle / 2)
+    return np.array([[a * a + b * b - c * c - d * d,
+                      2 * (b * c - a * d), 2 * (b * d + a * c)],
+                     [2 * (b * c + a * d),
+                      a * a + c * c - b * b - d * d, 2 * (c * d - a * b)],
+                     [2 * (b * d - a * c),
+                      2 * (c * d + a * b), a * a + d * d - b * b - c * c]])
+
+
 class Logger(object):
     """
     It contains all the required methods to handle logging messages.
@@ -378,16 +417,74 @@ class Logger(object):
         if 'peleffy_log' not in logging.root.manager.loggerDict:
             self._logger = logging.getLogger('peleffy_log')
             self._logger.setLevel(self.DEFAULT_LEVEL)
+
+            # Add stream handler
+            self.set_stdout_handler()
         else:
             self._logger = logging.getLogger('peleffy_log')
 
-        # If no handler is found add stream handler
-        if not len(self._logger.handlers):
-            ch = logging.StreamHandler()
-            ch.setLevel(self.DEFAULT_LEVEL)
-            formatter = logging.Formatter('%(message)s')
-            ch.setFormatter(formatter)
-            self._logger.addHandler(ch)
+    def set_stdout_handler(self):
+        """
+        It unsets current Logger's handlers and sets the stream handler
+        that points to the standard output.
+        """
+        import sys
+        import logging
+
+        # Unset current file handlers
+        self._unset_handlers()
+
+        # Initialize stream handler
+        stream_handler = logging.StreamHandler(sys.stdout)
+
+        # Assign logger's level
+        level = self.get_level()
+        stream_handler.setLevel(level)
+
+        # Set up logger's format
+        stream_handler.setFormatter(logging.Formatter('%(message)s'))
+
+        # Add handler
+        self._logger.addHandler(stream_handler)
+
+    def set_file_handler(self, log_file):
+        """
+        It unsets current Logger's handlers and sets the file handler
+        that points to the supplied path.
+
+        Parameters
+        ----------
+        log_file : str
+            Path where to save logger's output
+        """
+        import os
+        import logging
+
+        # Unset current file handlers
+        self._unset_handlers()
+
+        # Initialize file handler
+        if not os.path.isfile(log_file):
+            file_handler = logging.FileHandler(log_file, mode="w+")
+        else:
+            file_handler = logging.FileHandler(log_file, mode="a")
+
+        # Assign logger's level
+        level = self.get_level()
+        file_handler.setLevel(level)
+
+        # Set up logger's format
+        file_handler.setFormatter(logging.Formatter('%(message)s'))
+
+        # Add handler
+        self._logger.addHandler(file_handler)
+
+    def _unset_handlers(self):
+        """
+        It removes any handler of this Logger.
+        """
+        for handler in self._logger.handlers:
+            self._logger.removeHandler(handler)
 
     def set_level(self, level):
         """
@@ -400,6 +497,7 @@ class Logger(object):
             CRITICAL]
         """
         import logging
+        logging.basicConfig()
 
         if level.upper() == 'DEBUG':
             logging_level = logging.DEBUG
