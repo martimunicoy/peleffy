@@ -13,6 +13,7 @@ __all__ = ["get_data_file_path",
            "convert_all_quantities_to_string",
            "string_to_quantity",
            "parse_charges_from_mae",
+           "rotation_matrix",
            "Logger"
            ]
 
@@ -361,6 +362,38 @@ def parse_charges_from_mae(path, parameters):
                 + "any external file atom name's.")
     parameters['charges'] = new_charges_parameters
     return parameters
+
+
+def rotation_matrix(axis, angle):
+    """
+    It applies the Euler-Rodrigues formula to generate the rotation
+    matrix.
+
+    Parameters
+    ----------
+    axis : Union[List, Tuple, np.array]
+        The 3D array that defines the rotation axis
+    angle : float
+        The rotation angle, in radians
+
+    Returns
+    -------
+    rotation_matrix : np.array
+        The resulting rotation matrix
+    """
+    import numpy as np
+    
+    # Normalize axis
+    axis = axis / np.sqrt(np.dot(axis, axis))
+    
+    a = np.cos(angle / 2)
+    b, c, d = -axis * np.sin(angle / 2)
+    return np.array([[a * a + b * b - c * c - d * d,
+                      2 * (b * c - a * d), 2 * (b * d + a * c)],
+                     [2 * (b * c + a * d),
+                      a * a + c * c - b * b - d * d, 2 * (c * d - a * b)],
+                     [2 * (b * d - a * c),
+                      2 * (c * d + a * b), a * a + d * d - b * b - c * c]])
 
 
 class Logger(object):
