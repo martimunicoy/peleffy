@@ -8,14 +8,15 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
-1.4.2 - Bug fixes for rotamer libraries
----------------------------------------
+1.4.2 - Compatibility fixes for latest RDKit and Schrodinger versions
+---------------------------------------------------------------------
 
-This is a micro release of peleffy that fixes a bug that affected the order of atom pairs in the rotamer libraries which caused problems of performance in PELE.
+This is a micro release of peleffy that fixes several bugs related with latest versions of RDKit and Schrodinger. Affected modules are rotamer libraries, the runner and parser of the ffld server, and the alchemistry package.
 
 Bugfixes
 """"""""
 - `PR #167 <https://github.com/martimunicoy/peleffy/pull/167>`_: Bug fixes for rotamer libraries and affected tests
+- `PR #168 <https://github.com/martimunicoy/peleffy/pull/168>`_: Compatibility changes for the ffld server shipped with latest Schrodinger version
 
 
 1.4.1 - Bug fixes for heteromolecules extraction
