@@ -24,9 +24,15 @@ jobs:
         shell: bash
         run: |
           python -m pip install --upgrade pip
-          python -m pip install --no-deps -v .
           if [ -f docs/requirements.txt ]; then pip install -r docs/requirements.txt; fi
 
+      - name: Install latest peleffy version
+        run: conda install peleffy
+        
+      - name: Keep specific jinja2 version
+        shell: bash
+        run: conda install -c conda-forge Jinja2<3.1
+         
       - name: Build sphinx documentation
         shell: bash
         run: |
