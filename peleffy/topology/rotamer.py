@@ -548,9 +548,13 @@ class MolecularGraph(nx.Graph):
                                         rot_bonds_per_group):
             sorting_dict = dict()
             for bond in rot_bonds:
-                min_d = min([distances[core_atom][bond[0]],
-                             distances[core_atom][bond[1]]])
-                sorting_dict[bond] = min_d
+                if (distances[core_atom][bond[0]] < 
+                        distances[core_atom][bond[1]]):
+                    sorting_dict[(bond[0], bond[1])] = \
+                        distances[core_atom][bond[0]]
+                else:
+                    sorting_dict[(bond[1], bond[0])] = \
+                        distances[core_atom][bond[1]]
 
             sorted_rot_bonds_per_group.append(
                 [i[0] for i in
