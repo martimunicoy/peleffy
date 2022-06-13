@@ -17,6 +17,7 @@ Bugfixes
 """"""""
 - `PR #167 <https://github.com/martimunicoy/peleffy/pull/167>`_: Bug fixes for rotamer libraries and affected tests
 - `PR #168 <https://github.com/martimunicoy/peleffy/pull/168>`_: Compatibility changes for the ffld server shipped with latest Schrodinger version
+- `PR #169 <https://github.com/martimunicoy/peleffy/pull/169>`_: Support more MAE file formats when looking for partial charges. Support new RDKit versions.
 
 
 1.4.1 - Bug fixes for heteromolecules extraction
