@@ -1336,7 +1336,7 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
                 if errors:
                     raise SystemError('FFLD_SERVER has failed with the ' +
                                       'following error message: \n ' +
-                                      '{}'.format(error.decode("utf-8")))
+                                      '{}'.format(errors.decode("utf-8")))
 
                 with open('parameters.txt') as parameters_file:
                     return parameters_file.read()
