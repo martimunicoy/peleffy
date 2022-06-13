@@ -335,9 +335,16 @@ def parse_charges_from_mae(path, parameters):
     # Get the index of the atom name and charge from the parameter's list
     idx_charges, idx_atom_name = (None for i in range(2))
     for idx, line in enumerate(params_info):
+        # Get PDB atom name
         if 's_m_pdb_atom_name' in line:
             idx_atom_name = idx
-        if 'r_m_charge1' in line:
+        elif 's_m_atom_name' in line:  # Alternative name for PDB atom names
+            idx_atom_name = idx
+
+        # Get precomputed charges
+        if 'r_j_ESP_Charges' in line:
+            idx_charges = idx
+        elif 'r_m_charge1' in line:  # Alternative name for precomputed charges
             idx_charges = idx
     if idx_charges is None or idx_atom_name is None:
         raise ValueError(
