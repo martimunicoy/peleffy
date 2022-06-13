@@ -1327,14 +1327,20 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
 
         with tempfile.TemporaryDirectory() as tmpdir:
             with temporary_cd(tmpdir):
-                self._rdkit_toolkit_wrapper.to_pdb_file(
-                    molecule, tmpdir + '/molecule.pdb')
+                self._rdkit_toolkit_wrapper.to_sdf_file(
+                    molecule, tmpdir + '/molecule.sdf')
 
-                subprocess.check_output([ffld_server_exec,
-                                         "-ipdb", "molecule.pdb",
-                                         "-version", "14",
-                                         "-print_parameters",
-                                         "-out_file", "parameters.txt"])
+                errors = subprocess.check_output([ffld_server_exec,
+                                                  "-isdf", "molecule.sdf",
+                                                  "-version", "14",
+                                                  "-print_parameters",
+                                                  "-out_file",
+                                                  "parameters.txt"])
+
+                if errors:
+                    raise SystemError('FFLD_SERVER has failed with the ' +
+                                      'following error message: \n ' +
+                                      '{}'.format(errors.decode("utf-8")))
 
                 with open('parameters.txt') as parameters_file:
                     return parameters_file.read()

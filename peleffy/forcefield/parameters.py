@@ -1200,6 +1200,12 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
 
         params['charges'] = unit.Quantity(charges, unit.elementary_charge)
 
+        # Check params is not empty (it would mean that ffld_server failed)
+        if len(params['atom_types']) == 0:
+            raise ValueError(f"ffld server did not produce a valid output. " +
+                             f"Instead, the following output was obtained: " +
+                             f"{ffld_output}")
+
         opls_parameters_wrapper = OPLS2005ParameterWrapper(params)
         OPLS2005ParameterWrapper._add_SGBNP_solvent_parameters(
             opls_parameters_wrapper)
