@@ -11,12 +11,17 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 1.4.2 - Compatibility fixes for latest RDKit and Schrodinger versions
 ---------------------------------------------------------------------
 
-This is a micro release of peleffy that fixes several bugs related with latest versions of RDKit and Schrodinger. Affected modules are rotamer libraries, the runner and parser of the ffld server, and the alchemistry package.
+This is a micro release of peleffy that fixes several bugs related with latest versions of RDKit and Schrodinger. Affected modules are rotamer libraries, the runner and parser of the ffld server, and the alchemistry package. It also adds some minor improvements to log handlers.
+
+New features
+""""""""""""
+- `PR #166 <https://github.com/martimunicoy/peleffy/pull/166>`_: New options for log handlers.
 
 Bugfixes
 """"""""
 - `PR #167 <https://github.com/martimunicoy/peleffy/pull/167>`_: Bug fixes for rotamer libraries and affected tests
 - `PR #168 <https://github.com/martimunicoy/peleffy/pull/168>`_: Compatibility changes for the ffld server shipped with latest Schrodinger version
+- `PR #169 <https://github.com/martimunicoy/peleffy/pull/169>`_: Support new RDKit versions.
 
 
 1.4.1 - Bug fixes for heteromolecules extraction

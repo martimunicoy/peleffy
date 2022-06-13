@@ -957,6 +957,10 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         for atom in mol_combo.GetAtoms():
             atom.SetIsAromatic(False)
 
+        # Sanitize it
+        Chem.SanitizeMol(mol_combo,
+                         Chem.SANITIZE_ALL ^ Chem.SANITIZE_KEKULIZE ^ Chem.SANITIZE_SETAROMATICITY)
+
         return mol_combo
 
 

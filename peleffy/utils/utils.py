@@ -314,7 +314,7 @@ def parse_charges_from_mae(path, parameters):
     import re
 
     # Read external file containing the partial charges information
-    params_info, params_list = ([] for i in range(2))
+    params_info, params_list = ([], [])
     copy = False
     with open(path, 'r') as file:
         for line in file.readlines():
@@ -333,15 +333,21 @@ def parse_charges_from_mae(path, parameters):
         params_list = [l.replace('"', '').split() for l in params_list[1:-1]]
 
     # Get the index of the atom name and charge from the parameter's list
-    idx_charges, idx_atom_name = (None for i in range(2))
+    idx_charges, idx_atom_name = (None, None)
     for idx, line in enumerate(params_info):
+        # Get PDB atom name
         if 's_m_pdb_atom_name' in line:
             idx_atom_name = idx
+
+        # Get precomputed charges
         if 'r_m_charge1' in line:
             idx_charges = idx
-    if idx_charges is None or idx_atom_name is None:
-        raise ValueError(
-            " {} does not contain charges information. ".format(path))
+
+    if idx_charges is None:
+        raise ValueError(f"{path} does not contain charges information")
+
+    if idx_atom_name is None:
+        raise ValueError(f"{path} does not contain PDB atom names information")
 
     # Creates a charges by atom name dictionary
     d = {}
