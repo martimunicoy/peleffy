@@ -1,0 +1,1566 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>peleffy.topology.elements &mdash; Open Force Field for PELE  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> Open Force Field for PELE
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.4.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releasehistory.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Generate PELE parameter files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../topology.html">Topology representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../forcefield.html">Forcefield methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../template.html">Template handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../solvent.html">Solvent models</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Open Force Field for PELE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>peleffy.topology.elements</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for peleffy.topology.elements</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module defines the basic topology elements of a molecule.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">simtk</span> <span class="kn">import</span> <span class="n">unit</span>
+
+
+<span class="k">class</span> <span class="nc">_TopologyElement</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A wrapper for any topological element.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_writable_attrs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">_lambda_changeable</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">class</span> <span class="nc">TopologyIterator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        An iterator for topological elements that iterates over their</span>
+<span class="sd">        attributes in an ordered way.</span>
+
+<span class="sd">        It is useful when writing topological elements to file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_el</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            It initiates a TopologyIterator object.</span>
+
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            top_el : a TopologyElement object</span>
+<span class="sd">                The topology element to iterate on.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_top_el</span> <span class="o">=</span> <span class="n">top_el</span>
+
+        <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            It returns the next item for the iteration.</span>
+
+<span class="sd">            Returns</span>
+<span class="sd">            -------</span>
+<span class="sd">            attr_name : str</span>
+<span class="sd">                The name of the attribute</span>
+<span class="sd">            attr_value : float</span>
+<span class="sd">                The value of the attribute</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_el</span><span class="o">.</span><span class="n">_writable_attrs</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">StopIteration</span>
+
+            <span class="n">attr_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_el</span><span class="o">.</span><span class="n">_writable_attrs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">]</span>
+            <span class="n">attr_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_el</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">return</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">attr_value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The name that this topological element has.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            The name of the topological element</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_writable_attrs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The number of writable attributes this topological element has.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        n_writable_attrs : int</span>
+<span class="sd">            The number of writable attributes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_writable_attrs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">apply_lambda</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attributes_to_modify</span><span class="p">,</span> <span class="n">lambda_value</span><span class="p">,</span>
+                     <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">final_state</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a lambda value, it modifies a set of attributes of</span>
+<span class="sd">        this topological element. A lambda equal to 0 will keep the</span>
+<span class="sd">        original attributes of this topological element. A lambda</span>
+<span class="sd">        equal to 1 will remove completely the effects of the</span>
+<span class="sd">        attributes. This behavior will be the opposite when reverse</span>
+<span class="sd">        is set to True.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        attributes_to_modify : list[str]</span>
+<span class="sd">            The list attribute names that will be modified</span>
+<span class="sd">        lambda_value : float</span>
+<span class="sd">            A value between 0 and 1 that defined the lambda to</span>
+<span class="sd">            apply to the attributes</span>
+<span class="sd">        reverse : bool</span>
+<span class="sd">            When set to true the effects of lambda will be the</span>
+<span class="sd">            opposite</span>
+<span class="sd">        final_state : a peleffy.topology.topology._TopologyElement object</span>
+<span class="sd">            The topology element that represents the final state when</span>
+<span class="sd">            lambda equals 1.0. Default is None, which means that the</span>
+<span class="sd">            final state is not defined and therefore the topological</span>
+<span class="sd">            element will disappear or will start from scratch</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">peleffy.utils</span> <span class="kn">import</span> <span class="n">Logger</span>
+
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span>
+
+        <span class="c1"># Check final_state</span>
+        <span class="k">if</span> <span class="n">final_state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">final_state</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;Final state must belong to the &#39;</span> <span class="o">+</span>
+                              <span class="sa">f</span><span class="s1">&#39;same topological element as &#39;</span> <span class="o">+</span>
+                              <span class="sa">f</span><span class="s1">&#39;the element that wants to be &#39;</span> <span class="o">+</span>
+                              <span class="sa">f</span><span class="s1">&#39;modified with a lambda value. &#39;</span> <span class="o">+</span>
+                              <span class="sa">f</span><span class="s1">&#39;It will not be changed.&#39;</span><span class="p">])</span>
+
+                <span class="k">return</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">reverse</span><span class="p">:</span>
+            <span class="n">lambda_value</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">lambda_value</span>
+
+        <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="n">attributes_to_modify</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attribute</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lambda_changeable</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;Attribute </span><span class="si">{</span><span class="n">attribute</span><span class="si">}</span><span class="s1"> is not an &#39;</span>
+                              <span class="sa">f</span><span class="s1">&#39;attribute that can be changed with &#39;</span>
+                              <span class="sa">f</span><span class="s1">&#39;a lambda. It will not be changed.&#39;</span><span class="p">])</span>
+                <span class="k">continue</span>
+
+            <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">attribute</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span> <span class="o">*</span> <span class="n">lambda_value</span>
+
+            <span class="k">if</span> <span class="n">final_state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">final_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">final_state</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">attribute</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">final_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">value</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">lambda_value</span><span class="p">)</span> <span class="o">*</span> <span class="n">final_value</span>
+
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It returns an instance of the TopologyIterator.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        iterator : a TopologyIterator</span>
+<span class="sd">            The TopologyIterator object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">TopologyIterator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It returns the representation string of this topological element.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        repr_string : str</span>
+<span class="sd">            The representation string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">repr_string</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">(&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">)</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span><span class="n">attr</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">attr_name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">repr_string</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">=</span><span class="si">{}</span><span class="s1">, &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attr_name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="n">repr_string</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">=</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">attrs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">repr_string</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It returns the readable representation string of this topological</span>
+<span class="sd">        element.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str_string : str</span>
+<span class="sd">            The readable representation string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Atom"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Atom.html#peleffy.template.impact.Atom">[docs]</a><span class="k">class</span> <span class="nc">Atom</span><span class="p">(</span><span class="n">_TopologyElement</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents the properties of an atom.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;Atom&#39;</span>
+    <span class="n">_writable_attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="s1">&#39;PDB_name&#39;</span><span class="p">,</span> <span class="s1">&#39;OPLS_type&#39;</span><span class="p">]</span>
+    <span class="n">_lambda_changeable</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sigma&#39;</span><span class="p">,</span> <span class="s1">&#39;epsilon&#39;</span><span class="p">,</span> <span class="s1">&#39;charge&#39;</span><span class="p">,</span> <span class="s1">&#39;born_radius&#39;</span><span class="p">,</span>
+                          <span class="s1">&#39;SASA_radius&#39;</span><span class="p">,</span> <span class="s1">&#39;nonpolar_gamma&#39;</span><span class="p">,</span> <span class="s1">&#39;nonpolar_alpha&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Atom.__init__"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Atom.html#peleffy.template.impact.Atom.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">core</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">OPLS_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">PDB_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">unknown</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">epsilon</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">charge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">born_radius</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">SASA_radius</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">nonpolar_gamma</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nonpolar_alpha</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initializes an Atom object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the atom</span>
+<span class="sd">        core : bool</span>
+<span class="sd">            Whether atom is in the core or in a branch</span>
+<span class="sd">        OPLS_type : str</span>
+<span class="sd">            The OPLS type of the atom</span>
+<span class="sd">        PDB_name : str</span>
+<span class="sd">            The PDB name of the atom</span>
+<span class="sd">        unknown : int</span>
+<span class="sd">            The unknown value of the atom</span>
+<span class="sd">        x : float</span>
+<span class="sd">            The x coordinate of the atom</span>
+<span class="sd">        y : float</span>
+<span class="sd">            The y coordinate of the atom</span>
+<span class="sd">        z : float</span>
+<span class="sd">            The z coordinate of the atom</span>
+<span class="sd">        sigma : simtk.unit.Quantity</span>
+<span class="sd">            The sigma parameter of the atom</span>
+<span class="sd">        epsilon : simtk.unit.Quantity</span>
+<span class="sd">            The epsilon parameter of the atom</span>
+<span class="sd">        charge : simtk.unit.Quantity</span>
+<span class="sd">            The partial charge parameter of the atom</span>
+<span class="sd">        born_radius : simtk.unit.Quantity</span>
+<span class="sd">            The SGB born parameter radius of the atom</span>
+<span class="sd">        SASA_radius : simtk.unit.Quantity</span>
+<span class="sd">            The SASA radius parameter of the atom</span>
+<span class="sd">        nonpolar_gamma : simtk.unit.Quantity</span>
+<span class="sd">            The nonpolar gamma parameter of the atom</span>
+<span class="sd">        nonpolar_alpha : simtk.unit.Quantity</span>
+<span class="sd">            The nonpolar alpha parameter of the atom</span>
+<span class="sd">        parent : peleffy.topology.Atom</span>
+<span class="sd">            The parent of the atom</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_core</span> <span class="o">=</span> <span class="n">core</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_OPLS_type</span> <span class="o">=</span> <span class="n">OPLS_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_PDB_name</span> <span class="o">=</span> <span class="n">PDB_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_unknown</span> <span class="o">=</span> <span class="n">unknown</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_z</span> <span class="o">=</span> <span class="n">z</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sigma</span> <span class="o">=</span> <span class="n">sigma</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_epsilon</span> <span class="o">=</span> <span class="n">epsilon</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_charge</span> <span class="o">=</span> <span class="n">charge</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_born_radius</span> <span class="o">=</span> <span class="n">born_radius</span>  <span class="c1"># Rad. Non Polar SGB</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_SASA_radius</span> <span class="o">=</span> <span class="n">SASA_radius</span>  <span class="c1"># Rad. Non Polar Type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nonpolar_gamma</span> <span class="o">=</span> <span class="n">nonpolar_gamma</span>  <span class="c1"># SGB Non Polar gamma</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nonpolar_alpha</span> <span class="o">=</span> <span class="n">nonpolar_alpha</span>  <span class="c1"># SGB Non Polar type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="n">parent</span></div>
+
+<div class="viewcode-block" id="Atom.set_index"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Atom.html#peleffy.template.impact.Atom.set_index">[docs]</a>    <span class="k">def</span> <span class="nf">set_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the index of the atom.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span></div>
+
+<div class="viewcode-block" id="Atom.set_as_core"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Atom.html#peleffy.template.impact.Atom.set_as_core">[docs]</a>    <span class="k">def</span> <span class="nf">set_as_core</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;It sets the atom as core.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_core</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Atom.set_as_branch"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Atom.html#peleffy.template.impact.Atom.set_as_branch">[docs]</a>    <span class="k">def</span> <span class="nf">set_as_branch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;It sets the atom as branch.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_core</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Atom.set_PDB_name"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Atom.html#peleffy.template.impact.Atom.set_PDB_name">[docs]</a>    <span class="k">def</span> <span class="nf">set_PDB_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdb_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the PDB atom name.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pdb_name : str</span>
+<span class="sd">            The PDB atom name to be set</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_PDB_name</span> <span class="o">=</span> <span class="n">pdb_name</span></div>
+
+<div class="viewcode-block" id="Atom.set_parent"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Atom.html#peleffy.template.impact.Atom.set_parent">[docs]</a>    <span class="k">def</span> <span class="nf">set_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the parent of the atom.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        parent : peleffy.topology.Atom</span>
+<span class="sd">            The parent of the atom</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="n">parent</span></div>
+
+<div class="viewcode-block" id="Atom.set_coords"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Atom.html#peleffy.template.impact.Atom.set_coords">[docs]</a>    <span class="k">def</span> <span class="nf">set_coords</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the coordinates of the atom.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        coords : list</span>
+<span class="sd">            The coordinates array to set to this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;3D array is expected&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_z</span> <span class="o">=</span> <span class="n">coords</span></div>
+
+<div class="viewcode-block" id="Atom.set_OPLS_type"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Atom.html#peleffy.template.impact.Atom.set_OPLS_type">[docs]</a>    <span class="k">def</span> <span class="nf">set_OPLS_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">OPLS_type</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the OPLS type of the atom.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        OPLS_type : str</span>
+<span class="sd">            The OPLS type to set to this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_OPLS_type</span> <span class="o">=</span> <span class="n">OPLS_type</span></div>
+
+<div class="viewcode-block" id="Atom.set_sigma"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Atom.html#peleffy.template.impact.Atom.set_sigma">[docs]</a>    <span class="k">def</span> <span class="nf">set_sigma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sigma</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the sigma of the atom.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        sigma : float</span>
+<span class="sd">            The sigma to set to this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sigma</span> <span class="o">=</span> <span class="n">sigma</span></div>
+
+<div class="viewcode-block" id="Atom.set_epsilon"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Atom.html#peleffy.template.impact.Atom.set_epsilon">[docs]</a>    <span class="k">def</span> <span class="nf">set_epsilon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the epsilon of the atom.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        epsilon : float</span>
+<span class="sd">            The epsilon to set to this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_epsilon</span> <span class="o">=</span> <span class="n">epsilon</span></div>
+
+<div class="viewcode-block" id="Atom.set_charge"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Atom.html#peleffy.template.impact.Atom.set_charge">[docs]</a>    <span class="k">def</span> <span class="nf">set_charge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">charge</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the charge of the atom.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        charge : float</span>
+<span class="sd">            The charge to set to this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_charge</span> <span class="o">=</span> <span class="n">charge</span></div>
+
+<div class="viewcode-block" id="Atom.set_born_radius"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Atom.html#peleffy.template.impact.Atom.set_born_radius">[docs]</a>    <span class="k">def</span> <span class="nf">set_born_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">born_radius</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the Born radius of the atom.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        born_radius : float</span>
+<span class="sd">            The Born radius to set to this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_born_radius</span> <span class="o">=</span> <span class="n">born_radius</span></div>
+
+<div class="viewcode-block" id="Atom.set_SASA_radius"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Atom.html#peleffy.template.impact.Atom.set_SASA_radius">[docs]</a>    <span class="k">def</span> <span class="nf">set_SASA_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">SASA_radius</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the SASA radius of the atom.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        SASA_radius : float</span>
+<span class="sd">            The SASA radius to set to this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_SASA_radius</span> <span class="o">=</span> <span class="n">SASA_radius</span></div>
+
+<div class="viewcode-block" id="Atom.set_nonpolar_gamma"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Atom.html#peleffy.template.impact.Atom.set_nonpolar_gamma">[docs]</a>    <span class="k">def</span> <span class="nf">set_nonpolar_gamma</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nonpolar_gamma</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the nonpolar gamma of the atom.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nonpolar_gamma : float</span>
+<span class="sd">            The nonpolar gamma to set to this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nonpolar_gamma</span> <span class="o">=</span> <span class="n">nonpolar_gamma</span></div>
+
+<div class="viewcode-block" id="Atom.set_nonpolar_alpha"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Atom.html#peleffy.template.impact.Atom.set_nonpolar_alpha">[docs]</a>    <span class="k">def</span> <span class="nf">set_nonpolar_alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nonpolar_alpha</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the nonpolar alpha of the atom.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nonpolar_alpha : float</span>
+<span class="sd">            The nonpolar alpha to set to this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nonpolar_alpha</span> <span class="o">=</span> <span class="n">nonpolar_alpha</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">core</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s core position.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        core : bool</span>
+<span class="sd">            Whether this Atom object is in the core or in a branch</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_core</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">OPLS_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s OPLS type.</span>
+
+<span class="sd">        .. todo ::</span>
+
+<span class="sd">           * Consider removing any reference to OPLS, if possible</span>
+<span class="sd">             Otherwise, use SMIRks to find the best match</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        OPLS_type : str</span>
+<span class="sd">            The OLPS type of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_OPLS_type</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">PDB_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s PDB name.</span>
+
+<span class="sd">        .. todo ::</span>
+
+<span class="sd">           * Consider removing any reference to OPLS, if possible</span>
+<span class="sd">             Otherwise, use SMIRks to find the best match</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        PDB_name : str</span>
+<span class="sd">            The PDB name of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PDB_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">unknown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s unknown int.</span>
+
+<span class="sd">        .. todo ::</span>
+
+<span class="sd">           * Review the actual purpose of this attribute in PELE</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        unknown : int</span>
+<span class="sd">            The unknown int of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unknown</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s x coordinate.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        x : float</span>
+<span class="sd">            The x coordinate of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_x</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">y</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s y coordinate.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        y : float</span>
+<span class="sd">            The y coordinate of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">z</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s z coordinate.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        z : float</span>
+<span class="sd">            The z coordinate of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_z</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sigma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s sigma.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        sigma : simtk.unit.Quantity</span>
+<span class="sd">            The sigma parameter of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sigma</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">epsilon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s epsilon.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        epsilon : simtk.unit.Quantity</span>
+<span class="sd">            The epsilon parameter of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_epsilon</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">charge</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s charge.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        charge : simtk.unit.Quantity</span>
+<span class="sd">            The charge parameter of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_charge</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">born_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s born radius.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        born_radius : simtk.unit.Quantity</span>
+<span class="sd">            The SGB Born radius parameter of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_born_radius</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">SASA_radius</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s SASA radius.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        SASA_radius : simtk.unit.Quantity</span>
+<span class="sd">            The SASA radius parameter of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_SASA_radius</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">nonpolar_gamma</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s nonpolar gamma.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        nonpolar_gamma : simtk.unit.Quantity</span>
+<span class="sd">            The nonpolar gamma parameter of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nonpolar_gamma</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">nonpolar_alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s nonpolar alpha.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        nonpolar_alpha : simtk.unit.Quantity</span>
+<span class="sd">            The nonpolar alpha parameter of this Atom object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nonpolar_alpha</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">parent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Atom&#39;s parent.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        parent : a peleffy.topology.Atom or None</span>
+<span class="sd">            The parent of the atom. If it is the absolute parent, it</span>
+<span class="sd">            will return a None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span></div>
+
+
+<div class="viewcode-block" id="DummyAtom"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.elements.DummyAtom.html#peleffy.template.impact.DummyAtom">[docs]</a><span class="k">class</span> <span class="nc">DummyAtom</span><span class="p">(</span><span class="n">Atom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents a dummy atom.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DummyAtom.__init__"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.elements.DummyAtom.html#peleffy.template.impact.DummyAtom.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">PDB_name</span><span class="o">=</span><span class="s1">&#39;DUMM&#39;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initializes a DummyAtom object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the atom</span>
+<span class="sd">        PDB_name : str</span>
+<span class="sd">            The PDB name of the atom</span>
+<span class="sd">        parent : peleffy.topology.Atom</span>
+<span class="sd">            The parent of the atom</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">PDB_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Bond"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Bond.html#peleffy.template.impact.Bond">[docs]</a><span class="k">class</span> <span class="nc">Bond</span><span class="p">(</span><span class="n">_TopologyElement</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents a bond in the topology.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;Bond&#39;</span>
+    <span class="n">_writable_attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;atom1_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;atom2_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;spring_constant&#39;</span><span class="p">,</span> <span class="s1">&#39;eq_dist&#39;</span><span class="p">]</span>
+    <span class="n">_lambda_changeable</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;spring_constant&#39;</span><span class="p">,</span> <span class="s1">&#39;eq_dist&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Bond.__init__"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Bond.html#peleffy.template.impact.Bond.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">atom1_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atom2_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">spring_constant</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eq_dist</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initiates a Bond object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of this Bond object</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the first atom involved in this Bond</span>
+<span class="sd">        atom2_idx : int</span>
+<span class="sd">            The index of the second atom involved in this Bond</span>
+<span class="sd">        spring_constant : simtk.unit.Quantity</span>
+<span class="sd">            The spring constant of this Bond</span>
+<span class="sd">        eq_dist : simtk.unit.Quantity</span>
+<span class="sd">            The equilibrium distance of this Bond</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom1_idx</span> <span class="o">=</span> <span class="n">atom1_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom2_idx</span> <span class="o">=</span> <span class="n">atom2_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spring_constant</span> <span class="o">=</span> <span class="n">spring_constant</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_eq_dist</span> <span class="o">=</span> <span class="n">eq_dist</span></div>
+
+<div class="viewcode-block" id="Bond.set_index"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Bond.html#peleffy.template.impact.Bond.set_index">[docs]</a>    <span class="k">def</span> <span class="nf">set_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the index of the bond.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of this Bond object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span></div>
+
+<div class="viewcode-block" id="Bond.set_atom1_idx"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Bond.html#peleffy.template.impact.Bond.set_atom1_idx">[docs]</a>    <span class="k">def</span> <span class="nf">set_atom1_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets atom1&#39;s index.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the first atom involved in this Bond</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom1_idx</span> <span class="o">=</span> <span class="n">index</span></div>
+
+<div class="viewcode-block" id="Bond.set_atom2_idx"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Bond.html#peleffy.template.impact.Bond.set_atom2_idx">[docs]</a>    <span class="k">def</span> <span class="nf">set_atom2_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets atom2&#39;s index.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the second atom involved in this Bond</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom2_idx</span> <span class="o">=</span> <span class="n">index</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bond&#39;s index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of this Bond object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">atom1_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bond&#39;s atom1 index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the first atom involved in this Bond object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom1_idx</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">atom2_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bond&#39;s atom2 index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        atom2_idx : int</span>
+<span class="sd">            The index of the second atom involved in this Bond object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom2_idx</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">spring_constant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bond&#39;s spring constant.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        spring_constant : simtk.unit.Quantity</span>
+<span class="sd">            The spring constant of this Bond object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spring_constant</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">eq_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bond&#39;s equilibrium distance.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        eq_dist : simtk.unit.Quantity</span>
+<span class="sd">            The equilibrium distance of this Bond object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eq_dist</span></div>
+
+
+<div class="viewcode-block" id="Angle"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Angle.html#peleffy.template.impact.Angle">[docs]</a><span class="k">class</span> <span class="nc">Angle</span><span class="p">(</span><span class="n">_TopologyElement</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents an angle in the topology.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;Angle&#39;</span>
+    <span class="n">_writable_attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;atom1_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;atom2_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;atom3_idx&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;spring_constant&#39;</span><span class="p">,</span> <span class="s1">&#39;eq_angle&#39;</span><span class="p">]</span>
+    <span class="n">_lambda_changeable</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;spring_constant&#39;</span><span class="p">,</span> <span class="s1">&#39;eq_angle&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Angle.__init__"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Angle.html#peleffy.template.impact.Angle.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">atom1_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atom2_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">atom3_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">spring_constant</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eq_angle</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initiates an Angle object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of this Angle object</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the first atom involved in this Angle</span>
+<span class="sd">        atom2_idx : int</span>
+<span class="sd">            The index of the second atom involved in this Angle</span>
+<span class="sd">        atom3_idx : int</span>
+<span class="sd">            The index of the third atom involved in this Angle</span>
+<span class="sd">        spring_constant : simtk.unit.Quantity</span>
+<span class="sd">            The spring constant of this Angle</span>
+<span class="sd">        eq_angle : simtk.unit.Quantity</span>
+<span class="sd">            The equilibrium angle of this Angle</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom1_idx</span> <span class="o">=</span> <span class="n">atom1_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom2_idx</span> <span class="o">=</span> <span class="n">atom2_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom3_idx</span> <span class="o">=</span> <span class="n">atom3_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spring_constant</span> <span class="o">=</span> <span class="n">spring_constant</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_eq_angle</span> <span class="o">=</span> <span class="n">eq_angle</span></div>
+
+<div class="viewcode-block" id="Angle.set_index"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Angle.html#peleffy.template.impact.Angle.set_index">[docs]</a>    <span class="k">def</span> <span class="nf">set_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the index of the angle.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of this Angle object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span></div>
+
+<div class="viewcode-block" id="Angle.set_atom1_idx"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Angle.html#peleffy.template.impact.Angle.set_atom1_idx">[docs]</a>    <span class="k">def</span> <span class="nf">set_atom1_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets atom1&#39;s index.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the first atom involved in this Angle</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom1_idx</span> <span class="o">=</span> <span class="n">index</span></div>
+
+<div class="viewcode-block" id="Angle.set_atom2_idx"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Angle.html#peleffy.template.impact.Angle.set_atom2_idx">[docs]</a>    <span class="k">def</span> <span class="nf">set_atom2_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets atom2&#39;s index.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the second atom involved in this Angle</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom2_idx</span> <span class="o">=</span> <span class="n">index</span></div>
+
+<div class="viewcode-block" id="Angle.set_atom3_idx"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Angle.html#peleffy.template.impact.Angle.set_atom3_idx">[docs]</a>    <span class="k">def</span> <span class="nf">set_atom3_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets atom3&#39;s index.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the third atom involved in this Angle</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom3_idx</span> <span class="o">=</span> <span class="n">index</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Angle&#39;s index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of this Angle object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">atom1_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Angle&#39;s atom1 index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the first atom involved in this Angle object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom1_idx</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">atom2_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Angle&#39;s atom2 index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the second atom involved in this Angle object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom2_idx</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">atom3_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Angle&#39;s atom3 index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the third atom involved in this Angle object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom3_idx</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">spring_constant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Angle&#39;s spring constant.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        spring_constant : simtk.unit.Quantity</span>
+<span class="sd">            The spring constant of this Angle object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spring_constant</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">eq_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Angle&#39;s equilibrium angle.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        eq_angle : simtk.unit.Quantity</span>
+<span class="sd">            The equilibrium angle of this Angle object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eq_angle</span></div>
+
+
+<div class="viewcode-block" id="Dihedral"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Dihedral.html#peleffy.template.impact.Dihedral">[docs]</a><span class="k">class</span> <span class="nc">Dihedral</span><span class="p">(</span><span class="n">_TopologyElement</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents a dihedral in the topology.</span>
+
+<span class="sd">    It can be a proper or an improper dihedral.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;Dihedral&#39;</span>
+
+<div class="viewcode-block" id="Dihedral.__init__"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Dihedral.html#peleffy.template.impact.Dihedral.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">atom1_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atom2_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">atom3_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atom4_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">periodicity</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">prefactor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">constant</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initiates an Dihedral object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of this Dihedral object</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the first atom involved in this Dihedral</span>
+<span class="sd">        atom2_idx : int</span>
+<span class="sd">            The index of the second atom involved in this Dihedral</span>
+<span class="sd">        atom3_idx : int</span>
+<span class="sd">            The index of the third atom involved in this Dihedral</span>
+<span class="sd">        atom4_idx : int</span>
+<span class="sd">            The index of the fourth atom involved in this Dihedral</span>
+<span class="sd">        periodicity : int</span>
+<span class="sd">            The periodicity of this Dihedral</span>
+<span class="sd">        prefactor : int</span>
+<span class="sd">            The prefactor of this Dihedral</span>
+<span class="sd">        constant : simtk.unit.Quantity</span>
+<span class="sd">            The constant of this Dihedral</span>
+<span class="sd">        phase : simtk.unit.Quantity</span>
+<span class="sd">            The phase constant of this Dihedral</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom1_idx</span> <span class="o">=</span> <span class="n">atom1_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom2_idx</span> <span class="o">=</span> <span class="n">atom2_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom3_idx</span> <span class="o">=</span> <span class="n">atom3_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom4_idx</span> <span class="o">=</span> <span class="n">atom4_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_periodicity</span> <span class="o">=</span> <span class="n">periodicity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prefactor</span> <span class="o">=</span> <span class="n">prefactor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_constant</span> <span class="o">=</span> <span class="n">constant</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_phase</span> <span class="o">=</span> <span class="n">phase</span></div>
+
+<div class="viewcode-block" id="Dihedral.set_index"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Dihedral.html#peleffy.template.impact.Dihedral.set_index">[docs]</a>    <span class="k">def</span> <span class="nf">set_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the index of the dihedral.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of this Dihedral object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span></div>
+
+<div class="viewcode-block" id="Dihedral.set_atom1_idx"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Dihedral.html#peleffy.template.impact.Dihedral.set_atom1_idx">[docs]</a>    <span class="k">def</span> <span class="nf">set_atom1_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets atom1&#39;s index.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the first atom involved in this Dihedral</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom1_idx</span> <span class="o">=</span> <span class="n">index</span></div>
+
+<div class="viewcode-block" id="Dihedral.set_atom2_idx"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Dihedral.html#peleffy.template.impact.Dihedral.set_atom2_idx">[docs]</a>    <span class="k">def</span> <span class="nf">set_atom2_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets atom2&#39;s index.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the second atom involved in this Dihedral</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom2_idx</span> <span class="o">=</span> <span class="n">index</span></div>
+
+<div class="viewcode-block" id="Dihedral.set_atom3_idx"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Dihedral.html#peleffy.template.impact.Dihedral.set_atom3_idx">[docs]</a>    <span class="k">def</span> <span class="nf">set_atom3_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets atom3&#39;s index.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the third atom involved in this Dihedral</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom3_idx</span> <span class="o">=</span> <span class="n">index</span></div>
+
+<div class="viewcode-block" id="Dihedral.set_atom4_idx"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Dihedral.html#peleffy.template.impact.Dihedral.set_atom4_idx">[docs]</a>    <span class="k">def</span> <span class="nf">set_atom4_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets atom4&#39;s index.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of the fourth atom involved in this Dihedral</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_atom4_idx</span> <span class="o">=</span> <span class="n">index</span></div>
+
+<div class="viewcode-block" id="Dihedral.plot"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Dihedral.html#peleffy.template.impact.Dihedral.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It plots this Dihedral as a function of phi angle.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span>
+        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="o">.</span><span class="n">radians</span><span class="p">)</span>
+        <span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">constant</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefactor</span>
+                                        <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">periodicity</span> <span class="o">*</span> <span class="n">x</span>
+                                                 <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="p">)),</span>
+                    <span class="s1">&#39;r--&#39;</span><span class="p">)</span>
+
+        <span class="n">pyplot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dihedral&#39;s index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of this Dihedral object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">atom1_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dihedral&#39;s atom1 index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the first atom involved in this Dihedral object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom1_idx</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">atom2_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dihedral&#39;s atom2 index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the second atom involved in this Dihedral object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom2_idx</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">atom3_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dihedral&#39;s atom3 index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the third atom involved in this Dihedral object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom3_idx</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">atom4_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dihedral&#39;s atom4 index.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the fourth atom involved in this Dihedral object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atom4_idx</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">periodicity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dihedral&#39;s periodicity.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        periodicity : int</span>
+<span class="sd">            The periodicity this Dihedral object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_periodicity</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">prefactor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dihedral&#39;s prefactor.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        prefactor : int</span>
+<span class="sd">            The prefactor this Dihedral object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefactor</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">constant</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dihedral&#39;s constant.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        constant : unit.simtk.Quantity</span>
+<span class="sd">            The constant of this Dihedral object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_constant</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dihedral&#39;s phase constant.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        phase : unit.simtk.Quantity</span>
+<span class="sd">            The phase constant of this Dihedral object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phase</span></div>
+
+
+<div class="viewcode-block" id="Proper"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Proper.html#peleffy.template.impact.Proper">[docs]</a><span class="k">class</span> <span class="nc">Proper</span><span class="p">(</span><span class="n">Dihedral</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents a proper dihedral in the topology.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;Proper&#39;</span>
+    <span class="n">exclude</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_writable_attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;atom1_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;atom2_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;atom3_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;atom4_idx&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="s1">&#39;prefactor&#39;</span><span class="p">,</span> <span class="s1">&#39;periodicity&#39;</span><span class="p">,</span> <span class="s1">&#39;phase&#39;</span><span class="p">]</span>
+    <span class="n">_lambda_changeable</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;constant&#39;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Proper.include_in_14_list"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Proper.html#peleffy.template.impact.Proper.include_in_14_list">[docs]</a>    <span class="k">def</span> <span class="nf">include_in_14_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It includes this proper dihedral in PELE&#39;s 1-4 list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Proper.exclude_from_14_list"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Proper.html#peleffy.template.impact.Proper.exclude_from_14_list">[docs]</a>    <span class="k">def</span> <span class="nf">exclude_from_14_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It excludes this proper dihedral from PELE&#39;s 1-4 list by</span>
+<span class="sd">        setting the index of the third atom to negative.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span> <span class="o">=</span> <span class="kc">True</span></div></div>
+
+
+<div class="viewcode-block" id="Improper"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Improper.html#peleffy.template.impact.Improper">[docs]</a><span class="k">class</span> <span class="nc">Improper</span><span class="p">(</span><span class="n">Dihedral</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents an improper dihedral in the topology.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;Improper&#39;</span>
+    <span class="n">_writable_attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;atom1_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;atom2_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;atom3_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;atom4_idx&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="s1">&#39;prefactor&#39;</span><span class="p">,</span> <span class="s1">&#39;periodicity&#39;</span><span class="p">]</span>
+    <span class="n">_lambda_changeable</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;constant&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="OFFDihedral"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.elements.OFFDihedral.html#peleffy.template.impact.OFFDihedral">[docs]</a><span class="k">class</span> <span class="nc">OFFDihedral</span><span class="p">(</span><span class="n">_TopologyElement</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents a dihedral in the Open Force Field&#39;s topology.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;OFFDihedral&#39;</span>
+    <span class="n">_writable_attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;atom1_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;atom2_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;atom3_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;atom4_idx&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;periodicity&#39;</span><span class="p">,</span> <span class="s1">&#39;phase&#39;</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="s1">&#39;idivf&#39;</span><span class="p">]</span>
+    <span class="n">_lambda_changeable</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;k&#39;</span><span class="p">]</span>
+    <span class="n">_to_PELE_class</span> <span class="o">=</span> <span class="n">Dihedral</span>
+
+<div class="viewcode-block" id="OFFDihedral.__init__"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.elements.OFFDihedral.html#peleffy.template.impact.OFFDihedral.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">atom1_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atom2_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">atom3_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">atom4_idx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">periodicity</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">phase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">idivf</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initiates an Dihedral object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            The index of this Dihedral object</span>
+<span class="sd">        atom1_idx : int</span>
+<span class="sd">            The index of the first atom involved in this Dihedral</span>
+<span class="sd">        atom2_idx : int</span>
+<span class="sd">            The index of the second atom involved in this Dihedral</span>
+<span class="sd">        atom3_idx : int</span>
+<span class="sd">            The index of the third atom involved in this Dihedral</span>
+<span class="sd">        atom4_idx : int</span>
+<span class="sd">            The index of the fourth atom involved in this Dihedral</span>
+<span class="sd">        periodicity : int</span>
+<span class="sd">            The periodicity of this Dihedral</span>
+<span class="sd">        phase : simtk.unit.Quantity</span>
+<span class="sd">            The phase of this Dihedral</span>
+<span class="sd">        k : simtk.unit.Quantity</span>
+<span class="sd">            The constant of this Dihedral</span>
+<span class="sd">        idivf : int</span>
+<span class="sd">            The idivf of this Dihedral</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atom1_idx</span> <span class="o">=</span> <span class="n">atom1_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atom2_idx</span> <span class="o">=</span> <span class="n">atom2_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atom3_idx</span> <span class="o">=</span> <span class="n">atom3_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atom4_idx</span> <span class="o">=</span> <span class="n">atom4_idx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">periodicity</span> <span class="o">=</span> <span class="n">periodicity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phase</span> <span class="o">=</span> <span class="n">phase</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idivf</span> <span class="o">=</span> <span class="n">idivf</span></div>
+
+    <span class="k">def</span> <span class="nf">_check_up</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It performs some parameter check ups.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        AssertionError</span>
+<span class="sd">            If any unexpected value is found</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="OFFDihedral.to_PELE"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.elements.OFFDihedral.html#peleffy.template.impact.OFFDihedral.to_PELE">[docs]</a>    <span class="k">def</span> <span class="nf">to_PELE</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It converts this Open Force Field Dihedral object into a</span>
+<span class="sd">        PELE-compatible one.</span>
+
+<span class="sd">        .. todo ::</span>
+
+<span class="sd">           * Fully cover all OpenFF dihedral parameters</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        PELE_dihedral : a Dihedral</span>
+<span class="sd">            The PELE-compatible Dihedral object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">periodicity</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">idivf</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_up</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid value found: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+        <span class="n">PELE_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">value_in_unit</span><span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">degree</span><span class="p">)</span> <span class="o">==</span> <span class="mi">180</span><span class="p">:</span>
+            <span class="n">PELE_prefactor</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="n">PELE_phase</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="o">.</span><span class="n">degree</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">PELE_prefactor</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">PELE_constant</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">idivf</span>
+
+        <span class="n">PELE_dihedral_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;index&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+                                <span class="s1">&#39;atom1_idx&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom1_idx</span><span class="p">,</span>
+                                <span class="s1">&#39;atom2_idx&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom2_idx</span><span class="p">,</span>
+                                <span class="s1">&#39;atom3_idx&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom3_idx</span><span class="p">,</span>
+                                <span class="s1">&#39;atom4_idx&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom4_idx</span><span class="p">,</span>
+                                <span class="s1">&#39;periodicity&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">periodicity</span><span class="p">,</span>
+                                <span class="s1">&#39;prefactor&#39;</span><span class="p">:</span> <span class="n">PELE_prefactor</span><span class="p">,</span>
+                                <span class="s1">&#39;constant&#39;</span><span class="p">:</span> <span class="n">PELE_constant</span><span class="p">,</span>
+                                <span class="s1">&#39;phase&#39;</span><span class="p">:</span> <span class="n">PELE_phase</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_PELE_class</span><span class="p">(</span><span class="o">**</span><span class="n">PELE_dihedral_kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OFFDihedral.plot"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.elements.OFFDihedral.html#peleffy.template.impact.OFFDihedral.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It plots this Dihedral as a function of phi angle.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span>
+        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="o">.</span><span class="n">radians</span><span class="p">)</span>
+        <span class="n">pyplot</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">periodicity</span> <span class="o">*</span> <span class="n">x</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="p">)),</span>
+                    <span class="s1">&#39;r--&#39;</span><span class="p">)</span>
+
+        <span class="n">pyplot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="OFFProper"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.elements.OFFProper.html#peleffy.template.impact.OFFProper">[docs]</a><span class="k">class</span> <span class="nc">OFFProper</span><span class="p">(</span><span class="n">OFFDihedral</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents a proper dihedral in the Open Force Field&#39;s topology.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;OFFProper&#39;</span>
+    <span class="n">_to_PELE_class</span> <span class="o">=</span> <span class="n">Proper</span>
+
+    <span class="k">def</span> <span class="nf">_check_up</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It performs some parameter check ups.</span>
+
+<span class="sd">        .. todo ::</span>
+
+<span class="sd">            * Periodicity can also equal 5 and currently it is not supported</span>
+<span class="sd">             by PELE</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        AssertionError</span>
+<span class="sd">            If any unexpected value is found</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">periodicity</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="s1">&#39;Expected values &#39;</span> \
+            <span class="s1">&#39;for periodicity are 1, 2, 3, 4, 5 or 6, obtained &#39;</span> \
+            <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">periodicity</span><span class="p">)</span></div>
+
+        <span class="c1"># proper&#39;s idivfs must always be 1 --&gt; Apparently not: COC(O)OC, t84, t86</span>
+        <span class="c1"># assert self.idivf == 1, &#39;The expected value for idivf is 1 &#39; \</span>
+        <span class="c1">#     &#39;for propers, obtained {}&#39;.format(self.idivf)</span>
+
+        <span class="c1"># The next version of PELE will be compatible with phase values</span>
+        <span class="c1"># other than 0 and 180 degrees to fully cover all OpenFF dihedrals</span>
+        <span class="c1"># assert self.phase.value_in_unit(unit.degree) in (0, 180), \</span>
+        <span class="c1">#     &#39;Expected values for phase are 0 or 180, obtained &#39; \</span>
+        <span class="c1">#     &#39;{}&#39;.format(self.phase)</span>
+
+
+<div class="viewcode-block" id="OFFImproper"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.elements.OFFImproper.html#peleffy.template.impact.OFFImproper">[docs]</a><span class="k">class</span> <span class="nc">OFFImproper</span><span class="p">(</span><span class="n">OFFDihedral</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represents an improper dihedral in the Open Force Field&#39;s topology.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;OFFImproper&#39;</span>
+    <span class="n">_to_PELE_class</span> <span class="o">=</span> <span class="n">Improper</span>
+
+    <span class="k">def</span> <span class="nf">_check_up</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It performs some parameter check ups.</span>
+
+<span class="sd">        .. todo ::</span>
+
+<span class="sd">            * Periodicity can also equal 5 and currently it is not supported</span>
+<span class="sd">             by PELE</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        AssertionError</span>
+<span class="sd">            If any unexpected value is found</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">periodicity</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="s1">&#39;Expected values &#39;</span> \
+            <span class="s1">&#39;for periodicity are 1, 2, 3, 4, 5 or 6, obtained &#39;</span> \
+            <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">periodicity</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="o">.</span><span class="n">value_in_unit</span><span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">degree</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">180</span><span class="p">),</span> \
+            <span class="s1">&#39;Expected values for phase are 0 or 180 in impropers, &#39;</span> \
+            <span class="s1">&#39;obtained </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Barcelona Supercomputing Center
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

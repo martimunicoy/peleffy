@@ -1,0 +1,27 @@
+peleffy.solvent.OPLSOBC
+=======================
+
+.. currentmodule:: peleffy.solvent
+
+.. autoclass:: OPLSOBC
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: to_file
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~OPLSOBC.name
+      ~OPLSOBC.radii
+      ~OPLSOBC.scales
+      ~OPLSOBC.topologies
+   
+   

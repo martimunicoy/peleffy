@@ -1,0 +1,33 @@
+peleffy.topology.Bond
+=====================
+
+.. currentmodule:: peleffy.topology
+
+.. autoclass:: Bond
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: apply_lambda
+      .. automethod:: set_atom1_idx
+      .. automethod:: set_atom2_idx
+      .. automethod:: set_index
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Bond.atom1_idx
+      ~Bond.atom2_idx
+      ~Bond.eq_dist
+      ~Bond.index
+      ~Bond.n_writable_attrs
+      ~Bond.name
+      ~Bond.spring_constant
+   
+   

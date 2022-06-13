@@ -1,0 +1,405 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>peleffy.forcefield.calculators &mdash; Open Force Field for PELE  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> Open Force Field for PELE
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.4.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releasehistory.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Generate PELE parameter files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../topology.html">Topology representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../forcefield.html">Forcefield methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../template.html">Template handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../solvent.html">Solvent models</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Open Force Field for PELE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>peleffy.forcefield.calculators</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for peleffy.forcefield.calculators</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains different parameter calculators for force fields.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">simtk</span> <span class="kn">import</span> <span class="n">unit</span>
+
+<span class="kn">from</span> <span class="nn">peleffy.utils.toolkits</span> <span class="kn">import</span> <span class="n">ToolkitUnavailableException</span>
+
+
+<span class="k">class</span> <span class="nc">_PartialChargeCalculator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for partial charge calculators.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">from</span> <span class="nn">peleffy.utils.toolkits</span> <span class="kn">import</span> <span class="n">AmberToolkitWrapper</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_amber_toolkit</span> <span class="o">=</span> <span class="n">AmberToolkitWrapper</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecule</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initiates a PartialChargeCalculator object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        molecule : a peleffy.topology.Molecule</span>
+<span class="sd">            The partial charges of this Molecule object will be calculated</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_molecule</span> <span class="o">=</span> <span class="n">molecule</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">molecule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The peleffy&#39;s Molecule.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        molecule : a peleffy.topology.Molecule</span>
+<span class="sd">            The peleffy&#39;s Molecule object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_molecule</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+
+    <span class="k">def</span> <span class="nf">get_partial_charges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It returns the partial charges that correspond to the molecule&#39;s</span>
+<span class="sd">        atoms.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        charges : simtk.unit.Quantity</span>
+<span class="sd">            The array of partial charges</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_amber_toolkit</span><span class="o">.</span><span class="n">compute_partial_charges</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="p">,</span>
+                                                           <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">assign_partial_charges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a parameter wrapper, it computes the partial charges and</span>
+<span class="sd">        assigns them to it.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        parameters : a peleffy.forcefield.parameters.BaseParameterWrapper object</span>
+<span class="sd">            The parameter wrapper containing the parameters generated</span>
+<span class="sd">            with the current force field and where the partial charges</span>
+<span class="sd">            will be assigned</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">partial_charges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_partial_charges</span><span class="p">()</span>
+        <span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;charges&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">partial_charges</span>
+
+
+<div class="viewcode-block" id="Am1bccCalculator"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.forcefield.calculators.Am1bccCalculator.html#peleffy.forcefield.calculators.Am1bccCalculator">[docs]</a><span class="k">class</span> <span class="nc">Am1bccCalculator</span><span class="p">(</span><span class="n">_PartialChargeCalculator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implementation of the AM1-BCC partial charge calculator (using RDKit).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;am1bcc&#39;</span></div>
+
+
+<div class="viewcode-block" id="GasteigerCalculator"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.forcefield.calculators.GasteigerCalculator.html#peleffy.forcefield.calculators.GasteigerCalculator">[docs]</a><span class="k">class</span> <span class="nc">GasteigerCalculator</span><span class="p">(</span><span class="n">_PartialChargeCalculator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implementation of the gasteiger partial charge calculator (using</span>
+<span class="sd">    RDKit).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;gasteiger&#39;</span></div>
+
+
+<div class="viewcode-block" id="OPLSChargeCalculator"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.forcefield.calculators.OPLSChargeCalculator.html#peleffy.forcefield.calculators.OPLSChargeCalculator">[docs]</a><span class="k">class</span> <span class="nc">OPLSChargeCalculator</span><span class="p">(</span><span class="n">_PartialChargeCalculator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implementation of the calculator of OPLS partial charges (using</span>
+<span class="sd">    Schrodinger&#39;s ffld_server)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;OPLS2005&#39;</span>
+
+<div class="viewcode-block" id="OPLSChargeCalculator.get_partial_charges"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.forcefield.calculators.OPLSChargeCalculator.html#peleffy.forcefield.calculators.OPLSChargeCalculator.get_partial_charges">[docs]</a>    <span class="k">def</span> <span class="nf">get_partial_charges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It returns the partial charges that correspond to the molecule&#39;s</span>
+<span class="sd">        atoms.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        partial_charges : simtk.unit.Quantity</span>
+<span class="sd">            The array of partial charges</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="kn">from</span> <span class="nn">peleffy.utils.toolkits</span> <span class="kn">import</span> <span class="n">SchrodingerToolkitWrapper</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">schrodinger_toolkit_wrapper</span> <span class="o">=</span> <span class="n">SchrodingerToolkitWrapper</span><span class="p">()</span>
+            <span class="n">ffld_output</span> <span class="o">=</span> <span class="n">schrodinger_toolkit_wrapper</span><span class="o">.</span><span class="n">run_ffld_server</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ToolkitUnavailableException</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ToolkitUnavailableException</span><span class="p">(</span>
+                <span class="s1">&#39;OPLSChargeCalculator requires the Schrodinger &#39;</span>
+                <span class="o">+</span> <span class="s1">&#39;Toolkit to obtain partial charges&#39;</span><span class="p">)</span>
+
+        <span class="kn">from</span> <span class="nn">peleffy.forcefield.parameters</span> <span class="kn">import</span> <span class="n">OPLS2005ParameterWrapper</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="n">OPLS2005ParameterWrapper</span><span class="o">.</span><span class="n">from_ffld_output</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="p">,</span> <span class="n">ffld_output</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;charges&#39;</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="OPLSChargeCalculator.assign_partial_charges"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.forcefield.calculators.OPLSChargeCalculator.html#peleffy.forcefield.calculators.OPLSChargeCalculator.assign_partial_charges">[docs]</a>    <span class="k">def</span> <span class="nf">assign_partial_charges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a parameter wrapper, it computes the partial charges and</span>
+<span class="sd">        assigns them to it.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        parameters : a peleffy.forcefield.parameters.BaseParameterWrapper object</span>
+<span class="sd">            The parameter wrapper containing the parameters generated</span>
+<span class="sd">            with the current force field and where the partial charges</span>
+<span class="sd">            will be assigned</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">peleffy</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="n">parameters</span><span class="p">,</span>
+                <span class="n">peleffy</span><span class="o">.</span><span class="n">forcefield</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">OPLS2005ParameterWrapper</span><span class="p">):</span>
+            <span class="n">partial_charges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_partial_charges</span><span class="p">()</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;charges&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">partial_charges</span></div></div>
+
+
+<div class="viewcode-block" id="DummyChargeCalculator"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.forcefield.calculators.DummyChargeCalculator.html#peleffy.forcefield.calculators.DummyChargeCalculator">[docs]</a><span class="k">class</span> <span class="nc">DummyChargeCalculator</span><span class="p">(</span><span class="n">_PartialChargeCalculator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implementation of a dummy charge calculator that will not perform</span>
+<span class="sd">    any partial charge calculation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s1">&#39;OPLS2005&#39;</span>
+
+<div class="viewcode-block" id="DummyChargeCalculator.get_partial_charges"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.forcefield.calculators.DummyChargeCalculator.html#peleffy.forcefield.calculators.DummyChargeCalculator.get_partial_charges">[docs]</a>    <span class="k">def</span> <span class="nf">get_partial_charges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It returns the partial charges that correspond to the molecule&#39;s</span>
+<span class="sd">        atoms.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        partial_charges : simtk.unit.Quantity</span>
+<span class="sd">            The array of partial charges</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Extract number of atoms in molecule</span>
+        <span class="n">n_atoms</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">get_pdb_atom_names</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">unit</span><span class="o">.</span><span class="n">Quantity</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="p">]</span> <span class="o">*</span> <span class="n">n_atoms</span><span class="p">,</span> <span class="n">unit</span><span class="o">.</span><span class="n">elementary_charge</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DummyChargeCalculator.assign_partial_charges"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.forcefield.calculators.DummyChargeCalculator.html#peleffy.forcefield.calculators.DummyChargeCalculator.assign_partial_charges">[docs]</a>    <span class="k">def</span> <span class="nf">assign_partial_charges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a parameter wrapper, it computes the partial charges and</span>
+<span class="sd">        assigns them to it.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        parameters : a peleffy.forcefield.parameters.BaseParameterWrapper object</span>
+<span class="sd">            The parameter wrapper containing the parameters generated</span>
+<span class="sd">            with the current force field and where the partial charges</span>
+<span class="sd">            will be assigned</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span> <span class="nn">peleffy</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="n">parameters</span><span class="p">,</span>
+                <span class="n">peleffy</span><span class="o">.</span><span class="n">forcefield</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">OPLS2005ParameterWrapper</span><span class="p">):</span>
+            <span class="n">partial_charges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_partial_charges</span><span class="p">()</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="s1">&#39;charges&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">partial_charges</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Barcelona Supercomputing Center
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

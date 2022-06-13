@@ -1,0 +1,26 @@
+peleffy.forcefield.OpenForceField
+=================================
+
+.. currentmodule:: peleffy.forcefield
+
+.. autoclass:: OpenForceField
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: parameterize
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~OpenForceField.name
+      ~OpenForceField.parameters
+      ~OpenForceField.type
+   
+   

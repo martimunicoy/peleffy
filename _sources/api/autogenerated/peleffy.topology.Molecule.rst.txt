@@ -1,0 +1,43 @@
+peleffy.topology.Molecule
+=========================
+
+.. currentmodule:: peleffy.topology
+
+.. autoclass:: Molecule
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: from_openff
+      .. automethod:: from_rdkit
+      .. automethod:: get_conformer
+      .. automethod:: get_pdb_atom_names
+      .. automethod:: set_conformer
+      .. automethod:: set_name
+      .. automethod:: set_tag
+      .. automethod:: to_pdb_file
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Molecule.allow_undefined_stereo
+      ~Molecule.connectivity_template
+      ~Molecule.core_constraints
+      ~Molecule.exclude_terminal_rotamers
+      ~Molecule.fix_pdb
+      ~Molecule.graph
+      ~Molecule.hydrogens_are_explicit
+      ~Molecule.name
+      ~Molecule.off_molecule
+      ~Molecule.rdkit_molecule
+      ~Molecule.rotamer_resolution
+      ~Molecule.rotamers
+      ~Molecule.tag
+   
+   

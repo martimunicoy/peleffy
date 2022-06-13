@@ -1,0 +1,69 @@
+peleffy.topology.rotamer.MolecularGraph
+=======================================
+
+.. currentmodule:: peleffy.topology.rotamer
+
+.. autoclass:: MolecularGraph
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: add_cycle
+      .. automethod:: add_edge
+      .. automethod:: add_edges_from
+      .. automethod:: add_node
+      .. automethod:: add_nodes_from
+      .. automethod:: add_path
+      .. automethod:: add_star
+      .. automethod:: add_weighted_edges_from
+      .. automethod:: adjacency
+      .. automethod:: clear
+      .. automethod:: copy
+      .. automethod:: edge_subgraph
+      .. automethod:: fresh_copy
+      .. automethod:: get_edge_data
+      .. automethod:: get_parents
+      .. automethod:: get_rotamers
+      .. automethod:: has_edge
+      .. automethod:: has_node
+      .. automethod:: is_directed
+      .. automethod:: is_multigraph
+      .. automethod:: nbunch_iter
+      .. automethod:: neighbors
+      .. automethod:: nodes_with_selfloops
+      .. automethod:: number_of_edges
+      .. automethod:: number_of_nodes
+      .. automethod:: number_of_selfloops
+      .. automethod:: order
+      .. automethod:: remove_edge
+      .. automethod:: remove_edges_from
+      .. automethod:: remove_node
+      .. automethod:: remove_nodes_from
+      .. automethod:: selfloop_edges
+      .. automethod:: size
+      .. automethod:: subgraph
+      .. automethod:: to_directed
+      .. automethod:: to_directed_class
+      .. automethod:: to_undirected
+      .. automethod:: to_undirected_class
+      .. automethod:: update
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~MolecularGraph.adj
+      ~MolecularGraph.core_nodes
+      ~MolecularGraph.degree
+      ~MolecularGraph.edges
+      ~MolecularGraph.molecule
+      ~MolecularGraph.name
+      ~MolecularGraph.node
+      ~MolecularGraph.nodes
+   
+   

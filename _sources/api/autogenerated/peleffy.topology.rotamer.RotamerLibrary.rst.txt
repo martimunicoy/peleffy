@@ -1,0 +1,24 @@
+peleffy.topology.rotamer.RotamerLibrary
+=======================================
+
+.. currentmodule:: peleffy.topology.rotamer
+
+.. autoclass:: RotamerLibrary
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: to_file
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~RotamerLibrary.molecule
+   
+   

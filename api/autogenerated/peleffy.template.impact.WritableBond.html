@@ -1,0 +1,500 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>peleffy.template.impact.WritableBond &mdash; Open Force Field for PELE  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="peleffy.template.impact.WritableAngle" href="peleffy.template.impact.WritableAngle.html" />
+    <link rel="prev" title="peleffy.template.impact.WritableAtom" href="peleffy.template.impact.WritableAtom.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Open Force Field for PELE
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.4.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releasehistory.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Generate PELE parameter files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../topology.html">Topology representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../forcefield.html">Forcefield methods</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../template.html">Template handlers</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../template.html#primary-objects">Primary objects</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../template.html#secondary-objects">Secondary objects</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="peleffy.template.impact.WritableWrapper.html">peleffy.template.impact.WritableWrapper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.template.impact.WritableAtom.html">peleffy.template.impact.WritableAtom</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">peleffy.template.impact.WritableBond</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.template.impact.WritableAngle.html">peleffy.template.impact.WritableAngle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.template.impact.WritableProper.html">peleffy.template.impact.WritableProper</a></li>
+<li class="toctree-l3"><a class="reference internal" href="peleffy.template.impact.WritableImproper.html">peleffy.template.impact.WritableImproper</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../solvent.html">Solvent models</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Open Force Field for PELE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../template.html">Template handlers</a> &raquo;</li>
+        
+      <li>peleffy.template.impact.WritableBond</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../../_sources/api/autogenerated/peleffy.template.impact.WritableBond.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="peleffy-template-impact-writablebond">
+<h1>peleffy.template.impact.WritableBond<a class="headerlink" href="#peleffy-template-impact-writablebond" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="peleffy.template.impact.WritableBond">
+<em class="property">class </em><code class="sig-prename descclassname">peleffy.template.impact.</code><code class="sig-name descname">WritableBond</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bond</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/template/impact.html#WritableBond"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.template.impact.WritableBond" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writable peleffy’s Bond class</p>
+<blockquote>
+<div><dl class="py method">
+<dt id="peleffy.template.impact.WritableBond.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bond</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/peleffy/template/impact.html#WritableBond.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#peleffy.template.impact.WritableBond.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>It initializes a WritableBond object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>bond</strong> (<em>a peleffy.topology.Bond</em>) – The Bond to create the WritableBond with</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.template.impact.WritableBond.apply_lambda">
+<code class="sig-name descname">apply_lambda</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attributes_to_modify</span></em>, <em class="sig-param"><span class="n">lambda_value</span></em>, <em class="sig-param"><span class="n">reverse</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">final_state</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.template.impact.WritableBond.apply_lambda" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a lambda value, it modifies a set of attributes of
+this topological element. A lambda equal to 0 will keep the
+original attributes of this topological element. A lambda
+equal to 1 will remove completely the effects of the
+attributes. This behavior will be the opposite when reverse
+is set to True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attributes_to_modify</strong> (<em>list[str]</em>) – The list attribute names that will be modified</p></li>
+<li><p><strong>lambda_value</strong> (<em>float</em>) – A value between 0 and 1 that defined the lambda to
+apply to the attributes</p></li>
+<li><p><strong>reverse</strong> (<em>bool</em>) – When set to true the effects of lambda will be the
+opposite</p></li>
+<li><p><strong>final_state</strong> (<em>a peleffy.topology.topology._TopologyElement object</em>) – The topology element that represents the final state when
+lambda equals 1.0. Default is None, which means that the
+final state is not defined and therefore the topological
+element will disappear or will start from scratch</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.template.impact.WritableBond.dummy_to_writable">
+<em class="property">static </em><code class="sig-name descname">dummy_to_writable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.template.impact.WritableBond.dummy_to_writable" title="Permalink to this definition">¶</a></dt>
+<dd><p>It converts a returned DummyAtom to a WritableAtom.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>f</strong> (<em>function</em>) – The function to apply the decorator to</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – A WritableAtom object</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="peleffy.template.impact.WritableAtom.html#peleffy.template.impact.WritableAtom" title="peleffy.template.impact.WritableAtom">WritableAtom</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.template.impact.WritableBond.in_angstrom">
+<em class="property">static </em><code class="sig-name descname">in_angstrom</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.template.impact.WritableBond.in_angstrom" title="Permalink to this definition">¶</a></dt>
+<dd><p>It expresses a simtk.unit.Quantity in angstroms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>f</strong> (<em>function</em>) – The function to apply the decorator to</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – simtk.unit.Quantity expressed in angstroms</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.template.impact.WritableBond.in_deg">
+<em class="property">static </em><code class="sig-name descname">in_deg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.template.impact.WritableBond.in_deg" title="Permalink to this definition">¶</a></dt>
+<dd><p>It expresses a simtk.unit.Quantity in degrees.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>f</strong> (<em>function</em>) – The function to apply the decorator to</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – simtk.unit.Quantity expressed in degrees</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.template.impact.WritableBond.in_elementarycharge">
+<em class="property">static </em><code class="sig-name descname">in_elementarycharge</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.template.impact.WritableBond.in_elementarycharge" title="Permalink to this definition">¶</a></dt>
+<dd><p>It expresses a simtk.unit.Quantity in elementary charges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>f</strong> (<em>function</em>) – The function to apply the decorator to</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – simtk.unit.Quantity expressed in elementary charges</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.template.impact.WritableBond.in_kcal_angstrom2mol">
+<em class="property">static </em><code class="sig-name descname">in_kcal_angstrom2mol</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.template.impact.WritableBond.in_kcal_angstrom2mol" title="Permalink to this definition">¶</a></dt>
+<dd><p>It expresses a simtk.unit.Quantity in kcal/angstrom2mol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>f</strong> (<em>function</em>) – The function to apply the decorator to</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – simtk.unit.Quantity expressed in kcal/angstrom2mol</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.template.impact.WritableBond.in_kcal_rad2mol">
+<em class="property">static </em><code class="sig-name descname">in_kcal_rad2mol</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.template.impact.WritableBond.in_kcal_rad2mol" title="Permalink to this definition">¶</a></dt>
+<dd><p>It expresses a simtk.unit.Quantity in kcal/rad2mol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>f</strong> (<em>function</em>) – The function to apply the decorator to</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – simtk.unit.Quantity expressed in kcal/rad2mol</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.template.impact.WritableBond.in_kcalmol">
+<em class="property">static </em><code class="sig-name descname">in_kcalmol</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.template.impact.WritableBond.in_kcalmol" title="Permalink to this definition">¶</a></dt>
+<dd><p>It expresses a simtk.unit.Quantity in kcal/mol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>f</strong> (<em>function</em>) – The function to apply the decorator to</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – simtk.unit.Quantity expressed in kcal/mol</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.template.impact.WritableBond.none_to_dummy">
+<em class="property">static </em><code class="sig-name descname">none_to_dummy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.template.impact.WritableBond.none_to_dummy" title="Permalink to this definition">¶</a></dt>
+<dd><p>It converts a returned None to a DummyAtom.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>f</strong> (<em>function</em>) – The function to apply the decorator to</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – A DummyAtom object</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="peleffy.topology.elements.DummyAtom.html#peleffy.topology.elements.DummyAtom" title="peleffy.topology.elements.DummyAtom">DummyAtom</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.template.impact.WritableBond.none_to_zero">
+<em class="property">static </em><code class="sig-name descname">none_to_zero</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.template.impact.WritableBond.none_to_zero" title="Permalink to this definition">¶</a></dt>
+<dd><p>It converts a returned None to zero.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>f</strong> (<em>function</em>) – The function to apply the decorator to</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>out</strong> – It is set to zero in case that it is None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>function’s output</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.template.impact.WritableBond.set_atom1_idx">
+<code class="sig-name descname">set_atom1_idx</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.template.impact.WritableBond.set_atom1_idx" title="Permalink to this definition">¶</a></dt>
+<dd><p>It sets atom1’s index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – The index of the first atom involved in this Bond</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.template.impact.WritableBond.set_atom2_idx">
+<code class="sig-name descname">set_atom2_idx</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.template.impact.WritableBond.set_atom2_idx" title="Permalink to this definition">¶</a></dt>
+<dd><p>It sets atom2’s index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – The index of the second atom involved in this Bond</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="peleffy.template.impact.WritableBond.set_index">
+<code class="sig-name descname">set_index</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">index</span></em><span class="sig-paren">)</span><a class="headerlink" href="#peleffy.template.impact.WritableBond.set_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>It sets the index of the bond.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – The index of this Bond object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div></blockquote>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">atom1_idx</span></code></p></td>
+<td><p>Bond’s atom1 index.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">atom2_idx</span></code></p></td>
+<td><p>Bond’s atom2 index.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">eq_dist</span></code></p></td>
+<td><p>Bond’s equilibrium distance.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></p></td>
+<td><p>Bond’s index.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_writable_attrs</span></code></p></td>
+<td><p>The number of writable attributes this topological element has.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>The name that this topological element has.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">spring_constant</span></code></p></td>
+<td><p>Bond’s spring constant.</p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="peleffy.template.impact.WritableAngle.html" class="btn btn-neutral float-right" title="peleffy.template.impact.WritableAngle" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="peleffy.template.impact.WritableAtom.html" class="btn btn-neutral float-left" title="peleffy.template.impact.WritableAtom" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Barcelona Supercomputing Center
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

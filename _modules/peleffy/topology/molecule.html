@@ -1,0 +1,1106 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>peleffy.topology.molecule &mdash; Open Force Field for PELE  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home" alt="Documentation Home"> Open Force Field for PELE
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.4.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releasehistory.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Generate PELE parameter files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../topology.html">Topology representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../forcefield.html">Forcefield methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../template.html">Template handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../solvent.html">Solvent models</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Open Force Field for PELE</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>peleffy.topology.molecule</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for peleffy.topology.molecule</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module handles all classes and functions related with molecular</span>
+<span class="sd">representations.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">.rotamer</span> <span class="kn">import</span> <span class="n">MolecularGraph</span><span class="p">,</span> <span class="n">MolecularGraphWithConstrainedCore</span>
+<span class="kn">from</span> <span class="nn">peleffy.utils.toolkits</span> <span class="kn">import</span> <span class="p">(</span><span class="n">RDKitToolkitWrapper</span><span class="p">,</span>
+                                    <span class="n">OpenForceFieldToolkitWrapper</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">peleffy.utils</span> <span class="kn">import</span> <span class="n">Logger</span>
+
+
+<div class="viewcode-block" id="Molecule"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Molecule.html#peleffy.topology.Molecule">[docs]</a><span class="k">class</span> <span class="nc">Molecule</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    It represent wraps up all the tools to parameterize a molecule with</span>
+<span class="sd">    the OpenForceField toolkit for PELE.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Molecule.__init__"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Molecule.html#peleffy.topology.Molecule.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">smiles</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pdb_block</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">rotamer_resolution</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span><span class="n">exclude_terminal_rotamers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                 <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;UNK&#39;</span><span class="p">,</span> <span class="n">connectivity_template</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">core_constraints</span><span class="o">=</span><span class="p">[],</span>
+                 <span class="n">allow_undefined_stereo</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">hydrogens_are_explicit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">fix_pdb</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initializes a Molecule object through a PDB file or a SMILES</span>
+<span class="sd">        tag.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : str</span>
+<span class="sd">            The path to a PDB with the molecule structure</span>
+<span class="sd">        smiles : str</span>
+<span class="sd">            The smiles tag</span>
+<span class="sd">        rotamer_resolution : float</span>
+<span class="sd">            The resolution in degrees to discretize the rotamer&#39;s</span>
+<span class="sd">            conformational space. Default is 30</span>
+<span class="sd">        exclude_terminal_rotamers : bool</span>
+<span class="sd">            Whether to exclude terminal rotamers when generating the</span>
+<span class="sd">            rotamers library  or not</span>
+<span class="sd">        name : str</span>
+<span class="sd">            The molecule name</span>
+<span class="sd">        tag : str</span>
+<span class="sd">            The molecule tag. It must be a 3-character string</span>
+<span class="sd">        connectivity_template : an rdkit.Chem.rdchem.Mol object</span>
+<span class="sd">            A molecule represented with RDKit to use when assigning the</span>
+<span class="sd">            connectivity of this Molecule object</span>
+<span class="sd">        core_constraints : list[int or str]</span>
+<span class="sd">            It defines the list of atoms to constrain in the core, thus,</span>
+<span class="sd">            the core will be forced to contain them. Atoms can be specified</span>
+<span class="sd">            through integers that match the atom index or strings that</span>
+<span class="sd">            match with the atom PDB name</span>
+<span class="sd">        allow_undefined_stereo : bool</span>
+<span class="sd">            Whether to allow a molecule with undefined stereochemistry</span>
+<span class="sd">            to be defined or try to assign the stereochemistry and</span>
+<span class="sd">            raise a complaint if not possible. Default is False</span>
+<span class="sd">        hydrogens_are_explicit : bool</span>
+<span class="sd">            Whether the input molecule has explicit information about</span>
+<span class="sd">            hydrogen atoms or not. Otherwise, they will be added when</span>
+<span class="sd">            the molecule is built. Default is True</span>
+<span class="sd">        fix_pdb : bool</span>
+<span class="sd">            Activates or deactivate the PDB fixer that is executed</span>
+<span class="sd">            prior parsing it</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">        Load a molecule from a PDB file and parameterize it with Open</span>
+<span class="sd">        Force Field</span>
+
+<span class="sd">        &gt;&gt;&gt; from peleffy.topology import Molecule</span>
+
+<span class="sd">        &gt;&gt;&gt; molecule = Molecule(&#39;molecule.pdb&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; molecule.parameterize(&#39;openff_unconstrained-1.2.0.offxml&#39;)</span>
+
+<span class="sd">        Load a molecule using a SMILES tag and parameterize it with Open</span>
+<span class="sd">        Force Field</span>
+
+<span class="sd">        &gt;&gt;&gt; from peleffy.topology import Molecule</span>
+
+<span class="sd">        &gt;&gt;&gt; molecule = Molecule(smiles=&#39;Cc1ccccc1&#39;)</span>
+
+<span class="sd">        Load a molecule usign a PDB file (without connectivity) and assign</span>
+<span class="sd">        the missing connectivity from an RDKit template (e.g. obtained</span>
+<span class="sd">        from qcportal and the Open Force Field Toolkit)</span>
+
+<span class="sd">        &gt;&gt;&gt; import qcportal as ptl</span>
+<span class="sd">        &gt;&gt;&gt; from openff.toolkit.topology import Molecule as OFFMolecule</span>
+
+<span class="sd">        &gt;&gt;&gt; ds = client.get_collection(&#39;OptimizationDataset&#39;,</span>
+<span class="sd">                                       &#39;Kinase Inhibitors: WBO Distributions&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; entry = ds.get_entry(ds.df.index[0])</span>
+<span class="sd">        &gt;&gt;&gt; mol_record = OFFMolecule.from_qcschema(entry)</span>
+<span class="sd">        &gt;&gt;&gt; template = mol_record.to_rdkit()</span>
+
+<span class="sd">        &gt;&gt;&gt; from peleffy.topology import Molecule</span>
+
+<span class="sd">        &gt;&gt;&gt; molecule = Molecule(&#39;PDB_without_connectivity.pdb&#39;,</span>
+<span class="sd">                                template=template)</span>
+
+<span class="sd">        Load a molecule and create its rotamer library template with</span>
+<span class="sd">        a core constraint</span>
+
+<span class="sd">        &gt;&gt;&gt; from peleffy.topology import Molecule</span>
+<span class="sd">        &gt;&gt;&gt; from peleffy.topology import RotamerLibrary</span>
+
+<span class="sd">        &gt;&gt;&gt; molecule = Molecule(smiles=&#39;CCCC&#39;, name=&#39;butane&#39;, tag=&#39;BUT&#39;,</span>
+<span class="sd">                                exclude_terminal_rotamers=False,</span>
+<span class="sd">                                core_constraints=[0, ])</span>
+
+<span class="sd">        &gt;&gt;&gt; rotamer_library = RotamerLibrary(mol)</span>
+<span class="sd">        &gt;&gt;&gt; rotamer_library.to_file(&#39;butz&#39;)</span>
+
+<span class="sd">        Deactivate OpenFF Toolkit&#39;s stereochemistry checking when</span>
+<span class="sd">        loading a molecule</span>
+
+<span class="sd">        &gt;&gt;&gt; from peleffy.topology import Molecule</span>
+
+<span class="sd">        &gt;&gt;&gt; molecule = Molecule(&#39;molecule_with_undefined_stereochemistry.pdb&#39;,</span>
+<span class="sd">                                allow_undefined_stereo=True)</span>
+
+<span class="sd">        Load a molecule with no explicit hydrogen atoms and ask the builder</span>
+<span class="sd">        to add them</span>
+
+<span class="sd">        &gt;&gt;&gt; from peleffy.topology import Molecule</span>
+
+<span class="sd">        &gt;&gt;&gt; molecule = Molecule(&#39;molecule_with_implicit_hydrogen.pdb&#39;,</span>
+<span class="sd">                                hydrogens_are_explicit=False)</span>
+
+<span class="sd">        Display the molecular representation in a Jupyter Notebook</span>
+
+<span class="sd">        &gt;&gt;&gt; from peleffy.topology import Molecule</span>
+
+<span class="sd">        &gt;&gt;&gt; molecule = Molecule(smiles=&#39;CCCC&#39;, name=&#39;butane&#39;, tag=&#39;BUT&#39;)</span>
+
+<span class="sd">        &gt;&gt;&gt; display(molecule)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tag</span> <span class="o">=</span> <span class="n">tag</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rotamer_resolution</span> <span class="o">=</span> <span class="n">rotamer_resolution</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_exclude_terminal_rotamers</span> <span class="o">=</span> <span class="n">exclude_terminal_rotamers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connectivity_template</span> <span class="o">=</span> <span class="n">connectivity_template</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_core_constraints</span> <span class="o">=</span> <span class="n">core_constraints</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_allow_undefined_stereo</span> <span class="o">=</span> <span class="n">allow_undefined_stereo</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hydrogens_are_explicit</span> <span class="o">=</span> <span class="n">hydrogens_are_explicit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fix_pdb</span> <span class="o">=</span> <span class="n">fix_pdb</span>
+
+        <span class="c1"># Deactivate OpenForceField toolkit warnings</span>
+        <span class="kn">import</span> <span class="nn">logging</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+            <span class="n">extension</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span>
+            <span class="n">extension</span> <span class="o">=</span> <span class="n">extension</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">extension</span> <span class="o">==</span> <span class="s1">&#39;pdb&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_from_pdb</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not a valid extension&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">extension</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">smiles</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_from_smiles</span><span class="p">(</span><span class="n">smiles</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pdb_block</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_from_pdb_block</span><span class="p">(</span><span class="n">pdb_block</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_initialize</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_rotamers</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;It initializes an empty molecule.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rdkit_molecule</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_off_molecule</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rotamers</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_pdb_checkup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Safety check for PDB files in order to properly handle exceptions</span>
+<span class="sd">        related with its format prior running the parser.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : str</span>
+<span class="sd">            The path to a PDB with the molecule structure</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Parse PDB file</span>
+        <span class="n">atom_id</span><span class="p">,</span> <span class="n">res_name</span><span class="p">,</span> <span class="n">res_id</span> <span class="o">=</span> <span class="p">([]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+        <span class="n">connectivity</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">pdb_file</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">pdb_file</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;ATOM&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;HETATM&#39;</span><span class="p">):</span>
+                    <span class="n">atom_id</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="mi">16</span><span class="p">])</span>
+                    <span class="n">res_name</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">17</span><span class="p">:</span><span class="mi">20</span><span class="p">])</span>
+                    <span class="n">res_id</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">22</span><span class="p">:</span><span class="mi">26</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;CONECT&#39;</span><span class="p">):</span>
+                    <span class="n">connectivity</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># Handle exceptions related with the PDB file format</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">res_id</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">res_id</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="s1">&#39;A single ligand with immutable residue ids is expected&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">res_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">res_name</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="s1">&#39;A single ligand with immutable residue names is expected&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">atom_id</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">atom_id</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="s1">&#39;Ligand in input PDB has no unique atom names&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">connectivity</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">connectivity_template</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">log</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Warning: input PDB has no information about the &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;connectivity and this could result in an unexpected &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;bond assignment&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_read_and_fix_pdb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It reads the input PDB file returns the corresponding PDB block.</span>
+<span class="sd">        It also applies some modifications, in case it requires some</span>
+<span class="sd">        fixing prior running the parser.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : str</span>
+<span class="sd">            The path to a PDB with the molecule structure</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pdb_block : str</span>
+<span class="sd">            The corresponding PDB block, with applied fixes if required</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span>
+
+        <span class="c1"># Skip PDB fixing if it has been deactivated</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">fix_pdb</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">pdb_file</span><span class="p">:</span>
+                <span class="n">pdb_block</span> <span class="o">=</span> <span class="n">pdb_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="n">pdb_block</span>
+
+        <span class="c1"># Fix PDB</span>
+        <span class="n">missing_element</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">any_fail</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">pdb_block</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">pdb_file</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">pdb_file</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;ATOM&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;HETATM&#39;</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">78</span> <span class="ow">or</span> <span class="n">line</span><span class="p">[</span><span class="mi">76</span><span class="p">:</span><span class="mi">78</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;  &#39;</span><span class="p">:</span>
+                        <span class="n">missing_element</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="n">atom_name</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="mi">16</span><span class="p">]</span>
+                        <span class="c1"># Try to infer element from atom name</span>
+                        <span class="n">inferred_element</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">atom_name</span>
+                                                    <span class="k">if</span> <span class="ow">not</span> <span class="n">c</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span>
+                                                    <span class="ow">and</span> <span class="n">c</span> <span class="o">!=</span> <span class="s1">&#39; &#39;</span><span class="p">])</span>
+
+                        <span class="c1"># Format properly the element identifier</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inferred_element</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="n">inferred_element</span> <span class="o">=</span> <span class="n">inferred_element</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+                        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">inferred_element</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                            <span class="n">inferred_element</span> <span class="o">=</span> <span class="n">inferred_element</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> \
+                                <span class="n">inferred_element</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="c1"># We were expecting an element identifier of 1 or 2 chars</span>
+                            <span class="n">any_fail</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="k">break</span>
+
+                        <span class="c1"># Remove line breaks, if any</span>
+                        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+                        <span class="c1"># Fill a short line with white spaces</span>
+                        <span class="k">while</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">79</span><span class="p">):</span>
+                            <span class="n">line</span> <span class="o">+=</span> <span class="s1">&#39; &#39;</span>
+
+                        <span class="c1"># Add element to line (right-justified)</span>
+                        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="p">[:</span><span class="mi">76</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="si">{:&gt;2s}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">inferred_element</span><span class="p">)</span> \
+                            <span class="o">+</span> <span class="n">line</span><span class="p">[</span><span class="mi">79</span><span class="p">:]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+                <span class="n">pdb_block</span> <span class="o">+=</span> <span class="n">line</span>
+
+        <span class="k">if</span> <span class="n">missing_element</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Warning: input PDB has no information about atom &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;elements and they were inferred from atom names. &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;Please, verify that the resulting elements are &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;correct&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">any_fail</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error: PDB could not be fixed&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">pdb_file</span><span class="p">:</span>
+                <span class="n">pdb_block</span> <span class="o">=</span> <span class="n">pdb_file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">pdb_block</span>
+
+    <span class="k">def</span> <span class="nf">_initialize_from_pdb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initializes a molecule with the molecule structure read from</span>
+<span class="sd">        a PDB file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : str</span>
+<span class="sd">            The path to a PDB with the molecule structure</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39; - Initializing molecule from PDB&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize</span><span class="p">()</span>
+
+        <span class="c1"># Validate PDB</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pdb_checkup</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="c1"># Read and fix PDB</span>
+        <span class="n">pdb_block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_and_fix_pdb</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;   - Loading molecule from RDKit&#39;</span><span class="p">)</span>
+        <span class="n">rdkit_toolkit</span> <span class="o">=</span> <span class="n">RDKitToolkitWrapper</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rdkit_molecule</span> <span class="o">=</span> \
+            <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">from_pdb_block</span><span class="p">(</span><span class="n">pdb_block</span><span class="p">,</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">hydrogens_are_explicit</span><span class="p">)</span>
+
+        <span class="c1"># Use RDKit template, if any, to assign the connectivity to</span>
+        <span class="c1"># the current Molecule object</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">connectivity_template</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;   - Assigning connectivity from template&#39;</span><span class="p">)</span>
+            <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">assign_connectivity_from_template</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_undefined_stereo</span><span class="p">:</span>
+            <span class="c1"># RDKit must generate stereochemistry specifically from 3D coords</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;   - Assigning stereochemistry from 3D coordinates&#39;</span><span class="p">)</span>
+            <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">assign_stereochemistry_from_3D</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># Set molecule name according to PDB name</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;   - Setting molecule name to </span><span class="se">\&#39;</span><span class="si">{}</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="c1"># Set molecule tag according to PDB&#39;s residue name</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="s1">&#39;UNK&#39;</span><span class="p">:</span>
+            <span class="n">tag</span> <span class="o">=</span> <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">get_residue_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;   - Setting molecule tag to </span><span class="se">\&#39;</span><span class="si">{}</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tag</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;   - Representing molecule with the Open Force Field &#39;</span>
+                    <span class="o">+</span> <span class="s1">&#39;Toolkit&#39;</span><span class="p">)</span>
+        <span class="n">openforcefield_toolkit</span> <span class="o">=</span> <span class="n">OpenForceFieldToolkitWrapper</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_off_molecule</span> <span class="o">=</span> \
+            <span class="n">openforcefield_toolkit</span><span class="o">.</span><span class="n">from_rdkit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">hydrogens_are_explicit</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_initialize_from_smiles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">smiles</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initializes a molecule from a SMILES tag.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        smiles : str</span>
+<span class="sd">            The SMILES tag to construct the molecule structure with</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39; - Initializing molecule from a SMILES tag&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize</span><span class="p">()</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;   - Loading molecule from RDKit&#39;</span><span class="p">)</span>
+        <span class="n">rdkit_toolkit</span> <span class="o">=</span> <span class="n">RDKitToolkitWrapper</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rdkit_molecule</span> <span class="o">=</span> \
+            <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">from_smiles</span><span class="p">(</span><span class="n">smiles</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hydrogens_are_explicit</span><span class="p">)</span>
+
+        <span class="c1"># TODO not sure if stereochemistry assignment from 3D is still necessary</span>
+        <span class="c1"># RDKit must generate stereochemistry specifically from 3D coords</span>
+        <span class="c1"># rdkit_toolkit.assign_stereochemistry_from_3D(self)</span>
+
+        <span class="c1"># Set molecule name according to the SMILES tag</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;   - Setting molecule name to </span><span class="se">\&#39;</span><span class="si">{}</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">smiles</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="n">smiles</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;   - Representing molecule with the Open Force Field &#39;</span>
+                    <span class="o">+</span> <span class="s1">&#39;Toolkit&#39;</span><span class="p">)</span>
+        <span class="n">openforcefield_toolkit</span> <span class="o">=</span> <span class="n">OpenForceFieldToolkitWrapper</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_off_molecule</span> <span class="o">=</span> \
+            <span class="n">openforcefield_toolkit</span><span class="o">.</span><span class="n">from_rdkit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">hydrogens_are_explicit</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_initialize_from_pdb_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdb_block</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initializes a molecule with the molecule structure fetch in a PDB</span>
+<span class="sd">        block.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pdb_block : str</span>
+<span class="sd">            PDB block with the molecule structure</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39; - Initializing molecule from PDB&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize</span><span class="p">()</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;   - Loading molecule from RDKit&#39;</span><span class="p">)</span>
+        <span class="n">rdkit_toolkit</span> <span class="o">=</span> <span class="n">RDKitToolkitWrapper</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rdkit_molecule</span> <span class="o">=</span> \
+            <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">from_pdb_block</span><span class="p">(</span><span class="n">pdb_block</span><span class="p">,</span>
+                                         <span class="bp">self</span><span class="o">.</span><span class="n">hydrogens_are_explicit</span><span class="p">)</span>
+
+        <span class="c1"># Use RDKit template, if any, to assign the connectivity to</span>
+        <span class="c1"># the current Molecule object</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">connectivity_template</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;   - Assigning connectivity from template&#39;</span><span class="p">)</span>
+            <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">assign_connectivity_from_template</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_undefined_stereo</span><span class="p">:</span>
+            <span class="c1"># RDKit must generate stereochemistry specifically from 3D coords</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;   - Assigning stereochemistry from 3D coordinates&#39;</span><span class="p">)</span>
+            <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">assign_stereochemistry_from_3D</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># Set molecule tag according to PDB&#39;s residue name</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="s1">&#39;UNK&#39;</span><span class="p">:</span>
+            <span class="n">tag</span> <span class="o">=</span> <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">get_residue_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;   - Setting molecule tag to </span><span class="se">\&#39;</span><span class="si">{}</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tag</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_tag</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;   - Representing molecule with the Open Force Field &#39;</span>
+                    <span class="o">+</span> <span class="s1">&#39;Toolkit&#39;</span><span class="p">)</span>
+        <span class="n">openforcefield_toolkit</span> <span class="o">=</span> <span class="n">OpenForceFieldToolkitWrapper</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_off_molecule</span> <span class="o">=</span> \
+            <span class="n">openforcefield_toolkit</span><span class="o">.</span><span class="n">from_rdkit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">hydrogens_are_explicit</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_build_rotamers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;It builds the rotamers of the molecule.&quot;&quot;&quot;</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">off_molecule</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">rdkit_molecule</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39; - Generating rotamer library&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">core_constraints</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span> <span class="o">=</span> <span class="n">MolecularGraphWithConstrainedCore</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">core_constraints</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">core_constraints</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;   - Core forced to contain atom: &#39;</span>
+                                <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">constraint_names</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;   - Core forced to contain atoms: &#39;</span>
+                                <span class="o">+</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">atom_name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">atom_name</span>
+                                            <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">constraint_names</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span> <span class="o">=</span> <span class="n">MolecularGraph</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;   - Core set to the center of the molecule&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rotamers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="o">.</span><span class="n">get_rotamers</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Molecule.set_name"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Molecule.html#peleffy.topology.Molecule.set_name">[docs]</a>    <span class="k">def</span> <span class="nf">set_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the name of the molecule.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            The name to set to the molecule</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="s1">&#39;Invalid type for a name, it must be &#39;</span> \
+            <span class="o">+</span> <span class="s1">&#39;a string&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span></div>
+
+<div class="viewcode-block" id="Molecule.set_tag"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Molecule.html#peleffy.topology.Molecule.set_tag">[docs]</a>    <span class="k">def</span> <span class="nf">set_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the tag of the molecule. It must be a 3-character string.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        tag : str</span>
+<span class="sd">            The tag to set to the molecule. It must be a 3-character string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Some previous checks</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;Invalid tag length, it must be a &#39;</span> \
+            <span class="o">+</span> <span class="s1">&#39;3-character string&#39;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="s1">&#39;Invalid type for a tag, it must be &#39;</span> \
+            <span class="o">+</span> <span class="s1">&#39;a string&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tag</span> <span class="o">=</span> <span class="n">tag</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Molecule.get_pdb_atom_names"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Molecule.html#peleffy.topology.Molecule.get_pdb_atom_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_pdb_atom_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It returns the PDB atom names of all the atoms in the molecule.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pdb_atom_names : list[str]</span>
+<span class="sd">            The PDB atom names of all the atoms in this Molecule object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rdkit_toolkit</span> <span class="o">=</span> <span class="n">RDKitToolkitWrapper</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">get_atom_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Molecule.to_pdb_file"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Molecule.html#peleffy.topology.Molecule.to_pdb_file">[docs]</a>    <span class="k">def</span> <span class="nf">to_pdb_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It writes the molecule to a PDB file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : str</span>
+<span class="sd">            Path to write to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rdkit_toolkit</span> <span class="o">=</span> <span class="n">RDKitToolkitWrapper</span><span class="p">()</span>
+        <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">to_pdb_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Molecule.set_conformer"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Molecule.html#peleffy.topology.Molecule.set_conformer">[docs]</a>    <span class="k">def</span> <span class="nf">set_conformer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conformer</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets a new conformer to the molecule.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        conformer : an RDKit.Chem.rdchem.Conformer object</span>
+<span class="sd">            The conformer to set to the molecule</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rdkit_toolkit</span> <span class="o">=</span> <span class="n">RDKitToolkitWrapper</span><span class="p">()</span>
+        <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">set_conformer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conformer</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Molecule.get_conformer"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Molecule.html#peleffy.topology.Molecule.get_conformer">[docs]</a>    <span class="k">def</span> <span class="nf">get_conformer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It gets the current conformer of the molecule.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        conformer : numpy.ndarray</span>
+<span class="sd">            The array of 3D coordinates of all the atoms in the molecule</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rdkit_toolkit</span> <span class="o">=</span> <span class="n">RDKitToolkitWrapper</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Molecule.from_rdkit"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Molecule.html#peleffy.topology.Molecule.from_rdkit">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_rdkit</span><span class="p">(</span><span class="n">rdkit_molecule</span><span class="p">,</span> <span class="n">rotamer_resolution</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+                   <span class="n">exclude_terminal_rotamers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;UNK&#39;</span><span class="p">,</span>
+                   <span class="n">connectivity_template</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">core_constraints</span><span class="o">=</span><span class="p">[],</span>
+                   <span class="n">allow_undefined_stereo</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                   <span class="n">hydrogens_are_explicit</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initializes and returns a peleffy Molecule representation</span>
+<span class="sd">        from an RDKit molecular representation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        rdkit_molecule : an rdkit.Chem.rdchem.Mol object</span>
+<span class="sd">            The RDKit&#39;s Molecule object to use to initialize a peleffy</span>
+<span class="sd">            Molecule object</span>
+<span class="sd">        rotamer_resolution : float</span>
+<span class="sd">            The resolution in degrees to discretize the rotamer&#39;s</span>
+<span class="sd">            conformational space. Default is 30</span>
+<span class="sd">        exclude_terminal_rotamers : bool</span>
+<span class="sd">            Whether to exclude terminal rotamers when generating the</span>
+<span class="sd">            rotamers library  or not</span>
+<span class="sd">        name : str</span>
+<span class="sd">            The molecule name</span>
+<span class="sd">        tag : str</span>
+<span class="sd">            The molecule tag. It must be a 3-character string</span>
+<span class="sd">        connectivity_template : an rdkit.Chem.rdchem.Mol object</span>
+<span class="sd">            A molecule represented with RDKit to use when assigning the</span>
+<span class="sd">            connectivity of this Molecule object</span>
+<span class="sd">        core_constraints : list[int or str]</span>
+<span class="sd">            It defines the list of atoms to constrain in the core, thus,</span>
+<span class="sd">            the core will be forced to contain them. Atoms can be specified</span>
+<span class="sd">            through integers that match the atom index or strings that</span>
+<span class="sd">            match with the atom PDB name</span>
+<span class="sd">        allow_undefined_stereo : bool</span>
+<span class="sd">            Whether to allow a molecule with undefined stereochemistry</span>
+<span class="sd">            to be defined or try to assign the stereochemistry and</span>
+<span class="sd">            raise a complaint if not possible. Default is False</span>
+<span class="sd">        hydrogens_are_explicit : bool</span>
+<span class="sd">            Whether the input molecule has explicit information about</span>
+<span class="sd">            hydrogen atoms or not. Otherwise, they will be added when</span>
+<span class="sd">            the molecule is built. Default is True</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        molecule : an peleffy.topology.Molecule</span>
+<span class="sd">            The resulting peleffy&#39;s Molecule object</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">        Load a molecule from an RDKit molecular representation</span>
+
+<span class="sd">        &gt;&gt;&gt; from rdkit import Chem</span>
+
+<span class="sd">        &gt;&gt;&gt; rdkit_molecule = Chem.MolFromPDBFile(pdb_path, removeHs=False)</span>
+
+<span class="sd">        &gt;&gt;&gt; from peleffy.topology import Molecule</span>
+
+<span class="sd">        &gt;&gt;&gt; molecule = Molecule.from_rdkit(rdkit_molecule)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">molecule</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span>
+            <span class="n">rotamer_resolution</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+            <span class="n">exclude_terminal_rotamers</span><span class="o">=</span><span class="n">exclude_terminal_rotamers</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span>
+            <span class="n">connectivity_template</span><span class="o">=</span><span class="n">connectivity_template</span><span class="p">,</span>
+            <span class="n">core_constraints</span><span class="o">=</span><span class="n">core_constraints</span><span class="p">,</span>
+            <span class="n">allow_undefined_stereo</span><span class="o">=</span><span class="n">allow_undefined_stereo</span><span class="p">,</span>
+            <span class="n">hydrogens_are_explicit</span><span class="o">=</span><span class="n">hydrogens_are_explicit</span><span class="p">)</span>
+
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39; - Initializing molecule from an RDKit &#39;</span>
+                    <span class="o">+</span> <span class="s1">&#39;molecular representation&#39;</span><span class="p">)</span>
+        <span class="n">molecule</span><span class="o">.</span><span class="n">_initialize</span><span class="p">()</span>
+        <span class="n">molecule</span><span class="o">.</span><span class="n">_rdkit_molecule</span> <span class="o">=</span> <span class="n">rdkit_molecule</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;   - Representing molecule with the Open Force Field &#39;</span>
+                    <span class="o">+</span> <span class="s1">&#39;Toolkit&#39;</span><span class="p">)</span>
+        <span class="n">openforcefield_toolkit</span> <span class="o">=</span> <span class="n">OpenForceFieldToolkitWrapper</span><span class="p">()</span>
+        <span class="n">molecule</span><span class="o">.</span><span class="n">_off_molecule</span> <span class="o">=</span> \
+            <span class="n">openforcefield_toolkit</span><span class="o">.</span><span class="n">from_rdkit</span><span class="p">(</span><span class="n">molecule</span><span class="p">,</span>
+                                              <span class="n">hydrogens_are_explicit</span><span class="p">)</span>
+
+        <span class="n">molecule</span><span class="o">.</span><span class="n">_build_rotamers</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">molecule</span></div>
+
+<div class="viewcode-block" id="Molecule.from_openff"><a class="viewcode-back" href="../../../api/autogenerated/peleffy.topology.Molecule.html#peleffy.topology.Molecule.from_openff">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_openff</span><span class="p">(</span><span class="n">openff_molecule</span><span class="p">,</span> <span class="n">rotamer_resolution</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+                    <span class="n">exclude_terminal_rotamers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="s1">&#39;UNK&#39;</span><span class="p">,</span>
+                    <span class="n">connectivity_template</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">core_constraints</span><span class="o">=</span><span class="p">[],</span>
+                    <span class="n">allow_undefined_stereo</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                    <span class="n">hydrogens_are_explicit</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It initializes and returns a peleffy Molecule representation</span>
+<span class="sd">        from an OpenForceField molecular representation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        openff_molecule : an openforcefield.topology.Molecule object</span>
+<span class="sd">            The OpenForceField&#39;s Molecule to use to initialize a peleffy</span>
+<span class="sd">            Molecule object</span>
+<span class="sd">        rotamer_resolution : float</span>
+<span class="sd">            The resolution in degrees to discretize the rotamer&#39;s</span>
+<span class="sd">            conformational space. Default is 30</span>
+<span class="sd">        exclude_terminal_rotamers : bool</span>
+<span class="sd">            Whether to exclude terminal rotamers when generating the</span>
+<span class="sd">            rotamers library  or not</span>
+<span class="sd">        name : str</span>
+<span class="sd">            The molecule name</span>
+<span class="sd">        tag : str</span>
+<span class="sd">            The molecule tag. It must be a 3-character string</span>
+<span class="sd">        connectivity_template : an rdkit.Chem.rdchem.Mol object</span>
+<span class="sd">            A molecule represented with RDKit to use when assigning the</span>
+<span class="sd">            connectivity of this Molecule object</span>
+<span class="sd">        core_constraints : list[int or str]</span>
+<span class="sd">            It defines the list of atoms to constrain in the core, thus,</span>
+<span class="sd">            the core will be forced to contain them. Atoms can be specified</span>
+<span class="sd">            through integers that match the atom index or strings that</span>
+<span class="sd">            match with the atom PDB name</span>
+<span class="sd">        allow_undefined_stereo : bool</span>
+<span class="sd">            Whether to allow a molecule with undefined stereochemistry</span>
+<span class="sd">            to be defined or try to assign the stereochemistry and</span>
+<span class="sd">            raise a complaint if not possible. Default is False</span>
+<span class="sd">        hydrogens_are_explicit : bool</span>
+<span class="sd">            Whether the input molecule has explicit information about</span>
+<span class="sd">            hydrogen atoms or not. Otherwise, they will be added when</span>
+<span class="sd">            the molecule is built. Default is True</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        molecule : an peleffy.topology.Molecule</span>
+<span class="sd">            The resulting peleffy&#39;s Molecule object</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">        Load a molecule from an RDKit molecular representation</span>
+
+<span class="sd">        &gt;&gt;&gt; from rdkit import Chem</span>
+
+<span class="sd">        &gt;&gt;&gt; rdkit_molecule = Chem.MolFromPDBFile(pdb_path)</span>
+
+<span class="sd">        &gt;&gt;&gt; from peleffy.topology import Molecule</span>
+
+<span class="sd">        &gt;&gt;&gt; molecule = Molecule.from_rdkit(rdkit_molecule)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">openff_molecule</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="n">molecule</span> <span class="o">=</span> <span class="n">Molecule</span><span class="p">(</span>
+            <span class="n">rotamer_resolution</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+            <span class="n">exclude_terminal_rotamers</span><span class="o">=</span><span class="n">exclude_terminal_rotamers</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span>
+            <span class="n">connectivity_template</span><span class="o">=</span><span class="n">connectivity_template</span><span class="p">,</span>
+            <span class="n">core_constraints</span><span class="o">=</span><span class="n">core_constraints</span><span class="p">,</span>
+            <span class="n">allow_undefined_stereo</span><span class="o">=</span><span class="n">allow_undefined_stereo</span><span class="p">,</span>
+            <span class="n">hydrogens_are_explicit</span><span class="o">=</span><span class="n">hydrogens_are_explicit</span><span class="p">)</span>
+
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39; - Initializing molecule from an OpenFF &#39;</span>
+                    <span class="o">+</span> <span class="s1">&#39;molecular representation&#39;</span><span class="p">)</span>
+        <span class="n">molecule</span><span class="o">.</span><span class="n">_initialize</span><span class="p">()</span>
+        <span class="n">molecule</span><span class="o">.</span><span class="n">_off_molecule</span> <span class="o">=</span> <span class="n">openff_molecule</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;   - Generating RDKit molecular representation with &#39;</span>
+                    <span class="o">+</span> <span class="s1">&#39;the Open Force Field Toolkit&#39;</span><span class="p">)</span>
+        <span class="n">molecule</span><span class="o">.</span><span class="n">_rdkit_molecule</span> <span class="o">=</span> <span class="n">openff_molecule</span><span class="o">.</span><span class="n">to_rdkit</span><span class="p">()</span>
+
+        <span class="n">molecule</span><span class="o">.</span><span class="n">_build_rotamers</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">molecule</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rotamer_resolution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The resolution to be used when generating the rotamers library.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        rotamer_resolution : float</span>
+<span class="sd">            The resolution in degrees to discretize the rotamer&#39;s</span>
+<span class="sd">            conformational space</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rotamer_resolution</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">exclude_terminal_rotamers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The behavior when handling terminal rotamers when generating the</span>
+<span class="sd">        rotamers library.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        exclude_terminal_rotamers : bool</span>
+<span class="sd">            Whether to exclude terminal rotamers when generating the</span>
+<span class="sd">            rotamers library  or not</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exclude_terminal_rotamers</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">connectivity_template</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The template containing the correct connectivity for this Molecule</span>
+<span class="sd">        object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        connectivity_template : an rdkit.Chem.rdchem.Mol object</span>
+<span class="sd">            A molecule represented with RDKit to use when assigning the</span>
+<span class="sd">            connectivity of this Molecule object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connectivity_template</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">allow_undefined_stereo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Whether to allow a molecule with undefined stereochemistry</span>
+<span class="sd">        to be defined or try to assign the stereochemistry and</span>
+<span class="sd">        raise a complaint if not possible</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        allow_undefined_stereo : bool</span>
+<span class="sd">            The current configuration towards the stereochemistry</span>
+<span class="sd">            behaviour of this molecule</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_allow_undefined_stereo</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">hydrogens_are_explicit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Whether the input molecule has explicit information about</span>
+<span class="sd">        hydrogen atoms or not. Otherwise, they will be added when</span>
+<span class="sd">        the molecule is built</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        allow_undefined_stereo : bool</span>
+<span class="sd">            The current configuration towards the hydrogen treatment</span>
+<span class="sd">            of this molecule</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hydrogens_are_explicit</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">fix_pdb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It activates or deactivates the PDB fixer prior parsing the PDB</span>
+<span class="sd">        file.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        fix_pdb : bool</span>
+<span class="sd">            The current activation state of the PDB fixer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fix_pdb</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">core_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The list of indices or PDB names of the atoms to constraint to</span>
+<span class="sd">        the core when building the rotamers.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        core_constraints : list[int or str]</span>
+<span class="sd">            The list of indices or PDB names of the atoms to constrain</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_core_constraints</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">off_molecule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The OpenForceField&#39;s molecule instance linked to the molecule.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        off_molecule : an openforcefield.topology.Molecule</span>
+<span class="sd">            The OpenForceField&#39;s molecule linked to this Molecule object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_off_molecule</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rdkit_molecule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The RDKit&#39;s molecule instance linked to the molecule.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        rdkit_molecule : an rdkit.Chem.rdchem.Mol object</span>
+<span class="sd">            The RDKit&#39;s molecule linked to this Molecule object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rdkit_molecule</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rotamers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The list of rotamers of the molecule.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        rotamers : list[list]</span>
+<span class="sd">            The list of rotamers grouped by the branch they belong to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rotamers</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Molecule&#39;s name.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            The name of this Molecule object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tag</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Molecule&#39;s tag.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tag : str</span>
+<span class="sd">            The tag of this Molecule object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tag</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">graph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The topological graph of the molecule.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        graph : an peleffy.topology.rotamer.MolecularGraph object</span>
+<span class="sd">            The topological graph of this Molecule object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_graph</span>
+
+    <span class="k">def</span> <span class="nf">_ipython_display_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It returns a RDKit molecule with an embeded 2D representation.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        representation_2D : a IPython display object</span>
+<span class="sd">            It is displayable RDKit molecule with an embeded 2D</span>
+<span class="sd">            representation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span>
+
+        <span class="c1"># Get 2D molecular representation</span>
+        <span class="n">rdkit_toolkit</span> <span class="o">=</span> <span class="n">RDKitToolkitWrapper</span><span class="p">()</span>
+        <span class="n">representation</span> <span class="o">=</span> <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">get_2D_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># Get its image</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">rdkit_toolkit</span><span class="o">.</span><span class="n">draw_molecule</span><span class="p">(</span><span class="n">representation</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">display</span><span class="p">(</span><span class="n">image</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Barcelona Supercomputing Center
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

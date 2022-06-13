@@ -1,0 +1,55 @@
+peleffy.topology.Atom
+=====================
+
+.. currentmodule:: peleffy.topology
+
+.. autoclass:: Atom
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: apply_lambda
+      .. automethod:: set_OPLS_type
+      .. automethod:: set_PDB_name
+      .. automethod:: set_SASA_radius
+      .. automethod:: set_as_branch
+      .. automethod:: set_as_core
+      .. automethod:: set_born_radius
+      .. automethod:: set_charge
+      .. automethod:: set_coords
+      .. automethod:: set_epsilon
+      .. automethod:: set_index
+      .. automethod:: set_nonpolar_alpha
+      .. automethod:: set_nonpolar_gamma
+      .. automethod:: set_parent
+      .. automethod:: set_sigma
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Atom.OPLS_type
+      ~Atom.PDB_name
+      ~Atom.SASA_radius
+      ~Atom.born_radius
+      ~Atom.charge
+      ~Atom.core
+      ~Atom.epsilon
+      ~Atom.index
+      ~Atom.n_writable_attrs
+      ~Atom.name
+      ~Atom.nonpolar_alpha
+      ~Atom.nonpolar_gamma
+      ~Atom.parent
+      ~Atom.sigma
+      ~Atom.unknown
+      ~Atom.x
+      ~Atom.y
+      ~Atom.z
+   
+   

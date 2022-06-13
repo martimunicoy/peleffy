@@ -1,0 +1,32 @@
+peleffy.solvent.OBC2
+====================
+
+.. currentmodule:: peleffy.solvent
+
+.. autoclass:: OBC2
+
+   
+   
+   
+      .. automethod:: __init__
+      .. automethod:: to_dict
+      .. automethod:: to_file
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~OBC2.name
+      ~OBC2.radii
+      ~OBC2.scales
+      ~OBC2.solute_dielectric
+      ~OBC2.solvent_dielectric
+      ~OBC2.solvent_radius
+      ~OBC2.surface_area_penalty
+      ~OBC2.topologies
+   
+   
