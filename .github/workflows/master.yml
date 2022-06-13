@@ -30,7 +30,7 @@ jobs:
         run: conda install peleffy
         
       - name: Keep specific jinja2 version
-        run: conda install -c conda-forge Jinja2<3.1
+        run: conda install -c conda-forge "Jinja2<3.1"
          
       - name: Build sphinx documentation
         shell: bash
