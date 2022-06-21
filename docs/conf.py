@@ -85,7 +85,7 @@ master_doc = 'index'
 
 #import peleffy
 #version = peleffy.__version__
-version = '1.4.1'
+version = '1.4.2'
 
 pygments_style = 'sphinx'
 
