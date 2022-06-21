@@ -1322,6 +1322,10 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
         ffld_output : str
             The ffld_server output
         """
+        from peleffy.utils import Logger
+
+        # Initialize logger
+        logger = Logger()
 
         ffld_server_exec = self.path_to_ffld_server()
 
@@ -1338,9 +1342,9 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
                                                   "parameters.txt"])
 
                 if errors:
-                    raise SystemError('FFLD_SERVER has failed with the ' +
-                                      'following error message: \n ' +
-                                      '{}'.format(errors.decode("utf-8")))
+                    logger.warning('FFLD_SERVER has produced the ' +
+                                   'following error message: \n ' +
+                                   '{}'.format(errors.decode("utf-8")))
 
                 with open('parameters.txt') as parameters_file:
                     return parameters_file.read()
