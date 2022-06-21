@@ -17,10 +17,9 @@ from peleffy.utils import Logger, OutputPathHandler
 from peleffy.forcefield.selectors import ChargeCalculatorSelector
 
 
-DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-1.3.0.offxml'
+DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-2.0.0.offxml'
 DEFAULT_RESOLUTION = int(30)
-DEFAULT_CHARGE_METHOD = 'am1bcc'
-AVAILABLE_CHARGE_METHODS = ChargeCalculatorSelector()._AVAILABLE_TYPES.keys()
+DEFAULT_CHARGE_METHOD = None  # Use FF's default
 IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OFF/Parsley/HeteroAtoms/'
 ROTAMER_LIBRARY_PATH = 'DataLocal/LigandRotamerLibs/'
 SOLVENT_TEMPLATE_PATH = 'DataLocal/OBC/'
@@ -66,8 +65,7 @@ def parse_args(args):
                         "DataLocal hierarchy", action='store_true')
     parser.add_argument('-c', '--charge_method', metavar="NAME",
                         type=str, help="The name of the method to use to " +
-                        "compute charges", default=DEFAULT_CHARGE_METHOD,
-                        choices=AVAILABLE_CHARGE_METHODS)
+                        "compute charges", default=DEFAULT_CHARGE_METHOD)
     parser.add_argument('--charges_from_file', metavar="PATH",
                         type=str, help="The path to the file with charges",
                         default=None)
@@ -92,6 +90,10 @@ def parse_args(args):
                         action='store_true',
                         help="Generate Impact template compatible with " +
                              "PELE\'s AMBER implementation")
+    parser.add_argument('-v', '--version',
+                        dest="version",
+                        action='store_true',
+                        help="Print version and quit")
 
     parser.set_defaults(as_datalocal=False)
     parser.set_defaults(with_solvent=False)
@@ -99,6 +101,7 @@ def parse_args(args):
     parser.set_defaults(silent=False)
     parser.set_defaults(debug=False)
     parser.set_defaults(for_amber=False)
+    parser.set_defaults(version=False)
 
     parsed_args = parser.parse_args(args)
 
@@ -157,11 +160,14 @@ def run_peleffy(pdb_file,
             + '   - Charge file: {}'.format(charges_from_file)
         charge_method = 'dummy'
     else:
-        charge_method_str = charge_method
+        if charge_method is None:
+            charge_method_str = "-"
+        else:
+            charge_method_str = charge_method
 
     log = Logger()
     log.info('-' * 60)
-    log.info('Open Force Field parameterizer for PELE', peleffy.__version__)
+    log.info('PELE Force Field Yielder', peleffy.__version__)
     log.info('-' * 60)
     log.info(' - General:')
     log.info('   - Input PDB:', pdb_file)
@@ -319,4 +325,11 @@ def main(args):
 if __name__ == '__main__':
     import sys
     args = parse_args(sys.argv[1:])
-    main(args)
+
+    # Only print version
+    if args.version:
+        print('PELE Force Field Yielder (peleffy) -', peleffy.__version__)
+
+    # Run main
+    else:
+        main(args)

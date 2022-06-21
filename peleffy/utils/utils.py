@@ -420,6 +420,9 @@ class Logger(object):
 
             # Add stream handler
             self.set_stdout_handler()
+
+            # Disable backwards propagation
+            self._logger.propagate = False
         else:
             self._logger = logging.getLogger('peleffy_log')
 
