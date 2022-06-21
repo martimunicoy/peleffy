@@ -8,6 +8,16 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
+1.4.3 - Minor improvements for CLI arguments and ffld_server
+------------------------------------------------------------
+
+This is a micro release of peleffy that contains minor improvements for the CLI interface and the usage of the ffld_server.
+
+New features
+""""""""""""
+- `PR #171 <https://github.com/martimunicoy/peleffy/pull/171>`_: improvements for the CLI interface. Also, ffld_server will not raise an exception but any warning or error found will be raised by peleffy's logger
+
+
 1.4.2 - Compatibility fixes for latest RDKit and Schrodinger versions
 ---------------------------------------------------------------------
 

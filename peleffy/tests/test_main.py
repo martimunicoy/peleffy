@@ -63,11 +63,11 @@ class TestMain(object):
 
         assert parsed_args.as_datalocal is False, \
             'Unexpected as_datalocal settings were parsed'
-        assert parsed_args.charge_method == 'am1bcc', \
+        assert parsed_args.charge_method == None, \
             'Unexpected charge_method settings were parsed'
         assert parsed_args.debug is False, \
             'Unexpected debug settings were parsed'
-        assert parsed_args.forcefield == 'openff_unconstrained-1.3.0.offxml', \
+        assert parsed_args.forcefield == 'openff_unconstrained-2.0.0.offxml', \
             'Unexpected forcefield settings were parsed'
         assert parsed_args.include_terminal_rotamers is False, \
             'Unexpected include_terminal_rotamers settings were parsed'
@@ -152,11 +152,8 @@ class TestMain(object):
             'Unexpected for_amber settings were parsed'
 
         # Test unexpected charge method
-        with pytest.raises(SystemExit) as pytest_wrapped_e:
+        with pytest.raises(ValueError):
             parsed_args = parse_args(['toluene.pdb', '-c', 'unexpected'])
-
-        assert pytest_wrapped_e.type == SystemExit
-        assert pytest_wrapped_e.value.code == 2
 
         # Test as_datalocal argument
         parsed_args = parse_args(['methane.pdb',
@@ -164,11 +161,11 @@ class TestMain(object):
 
         assert parsed_args.as_datalocal is True, \
             'Unexpected as_datalocal settings were parsed'
-        assert parsed_args.charge_method == 'am1bcc', \
+        assert parsed_args.charge_method == None, \
             'Unexpected charge_method settings were parsed'
         assert parsed_args.debug is False, \
             'Unexpected debug settings were parsed'
-        assert parsed_args.forcefield == 'openff_unconstrained-1.3.0.offxml', \
+        assert parsed_args.forcefield == 'openff_unconstrained-2.0.0.offxml', \
             'Unexpected forcefield settings were parsed'
         assert parsed_args.include_terminal_rotamers is False, \
             'Unexpected include_terminal_rotamers settings were parsed'
@@ -193,11 +190,11 @@ class TestMain(object):
 
         assert parsed_args.as_datalocal is False, \
             'Unexpected as_datalocal settings were parsed'
-        assert parsed_args.charge_method == 'am1bcc', \
+        assert parsed_args.charge_method == None, \
             'Unexpected charge_method settings were parsed'
         assert parsed_args.debug is False, \
             'Unexpected debug settings were parsed'
-        assert parsed_args.forcefield == 'openff_unconstrained-1.3.0.offxml', \
+        assert parsed_args.forcefield == 'openff_unconstrained-2.0.0.offxml', \
             'Unexpected forcefield settings were parsed'
         assert parsed_args.include_terminal_rotamers is False, \
             'Unexpected include_terminal_rotamers settings were parsed'
@@ -224,11 +221,11 @@ class TestMain(object):
 
         assert parsed_args.as_datalocal is False, \
             'Unexpected as_datalocal settings were parsed'
-        assert parsed_args.charge_method == 'am1bcc', \
+        assert parsed_args.charge_method == None, \
             'Unexpected charge_method settings were parsed'
         assert parsed_args.debug is False, \
             'Unexpected debug settings were parsed'
-        assert parsed_args.forcefield == 'openff_unconstrained-1.3.0.offxml', \
+        assert parsed_args.forcefield == 'openff_unconstrained-2.0.0.offxml', \
             'Unexpected forcefield settings were parsed'
         assert parsed_args.include_terminal_rotamers is True, \
             'Unexpected include_terminal_rotamers settings were parsed'
@@ -253,11 +250,11 @@ class TestMain(object):
 
         assert parsed_args.as_datalocal is False, \
             'Unexpected as_datalocal settings were parsed'
-        assert parsed_args.charge_method == 'am1bcc', \
+        assert parsed_args.charge_method == None, \
             'Unexpected charge_method settings were parsed'
         assert parsed_args.debug is False, \
             'Unexpected debug settings were parsed'
-        assert parsed_args.forcefield == 'openff_unconstrained-1.3.0.offxml', \
+        assert parsed_args.forcefield == 'openff_unconstrained-2.0.0.offxml', \
             'Unexpected forcefield settings were parsed'
         assert parsed_args.include_terminal_rotamers is False, \
             'Unexpected include_terminal_rotamers settings were parsed'
@@ -282,11 +279,11 @@ class TestMain(object):
 
         assert parsed_args.as_datalocal is False, \
             'Unexpected as_datalocal settings were parsed'
-        assert parsed_args.charge_method == 'am1bcc', \
+        assert parsed_args.charge_method == None, \
             'Unexpected charge_method settings were parsed'
         assert parsed_args.debug is False, \
             'Unexpected debug settings were parsed'
-        assert parsed_args.forcefield == 'openff_unconstrained-1.3.0.offxml', \
+        assert parsed_args.forcefield == 'openff_unconstrained-2.0.0.offxml', \
             'Unexpected forcefield settings were parsed'
         assert parsed_args.include_terminal_rotamers is False, \
             'Unexpected include_terminal_rotamers settings were parsed'
@@ -311,11 +308,11 @@ class TestMain(object):
 
         assert parsed_args.as_datalocal is False, \
             'Unexpected as_datalocal settings were parsed'
-        assert parsed_args.charge_method == 'am1bcc', \
+        assert parsed_args.charge_method == None, \
             'Unexpected charge_method settings were parsed'
         assert parsed_args.debug is True, \
             'Unexpected debug settings were parsed'
-        assert parsed_args.forcefield == 'openff_unconstrained-1.3.0.offxml', \
+        assert parsed_args.forcefield == 'openff_unconstrained-2.0.0.offxml', \
             'Unexpected forcefield settings were parsed'
         assert parsed_args.include_terminal_rotamers is False, \
             'Unexpected include_terminal_rotamers settings were parsed'
@@ -340,11 +337,11 @@ class TestMain(object):
 
         assert parsed_args.as_datalocal is False, \
             'Unexpected as_datalocal settings were parsed'
-        assert parsed_args.charge_method == 'am1bcc', \
+        assert parsed_args.charge_method == None, \
             'Unexpected charge_method settings were parsed'
         assert parsed_args.debug is False, \
             'Unexpected debug settings were parsed'
-        assert parsed_args.forcefield == 'openff_unconstrained-1.3.0.offxml', \
+        assert parsed_args.forcefield == 'openff_unconstrained-2.0.0.offxml', \
             'Unexpected forcefield settings were parsed'
         assert parsed_args.include_terminal_rotamers is False, \
             'Unexpected include_terminal_rotamers settings were parsed'
@@ -369,11 +366,11 @@ class TestMain(object):
 
         assert parsed_args.as_datalocal is False, \
             'Unexpected as_datalocal settings were parsed'
-        assert parsed_args.charge_method == 'am1bcc', \
+        assert parsed_args.charge_method == None, \
             'Unexpected charge_method settings were parsed'
         assert parsed_args.debug is False, \
             'Unexpected debug settings were parsed'
-        assert parsed_args.forcefield == 'openff_unconstrained-1.3.0.offxml', \
+        assert parsed_args.forcefield == 'openff_unconstrained-2.0.0.offxml', \
             'Unexpected forcefield settings were parsed'
         assert parsed_args.include_terminal_rotamers is False, \
             'Unexpected include_terminal_rotamers settings were parsed'
@@ -441,6 +438,3 @@ class TestMain(object):
         complex_path = get_data_file_path('complexes/complex_test.pdb')
         with pytest.raises(ValueError):
             _ = run_peleffy(complex_path, chain = 'C')
-
-
-

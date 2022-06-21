@@ -17,10 +17,9 @@ from peleffy.utils import Logger, OutputPathHandler
 from peleffy.forcefield.selectors import ChargeCalculatorSelector
 
 
-DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-1.3.0.offxml'
+DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-2.0.0.offxml'
 DEFAULT_RESOLUTION = int(30)
-DEFAULT_CHARGE_METHOD = 'am1bcc'
-AVAILABLE_CHARGE_METHODS = ChargeCalculatorSelector()._AVAILABLE_TYPES.keys()
+DEFAULT_CHARGE_METHOD = None  # Use FF's default
 IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OFF/Parsley/HeteroAtoms/'
 ROTAMER_LIBRARY_PATH = 'DataLocal/LigandRotamerLibs/'
 SOLVENT_TEMPLATE_PATH = 'DataLocal/OBC/'
@@ -41,9 +40,12 @@ def parse_args(args):
     parsed_args : argparse.Namespace
         It contains the command-line arguments that are supplied by the user
     """
-    parser = ap.ArgumentParser()
+    import peleffy
+
+    parser = ap.ArgumentParser(prog="PELE Force Field Yielder (peleffy)")
     parser.add_argument("pdb_file", metavar="PDB FILE", type=str,
-                        help="Path PDB file to parameterize")
+                        help="Path PDB file to parameterize",
+                        default=None)
     parser.add_argument("-f", "--forcefield", metavar="NAME",
                         type=str, help="OpenForceField's forcefield name. " +
                         "Default is " + str(DEFAULT_OFF_FORCEFIELD),
@@ -66,8 +68,7 @@ def parse_args(args):
                         "DataLocal hierarchy", action='store_true')
     parser.add_argument('-c', '--charge_method', metavar="NAME",
                         type=str, help="The name of the method to use to " +
-                        "compute charges", default=DEFAULT_CHARGE_METHOD,
-                        choices=AVAILABLE_CHARGE_METHODS)
+                        "compute charges", default=DEFAULT_CHARGE_METHOD)
     parser.add_argument('--charges_from_file', metavar="PATH",
                         type=str, help="The path to the file with charges",
                         default=None)
@@ -92,6 +93,9 @@ def parse_args(args):
                         action='store_true',
                         help="Generate Impact template compatible with " +
                              "PELE\'s AMBER implementation")
+    parser.add_argument('-v', '--version',
+                        action='version',
+                        version='%(prog)s {}'.format(peleffy.__version__))
 
     parser.set_defaults(as_datalocal=False)
     parser.set_defaults(with_solvent=False)
@@ -101,6 +105,29 @@ def parse_args(args):
     parser.set_defaults(for_amber=False)
 
     parsed_args = parser.parse_args(args)
+    
+    # Check force field
+    from peleffy.forcefield import ForceFieldSelector
+
+    selector = ForceFieldSelector()
+    available_ffs = selector.get_list()
+
+    if parsed_args.forcefield.lower() not in available_ffs:
+        raise ValueError('Force field ' +
+                         '\'{}\' '.format(parsed_args.forcefield) +
+                         'is unknown')
+
+    # Check charge method
+    if parsed_args.charge_method is not None:
+        from peleffy.forcefield import ChargeCalculatorSelector
+
+        selector = ChargeCalculatorSelector()
+        available_charge_methods = selector.get_list()
+
+        if parsed_args.charge_method.lower() not in available_charge_methods:
+            raise ValueError('Charge method ' +
+                             '\'{}\' '.format(parsed_args.charge_method) +
+                             'is unknown')
 
     return parsed_args
 
@@ -157,11 +184,14 @@ def run_peleffy(pdb_file,
             + '   - Charge file: {}'.format(charges_from_file)
         charge_method = 'dummy'
     else:
-        charge_method_str = charge_method
+        if charge_method is None:
+            charge_method_str = "-"
+        else:
+            charge_method_str = charge_method
 
     log = Logger()
     log.info('-' * 60)
-    log.info('Open Force Field parameterizer for PELE', peleffy.__version__)
+    log.info('PELE Force Field Yielder', peleffy.__version__)
     log.info('-' * 60)
     log.info(' - General:')
     log.info('   - Input PDB:', pdb_file)
