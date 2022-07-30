@@ -20,7 +20,7 @@ import sphinx
 # -- Project information -----------------------------------------------------
 
 project = 'Open Force Field for PELE'
-copyright = '2020, Barcelona Supercomputing Center'
+copyright = '2022, Barcelona Supercomputing Center'
 author = 'Martí Municoy'
 
 
@@ -85,7 +85,7 @@ master_doc = 'index'
 
 #import peleffy
 #version = peleffy.__version__
-version = '1.4.1'
+version = '1.4.3'
 
 pygments_style = 'sphinx'
 

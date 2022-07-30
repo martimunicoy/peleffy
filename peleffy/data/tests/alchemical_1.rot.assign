@@ -1,5 +1,5 @@
 rot assign res HYB &
-   sidelib FREE30 _C4_ _N1_ &
+   sidelib FREE30 _N1_ _C4_ &
    sidelib FREE30 _C4_ _C5_ &
      newgrp &
-   sidelib FREE30 _C6_ _N1_ &
+   sidelib FREE30 _N1_ _C6_ &

@@ -4,11 +4,14 @@ calculators, given a context.
 """
 
 
+_ALL_ = ["ForceFieldSelector", "ChargeCalculatorSelector"]
+
+
 class ForceFieldSelector(object):
     """
     It defines a force field selector.
     """
-    _FF_TYPES = {'OPLS2005': ('OPLS2005'),
+    _FF_TYPES = {'OPLS2005': ('OPLS2005', ),
                  'OpenFF': ('openff_unconstrained-2.0.0.offxml',
                             'openff_unconstrained-1.3.0.offxml',
                             'openff_unconstrained-1.2.1.offxml',
@@ -69,11 +72,16 @@ class ForceFieldSelector(object):
 
         Returns
         -------
-        forcefields : dict
-            The complete list of available force fields grouped by
-            force field type
+        forcefields : list[str]
+            The complete list of available force fields
         """
-        return self._FF_TYPES
+        forcefields = []
+
+        for ff_type in self._FF_TYPES:
+            forcefields.extend([ff_name.lower() for ff_name in
+                                self._FF_TYPES[ff_type]])
+
+        return forcefields
 
 
 class ChargeCalculatorSelector(object):
@@ -131,8 +139,7 @@ class ChargeCalculatorSelector(object):
 
         Returns
         -------
-        forcefields : dict
-            The complete list of available force fields grouped by
-            force field type
+        charge_methods : list[str]
+            The complete list of available charge methods
         """
-        return self._FF_TYPES
+        return list(self._AVAILABLE_TYPES.keys())

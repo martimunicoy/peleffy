@@ -957,6 +957,10 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         for atom in mol_combo.GetAtoms():
             atom.SetIsAromatic(False)
 
+        # Sanitize it
+        Chem.SanitizeMol(mol_combo,
+                         Chem.SANITIZE_ALL ^ Chem.SANITIZE_KEKULIZE ^ Chem.SANITIZE_SETAROMATICITY)
+
         return mol_combo
 
 
@@ -1318,19 +1322,29 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
         ffld_output : str
             The ffld_server output
         """
+        from peleffy.utils import Logger
+
+        # Initialize logger
+        logger = Logger()
 
         ffld_server_exec = self.path_to_ffld_server()
 
         with tempfile.TemporaryDirectory() as tmpdir:
             with temporary_cd(tmpdir):
-                self._rdkit_toolkit_wrapper.to_pdb_file(
-                    molecule, tmpdir + '/molecule.pdb')
+                self._rdkit_toolkit_wrapper.to_sdf_file(
+                    molecule, tmpdir + '/molecule.sdf')
 
-                subprocess.check_output([ffld_server_exec,
-                                         "-ipdb", "molecule.pdb",
-                                         "-version", "14",
-                                         "-print_parameters",
-                                         "-out_file", "parameters.txt"])
+                errors = subprocess.check_output([ffld_server_exec,
+                                                  "-isdf", "molecule.sdf",
+                                                  "-version", "14",
+                                                  "-print_parameters",
+                                                  "-out_file",
+                                                  "parameters.txt"])
+
+                if errors:
+                    logger.warning('FFLD_SERVER has produced the ' +
+                                   'following error message: \n ' +
+                                   '{}'.format(errors.decode("utf-8")))
 
                 with open('parameters.txt') as parameters_file:
                     return parameters_file.read()

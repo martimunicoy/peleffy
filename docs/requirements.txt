@@ -4,3 +4,4 @@ m2r==0.2.1
 docutils==0.16
 peleffy
 mistune==0.8.4
+Jinja2<3.1
