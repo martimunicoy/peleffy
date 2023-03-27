@@ -9,7 +9,7 @@ class TestOpenForceField(object):
     It wraps all tests that check the OpenForceField class.
     """
 
-    FORCE_FIELD_NAME = 'openff_unconstrained-1.3.0.offxml' # original 1.2.1
+    FORCE_FIELD_NAME = 'openff_unconstrained-1.2.1.offxml'
 
     def test_name(self):
         """It checks the name assignment."""
