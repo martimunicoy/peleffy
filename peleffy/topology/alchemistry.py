@@ -1070,14 +1070,14 @@ class Alchemizer(object):
 
         for atom_idx, atom in enumerate(self._joint_topology.atoms):
             if atom_idx in self._exclusive_atoms:
-                lambda_value = 1.0 - lambda_set.get_lambda_for_coulomb1()
+                lambda_value = 1.0 - lambda_set.get_lambda_for_vdw()
                 radius = radii1[(atom_idx, )] * lambda_value
                 scale = scales1[(atom_idx, )] * lambda_value
 
             elif atom_idx in self._non_native_atoms:
                 for mol2_index, alc_index in self._mol2_to_alc_map.items():
                     if alc_index == atom_idx:
-                        lambda_value = lambda_set.get_lambda_for_coulomb2()
+                        lambda_value = lambda_set.get_lambda_for_vdw()
                         radius = radii2[(mol2_index, )] * lambda_value
                         scale = scales2[(mol2_index, )] * lambda_value
                         break
@@ -1093,7 +1093,7 @@ class Alchemizer(object):
                 radius2 = mol2_obc_params._radii[0][(mol2_idx, )]
                 scale2 = mol2_obc_params._scales[0][(mol2_idx, )]
 
-                lambda_value = 1.0 - lambda_set.get_lambda_for_coulomb2()
+                lambda_value = 1.0 - lambda_set.get_lambda_for_vdw()
                 radius = radii1[(atom_idx, )] * lambda_value \
                     + (1.0 - lambda_value) * radius2
                 scale = scales1[(atom_idx, )] * lambda_value \
