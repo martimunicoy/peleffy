@@ -428,3 +428,4 @@ class Topology(object):
             The list of impropers of this Topology object.
         """
         return self._impropers
+    

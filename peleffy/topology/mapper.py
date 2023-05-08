@@ -117,6 +117,36 @@ class Mapper(object):
         """
         return self._molecule2
 
+    def to_png(self, output_png):
+        """
+        It generates a PNG image representing the resulting alchemical
+        mapping.
+
+        Parameters
+        ----------
+        output_png : str
+            Path to the output PNG file to write
+        """
+        import os
+        from peleffy.utils.toolkits import RDKitToolkitWrapper
+
+        extension = os.path.splitext(output_png)[1]
+
+        if extension != ".png":
+            raise ValueError("Invalid extension for a PNG file")
+
+
+        rdkit_toolkit = RDKitToolkitWrapper()
+
+        mcs_mol = rdkit_toolkit.get_mcs(self.molecule1, self.molecule2,
+                                        self._include_hydrogens,
+                                        self._TIMEOUT)
+
+        image = rdkit_toolkit.draw_mapping(self.molecule1, self.molecule2,
+                                           mcs_mol, self._include_hydrogens)
+
+        image.save(output_png)
+
     def _ipython_display_(self):
         """
         It returns a representation of the mapping.
