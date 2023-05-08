@@ -986,6 +986,12 @@ class Alchemizer(object):
         of the OBC parameters of both molecules, to the path that
         is supplied.
 
+        Note that OBC radii are never shrinked to 0.0 for exclusive
+        and non native atoms to avoid problems with the equation
+        that places this parameter as the denominator of a fraction.
+        Instead the scale factor is changed according to the
+        value of the lambda.
+
         Parameters
         ----------
         path : str
@@ -1071,14 +1077,14 @@ class Alchemizer(object):
         for atom_idx, atom in enumerate(self._joint_topology.atoms):
             if atom_idx in self._exclusive_atoms:
                 lambda_value = 1.0 - lambda_set.get_lambda_for_coulomb1()
-                radius = radii1[(atom_idx, )] * lambda_value
+                radius = radii1[(atom_idx, )]  # Do not change it
                 scale = scales1[(atom_idx, )] * lambda_value
 
             elif atom_idx in self._non_native_atoms:
                 for mol2_index, alc_index in self._mol2_to_alc_map.items():
                     if alc_index == atom_idx:
                         lambda_value = lambda_set.get_lambda_for_coulomb2()
-                        radius = radii2[(mol2_index, )] * lambda_value
+                        radius = radii2[(mol2_index, )]  # Do not change it
                         scale = scales2[(mol2_index, )] * lambda_value
                         break
                 else:
@@ -1105,6 +1111,21 @@ class Alchemizer(object):
         alchemical_obc_params.to_file(path)
 
         logger.set_level(log_level)
+
+    def to_png(self, output_png):
+        """
+        It generates a PNG image representing the resulting alchemical
+        mapping.
+
+        Parameters
+        ----------
+        output_png : str
+            Path to the output PNG file to write
+        """
+        import os
+        from peleffy.utils.toolkits import RDKitToolkitWrapper
+
+        self._mapper.to_png(output_png)
 
     def _ipython_display_(self):
         """

@@ -85,47 +85,47 @@
                 "scale": 0.85
             },
             "_C6_": {
-                "radius": 0.0,
+                "radius": 1.7,
                 "scale": 0.0
             },
             "_C7_": {
-                "radius": 0.0,
+                "radius": 1.7,
                 "scale": 0.0
             },
             "_C8_": {
-                "radius": 0.0,
+                "radius": 1.7,
                 "scale": 0.0
             },
             "_C9_": {
-                "radius": 0.0,
+                "radius": 1.7,
                 "scale": 0.0
             },
             "C10_": {
-                "radius": 0.0,
+                "radius": 1.7,
                 "scale": 0.0
             },
             "C11_": {
-                "radius": 0.0,
+                "radius": 1.7,
                 "scale": 0.0
             },
             "H12_": {
-                "radius": 0.0,
+                "radius": 1.2,
                 "scale": 0.0
             },
             "H13_": {
-                "radius": 0.0,
+                "radius": 1.2,
                 "scale": 0.0
             },
             "H14_": {
-                "radius": 0.0,
+                "radius": 1.2,
                 "scale": 0.0
             },
             "H15_": {
-                "radius": 0.0,
+                "radius": 1.2,
                 "scale": 0.0
             },
             "H16_": {
-                "radius": 0.0,
+                "radius": 1.2,
                 "scale": 0.0
             }
         }

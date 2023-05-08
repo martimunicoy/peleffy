@@ -850,7 +850,8 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         image = Draw.MolsToGridImage([rdkit_mol1, rdkit_mol2],
                                      molsPerRow=2, subImgSize=(300, 300),
                                      legends=[mol1_name, mol2_name],
-                                     highlightAtomLists=[mol1_sub, mol2_sub])
+                                     highlightAtomLists=[mol1_sub, mol2_sub],
+                                     returnPNG=False)
 
         return image
 
