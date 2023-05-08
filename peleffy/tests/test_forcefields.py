@@ -58,7 +58,7 @@ class TestOpenForceField(object):
             peleffy.forcefield.calculators.GasteigerCalculator), \
             'Invalid custom selection 1 for the charge calculator'
 
-        # Check custom selection 1
+        # Check custom selection 2
         openff = OpenForceField(self.FORCE_FIELD_NAME)
         calculator = openff._get_charge_calculator('opls2005', dummy_mol)
 
@@ -66,6 +66,12 @@ class TestOpenForceField(object):
             calculator,
             peleffy.forcefield.calculators.OPLSChargeCalculator), \
             'Invalid custom selection 2 for the charge calculator'
+
+        # Check custom selection 3
+        openff = OpenForceField(self.FORCE_FIELD_NAME)
+        calculator = openff._get_charge_calculator('mulliken', dummy_mol)
+        assert isinstance(calculator, peleffy.forcefield.calculators.MullikenCalculator), \
+            "Invalid custom selection 3 for the charge calculator"
 
     def test_parameterizer(self):
         """It checks the parameterized method."""
