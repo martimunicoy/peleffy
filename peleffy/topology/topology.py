@@ -428,11 +428,4 @@ class Topology(object):
             The list of impropers of this Topology object.
         """
         return self._impropers
-
-    @classmethod
-    def from_parmed(cls, parmed_molecule):
-        #parmed_molecule --> peleffy.Molecule
-        #parmed_molecule --> peleffy.Parameters
-        
-        return cls(molecule, parameters)
     
