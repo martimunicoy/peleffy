@@ -344,6 +344,29 @@ class Topology(object):
         """
         self._OFF_impropers.append(improper)
 
+    @classmethod
+    def from_foyer(cls, pdb_file_path):
+        """
+        Given a pdb path, it creates a peleffy.topology.molecule.Molecule object and a
+        peleffy.forcefield.parameters.FoyerParameterWrapper object, and returns a Topology instance created
+        from the former two.
+
+        Parameters
+        ----------
+        pdb_file_path: a str or path-like object pointing to a pdb file.
+
+        Returns
+        -------
+        Topology instance.
+        """
+        from peleffy.topology import Molecule
+        from peleffy.forcefield.parameters import FoyerParameterWrapper
+
+        peleffy_molecule = Molecule(pdb_file_path)
+        foyer_opls_params = FoyerParameterWrapper.update_parameters(pdb_file_path, peleffy_molecule)
+
+        return cls(molecule=peleffy_molecule, parameters=foyer_opls_params)
+
     @property
     def molecule(self):
         """
