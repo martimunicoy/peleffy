@@ -345,7 +345,7 @@ class Topology(object):
         self._OFF_impropers.append(improper)
 
     @classmethod
-    def from_foyer(cls, pdb_file_path):
+    def from_foyer(cls, pdb_file_path, assert_params=True):
         """
         Given a pdb path, it creates a peleffy.topology.molecule.Molecule object and a
         peleffy.forcefield.parameters.FoyerParameterWrapper object, and returns a Topology instance created
@@ -353,7 +353,10 @@ class Topology(object):
 
         Parameters
         ----------
-        pdb_file_path: a str or path-like object pointing to a pdb file.
+        pdb_file_path:
+            str or path-like object pointing to a pdb file.
+        assert_params: bool (default is True)
+            Whether to check if bonds, angles and dihedrals are properly defined or not.
 
         Returns
         -------
@@ -363,7 +366,8 @@ class Topology(object):
         from peleffy.forcefield.parameters import FoyerParameterWrapper
 
         peleffy_molecule = Molecule(pdb_file_path)
-        foyer_opls_params = FoyerParameterWrapper.update_parameters(pdb_file_path, peleffy_molecule)
+        foyer_opls_params = FoyerParameterWrapper.update_parameters(
+            pdb_file_path, peleffy_molecule, assert_params=assert_params)
 
         return cls(molecule=peleffy_molecule, parameters=foyer_opls_params)
 

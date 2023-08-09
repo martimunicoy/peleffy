@@ -1403,7 +1403,7 @@ class FoyerToolkitWrapper(ToolkitWrapper):
 
         return load_OPLSAA()
 
-    def parameterize_from_parmed(self, pdb_file_path, forcefield='oplsaa'):
+    def parameterize_from_parmed(self, pdb_file_path, assert_params=True, forcefield='oplsaa'):
         """
         Load a pdb file into a parmed molecule object, apply the Foyer's OPLS_AA force field
         to it, and return the parameterized molecule as a dictionary object.
@@ -1412,6 +1412,8 @@ class FoyerToolkitWrapper(ToolkitWrapper):
         ----------
         pdb_file_path: path-like object or str
             String or path where the pdb file of interest is stored.
+        assert_params: bool (default is True)
+            Whether to check if bonds, angles and dihedrals are properly defined or not.
         forcefield: str
             Forcefield to be aplied to the input molecule. By default is 'oplsaa'.
 
@@ -1423,7 +1425,16 @@ class FoyerToolkitWrapper(ToolkitWrapper):
         parmed_molecule = parmed.load_file(pdb_file_path)
 
         if forcefield.lower() == 'oplsaa':
-            parameterized_molecule = self.load_oplsaa().apply(parmed_molecule)
+            parameterized_molecule = self.load_oplsaa().apply(
+                parmed_molecule,
+                references_file=None,
+                use_residue_map=True,
+                assert_bond_params=assert_params,
+                assert_angle_params=assert_params,
+                assert_dihedral_params=assert_params,
+                assert_improper_params=False,
+                verbose=False
+            )
         else:
             raise ForcefieldUnavailableError(f"Force field '{forcefield}' is not implemented.")
 

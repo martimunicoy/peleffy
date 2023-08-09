@@ -1525,7 +1525,7 @@ class FoyerParameterWrapper(OPLS2005ParameterWrapper):
     _name = 'Foyer'
 
     @staticmethod
-    def update_parameters(pdb_file_path, peleffy_molecule, forcefield='oplsaa'):
+    def update_parameters(pdb_file_path, peleffy_molecule, assert_params=True, forcefield='oplsaa'):
         """
         Static method which returns a dictionary with the data regarding the molecule being
         parameterized with a given force field (default is OPLS_AA).
@@ -1536,6 +1536,8 @@ class FoyerParameterWrapper(OPLS2005ParameterWrapper):
             String or path-like object that defines the location of the pdb file to be loaded.
         peleffy_molecule: peleffy.molecule.Molecule
             Peleffy Molecule object of the molecule being parameterized.
+        assert_params: bool (default is True)
+            Whether to check if bonds, angles and dihedrals are properly defined or not.
         forcefield: str
             String defining the force field name to be used. Default is 'oplsaa'.
         Returns
@@ -1563,7 +1565,7 @@ class FoyerParameterWrapper(OPLS2005ParameterWrapper):
 
         foyer_oplsaa = foyer_toolkit.load_oplsaa()
 
-        parameterized_molecule = foyer_toolkit.parameterize_from_parmed(pdb_file_path, forcefield)
+        parameterized_molecule = foyer_toolkit.parameterize_from_parmed(pdb_file_path, assert_params, forcefield)
 
         n_atoms = len(parameterized_molecule['atoms'])
         n_bonds = len(parameterized_molecule['bonds'])
