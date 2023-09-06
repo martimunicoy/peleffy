@@ -23,7 +23,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           activate-environment: standard
-          auto-activate-base: false
+          auto-activate-base: true
       - name: Install conda-build
         run: conda install conda-build
       - name: Install anaconda-client
