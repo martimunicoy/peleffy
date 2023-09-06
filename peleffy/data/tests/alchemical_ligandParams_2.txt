@@ -21,23 +21,23 @@
                 "scale": 0.79
             },
             "_C3_": {
-                "radius": 0.0,
+                "radius": 1.7,
                 "scale": 0.0
             },
             "_C4_": {
-                "radius": 0.0,
+                "radius": 1.7,
                 "scale": 0.0
             },
             "_C5_": {
-                "radius": 0.0,
+                "radius": 1.7,
                 "scale": 0.0
             },
             "_O1_": {
-                "radius": 0.0,
+                "radius": 1.5,
                 "scale": 0.0
             },
             "_O2_": {
-                "radius": 0.0,
+                "radius": 1.5,
                 "scale": 0.0
             },
             "_H1_": {
@@ -49,7 +49,7 @@
                 "scale": 0.85
             },
             "_H3_": {
-                "radius": 0.0,
+                "radius": 1.2,
                 "scale": 0.0
             },
             "_H4_": {
@@ -57,31 +57,31 @@
                 "scale": 0.85
             },
             "_H5_": {
-                "radius": 0.0,
+                "radius": 1.2,
                 "scale": 0.0
             },
             "_H6_": {
-                "radius": 0.0,
+                "radius": 1.2,
                 "scale": 0.0
             },
             "_H7_": {
-                "radius": 0.0,
+                "radius": 1.2,
                 "scale": 0.0
             },
             "_H8_": {
-                "radius": 0.0,
+                "radius": 1.2,
                 "scale": 0.0
             },
             "_H9_": {
-                "radius": 0.0,
+                "radius": 1.2,
                 "scale": 0.0
             },
             "H10_": {
-                "radius": 0.0,
+                "radius": 1.2,
                 "scale": 0.0
             },
             "H11_": {
-                "radius": 0.0,
+                "radius": 1.2,
                 "scale": 0.0
             },
             "_C6_": {

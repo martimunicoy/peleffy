@@ -850,7 +850,8 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         image = Draw.MolsToGridImage([rdkit_mol1, rdkit_mol2],
                                      molsPerRow=2, subImgSize=(300, 300),
                                      legends=[mol1_name, mol2_name],
-                                     highlightAtomLists=[mol1_sub, mol2_sub])
+                                     highlightAtomLists=[mol1_sub, mol2_sub],
+                                     returnPNG=False)
 
         return image
 
@@ -1010,7 +1011,7 @@ class AmberToolkitWrapper(ToolkitWrapper):
         molecule : an peleffy.topology.Molecule
             The peleffy's Molecule object
         method : str
-            The name of the method to use. One of ['gasteiger', 'am1bcc'].
+            The name of the method to use. One of ['gasteiger', 'am1bcc', 'mulliken'].
             If None, 'am1bcc' will be used
 
         Returns
@@ -1027,7 +1028,8 @@ class AmberToolkitWrapper(ToolkitWrapper):
         """
 
         SUPPORTED_CHARGE_METHODS = {'am1bcc': {'antechamber_keyword': 'bcc'},
-                                    'gasteiger': {'antechamber_keyword': 'gas'}
+                                    'gasteiger': {'antechamber_keyword': 'gas'},
+                                    'mulliken': {'antechamber_keyword': 'mul'}
                                     }
 
         if method not in SUPPORTED_CHARGE_METHODS:

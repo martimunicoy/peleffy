@@ -92,6 +92,14 @@ class GasteigerCalculator(_PartialChargeCalculator):
 
     _name = 'gasteiger'
 
+class MullikenCalculator(_PartialChargeCalculator):
+    """
+    Implementation of the Mulliken partial charge calculator (using
+    RDKit).
+    """
+
+    _name = 'mulliken'
+
 
 class OPLSChargeCalculator(_PartialChargeCalculator):
     """

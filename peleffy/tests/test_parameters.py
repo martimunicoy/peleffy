@@ -922,6 +922,20 @@ class TestCharges(object):
         # Check charges
         check_CHO_charges(parameters)
 
+    def test_mulliken_method(self):
+        """It tests the mulliken method"""
+        ligand_path = get_data_file_path(self.LIGAND_PATH)
+
+        # Load molecule
+        molecule = Molecule(ligand_path)
+
+        # Parameterize
+        ff = OpenForceField(FORCEFIELD_NAME)
+        parameters = ff.parameterize(molecule, charge_method='mulliken')
+
+        # Check charges
+        check_CHO_charges(parameters)
+        
     def test_OPLS_method(self):
         """It tests the OPLS method"""
 

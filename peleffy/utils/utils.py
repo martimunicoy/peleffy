@@ -500,7 +500,7 @@ class Logger(object):
             CRITICAL]
         """
         import logging
-        logging.basicConfig()
+        #logging.basicConfig()
 
         if level.upper() == 'DEBUG':
             logging_level = logging.DEBUG
