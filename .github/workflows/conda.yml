@@ -25,19 +25,22 @@ jobs:
           activate-environment: standard
           auto-activate-base: true
       - name: Install conda-build
+        shell: bash -l {0}
         run: conda install conda-build
       - name: Install anaconda-client
+        shell: bash -l {0}
         run: conda install anaconda-client
       - name: Configurate conda-build
+        shell: bash -l {0}
         run: conda config --set anaconda_upload yes
       - name: Configurate conda-client from anaconda
-        run: |
-          conda info
-          conda list
-          anaconda login --hostname peleffy14host${{ matrix.python-version }}${{ matrix.os }} --username ${{ secrets.ANACONDA_USER }} --password ${{ secrets.ANACONDA_PASSWD }}
+        shell: bash -l {0}
+        run: anaconda login --hostname peleffy14host${{ matrix.python-version }}${{ matrix.os }} --username ${{ secrets.ANACONDA_USER }} --password ${{ secrets.ANACONDA_PASSWD }}
       - name: Deploy package to conda
+        shell: bash -l {0}
         run: conda build 'devtools/conda'
       - name: Logout from anaconda
+        shell: bash -l {0}
         run: anaconda logout
 
       #- name: Setup conda
