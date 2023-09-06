@@ -39,7 +39,7 @@ jobs:
         run: conda config --set anaconda_upload yes
       - name: Configurate conda-client from anaconda
         shell: bash -l {0}
-        run: anaconda login --hostname peleffy144host${{ matrix.python-version }}${{ matrix.os }} --username ${{ secrets.ANACONDA_USER }} --password ${{ secrets.ANACONDA_PASSWD }}
+        run: anaconda login --hostname peleffy144_2host${{ matrix.python-version }}${{ matrix.os }} --username ${{ secrets.ANACONDA_USER }} --password ${{ secrets.ANACONDA_PASSWD }}
       - name: Deploy package to conda
         shell: bash -l {0}
         run: conda build 'devtools/conda' -c conda-forge -c nostrumbiodiscovery
