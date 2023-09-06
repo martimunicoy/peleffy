@@ -11,10 +11,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        #os: [ubuntu-latest, macOS-latest]
-        #python-version: [3.7, 3.8, 3.9]
-        python-version: [3.8]
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macOS-latest]
+        python-version: [3.7, 3.8, 3.9]
     name: Python ${{ matrix.python-version }} at ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -36,7 +34,7 @@ jobs:
         run: conda config --set anaconda_upload yes
       - name: Configurate conda-client from anaconda
         shell: bash -l {0}
-        run: anaconda login --hostname peleffy14host${{ matrix.python-version }}${{ matrix.os }} --username ${{ secrets.ANACONDA_USER }} --password ${{ secrets.ANACONDA_PASSWD }}
+        run: anaconda login --hostname peleffy144host${{ matrix.python-version }}${{ matrix.os }} --username ${{ secrets.ANACONDA_USER }} --password ${{ secrets.ANACONDA_PASSWD }}
       - name: Deploy package to conda
         shell: bash -l {0}
         run: conda build 'devtools/conda'
