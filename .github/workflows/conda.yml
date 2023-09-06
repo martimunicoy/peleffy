@@ -42,7 +42,7 @@ jobs:
         run: anaconda login --hostname peleffy144host${{ matrix.python-version }}${{ matrix.os }} --username ${{ secrets.ANACONDA_USER }} --password ${{ secrets.ANACONDA_PASSWD }}
       - name: Deploy package to conda
         shell: bash -l {0}
-        run: conda build 'devtools/conda'
+        run: conda build 'devtools/conda' -c conda-forge -c nostrumbiodiscovery
       - name: Logout from anaconda
         shell: bash -l {0}
         run: anaconda logout
