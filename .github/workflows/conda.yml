@@ -23,7 +23,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           activate-environment: standard
-          auto-activate-base: true
+          environment-file: devtools/envs/standard.yaml
+          auto-activate-base: false
       - name: Install conda-build
         shell: bash -l {0}
         run: conda install conda-build
