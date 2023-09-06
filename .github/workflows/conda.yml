@@ -31,7 +31,10 @@ jobs:
       - name: Configurate conda-build
         run: conda config --set anaconda_upload yes
       - name: Configurate conda-client from anaconda
-        run: anaconda login --hostname peleffy14host${{ matrix.python-version }}${{ matrix.os }} --username ${{ secrets.ANACONDA_USER }} --password ${{ secrets.ANACONDA_PASSWD }}
+        run: |
+          conda info
+          conda list
+          anaconda login --hostname peleffy14host${{ matrix.python-version }}${{ matrix.os }} --username ${{ secrets.ANACONDA_USER }} --password ${{ secrets.ANACONDA_PASSWD }}
       - name: Deploy package to conda
         run: conda build 'devtools/conda'
       - name: Logout from anaconda
