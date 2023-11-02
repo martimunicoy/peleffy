@@ -17,8 +17,6 @@ from peleffy.utils import get_data_file_path
 from peleffy.utils import Logger
 
 import re
-from foyer.forcefields.forcefields import load_OPLSAA
-import parmed
 from simtk import unit
 from peleffy.utils.toolkits import RDKitToolkitWrapper, FoyerToolkitWrapper, ToolkitUnavailableException
 from openff.units.openmm import string_to_openmm_unit
@@ -1519,7 +1517,8 @@ class OpenFFOPLS2005ParameterWrapper(BaseParameterWrapper):
 
 class FoyerParameterWrapper(OPLS2005ParameterWrapper):
     """
-    It defines a parameters wrapper for Foyer OPLS force field. Inherits from OPLS2005ParameterWrapper.
+    It defines a parameters wrapper for Foyer OPLS force field. Inherits the
+    adding solvent functions from OPLS2005ParameterWrapper.
     """
 
     _name = 'Foyer'
@@ -1600,10 +1599,8 @@ class FoyerParameterWrapper(OPLS2005ParameterWrapper):
                 c_atom_type = foyer_oplsaa.atomTypeClasses[getattr(parameterized_molecule['atoms'][i], 'type')]
             except AttributeError:
                 log.error(f"{parameterized_molecule['atoms'][i]} has no attribute 'type'")
-                exit(1)
             except KeyError:
                 log.error(f"{getattr(parameterized_molecule['atoms'][i], 'type')} is not a valid AtomTypeClass.")
-                exit(1)
             params['atom_types'].append(c_atom_type)
 
         try:
@@ -1611,21 +1608,18 @@ class FoyerParameterWrapper(OPLS2005ParameterWrapper):
                                     unit.elementary_charge) for i in range(n_atoms)]
         except AttributeError:
             log.error(f"{parameterized_molecule['atoms'][i]} has no attribute '_charge'")
-            exit(1)
 
         try:
             params['sigmas'] = [unit.Quantity(sigma_from_rmin_half(getattr(parameterized_molecule['atoms'][i], 'rmin')),
                                     unit.angstrom) for i in range(n_atoms)]
         except AttributeError:
             log.error(f"{parameterized_molecule['atoms'][i]} has no attribute 'rmin'")
-            exit(1)
 
         try:
             params['epsilons'] = [unit.Quantity(float(f"{getattr(parameterized_molecule['atoms'][i], 'epsilon'):.3f}"),
                                     unit.kilocalorie_per_mole) for i in range(n_atoms)]
         except AttributeError:
             log.error(f"{parameterized_molecule['atoms'][i]} has no attribute 'epsilon'")
-            exit(1)
 
         # Bonds
         if 'bonds' in parameterized_molecule.keys():
@@ -1645,7 +1639,7 @@ class FoyerParameterWrapper(OPLS2005ParameterWrapper):
                 params['bonds'].append(c_bond)
         else:
             log.warning("WATCH OUT! The parameterized molecule has no key 'bonds' assigned.")
-            exit(1)
+            raise KeyError()
 
         # Angles
         if 'angles' in parameterized_molecule.keys():
@@ -1667,9 +1661,9 @@ class FoyerParameterWrapper(OPLS2005ParameterWrapper):
                 params['angles'].append(c_angle)
         else:
             log.warning("WATCH OUT! The parameterized molecule has no key 'angles' assigned.")
-            exit(1)
+            raise KeyError()
 
-        # RB_torsions, propers
+        # Ryckaert-Bellemans proper torsions
         if 'rb_torsions' in parameterized_molecule.keys():
             for i in range(n_rb_torsions):
                 atom1_idx = getattr(getattr(parameterized_molecule['rb_torsions'][i], 'atom1'), 'idx')
@@ -1729,9 +1723,9 @@ class FoyerParameterWrapper(OPLS2005ParameterWrapper):
 
         else:
             log.warning("WATCH OUT! The parameterized molecule has no proper key 'rb_torsions' assigned.")
-            exit(1)
+            raise KeyError()
 
-        # RB_torsions, impropers
+        # Ryckaert-Bellemans improper torsions
         if 'impropers' in parameterized_molecule.keys():
             for i in range(n_impropers):
                 atom1_idx = getattr(getattr(parameterized_molecule['impropers'][i], 'atom1'), 'idx')
@@ -1790,16 +1784,16 @@ class FoyerParameterWrapper(OPLS2005ParameterWrapper):
                             })
         else:
             log.warning("WATCH OUT! The parameterized molecule has no key 'impropers' assigned.")
-            exit(1)
+            raise KeyError()
 
         # Periodic improper dihedrals
         if 'dihedrals' in parameterized_molecule.keys():
             for i in range(n_periodic_dihedrals):
                 if getattr(parameterized_molecule['dihedrals'][i], 'improper'):
-                    atom1_idx = getattr(getattr(parameterized_molecule['dihedrals'][i], 'atom1'), 'idx')
+                    atom1_idx = getattr(getattr(parameterized_molecule['dihedrals'][i], 'atom4'), 'idx')
                     atom2_idx = getattr(getattr(parameterized_molecule['dihedrals'][i], 'atom2'), 'idx')
                     atom3_idx = getattr(getattr(parameterized_molecule['dihedrals'][i], 'atom3'), 'idx')
-                    atom4_idx = getattr(getattr(parameterized_molecule['dihedrals'][i], 'atom4'), 'idx')
+                    atom4_idx = getattr(getattr(parameterized_molecule['dihedrals'][i], 'atom1'), 'idx')
 
                     periodicity = int(getattr(getattr(parameterized_molecule['dihedrals'][i], 'type'), 'per'))
                     phase = int(getattr(getattr(parameterized_molecule['dihedrals'][i], 'type'), 'phase'))
@@ -1815,9 +1809,37 @@ class FoyerParameterWrapper(OPLS2005ParameterWrapper):
                          'k': unit.Quantity(k, unit.kilocalorie / unit.mole),
                          'idivf': 1.0
                          })
+
+                elif hasattr(parameterized_molecule['dihedrals'][i], '_is_improper') \
+                    and getattr(parameterized_molecule['dihedrals'][i], '_is_improper'):
+                    # The order tries to match the one defined in Schrodinger's
+                    # MOD: 4,2,3,1 /// ORIGINAL: 1,2,3,4
+                    atom1_idx = getattr(getattr(parameterized_molecule['dihedrals'][i], 'atom4'), 'idx')
+                    atom2_idx = getattr(getattr(parameterized_molecule['dihedrals'][i], 'atom2'), 'idx')
+                    atom3_idx = getattr(getattr(parameterized_molecule['dihedrals'][i], 'atom3'), 'idx')
+                    atom4_idx = getattr(getattr(parameterized_molecule['dihedrals'][i], 'atom1'), 'idx')
+
+                    periodicity = int(getattr(getattr(parameterized_molecule['dihedrals'][i], 'type'), 'per'))
+                    phase = int(getattr(getattr(parameterized_molecule['dihedrals'][i], 'type'), 'phase'))
+                    k = getattr(getattr(parameterized_molecule['dihedrals'][i], 'type'), 'phi_k')
+
+                    params['impropers'].append(
+                        {'atom1_idx': atom1_idx,
+                         'atom2_idx': atom2_idx,
+                         'atom3_idx': atom3_idx,
+                         'atom4_idx': atom4_idx,
+                         'periodicity': periodicity,
+                         'phase': unit.Quantity(phase, unit.degree),
+                         'k': unit.Quantity(k, unit.kilocalorie / unit.mole),
+                         'idivf': 1.0
+                         })
+
+                elif not hasattr(parameterized_molecule['dihedrals'][i], '_is_improper'):
+                    log.warning("> Could not find attribute 'is_improper' in the"
+                                " input object.")
         else:
             log.warning(f"WATCH OUT! The parameterized molecule has no key 'dihedrals' assigned.")
-            exit(1)
+            raise KeyError()
 
         foyer_params_wrapper = FoyerParameterWrapper(params)
 
@@ -1839,6 +1861,6 @@ class FoyerParameterWrapper(OPLS2005ParameterWrapper):
                                                                element_by_name)
         else:
             log.error("ERROR: 'degree_by_name', 'parent_by_name', or 'element_by_name' may be empty and '_add_GBSA_solvent_parameters' method could not be run on the 'FoyerParameterWrapper' object.")
-            exit(1)
+            raise Exception()
 
         return foyer_params_wrapper
