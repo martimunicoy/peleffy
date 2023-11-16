@@ -283,12 +283,12 @@ class Alchemizer(object):
 
         for bond_idx, bond in enumerate(alchemical_topology.bonds):
             if bond_idx in self._exclusive_bonds:
-                bond.apply_lambda(["spring_constant", "eq_dist"],
+                bond.apply_lambda(["spring_constant", ],
                                   lambda_set.get_lambda_for_bonded(),
                                   reverse=False)
 
             if bond_idx in self._non_native_bonds:
-                bond.apply_lambda(["spring_constant", "eq_dist"],
+                bond.apply_lambda(["spring_constant", ],
                                   lambda_set.get_lambda_for_bonded(),
                                   reverse=True)
 
@@ -309,12 +309,12 @@ class Alchemizer(object):
 
         for angle_idx, angle in enumerate(alchemical_topology.angles):
             if angle_idx in self._exclusive_angles:
-                angle.apply_lambda(["spring_constant", "eq_angle"],
+                angle.apply_lambda(["spring_constant", ],
                                    lambda_set.get_lambda_for_bonded(),
                                    reverse=False)
 
             if angle_idx in self._non_native_angles:
-                angle.apply_lambda(["spring_constant", "eq_angle"],
+                angle.apply_lambda(["spring_constant", ],
                                    lambda_set.get_lambda_for_bonded(),
                                    reverse=True)
 
