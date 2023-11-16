@@ -10,7 +10,8 @@ __all__ = ["OpenForceFieldParameterWrapper",
 
 
 from collections import defaultdict
-from simtk import unit
+from openff.units import unit
+
 
 from peleffy.utils import get_data_file_path
 from peleffy.utils import Logger
@@ -269,13 +270,13 @@ class BaseParameterWrapper(dict):
             correct_value : list
                 Set of paramaeters with the expected data type
             """
-            import simtk.unit
+            from openff.units import unit
             from peleffy.utils import string_to_quantity
 
             # Dictionary relating parameters key with the expected data type
             dict_units = {
                 'alphas': float, 'gammas': float,
-                'charges':  simtk.unit.quantity.Quantity,
+                'charges':  unit.Quantity,
                 'sigmas': 'list_Quantity', 'epsilons': 'list_Quantity',
                 'SGB_radii': 'list_Quantity', 'vdW_radii': 'list_Quantity',
                 'angles': dict, 'bonds': dict, 'impropers': dict,
@@ -1038,7 +1039,7 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
             The resulting parameters wrapper
         """
 
-        from simtk import unit
+        from openff.units import unit
         from peleffy.utils.toolkits import RDKitToolkitWrapper
 
         params = defaultdict(list)
@@ -1289,7 +1290,7 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
             solvent parameters will be added to the collection: SGB_radii,
             vdW_radii, gammas, alphas
         """
-        from simtk import unit
+        from openff.units import unit
 
         solvent_data = dict()
         parameters_path = get_data_file_path(
@@ -1478,7 +1479,7 @@ class OPLS2005ParameterWrapper(BaseParameterWrapper):
 
             return radius, scale
 
-        from simtk import unit
+        from openff.units import unit
 
         # Loop over atom types and names:
         radii = list()

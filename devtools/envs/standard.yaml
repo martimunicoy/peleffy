@@ -3,14 +3,15 @@ channels:
   - conda-forge
 
 dependencies:
-  - python
+  - python=3.9
   - pip
   - flake8
   - pytest
   - pytest-cov
   - codecov
-  - coverage < 5.0
+  #- coverage < 5.0
+  - coverage
   - ipython
   - ambertools
   - rdkit
-  - openff-toolkit==0.10.1
+  - openff-toolkit==0.14.4

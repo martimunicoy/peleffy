@@ -90,6 +90,7 @@ class TestOpenForceField(object):
         # Obtain force field parameters
         parameters = openff.parameterize(molecule)
 
+        print(parameters)
         writable_parameters = convert_all_quantities_to_string(parameters)
 
         reference_file = get_data_file_path(
@@ -331,7 +332,9 @@ class TestOpenFFOPLS2005ForceField(object):
                                                      molecule,
                                                      ffld_file)
 
+            print(parameters)
             writable_parameters = convert_all_quantities_to_string(parameters)
+            print(writable_parameters)
 
             with open(reference_file) as f:
                 compare_dicts(writable_parameters, json.load(f))

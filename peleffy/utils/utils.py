@@ -20,8 +20,9 @@ __all__ = ["get_data_file_path",
 
 from pkg_resources import resource_filename
 import os
+import pint
 import contextlib
-from simtk import unit
+from openff.units import unit
 
 
 def get_data_file_path(relative_path):
@@ -103,16 +104,42 @@ def create_path(path):
     os.makedirs(str(path), exist_ok=True)
 
 
+@pint.register_unit_format("peleffy_simple")
+def format_unit_simple(unit, registry, **options):
+
+    output_str = ""
+
+    for u, p in sorted(unit.items(),
+                       key=lambda item: item[1],
+                       reverse=True):
+        if p < 0:
+            output_str += f"{u}**{p} * "
+
+    for u, p in sorted(unit.items(),
+                       key=lambda item: item[1],
+                       reverse=False):
+        if p == 1:
+            output_str += f"{u} * "
+
+    for u, p in sorted(unit.items(),
+                       key=lambda item: item[1],
+                       reverse=False):
+        if p > 1:
+            output_str += f"{u} * "
+
+    return output_str.strip(" *")
+
+
 def unit_to_string(input_unit):
     """
-    Serialize a simtk.unit.Unit and return it as a string.
+    Serialize a openff.units.unit.Quantity and return it as a string.
 
     Function modified from the OpenFF Toolkit
     (https://github.com/openforcefield/openforcefield/).
 
     Parameters
     ----------
-    input_unit : A simtk.unit
+    input_unit : a openff.units.unit.Unit
         The unit to serialize
 
     Returns
@@ -120,41 +147,19 @@ def unit_to_string(input_unit):
     unit_string : str
         The serialized unit.
     """
-
-    if input_unit == unit.dimensionless:
-        return "dimensionless"
-
-    # Decompose output_unit into a tuples of (base_dimension_unit, exponent)
-    unit_string = None
-    for unit_component in input_unit.iter_base_or_scaled_units():
-        unit_component_name = unit_component[0].name
-
-        # Convert, for example "elementary charge" --> "elementary_charge"
-        unit_component_name = unit_component_name.replace(' ', '_')
-        if unit_component[1] == 1:
-            contribution = '{}'.format(unit_component_name)
-        else:
-            contribution = '{}**{}'.format(unit_component_name,
-                                           int(unit_component[1]))
-        if unit_string is None:
-            unit_string = contribution
-
-        else:
-            unit_string += ' * {}'.format(contribution)
-
-    return unit_string
+    return f"{input_unit:peleffy_simple}"
 
 
 def quantity_to_string(input_quantity):
     """
-    Serialize a simtk.unit.Quantity to a string.
+    Serialize a openff.units.unit.Quantity to a string.
 
     Function modified from the OpenFF Toolkit
     (https://github.com/openforcefield/openforcefield/).
 
     Parameters
     ----------
-    input_quantity : simtk.unit.Quantity
+    input_quantity : openff.units.unit.Quantity
         The quantity to serialize
 
     Returns
@@ -162,21 +167,20 @@ def quantity_to_string(input_quantity):
     output_string : str
         The serialized quantity
     """
-
     import numpy as np
 
     if input_quantity is None:
         return None
 
-    unitless_value = input_quantity.value_in_unit(input_quantity.unit)
+    unitless_value = input_quantity.m_as(input_quantity.units)
 
     # The string representation of a numpy array doesn't have commas and
     # breaks the parser, thus we convert any arrays to list here
     if isinstance(unitless_value, np.ndarray):
         unitless_value = list(unitless_value)
 
-    unit_string = unit_to_string(input_quantity.unit)
-    output_string = '{} * {}'.format(unitless_value, unit_string)
+    unit_string = unit_to_string(input_quantity.units)
+    output_string = "{} * {}".format(unitless_value, unit_string)
 
     return output_string
 
@@ -197,7 +201,7 @@ def convert_all_quantities_to_string(data_structure):
     Returns
     -------
     converted_data_structure : dict
-        A hierarchical dict structured with simtk.unit.Quantitys
+        A hierarchical dict structured with openff.units.unit.Quantity
         converted to string
     """
     from copy import copy
@@ -258,7 +262,7 @@ def _ast_eval(node):
     elif isinstance(node, ast.UnaryOp):  # <operator> <operand> e.g., -1
         return operators[type(node.op)](_ast_eval(node.operand))
     elif isinstance(node, ast.Name):
-        # see if this is a simtk unit
+        # see if this is a openff unit
         b = getattr(unit, node.id)
         return b
     elif isinstance(node, ast.List):
@@ -281,7 +285,7 @@ def string_to_quantity(quantity_string):
 
     Returns
     -------
-    output_quantity : simtk.unit.Quantity
+    output_quantity : openff.units.unit.Quantity
         The deserialized quantity
     """
     import ast

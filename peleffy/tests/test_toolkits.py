@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 from peleffy.forcefield.parameters import OPLS2005ParameterWrapper
-from simtk import unit
+from openff.units import unit
 
 
 FORCEFIELD_NAME = 'openff_unconstrained-1.2.0.offxml'

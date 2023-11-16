@@ -5,7 +5,7 @@ This module contains the tests to check peleffy's parameters.
 import pytest
 
 import tempfile
-from simtk import unit
+from openff.units import unit
 import numpy as np
 
 from .utils import (SET_OF_LIGAND_PATHS, apply_PELE_dihedral_equation,
@@ -1013,7 +1013,7 @@ class TestSolventParameters(object):
         the OPLSParameters collection.
         """
 
-        from simtk import unit
+        from openff.units import unit
         from peleffy.forcefield.parameters import OPLS2005ParameterWrapper
 
         # Using a standard atom type

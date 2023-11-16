@@ -12,7 +12,7 @@ from pathlib import Path
 from copy import deepcopy
 
 import numpy as np
-from simtk import unit
+from openff.units import unit
 
 from peleffy.utils import temporary_cd
 
@@ -1043,8 +1043,7 @@ class AmberToolkitWrapper(ToolkitWrapper):
 
         with tempfile.TemporaryDirectory() as tmpdir:
             with temporary_cd(tmpdir):
-                net_charge = off_molecule.total_charge / \
-                             unit.elementary_charge
+                net_charge = int(off_molecule.total_charge.magnitude)
 
                 self._rdkit_toolkit_wrapper.to_sdf_file(
                     molecule, tmpdir + '/molecule.sdf')

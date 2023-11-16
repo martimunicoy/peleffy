@@ -3,7 +3,7 @@ This module defines the basic topology elements of a molecule.
 """
 
 
-from simtk import unit
+from openff.units import unit
 
 
 class _TopologyElement(object):
@@ -219,19 +219,19 @@ class Atom(_TopologyElement):
             The y coordinate of the atom
         z : float
             The z coordinate of the atom
-        sigma : simtk.unit.Quantity
+        sigma : openff.units.unit.Quantity
             The sigma parameter of the atom
-        epsilon : simtk.unit.Quantity
+        epsilon : openff.units.unit.Quantity
             The epsilon parameter of the atom
-        charge : simtk.unit.Quantity
+        charge : openff.units.unit.Quantity
             The partial charge parameter of the atom
-        born_radius : simtk.unit.Quantity
+        born_radius : openff.units.unit.Quantity
             The SGB born parameter radius of the atom
-        SASA_radius : simtk.unit.Quantity
+        SASA_radius : openff.units.unit.Quantity
             The SASA radius parameter of the atom
-        nonpolar_gamma : simtk.unit.Quantity
+        nonpolar_gamma : openff.units.unit.Quantity
             The nonpolar gamma parameter of the atom
-        nonpolar_alpha : simtk.unit.Quantity
+        nonpolar_alpha : openff.units.unit.Quantity
             The nonpolar alpha parameter of the atom
         parent : peleffy.topology.Atom
             The parent of the atom
@@ -512,7 +512,7 @@ class Atom(_TopologyElement):
 
         Returns
         -------
-        sigma : simtk.unit.Quantity
+        sigma : openff.units.unit.Quantity
             The sigma parameter of this Atom object
         """
         return self._sigma
@@ -524,7 +524,7 @@ class Atom(_TopologyElement):
 
         Returns
         -------
-        epsilon : simtk.unit.Quantity
+        epsilon : openff.units.unit.Quantity
             The epsilon parameter of this Atom object
         """
         return self._epsilon
@@ -536,7 +536,7 @@ class Atom(_TopologyElement):
 
         Returns
         -------
-        charge : simtk.unit.Quantity
+        charge : openff.units.unit.Quantity
             The charge parameter of this Atom object
         """
         return self._charge
@@ -548,7 +548,7 @@ class Atom(_TopologyElement):
 
         Returns
         -------
-        born_radius : simtk.unit.Quantity
+        born_radius : openff.units.unit.Quantity
             The SGB Born radius parameter of this Atom object
         """
         return self._born_radius
@@ -560,7 +560,7 @@ class Atom(_TopologyElement):
 
         Returns
         -------
-        SASA_radius : simtk.unit.Quantity
+        SASA_radius : openff.units.unit.Quantity
             The SASA radius parameter of this Atom object
         """
         return self._SASA_radius
@@ -572,7 +572,7 @@ class Atom(_TopologyElement):
 
         Returns
         -------
-        nonpolar_gamma : simtk.unit.Quantity
+        nonpolar_gamma : openff.units.unit.Quantity
             The nonpolar gamma parameter of this Atom object
         """
         return self._nonpolar_gamma
@@ -584,7 +584,7 @@ class Atom(_TopologyElement):
 
         Returns
         -------
-        nonpolar_alpha : simtk.unit.Quantity
+        nonpolar_alpha : openff.units.unit.Quantity
             The nonpolar alpha parameter of this Atom object
         """
         return self._nonpolar_alpha
@@ -649,9 +649,9 @@ class Bond(_TopologyElement):
             The index of the first atom involved in this Bond
         atom2_idx : int
             The index of the second atom involved in this Bond
-        spring_constant : simtk.unit.Quantity
+        spring_constant : openff.units.unit.Quantity
             The spring constant of this Bond
-        eq_dist : simtk.unit.Quantity
+        eq_dist : openff.units.unit.Quantity
             The equilibrium distance of this Bond
         """
         self._index = index
@@ -736,7 +736,7 @@ class Bond(_TopologyElement):
 
         Returns
         -------
-        spring_constant : simtk.unit.Quantity
+        spring_constant : openff.units.unit.Quantity
             The spring constant of this Bond object
         """
         return self._spring_constant
@@ -748,7 +748,7 @@ class Bond(_TopologyElement):
 
         Returns
         -------
-        eq_dist : simtk.unit.Quantity
+        eq_dist : openff.units.unit.Quantity
             The equilibrium distance of this Bond object
         """
         return self._eq_dist
@@ -779,9 +779,9 @@ class Angle(_TopologyElement):
             The index of the second atom involved in this Angle
         atom3_idx : int
             The index of the third atom involved in this Angle
-        spring_constant : simtk.unit.Quantity
+        spring_constant : openff.units.unit.Quantity
             The spring constant of this Angle
-        eq_angle : simtk.unit.Quantity
+        eq_angle : openff.units.unit.Quantity
             The equilibrium angle of this Angle
         """
         self._index = index
@@ -890,7 +890,7 @@ class Angle(_TopologyElement):
 
         Returns
         -------
-        spring_constant : simtk.unit.Quantity
+        spring_constant : openff.units.unit.Quantity
             The spring constant of this Angle object
         """
         return self._spring_constant
@@ -902,7 +902,7 @@ class Angle(_TopologyElement):
 
         Returns
         -------
-        eq_angle : simtk.unit.Quantity
+        eq_angle : openff.units.unit.Quantity
             The equilibrium angle of this Angle object
         """
         return self._eq_angle
@@ -939,9 +939,9 @@ class Dihedral(_TopologyElement):
             The periodicity of this Dihedral
         prefactor : int
             The prefactor of this Dihedral
-        constant : simtk.unit.Quantity
+        constant : openff.units.unit.Quantity
             The constant of this Dihedral
-        phase : simtk.unit.Quantity
+        phase : openff.units.unit.Quantity
             The phase constant of this Dihedral
         """
         self._index = index
@@ -1115,7 +1115,7 @@ class Dihedral(_TopologyElement):
 
         Returns
         -------
-        constant : unit.simtk.Quantity
+        constant : openff.units.unit.Quantity
             The constant of this Dihedral object
         """
         return self._constant
@@ -1127,7 +1127,7 @@ class Dihedral(_TopologyElement):
 
         Returns
         -------
-        phase : unit.simtk.Quantity
+        phase : openff.units.unit.Quantity
             The phase constant of this Dihedral object
         """
         return self._phase
@@ -1200,9 +1200,9 @@ class OFFDihedral(_TopologyElement):
             The index of the fourth atom involved in this Dihedral
         periodicity : int
             The periodicity of this Dihedral
-        phase : simtk.unit.Quantity
+        phase : openff.units.unit.Quantity
             The phase of this Dihedral
-        k : simtk.unit.Quantity
+        k : openff.units.unit.Quantity
             The constant of this Dihedral
         idivf : int
             The idivf of this Dihedral
@@ -1253,7 +1253,7 @@ class OFFDihedral(_TopologyElement):
 
         PELE_phase = self.phase
 
-        if self.phase.value_in_unit(unit.degree) == 180:
+        if self.phase.to(unit.degree) == 180:
             PELE_prefactor = -1
             PELE_phase = unit.Quantity(value=0.0, unit=unit.degree)
         else:
@@ -1320,7 +1320,7 @@ class OFFProper(OFFDihedral):
 
         # The next version of PELE will be compatible with phase values
         # other than 0 and 180 degrees to fully cover all OpenFF dihedrals
-        # assert self.phase.value_in_unit(unit.degree) in (0, 180), \
+        # assert self.phase.to(unit.degree) in (0, 180), \
         #     'Expected values for phase are 0 or 180, obtained ' \
         #     '{}'.format(self.phase)
 
@@ -1351,6 +1351,6 @@ class OFFImproper(OFFDihedral):
             'for periodicity are 1, 2, 3, 4, 5 or 6, obtained ' \
             '{}'.format(self.periodicity)
 
-        assert self.phase.value_in_unit(unit.degree) in (0, 180), \
+        assert self.phase.to(unit.degree).magnitude in (0, 180), \
             'Expected values for phase are 0 or 180 in impropers, ' \
             'obtained {}'.format(self.phase)

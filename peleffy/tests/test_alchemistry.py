@@ -1643,39 +1643,39 @@ class TestAlchemistry(object):
             improper_constants2.append(improper.constant)
 
         for sigma1, sigma2 in zip(sigmas1, sigmas2):
-            assert sigma2 - sigma1 < 1e-5, \
+            assert sigma2.magnitude - sigma1.magnitude < 1e-5, \
                 'Unexpected ratio between sigmas'
 
         for epsilon1, epsilon2 in zip(epsilons1, epsilons2):
-            assert epsilon2 - epsilon1 < 1e-5, \
+            assert epsilon2.magnitude - epsilon1.magnitude < 1e-5, \
                 'Unexpected ratio between epsilons'
 
         for SASA_radius1, SASA_radius2 in zip(SASA_radii1, SASA_radii2):
-            assert SASA_radius2 - SASA_radius1 < 1e-5, \
+            assert SASA_radius2.magnitude - SASA_radius1.magnitude < 1e-5, \
                 'Unexpected ratio between SASA radii'
 
         for charge1, charge2 in zip(charges1, charges2):
-            assert charge2 - charge1 < 1e-5, \
+            assert charge2.magnitude - charge1.magnitude < 1e-5, \
                 'Unexpected ratio between charges'
 
         for bond_sc1, bond_sc2 in zip(bond_spring_constants1,
                                       bond_spring_constants2):
-            assert bond_sc2 - bond_sc1 < 1e-5, \
+            assert bond_sc2.magnitude - bond_sc1.magnitude < 1e-5, \
                 'Unexpected ratio between bond spring constants'
 
         for angle_sc1, angle_sc2 in zip(angle_spring_constants1,
                                         angle_spring_constants2):
-            assert angle_sc2 - angle_sc1 < 1e-5, \
+            assert angle_sc2.magnitude - angle_sc1.magnitude < 1e-5, \
                 'Unexpected ratio between angle spring constants'
 
         for proper_c1, proper_c2 in zip(proper_constants1,
                                         proper_constants2):
-            assert proper_c2 - proper_c1 < 1e-5, \
+            assert proper_c2.magnitude - proper_c1.magnitude < 1e-5, \
                 'Unexpected ratio between proper constants'
 
         for improper_c1, improper_c2 in zip(improper_constants1,
                                             improper_constants2):
-            assert improper_c2 - improper_c1 < 1e-5, \
+            assert improper_c2.magnitude - improper_c1.magnitude < 1e-5, \
                 'Unexpected ratio between improper constants'
 
         top = alchemizer.get_alchemical_topology(fep_lambda=0.0,
@@ -1749,39 +1749,39 @@ class TestAlchemistry(object):
             improper_constants2.append(improper.constant)
 
         for sigma1, sigma2 in zip(sigmas1, sigmas2):
-            assert sigma2 - sigma1 < 1e-5, \
+            assert sigma2.magnitude - sigma1.magnitude < 1e-5, \
                 'Unexpected ratio between sigmas'
 
         for epsilon1, epsilon2 in zip(epsilons1, epsilons2):
-            assert epsilon2 - epsilon1 < 1e-5, \
+            assert epsilon2.magnitude - epsilon1.magnitude < 1e-5, \
                 'Unexpected ratio between epsilons'
 
         for SASA_radius1, SASA_radius2 in zip(SASA_radii1, SASA_radii2):
-            assert SASA_radius2 - SASA_radius1 < 1e-5, \
+            assert SASA_radius2.magnitude - SASA_radius1.magnitude < 1e-5, \
                 'Unexpected ratio between SASA radii'
 
         for charge1, charge2 in zip(charges1, charges2):
-            assert (charge2 / charge1) - 0.8 < 1e-5, \
+            assert (charge2.magnitude / charge1.magnitude) - 0.8 < 1e-5, \
                 'Unexpected ratio between charges'
 
         for bond_sc1, bond_sc2 in zip(bond_spring_constants1,
                                       bond_spring_constants2):
-            assert bond_sc2 - bond_sc1 < 1e-5, \
+            assert bond_sc2.magnitude - bond_sc1.magnitude < 1e-5, \
                 'Unexpected ratio between bond spring constants'
 
         for angle_sc1, angle_sc2 in zip(angle_spring_constants1,
                                         angle_spring_constants2):
-            assert angle_sc2 - angle_sc1 < 1e-5, \
+            assert angle_sc2.magnitude - angle_sc1.magnitude < 1e-5, \
                 'Unexpected ratio between angle spring constants'
 
         for proper_c1, proper_c2 in zip(proper_constants1,
                                         proper_constants2):
-            assert proper_c2 - proper_c1 < 1e-5, \
+            assert proper_c2.magnitude - proper_c1.magnitude < 1e-5, \
                 'Unexpected ratio between proper constants'
 
         for improper_c1, improper_c2 in zip(improper_constants1,
                                             improper_constants2):
-            assert improper_c2 - improper_c1 < 1e-5, \
+            assert improper_c2.magnitude - improper_c1.magnitude < 1e-5, \
                 'Unexpected ratio between improper constants'
 
         top = alchemizer.get_alchemical_topology(fep_lambda=0.0,
@@ -1920,60 +1920,60 @@ class TestAlchemistry(object):
                 improper_constants3.append(improper.constant)
 
         for sigma1, sigma2, sigma3 in zip(sigmas1, sigmas2, sigmas3):
-            assert sigma1 - sigma2 < 1e-5, \
+            assert sigma1.magnitude - sigma2.magnitude < 1e-5, \
                 'Unexpected ratio between sigmas'
-            assert sigma1 - sigma3 < 1e-5, \
+            assert sigma1.magnitude - sigma3.magnitude < 1e-5, \
                 'Unexpected ratio between sigmas'
 
         for epsilon1, epsilon2, epsilon3 in zip(epsilons1, epsilons2, epsilons3):
-            assert epsilon1 - epsilon2 < 1e-5, \
+            assert epsilon1.magnitude - epsilon2.magnitude < 1e-5, \
                 'Unexpected ratio between epsilons'
-            assert epsilon1 - epsilon3 < 1e-5, \
+            assert epsilon1.magnitude - epsilon3.magnitude < 1e-5, \
                 'Unexpected ratio between epsilons'
 
         for radius1, radius2, radius3 in zip(SASA_radii1, SASA_radii2,
                                              SASA_radii3):
-            assert radius1 - radius2 < 1e-5, \
+            assert radius1.magnitude - radius2.magnitude < 1e-5, \
                 'Unexpected ratio between SASA radii'
-            assert radius1 - radius3 < 1e-5, \
+            assert radius1.magnitude - radius3.magnitude < 1e-5, \
                 'Unexpected ratio between SASA radii'
 
         for charge1, charge2, charge3 in zip(charges1, charges2, charges3):
-            assert charge1 - charge2 < 1e-5, \
+            assert charge1.magnitude - charge2.magnitude < 1e-5, \
                 'Unexpected ratio between charges'
-            assert charge1 - charge3 < 1e-5, \
+            assert charge1.magnitude - charge3.magnitude < 1e-5, \
                 'Unexpected ratio between charges'
 
         for bond_sc1, bond_sc2, bond_sc3 in zip(bond_spring_constants1,
                                                 bond_spring_constants2,
                                                 bond_spring_constants3):
-            assert bond_sc1 - bond_sc2 < 1e-5, \
+            assert bond_sc1.magnitude - bond_sc2.magnitude < 1e-5, \
                 'Unexpected ratio between bond spring constants'
-            assert bond_sc1 - bond_sc3 < 1e-5, \
+            assert bond_sc1.magnitude - bond_sc3.magnitude < 1e-5, \
                 'Unexpected ratio between bond spring constants'
 
         for angle_sc1, angle_sc2, angle_sc3 in zip(angle_spring_constants1,
                                                    angle_spring_constants2,
                                                    angle_spring_constants3):
-            assert angle_sc1 - angle_sc2 < 1e-5, \
+            assert angle_sc1.magnitude - angle_sc2.magnitude < 1e-5, \
                 'Unexpected ratio between angle spring constants'
-            assert angle_sc1 - angle_sc3 < 1e-5, \
+            assert angle_sc1.magnitude - angle_sc3.magnitude < 1e-5, \
                 'Unexpected ratio between angle spring constants'
 
         for proper_c1, proper_c2, proper_c3 in zip(proper_constants1,
                                                    proper_constants2,
                                                    proper_constants3):
-            assert proper_c1 - proper_c2 < 1e-5, \
+            assert proper_c1.magnitude - proper_c2.magnitude < 1e-5, \
                 'Unexpected ratio between proper constants'
-            assert proper_c1 - proper_c3 < 1e-5, \
+            assert proper_c1.magnitude - proper_c3.magnitude < 1e-5, \
                 'Unexpected ratio between proper constants'
 
         for improper_c1, improper_c2, improper_c3 in zip(improper_constants1,
                                                          improper_constants2,
                                                          improper_constants3):
-            assert improper_c1 - improper_c2 < 1e-5, \
+            assert improper_c1.magnitude - improper_c2.magnitude < 1e-5, \
                 'Unexpected ratio between improper constants'
-            assert improper_c1 - improper_c3 < 1e-5, \
+            assert improper_c1.magnitude - improper_c3.magnitude < 1e-5, \
                 'Unexpected ratio between improper constants'
 
     def test_vdw_lambda(self):

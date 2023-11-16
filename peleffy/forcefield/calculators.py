@@ -3,7 +3,8 @@ This module contains different parameter calculators for force fields.
 """
 
 
-from simtk import unit
+from openff.units import unit
+
 
 from peleffy.utils.toolkits import ToolkitUnavailableException
 

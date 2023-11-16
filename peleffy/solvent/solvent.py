@@ -3,7 +3,7 @@ This module contains classes and functions involved in the manipulation of
 PELE's solvent templates.
 """
 
-from simtk import unit
+from openff.units import unit
 
 from peleffy.utils import get_data_file_path
 from peleffy.utils import Logger
@@ -170,9 +170,9 @@ class _OpenFFCompatibleSolvent(_SolventWrapper):
         data['SolventParameters']['General']['solute_dielectric'] = \
             round(self.solute_dielectric, 5)
         data['SolventParameters']['General']['solvent_radius'] = \
-            round(self.solvent_radius.value_in_unit(unit.angstrom), 5)
+            round(self.solvent_radius.to(unit.angstrom), 5)
         data['SolventParameters']['General']['surface_area_penalty'] = \
-            round(self.surface_area_penalty.value_in_unit(
+            round(self.surface_area_penalty.to(
                 unit.kilocalorie / (unit.angstrom**2 * unit.mole)), 8)
 
         for topology, radii, scales in zip(self._topologies,
@@ -185,7 +185,7 @@ class _OpenFFCompatibleSolvent(_SolventWrapper):
                 name = name.replace(' ', '_')
                 data['SolventParameters'][topology.molecule.tag][name] = \
                     {'radius': round(radii[tuple((index, ))]
-                                     .value_in_unit(unit.angstrom), 5),
+                                     .to(unit.angstrom), 5),
                      'scale': round(scales[tuple((index, ))], 5)}
         return data
 

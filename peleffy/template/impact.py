@@ -5,7 +5,7 @@ template.
 
 from copy import deepcopy
 
-from simtk import unit
+from openff.units import unit
 
 from peleffy.topology import Atom, Bond, Angle, Proper, Improper
 from peleffy.topology import ZMatrix
@@ -1018,7 +1018,7 @@ class WritableWrapper(object):
         """
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
-            return out.value_in_unit(unit.angstrom)
+            return out.to(unit.angstrom)
         return function_wrapper
 
     @staticmethod
@@ -1038,7 +1038,7 @@ class WritableWrapper(object):
         """
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
-            return out.value_in_unit(unit.kilocalorie / unit.mole)
+            return out.to(unit.kilocalorie / unit.mole)
         return function_wrapper
 
     @staticmethod
@@ -1058,7 +1058,7 @@ class WritableWrapper(object):
         """
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
-            return out.value_in_unit(unit.elementary_charge)
+            return out.to(unit.elementary_charge)
         return function_wrapper
 
     @staticmethod
@@ -1078,8 +1078,8 @@ class WritableWrapper(object):
         """
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
-            return out.value_in_unit(unit.kilocalorie
-                                     / (unit.radian**2 * unit.mole))
+            return out.to(unit.kilocalorie
+                          / (unit.radian**2 * unit.mole))
         return function_wrapper
 
     @staticmethod
@@ -1099,7 +1099,7 @@ class WritableWrapper(object):
         """
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
-            return out.value_in_unit(unit.degree)
+            return out.to(unit.degree)
         return function_wrapper
 
     @staticmethod
@@ -1119,8 +1119,8 @@ class WritableWrapper(object):
         """
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
-            return out.value_in_unit(unit.kilocalorie
-                                     / (unit.angstrom**2 * unit.mole))
+            return out.to(unit.kilocalorie
+                          / (unit.angstrom**2 * unit.mole))
         return function_wrapper
 
 

@@ -4,7 +4,7 @@ This module contains a variety of helpful tools for tests.
 
 
 import numpy as np
-from simtk import unit
+from openff.units import unit
 
 from peleffy.forcefield.forcefield import _BaseForceField
 
@@ -62,7 +62,7 @@ def check_CHO_charges(parameters):
     """
 
     for name, charge in zip(parameters['atom_names'], parameters['charges']):
-        charge = charge.value_in_unit(unit.elementary_charge)
+        charge = charge.to(unit.elementary_charge)
 
         if 'C' in name:
             assert charge < 1.0 and charge > -0.23, \
@@ -97,6 +97,7 @@ def compare_dicts(dict1, dict2):
         AssertionError
             If any difference is found between dictionaries
     """
+    import json
 
     assert len(dict1) == len(dict2), 'Number of keys does not match, ' \
         + 'dictionary1: {}, dictionary2: {}'.format(len(dict1), len(dict2))
@@ -109,11 +110,29 @@ def compare_dicts(dict1, dict2):
         assert key in dict1.keys(), 'Key \'{}\' from '.format(key) \
             + 'dictionary2 not found in dictionary1'
 
-    for key, value in dict1.items():
+    try:
+        for key, value in dict1.items():
+
+            if not isinstance(value)
+            yaml_string1 = value.replace("'", "\"")
+            yaml_string2 = dict2[key].replace("'", "\"")
+
+            yaml_data1 = yaml.safe_load(yaml_string1)
+            yaml_data2 = yaml.safe_load(yaml_string2)
+            
+            compare_dicts(yaml_data1, yaml_data2)
+
+    except json.decoder.JSONDecodeError:
         assert value == dict2[key], 'Value for key \'{}\' '.format(key) \
             + 'does not match between dictionaries, ' \
             + 'dictionary1: {}, dictionary2: {}'.format(value, dict2[key])
 
+    for key, value in dict1.items():
+        yaml_data1 = yaml.safe_load(value)
+        yaml_data2 = yaml.safe_load(dict2[key])
+
+        compare_dicts(yaml_data1, yaml_data2)
+        
 
 def merge_dicts(*dict_args):
     """
