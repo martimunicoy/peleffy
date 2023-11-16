@@ -178,38 +178,38 @@ package manager.</p>
 <a class="reference external" href="http://conda.pydata.org/miniconda.html">miniconda</a> distribution, which is
 the minimal installation of the Anaconda Python package.</p>
 <p>To install the Python 3 version on <code class="docutils literal notranslate"><span class="pre">linux</span></code> (on <code class="docutils literal notranslate"><span class="pre">bash</span></code> systems):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-$ bash ./Miniconda3-latest-Linux-x86_64.sh -b -p <span class="nv">$HOME</span>/miniconda3
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>wget<span class="w"> </span>https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+$<span class="w"> </span>bash<span class="w"> </span>./Miniconda3-latest-Linux-x86_64.sh<span class="w"> </span>-b<span class="w"> </span>-p<span class="w"> </span><span class="nv">$HOME</span>/miniconda3
 </pre></div>
 </div>
 <p>It can also be installed on <code class="docutils literal notranslate"><span class="pre">osx</span></code> with:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O
-$ bash ./Miniconda3-latest-MacOSX-x86_64.sh -b -p <span class="nv">$HOME</span>/miniconda3
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>curl<span class="w"> </span>https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh<span class="w"> </span>-O
+$<span class="w"> </span>bash<span class="w"> </span>./Miniconda3-latest-MacOSX-x86_64.sh<span class="w"> </span>-b<span class="w"> </span>-p<span class="w"> </span><span class="nv">$HOME</span>/miniconda3
 </pre></div>
 </div>
 <p>Once installed, the bases environment of <cite>conda</cite> can be loaded with
 the following commands:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">source</span> ~/miniconda3/etc/profile.d/conda.sh
-$ conda activate base
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">source</span><span class="w"> </span>~/miniconda3/etc/profile.d/conda.sh
+$<span class="w"> </span>conda<span class="w"> </span>activate<span class="w"> </span>base
 </pre></div>
 </div>
 <p>You can also create a custom conda environment to handle peleffy:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda create --name peleffy_env
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>peleffy_env
 </pre></div>
 </div>
 <p>which can be activated and deactivated with the two commands from below:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda activate peleffy_env
-$ conda deactivate
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>conda<span class="w"> </span>activate<span class="w"> </span>peleffy_env
+$<span class="w"> </span>conda<span class="w"> </span>deactivate
 </pre></div>
 </div>
 <p>To install de dependencies of peleffy, the following <cite>conda</cite> channels need
 to be added and updated:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda config --add channels omnia --add channels conda-forge --add channels martimunicoy
-$ conda update --all
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>conda<span class="w"> </span>config<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>omnia<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>conda-forge<span class="w"> </span>--add<span class="w"> </span>channels<span class="w"> </span>martimunicoy
+$<span class="w"> </span>conda<span class="w"> </span>update<span class="w"> </span>--all
 </pre></div>
 </div>
 <p>Finally, you can install the latest stable build of <cite>peleffy</cite></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda install peleffy
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>peleffy
 </pre></div>
 </div>
 </div>
@@ -217,7 +217,7 @@ $ conda update --all
 <h2>Installing via <cite>PyPI</cite><a class="headerlink" href="#installing-via-pypi" title="Permalink to this headline">¶</a></h2>
 <p><cite>peleffy</cite> can also be installed through <a class="reference external" href="https://pypi.org">PyPI</a>
 with the following command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install peleffy
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>peleffy
 </pre></div>
 </div>
 <p>However, with <cite>PyPI</cite> some of the required dependencies of <cite>peleffy</cite> are not
@@ -245,12 +245,12 @@ MacOS. Once installed, <cite>peleffy</cite> will need an environment variable to
 set in order to known the Schrodinger’s installation path. So, please,
 check that the following environment variable is set before running
 <cite>peleffy</cite> if you plant to work with <cite>OPLS2005</cite> parameters:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">SCHRODINGER</span><span class="o">=</span>/path/to/Schrodinger/installation/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">SCHRODINGER</span><span class="o">=</span>/path/to/Schrodinger/installation/
 </pre></div>
 </div>
 <p>For example, in MacOS, a typical installation path is
 <cite>/opt/schrodinger/suites2020-2/</cite>. Therefore:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">SCHRODINGER</span><span class="o">=</span>/opt/schrodinger/suites2020-2/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">SCHRODINGER</span><span class="o">=</span>/opt/schrodinger/suites2020-2/
 </pre></div>
 </div>
 <p>This variable must be set every time <cite>peleffy</cite> is employed to work with

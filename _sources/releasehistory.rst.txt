@@ -8,6 +8,37 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
+1.4.5 - Corrections for alchemistry
+-----------------------------------
+
+This is a micro release of peleffy that contains corrections for alchemistry module.
+
+Bugfixes
+""""""""
+- `PR #180 <https://github.com/martimunicoy/peleffy/pull/180>`_: bug fixes for alchemical topologies
+
+
+1.4.4 - Corrections for alchemistry and new charge calculator
+-------------------------------------------------------------
+
+This is a micro release of peleffy that contains corrections for alchemistry module. A new charge calculator
+called Mulliken is also available.
+
+New features
+""""""""""""
+- `PR #174 <https://github.com/martimunicoy/peleffy/pull/174>`_: minor fix in the logger to prevent conflicts with external loggers
+- `PR #176 <https://github.com/martimunicoy/peleffy/pull/176>`_: new charge calculator called Mulliken
+- `PR #177 <https://github.com/martimunicoy/peleffy/pull/177>`_: new method to save alchemical mapping as a PNG file
+
+Bugfixes
+""""""""
+- `PR #177 <https://github.com/martimunicoy/peleffy/pull/177>`_: bug fixes for alchemical solvent templates and affected tests
+
+Tests added
+"""""""""""
+- `PR #176 <https://github.com/martimunicoy/peleffy/pull/176>`_: new tests to validate the new charge calculator
+
+
 1.4.3 - Minor improvements for CLI arguments and ffld_server
 ------------------------------------------------------------
 

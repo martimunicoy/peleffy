@@ -159,17 +159,7 @@
            <div itemprop="articleBody">
             
   <h1>Source code for networkx.classes.graph</h1><div class="highlight"><pre>
-<span></span><span class="c1">#    Copyright (C) 2004-2019 by</span>
-<span class="c1">#    Aric Hagberg &lt;hagberg@lanl.gov&gt;</span>
-<span class="c1">#    Dan Schult &lt;dschult@colgate.edu&gt;</span>
-<span class="c1">#    Pieter Swart &lt;swart@lanl.gov&gt;</span>
-<span class="c1">#    All rights reserved.</span>
-<span class="c1">#    BSD license.</span>
-<span class="c1">#</span>
-<span class="c1"># Author:  Aric Hagberg (hagberg@lanl.gov),</span>
-<span class="c1">#          Pieter Swart (swart@lanl.gov),</span>
-<span class="c1">#          Dan Schult(dschult@colgate.edu)</span>
-<span class="sd">&quot;&quot;&quot;Base class for undirected graphs.</span>
+<span></span><span class="sd">&quot;&quot;&quot;Base class for undirected graphs.</span>
 
 <span class="sd">The Graph class allows any hashable object as a node</span>
 <span class="sd">and can associate key/value attribute pairs with each undirected edge.</span>
@@ -178,21 +168,19 @@
 
 <span class="sd">For directed graphs see DiGraph and MultiDiGraph.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Mapping</span>
 
 <span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
-<span class="kn">from</span> <span class="nn">networkx.classes.coreviews</span> <span class="kn">import</span> <span class="n">AtlasView</span><span class="p">,</span> <span class="n">AdjacencyView</span>
+<span class="kn">from</span> <span class="nn">networkx.classes.coreviews</span> <span class="kn">import</span> <span class="n">AdjacencyView</span>
 <span class="kn">from</span> <span class="nn">networkx.classes.reportviews</span> <span class="kn">import</span> <span class="n">NodeView</span><span class="p">,</span> <span class="n">EdgeView</span><span class="p">,</span> <span class="n">DegreeView</span>
 <span class="kn">from</span> <span class="nn">networkx.exception</span> <span class="kn">import</span> <span class="n">NetworkXError</span>
 <span class="kn">import</span> <span class="nn">networkx.convert</span> <span class="k">as</span> <span class="nn">convert</span>
-<span class="kn">from</span> <span class="nn">networkx.utils</span> <span class="kn">import</span> <span class="n">pairwise</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Graph&quot;</span><span class="p">]</span>
 
 
-<span class="k">class</span> <span class="nc">Graph</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="k">class</span> <span class="nc">Graph</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for undirected graphs.</span>
 
 <span class="sd">    A Graph stores nodes and edges with optional data, or attributes.</span>
@@ -201,7 +189,7 @@
 <span class="sd">    (parallel) edges are not.</span>
 
 <span class="sd">    Nodes can be arbitrary (hashable) Python objects with optional</span>
-<span class="sd">    key/value attributes. By convention `None` is not used as a node.</span>
+<span class="sd">    key/value attributes, except that `None` is not allowed as a node.</span>
 
 <span class="sd">    Edges are represented as links between nodes with optional</span>
 <span class="sd">    key/value attributes.</span>
@@ -212,8 +200,8 @@
 <span class="sd">        Data to initialize graph. If None (default) an empty</span>
 <span class="sd">        graph is created.  The data can be any format that is supported</span>
 <span class="sd">        by the to_networkx_graph() function, currently including edge list,</span>
-<span class="sd">        dict of dicts, dict of lists, NetworkX graph, NumPy matrix</span>
-<span class="sd">        or 2d ndarray, SciPy sparse matrix, or PyGraphviz graph.</span>
+<span class="sd">        dict of dicts, dict of lists, NetworkX graph, 2D NumPy array, SciPy</span>
+<span class="sd">        sparse matrix, or PyGraphviz graph.</span>
 
 <span class="sd">    attr : keyword arguments, optional (default= no attributes)</span>
 <span class="sd">        Attributes to add to graph as key=value pairs.</span>
@@ -288,23 +276,23 @@
 
 <span class="sd">    Add node attributes using add_node(), add_nodes_from() or G.nodes</span>
 
-<span class="sd">    &gt;&gt;&gt; G.add_node(1, time=&#39;5pm&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; G.add_nodes_from([3], time=&#39;2pm&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_node(1, time=&quot;5pm&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_nodes_from([3], time=&quot;2pm&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; G.nodes[1]</span>
 <span class="sd">    {&#39;time&#39;: &#39;5pm&#39;}</span>
-<span class="sd">    &gt;&gt;&gt; G.nodes[1][&#39;room&#39;] = 714  # node must exist already to use G.nodes</span>
-<span class="sd">    &gt;&gt;&gt; del G.nodes[1][&#39;room&#39;]  # remove attribute</span>
+<span class="sd">    &gt;&gt;&gt; G.nodes[1][&quot;room&quot;] = 714  # node must exist already to use G.nodes</span>
+<span class="sd">    &gt;&gt;&gt; del G.nodes[1][&quot;room&quot;]  # remove attribute</span>
 <span class="sd">    &gt;&gt;&gt; list(G.nodes(data=True))</span>
 <span class="sd">    [(1, {&#39;time&#39;: &#39;5pm&#39;}), (3, {&#39;time&#39;: &#39;2pm&#39;})]</span>
 
 <span class="sd">    Add edge attributes using add_edge(), add_edges_from(), subscript</span>
 <span class="sd">    notation, or G.edges.</span>
 
-<span class="sd">    &gt;&gt;&gt; G.add_edge(1, 2, weight=4.7 )</span>
-<span class="sd">    &gt;&gt;&gt; G.add_edges_from([(3, 4), (4, 5)], color=&#39;red&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; G.add_edges_from([(1, 2, {&#39;color&#39;: &#39;blue&#39;}), (2, 3, {&#39;weight&#39;: 8})])</span>
-<span class="sd">    &gt;&gt;&gt; G[1][2][&#39;weight&#39;] = 4.7</span>
-<span class="sd">    &gt;&gt;&gt; G.edges[1, 2][&#39;weight&#39;] = 4</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edge(1, 2, weight=4.7)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edges_from([(3, 4), (4, 5)], color=&quot;red&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; G.add_edges_from([(1, 2, {&quot;color&quot;: &quot;blue&quot;}), (2, 3, {&quot;weight&quot;: 8})])</span>
+<span class="sd">    &gt;&gt;&gt; G[1][2][&quot;weight&quot;] = 4.7</span>
+<span class="sd">    &gt;&gt;&gt; G.edges[1, 2][&quot;weight&quot;] = 4</span>
 
 <span class="sd">    Warning: we protect the graph data structure by making `G.edges` a</span>
 <span class="sd">    read-only dict-like structure. However, you can assign to attributes</span>
@@ -316,7 +304,7 @@
 
 <span class="sd">    Many common graph features allow python syntax to speed reporting.</span>
 
-<span class="sd">    &gt;&gt;&gt; 1 in G     # check if node in graph</span>
+<span class="sd">    &gt;&gt;&gt; 1 in G  # check if node in graph</span>
 <span class="sd">    True</span>
 <span class="sd">    &gt;&gt;&gt; [n for n in G if n &lt; 3]  # iterate through nodes</span>
 <span class="sd">    [1, 2]</span>
@@ -328,13 +316,13 @@
 
 <span class="sd">    &gt;&gt;&gt; for n, nbrsdict in G.adjacency():</span>
 <span class="sd">    ...     for nbr, eattr in nbrsdict.items():</span>
-<span class="sd">    ...        if &#39;weight&#39; in eattr:</span>
-<span class="sd">    ...            # Do something useful with the edges</span>
-<span class="sd">    ...            pass</span>
+<span class="sd">    ...         if &quot;weight&quot; in eattr:</span>
+<span class="sd">    ...             # Do something useful with the edges</span>
+<span class="sd">    ...             pass</span>
 
 <span class="sd">    But the edges() method is often more convenient:</span>
 
-<span class="sd">    &gt;&gt;&gt; for u, v, weight in G.edges.data(&#39;weight&#39;):</span>
+<span class="sd">    &gt;&gt;&gt; for u, v, weight in G.edges.data(&quot;weight&quot;):</span>
 <span class="sd">    ...     if weight is not None:</span>
 <span class="sd">    ...         # Do something useful with the edges</span>
 <span class="sd">    ...         pass</span>
@@ -344,8 +332,8 @@
 <span class="sd">    Simple graph information is obtained using object-attributes and methods.</span>
 <span class="sd">    Reporting typically provides views instead of containers to reduce memory</span>
 <span class="sd">    usage. The views update as the graph is updated similarly to dict-views.</span>
-<span class="sd">    The objects `nodes, `edges` and `adj` provide access to data attributes</span>
-<span class="sd">    via lookup (e.g. `nodes[n], `edges[u, v]`, `adj[u][v]`) and iteration</span>
+<span class="sd">    The objects `nodes`, `edges` and `adj` provide access to data attributes</span>
+<span class="sd">    via lookup (e.g. `nodes[n]`, `edges[u, v]`, `adj[u][v]`) and iteration</span>
 <span class="sd">    (e.g. `nodes.items()`, `nodes.data(&#39;color&#39;)`,</span>
 <span class="sd">    `nodes.data(&#39;color&#39;, default=&#39;blue&#39;)` and similarly for `edges`)</span>
 <span class="sd">    Views exist for `nodes`, `edges`, `neighbors()`/`adj` and `degree`.</span>
@@ -364,9 +352,7 @@
 <span class="sd">    dict-like object. In general, the dict-like features should be</span>
 <span class="sd">    maintained but extra features can be added. To replace one of the</span>
 <span class="sd">    dicts create a new graph class by changing the class(!) variable</span>
-<span class="sd">    holding the factory for that dict-like structure. The variable names are</span>
-<span class="sd">    node_dict_factory, node_attr_dict_factory, adjlist_inner_dict_factory,</span>
-<span class="sd">    adjlist_outer_dict_factory, edge_attr_dict_factory and graph_attr_dict_factory.</span>
+<span class="sd">    holding the factory for that dict-like structure.</span>
 
 <span class="sd">    node_dict_factory : function, (default: dict)</span>
 <span class="sd">        Factory function to be used to create the dict containing node</span>
@@ -412,17 +398,18 @@
 <span class="sd">        Class to create a new graph structure in the `to_undirected` method.</span>
 <span class="sd">        If `None`, a NetworkX class (Graph or MultiGraph) is used.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
+<span class="sd">    **Subclassing Example**</span>
 
 <span class="sd">    Create a low memory graph class that effectively disallows edge</span>
 <span class="sd">    attributes by using a single attribute dict for all edges.</span>
 <span class="sd">    This reduces the memory used, but you lose edge attributes.</span>
 
 <span class="sd">    &gt;&gt;&gt; class ThinGraph(nx.Graph):</span>
-<span class="sd">    ...     all_edge_dict = {&#39;weight&#39;: 1}</span>
+<span class="sd">    ...     all_edge_dict = {&quot;weight&quot;: 1}</span>
+<span class="sd">    ...</span>
 <span class="sd">    ...     def single_edge_dict(self):</span>
 <span class="sd">    ...         return self.all_edge_dict</span>
+<span class="sd">    ...</span>
 <span class="sd">    ...     edge_attr_dict_factory = single_edge_dict</span>
 <span class="sd">    &gt;&gt;&gt; G = ThinGraph()</span>
 <span class="sd">    &gt;&gt;&gt; G.add_edge(2, 1)</span>
@@ -436,6 +423,7 @@
 <span class="sd">    creating graph subclasses by overwriting the base class `dict` with</span>
 <span class="sd">    a dictionary-like object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">node_dict_factory</span> <span class="o">=</span> <span class="nb">dict</span>
     <span class="n">node_attr_dict_factory</span> <span class="o">=</span> <span class="nb">dict</span>
     <span class="n">adjlist_outer_dict_factory</span> <span class="o">=</span> <span class="nb">dict</span>
@@ -444,7 +432,7 @@
     <span class="n">graph_attr_dict_factory</span> <span class="o">=</span> <span class="nb">dict</span>
 
     <span class="k">def</span> <span class="nf">to_directed_class</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the class to use for empty directed copies.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the class to use for empty directed copies.</span>
 
 <span class="sd">        If you subclass the base classes, use this to designate</span>
 <span class="sd">        what directed class to use for `to_directed()` copies.</span>
@@ -452,7 +440,7 @@
         <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span>
 
     <span class="k">def</span> <span class="nf">to_undirected_class</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the class to use for empty undirected copies.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the class to use for empty undirected copies.</span>
 
 <span class="sd">        If you subclass the base classes, use this to designate</span>
 <span class="sd">        what directed class to use for `to_directed()` copies.</span>
@@ -460,7 +448,7 @@
         <span class="k">return</span> <span class="n">Graph</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">incoming_graph_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initialize a graph with edges, name, or graph attributes.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a graph with edges, name, or graph attributes.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -468,8 +456,8 @@
 <span class="sd">            Data to initialize graph. If None (default) an empty</span>
 <span class="sd">            graph is created.  The data can be an edge list, or any</span>
 <span class="sd">            NetworkX graph object.  If the corresponding optional Python</span>
-<span class="sd">            packages are installed the data can also be a NumPy matrix</span>
-<span class="sd">            or 2d ndarray, a SciPy sparse matrix, or a PyGraphviz graph.</span>
+<span class="sd">            packages are installed the data can also be a 2D NumPy array, a</span>
+<span class="sd">            SciPy sparse matrix, or a PyGraphviz graph.</span>
 
 <span class="sd">        attr : keyword arguments, optional (default= no attributes)</span>
 <span class="sd">            Attributes to add to graph as key=value pairs.</span>
@@ -481,7 +469,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc</span>
-<span class="sd">        &gt;&gt;&gt; G = nx.Graph(name=&#39;my graph&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.Graph(name=&quot;my graph&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; e = [(1, 2), (2, 3), (3, 4)]  # list of edges</span>
 <span class="sd">        &gt;&gt;&gt; G = nx.Graph(e)</span>
 
@@ -499,7 +487,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">adjlist_inner_dict_factory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjlist_inner_dict_factory</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">edge_attr_dict_factory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_attr_dict_factory</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_attr_dict_factory</span><span class="p">()</span>   <span class="c1"># dictionary for graph attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph_attr_dict_factory</span><span class="p">()</span>  <span class="c1"># dictionary for graph attributes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_dict_factory</span><span class="p">()</span>  <span class="c1"># empty node attribute dict</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjlist_outer_dict_factory</span><span class="p">()</span>  <span class="c1"># empty adjacency dict</span>
         <span class="c1"># attempt to load graph with data</span>
@@ -510,7 +498,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">adj</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Graph adjacency object holding the neighbors of each node.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Graph adjacency object holding the neighbors of each node.</span>
 
 <span class="sd">        This object is a read-only dict-like structure with node keys</span>
 <span class="sd">        and neighbor-dict values.  The neighbor-dict is keyed by neighbor</span>
@@ -529,36 +517,47 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;String identifier of the graph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;String identifier of the graph.</span>
 
 <span class="sd">        This graph attribute appears in the attribute dict G.graph</span>
 <span class="sd">        keyed by the string `&quot;name&quot;`. as well as an attribute (technically</span>
 <span class="sd">        a property) `G.name`. This is entirely user controlled.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 
     <span class="nd">@name</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the graph name.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a short summary of the graph.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        name : string</span>
-<span class="sd">            The name of the graph.</span>
+<span class="sd">        info : string</span>
+<span class="sd">            Graph information as provided by `nx.info`</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; G = nx.Graph(name=&#39;foo&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.Graph(name=&quot;foo&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; str(G)</span>
-<span class="sd">        &#39;foo&#39;</span>
+<span class="sd">        &quot;Graph named &#39;foo&#39; with 0 nodes and 0 edges&quot;</span>
+
+<span class="sd">        &gt;&gt;&gt; G = nx.path_graph(3)</span>
+<span class="sd">        &gt;&gt;&gt; str(G)</span>
+<span class="sd">        &#39;Graph with 3 nodes and 2 edges&#39;</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot; named </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot; with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span><span class="si">}</span><span class="s2"> nodes and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span><span class="si">}</span><span class="s2"> edges&quot;</span><span class="p">,</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Iterate over the nodes. Use: &#39;for n in G&#39;.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Iterate over the nodes. Use: &#39;for n in G&#39;.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -576,7 +575,7 @@
         <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns True if n is a node, False otherwise. Use: &#39;n in G&#39;.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if n is a node, False otherwise. Use: &#39;n in G&#39;.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -590,12 +589,17 @@
             <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the number of nodes. Use: &#39;len(G)&#39;.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the number of nodes in the graph. Use: &#39;len(G)&#39;.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        nnodes : int</span>
 <span class="sd">            The number of nodes in the graph.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        number_of_nodes: identical method</span>
+<span class="sd">        order: identical method</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -607,7 +611,7 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns a dict of neighbors of node n.  Use: &#39;G[n]&#39;.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a dict of neighbors of node n.  Use: &#39;G[n]&#39;.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -633,7 +637,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">add_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_for_adding</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add a single node `node_for_adding` and update node attributes.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a single node `node_for_adding` and update node attributes.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -650,7 +654,7 @@
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc</span>
 <span class="sd">        &gt;&gt;&gt; G.add_node(1)</span>
-<span class="sd">        &gt;&gt;&gt; G.add_node(&#39;Hello&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; G.add_node(&quot;Hello&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; K3 = nx.Graph([(0, 1), (1, 2), (2, 0)])</span>
 <span class="sd">        &gt;&gt;&gt; G.add_node(K3)</span>
 <span class="sd">        &gt;&gt;&gt; G.number_of_nodes()</span>
@@ -659,7 +663,7 @@
 <span class="sd">        Use keywords set/change node attributes:</span>
 
 <span class="sd">        &gt;&gt;&gt; G.add_node(1, size=10)</span>
-<span class="sd">        &gt;&gt;&gt; G.add_node(3, weight=0.4, UTM=(&#39;13S&#39;, 382871, 3972649))</span>
+<span class="sd">        &gt;&gt;&gt; G.add_node(3, weight=0.4, UTM=(&quot;13S&quot;, 382871, 3972649))</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -672,6 +676,8 @@
 <span class="sd">        doesn&#39;t change on mutables.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">node_for_adding</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">node_for_adding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;None cannot be a node&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">node_for_adding</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjlist_inner_dict_factory</span><span class="p">()</span>
             <span class="n">attr_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">node_for_adding</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_attr_dict_factory</span><span class="p">()</span>
             <span class="n">attr_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
@@ -679,7 +685,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">node_for_adding</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">add_nodes_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes_for_adding</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add multiple nodes.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add multiple nodes.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -700,7 +706,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc</span>
-<span class="sd">        &gt;&gt;&gt; G.add_nodes_from(&#39;Hello&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; G.add_nodes_from(&quot;Hello&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; K3 = nx.Graph([(0, 1), (1, 2), (2, 0)])</span>
 <span class="sd">        &gt;&gt;&gt; G.add_nodes_from(K3)</span>
 <span class="sd">        &gt;&gt;&gt; sorted(G.nodes(), key=str)</span>
@@ -713,41 +719,33 @@
 
 <span class="sd">        Use (node, attrdict) tuples to update attributes for specific nodes.</span>
 
-<span class="sd">        &gt;&gt;&gt; G.add_nodes_from([(1, dict(size=11)), (2, {&#39;color&#39;:&#39;blue&#39;})])</span>
-<span class="sd">        &gt;&gt;&gt; G.nodes[1][&#39;size&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; G.add_nodes_from([(1, dict(size=11)), (2, {&quot;color&quot;: &quot;blue&quot;})])</span>
+<span class="sd">        &gt;&gt;&gt; G.nodes[1][&quot;size&quot;]</span>
 <span class="sd">        11</span>
 <span class="sd">        &gt;&gt;&gt; H = nx.Graph()</span>
 <span class="sd">        &gt;&gt;&gt; H.add_nodes_from(G.nodes(data=True))</span>
-<span class="sd">        &gt;&gt;&gt; H.nodes[1][&#39;size&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; H.nodes[1][&quot;size&quot;]</span>
 <span class="sd">        11</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes_for_adding</span><span class="p">:</span>
-            <span class="c1"># keep all this inside try/except because</span>
-            <span class="c1"># CPython throws TypeError on n not in self._node,</span>
-            <span class="c1"># while pre-2.7.5 ironpython throws on self._adj[n]</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjlist_inner_dict_factory</span><span class="p">()</span>
-                    <span class="n">attr_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_attr_dict_factory</span><span class="p">()</span>
-                    <span class="n">attr_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+                <span class="n">newnode</span> <span class="o">=</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span>
+                <span class="n">newdict</span> <span class="o">=</span> <span class="n">attr</span>
             <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-                <span class="n">nn</span><span class="p">,</span> <span class="n">ndict</span> <span class="o">=</span> <span class="n">n</span>
-                <span class="k">if</span> <span class="n">nn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">nn</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjlist_inner_dict_factory</span><span class="p">()</span>
-                    <span class="n">newdict</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-                    <span class="n">newdict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ndict</span><span class="p">)</span>
-                    <span class="n">attr_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">nn</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_attr_dict_factory</span><span class="p">()</span>
-                    <span class="n">attr_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">newdict</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">olddict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">nn</span><span class="p">]</span>
-                    <span class="n">olddict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
-                    <span class="n">olddict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ndict</span><span class="p">)</span>
+                <span class="n">n</span><span class="p">,</span> <span class="n">ndict</span> <span class="o">=</span> <span class="n">n</span>
+                <span class="n">newnode</span> <span class="o">=</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span>
+                <span class="n">newdict</span> <span class="o">=</span> <span class="n">attr</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">newdict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ndict</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">newnode</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;None cannot be a node&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjlist_inner_dict_factory</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_attr_dict_factory</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">newdict</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">remove_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove node n.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove node n.</span>
 
 <span class="sd">        Removes the node n and all adjacent edges.</span>
 <span class="sd">        Attempting to remove a non-existent node will raise an exception.</span>
@@ -758,7 +756,7 @@
 <span class="sd">           A node in the graph</span>
 
 <span class="sd">        Raises</span>
-<span class="sd">        -------</span>
+<span class="sd">        ------</span>
 <span class="sd">        NetworkXError</span>
 <span class="sd">           If n is not in the graph.</span>
 
@@ -780,14 +778,14 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">nbrs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>  <span class="c1"># list handles self-loops (allows mutation)</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
-        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>  <span class="c1"># NetworkXError if n not in self</span>
-            <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;The node </span><span class="si">%s</span><span class="s2"> is not in the graph.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">n</span><span class="p">,))</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>  <span class="c1"># NetworkXError if n not in self</span>
+            <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The node </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> is not in the graph.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
         <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">nbrs</span><span class="p">:</span>
-            <span class="k">del</span> <span class="n">adj</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">n</span><span class="p">]</span>   <span class="c1"># remove all edges n-u in graph</span>
-        <span class="k">del</span> <span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>          <span class="c1"># now remove node</span>
+            <span class="k">del</span> <span class="n">adj</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">n</span><span class="p">]</span>  <span class="c1"># remove all edges n-u in graph</span>
+        <span class="k">del</span> <span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>  <span class="c1"># now remove node</span>
 
     <span class="k">def</span> <span class="nf">remove_nodes_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove multiple nodes.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove multiple nodes.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -815,7 +813,7 @@
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
-                <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">]):</span>   <span class="c1"># list handles self-loops</span>
+                <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">]):</span>  <span class="c1"># list handles self-loops</span>
                     <span class="k">del</span> <span class="n">adj</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">n</span><span class="p">]</span>  <span class="c1"># (allows mutation of dict in loop)</span>
                 <span class="k">del</span> <span class="n">adj</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -823,7 +821,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;A NodeView of the Graph as G.nodes or G.nodes().</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A NodeView of the Graph as G.nodes or G.nodes().</span>
 
 <span class="sd">        Can be used as `G.nodes` for data lookup and for set-like operations.</span>
 <span class="sd">        Can also be used as `G.nodes(data=&#39;color&#39;, default=None)` to return a</span>
@@ -877,26 +875,26 @@
 
 <span class="sd">        To get the node data along with the nodes:</span>
 
-<span class="sd">        &gt;&gt;&gt; G.add_node(1, time=&#39;5pm&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; G.nodes[0][&#39;foo&#39;] = &#39;bar&#39;</span>
+<span class="sd">        &gt;&gt;&gt; G.add_node(1, time=&quot;5pm&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; G.nodes[0][&quot;foo&quot;] = &quot;bar&quot;</span>
 <span class="sd">        &gt;&gt;&gt; list(G.nodes(data=True))</span>
 <span class="sd">        [(0, {&#39;foo&#39;: &#39;bar&#39;}), (1, {&#39;time&#39;: &#39;5pm&#39;}), (2, {})]</span>
 <span class="sd">        &gt;&gt;&gt; list(G.nodes.data())</span>
 <span class="sd">        [(0, {&#39;foo&#39;: &#39;bar&#39;}), (1, {&#39;time&#39;: &#39;5pm&#39;}), (2, {})]</span>
 
-<span class="sd">        &gt;&gt;&gt; list(G.nodes(data=&#39;foo&#39;))</span>
+<span class="sd">        &gt;&gt;&gt; list(G.nodes(data=&quot;foo&quot;))</span>
 <span class="sd">        [(0, &#39;bar&#39;), (1, None), (2, None)]</span>
-<span class="sd">        &gt;&gt;&gt; list(G.nodes.data(&#39;foo&#39;))</span>
+<span class="sd">        &gt;&gt;&gt; list(G.nodes.data(&quot;foo&quot;))</span>
 <span class="sd">        [(0, &#39;bar&#39;), (1, None), (2, None)]</span>
 
-<span class="sd">        &gt;&gt;&gt; list(G.nodes(data=&#39;time&#39;))</span>
+<span class="sd">        &gt;&gt;&gt; list(G.nodes(data=&quot;time&quot;))</span>
 <span class="sd">        [(0, None), (1, &#39;5pm&#39;), (2, None)]</span>
-<span class="sd">        &gt;&gt;&gt; list(G.nodes.data(&#39;time&#39;))</span>
+<span class="sd">        &gt;&gt;&gt; list(G.nodes.data(&quot;time&quot;))</span>
 <span class="sd">        [(0, None), (1, &#39;5pm&#39;), (2, None)]</span>
 
-<span class="sd">        &gt;&gt;&gt; list(G.nodes(data=&#39;time&#39;, default=&#39;Not Available&#39;))</span>
+<span class="sd">        &gt;&gt;&gt; list(G.nodes(data=&quot;time&quot;, default=&quot;Not Available&quot;))</span>
 <span class="sd">        [(0, &#39;Not Available&#39;), (1, &#39;5pm&#39;), (2, &#39;Not Available&#39;)]</span>
-<span class="sd">        &gt;&gt;&gt; list(G.nodes.data(&#39;time&#39;, default=&#39;Not Available&#39;))</span>
+<span class="sd">        &gt;&gt;&gt; list(G.nodes.data(&quot;time&quot;, default=&quot;Not Available&quot;))</span>
 <span class="sd">        [(0, &#39;Not Available&#39;), (1, &#39;5pm&#39;), (2, &#39;Not Available&#39;)]</span>
 
 <span class="sd">        If some of your nodes have an attribute and the rest are assumed</span>
@@ -908,7 +906,7 @@
 <span class="sd">            &gt;&gt;&gt; G.add_node(0)</span>
 <span class="sd">            &gt;&gt;&gt; G.add_node(1, weight=2)</span>
 <span class="sd">            &gt;&gt;&gt; G.add_node(2, weight=3)</span>
-<span class="sd">            &gt;&gt;&gt; dict(G.nodes(data=&#39;weight&#39;, default=1))</span>
+<span class="sd">            &gt;&gt;&gt; dict(G.nodes(data=&quot;weight&quot;, default=1))</span>
 <span class="sd">            {0: 1, 1: 2, 2: 3}</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -916,47 +914,11 @@
         <span class="c1"># Lazy View creation: overload the (class) property on the instance</span>
         <span class="c1"># Then future G.nodes use the existing View</span>
         <span class="c1"># setattr doesn&#39;t work because attribute already exists</span>
-        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;nodes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodes</span>
         <span class="k">return</span> <span class="n">nodes</span>
 
-    <span class="c1"># for backwards compatibility with 1.x, will be removed for 3.x</span>
-    <span class="n">node</span> <span class="o">=</span> <span class="n">nodes</span>
-
-    <span class="k">def</span> <span class="nf">add_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">):</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;add_path is deprecated. Use nx.add_path instead.&quot;</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">add_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">add_cycle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">):</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;add_cycle is deprecated. Use nx.add_cycle instead.&quot;</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">add_cycle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">add_star</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">):</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;add_star is deprecated. Use nx.add_star instead.&quot;</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">add_star</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">nodes_with_selfloops</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;nodes_with_selfloops is deprecated.&quot;</span> \
-              <span class="s2">&quot;Use nx.nodes_with_selfloops instead.&quot;</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">nodes_with_selfloops</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">number_of_selfloops</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;number_of_selfloops is deprecated.&quot;</span> \
-              <span class="s2">&quot;Use nx.number_of_selfloops instead.&quot;</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">number_of_selfloops</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">selfloop_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;selfloop_edges is deprecated. Use nx.selfloop_edges instead.&quot;</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">selfloop_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
-    <span class="c1"># Done with backward compatibility methods for 1.x</span>
-
     <span class="k">def</span> <span class="nf">number_of_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the number of nodes in the graph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the number of nodes in the graph.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -965,18 +927,19 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        order, __len__  which are identical</span>
+<span class="sd">        order: identical method</span>
+<span class="sd">        __len__: identical method</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; G = nx.path_graph(3)  # or DiGraph, MultiGraph, MultiDiGraph, etc</span>
-<span class="sd">        &gt;&gt;&gt; len(G)</span>
+<span class="sd">        &gt;&gt;&gt; G.number_of_nodes()</span>
 <span class="sd">        3</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">order</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the number of nodes in the graph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the number of nodes in the graph.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -985,13 +948,19 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        number_of_nodes, __len__  which are identical</span>
+<span class="sd">        number_of_nodes: identical method</span>
+<span class="sd">        __len__: identical method</span>
 
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.path_graph(3)  # or DiGraph, MultiGraph, MultiDiGraph, etc</span>
+<span class="sd">        &gt;&gt;&gt; G.order()</span>
+<span class="sd">        3</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">has_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns True if the graph contains the node n.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if the graph contains the node n.</span>
 
 <span class="sd">        Identical to `n in G`</span>
 
@@ -1017,7 +986,7 @@
             <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u_of_edge</span><span class="p">,</span> <span class="n">v_of_edge</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add an edge between u and v.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an edge between u and v.</span>
 
 <span class="sd">        The nodes u and v will be automatically added if they are</span>
 <span class="sd">        not already in the graph.</span>
@@ -1027,7 +996,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        u, v : nodes</span>
+<span class="sd">        u_of_edge, v_of_edge : nodes</span>
 <span class="sd">            Nodes can be, for example, strings or numbers.</span>
 <span class="sd">            Nodes must be hashable (and not None) Python objects.</span>
 <span class="sd">        attr : keyword arguments, optional</span>
@@ -1049,10 +1018,10 @@
 <span class="sd">        --------</span>
 <span class="sd">        The following all add the edge e=(1, 2) to graph G:</span>
 
-<span class="sd">        &gt;&gt;&gt; G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc</span>
 <span class="sd">        &gt;&gt;&gt; e = (1, 2)</span>
-<span class="sd">        &gt;&gt;&gt; G.add_edge(1, 2)           # explicit two-node form</span>
-<span class="sd">        &gt;&gt;&gt; G.add_edge(*e)             # single edge as tuple of two nodes</span>
+<span class="sd">        &gt;&gt;&gt; G.add_edge(1, 2)  # explicit two-node form</span>
+<span class="sd">        &gt;&gt;&gt; G.add_edge(*e)  # single edge as tuple of two nodes</span>
 <span class="sd">        &gt;&gt;&gt; G.add_edges_from([(1, 2)])  # add edges from iterable container</span>
 
 <span class="sd">        Associate data to edges using keywords:</span>
@@ -1069,9 +1038,13 @@
         <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">u_of_edge</span><span class="p">,</span> <span class="n">v_of_edge</span>
         <span class="c1"># add nodes</span>
         <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">u</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;None cannot be a node&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjlist_inner_dict_factory</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_attr_dict_factory</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;None cannot be a node&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjlist_inner_dict_factory</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_attr_dict_factory</span><span class="p">()</span>
         <span class="c1"># add the edge</span>
@@ -1081,13 +1054,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="n">datadict</span>
 
     <span class="k">def</span> <span class="nf">add_edges_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ebunch_to_add</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add all the edges in ebunch_to_add.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add all the edges in ebunch_to_add.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        ebunch_to_add : container of edges</span>
 <span class="sd">            Each edge given in the container will be added to the</span>
-<span class="sd">            graph. The edges must be given as as 2-tuples (u, v) or</span>
+<span class="sd">            graph. The edges must be given as 2-tuples (u, v) or</span>
 <span class="sd">            3-tuples (u, v, d) where d is a dictionary containing edge data.</span>
 <span class="sd">        attr : keyword arguments, optional</span>
 <span class="sd">            Edge data (or labels or objects) can be assigned using</span>
@@ -1108,15 +1081,15 @@
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc</span>
-<span class="sd">        &gt;&gt;&gt; G.add_edges_from([(0, 1), (1, 2)]) # using a list of edge tuples</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc</span>
+<span class="sd">        &gt;&gt;&gt; G.add_edges_from([(0, 1), (1, 2)])  # using a list of edge tuples</span>
 <span class="sd">        &gt;&gt;&gt; e = zip(range(0, 3), range(1, 4))</span>
-<span class="sd">        &gt;&gt;&gt; G.add_edges_from(e) # Add the path graph 0-1-2-3</span>
+<span class="sd">        &gt;&gt;&gt; G.add_edges_from(e)  # Add the path graph 0-1-2-3</span>
 
 <span class="sd">        Associate data to edges</span>
 
 <span class="sd">        &gt;&gt;&gt; G.add_edges_from([(1, 2), (2, 3)], weight=3)</span>
-<span class="sd">        &gt;&gt;&gt; G.add_edges_from([(3, 4), (1, 4)], label=&#39;WN2898&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; G.add_edges_from([(3, 4), (1, 4)], label=&quot;WN2898&quot;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">ebunch_to_add</span><span class="p">:</span>
             <span class="n">ne</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
@@ -1126,12 +1099,15 @@
                 <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">e</span>
                 <span class="n">dd</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># doesn&#39;t need edge_attr_dict_factory</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span>
-                    <span class="s2">&quot;Edge tuple </span><span class="si">%s</span><span class="s2"> must be a 2-tuple or 3-tuple.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">e</span><span class="p">,))</span>
+                <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Edge tuple </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> must be a 2-tuple or 3-tuple.&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">u</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;None cannot be a node&quot;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjlist_inner_dict_factory</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_attr_dict_factory</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">v</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;None cannot be a node&quot;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adjlist_inner_dict_factory</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_attr_dict_factory</span><span class="p">()</span>
             <span class="n">datadict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">u</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_attr_dict_factory</span><span class="p">())</span>
@@ -1140,8 +1116,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">datadict</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">u</span><span class="p">]</span> <span class="o">=</span> <span class="n">datadict</span>
 
-    <span class="k">def</span> <span class="nf">add_weighted_edges_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ebunch_to_add</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s1">&#39;weight&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Add weighted edges in `ebunch_to_add` with specified weight attr</span>
+    <span class="k">def</span> <span class="nf">add_weighted_edges_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ebunch_to_add</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add weighted edges in `ebunch_to_add` with specified weight attr</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1167,14 +1143,13 @@
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc</span>
 <span class="sd">        &gt;&gt;&gt; G.add_weighted_edges_from([(0, 1, 3.0), (1, 2, 7.5)])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="p">{</span><span class="n">weight</span><span class="p">:</span> <span class="n">d</span><span class="p">})</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ebunch_to_add</span><span class="p">),</span>
-                            <span class="o">**</span><span class="n">attr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="p">{</span><span class="n">weight</span><span class="p">:</span> <span class="n">d</span><span class="p">})</span> <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">ebunch_to_add</span><span class="p">),</span> <span class="o">**</span><span class="n">attr</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">remove_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove the edge between u and v.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove the edge between u and v.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1195,19 +1170,19 @@
 <span class="sd">        &gt;&gt;&gt; G = nx.path_graph(4)  # or DiGraph, etc</span>
 <span class="sd">        &gt;&gt;&gt; G.remove_edge(0, 1)</span>
 <span class="sd">        &gt;&gt;&gt; e = (1, 2)</span>
-<span class="sd">        &gt;&gt;&gt; G.remove_edge(*e) # unpacks e from an edge tuple</span>
-<span class="sd">        &gt;&gt;&gt; e = (2, 3, {&#39;weight&#39;:7}) # an edge with attribute data</span>
-<span class="sd">        &gt;&gt;&gt; G.remove_edge(*e[:2]) # select first part of edge tuple</span>
+<span class="sd">        &gt;&gt;&gt; G.remove_edge(*e)  # unpacks e from an edge tuple</span>
+<span class="sd">        &gt;&gt;&gt; e = (2, 3, {&quot;weight&quot;: 7})  # an edge with attribute data</span>
+<span class="sd">        &gt;&gt;&gt; G.remove_edge(*e[:2])  # select first part of edge tuple</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">u</span><span class="p">][</span><span class="n">v</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">u</span> <span class="o">!=</span> <span class="n">v</span><span class="p">:</span>  <span class="c1"># self-loop needs only one entry removed</span>
                 <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">u</span><span class="p">]</span>
-        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;The edge </span><span class="si">%s</span><span class="s2">-</span><span class="si">%s</span><span class="s2"> is not in the graph&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The edge </span><span class="si">{</span><span class="n">u</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2"> is not in the graph&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
 
     <span class="k">def</span> <span class="nf">remove_edges_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ebunch</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove all edges specified in ebunch.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove all edges specified in ebunch.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1229,7 +1204,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc</span>
-<span class="sd">        &gt;&gt;&gt; ebunch=[(1, 2), (2, 3)]</span>
+<span class="sd">        &gt;&gt;&gt; ebunch = [(1, 2), (2, 3)]</span>
 <span class="sd">        &gt;&gt;&gt; G.remove_edges_from(ebunch)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">adj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span>
@@ -1241,10 +1216,10 @@
                     <span class="k">del</span> <span class="n">adj</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">u</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Update the graph using nodes/edges/graphs as input.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the graph using nodes/edges/graphs as input.</span>
 
 <span class="sd">        Like dict.update, this method takes a graph as input, adding the</span>
-<span class="sd">        graph&#39;s noes and edges to this graph. It can also take two inputs:</span>
+<span class="sd">        graph&#39;s nodes and edges to this graph. It can also take two inputs:</span>
 <span class="sd">        edges and nodes. Finally it can take either edges or nodes.</span>
 <span class="sd">        To specify only nodes the keyword `nodes` must be used.</span>
 
@@ -1271,11 +1246,13 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; G = nx.path_graph(5)</span>
-<span class="sd">        &gt;&gt;&gt; G.update(nx.complete_graph(range(4,10)))</span>
+<span class="sd">        &gt;&gt;&gt; G.update(nx.complete_graph(range(4, 10)))</span>
 <span class="sd">        &gt;&gt;&gt; from itertools import combinations</span>
-<span class="sd">        &gt;&gt;&gt; edges = ((u, v, {&#39;power&#39;: u * v})</span>
-<span class="sd">        ...          for u, v in combinations(range(10, 20), 2)</span>
-<span class="sd">        ...          if u * v &lt; 225)</span>
+<span class="sd">        &gt;&gt;&gt; edges = (</span>
+<span class="sd">        ...     (u, v, {&quot;power&quot;: u * v})</span>
+<span class="sd">        ...     for u, v in combinations(range(10, 20), 2)</span>
+<span class="sd">        ...     if u * v &lt; 225</span>
+<span class="sd">        ... )</span>
 <span class="sd">        &gt;&gt;&gt; nodes = [1000]  # for singleton, use a container</span>
 <span class="sd">        &gt;&gt;&gt; G.update(edges, nodes)</span>
 
@@ -1284,24 +1261,30 @@
 <span class="sd">        It you want to update the graph using an adjacency structure</span>
 <span class="sd">        it is straightforward to obtain the edges/nodes from adjacency.</span>
 <span class="sd">        The following examples provide common cases, your adjacency may</span>
-<span class="sd">        be slightly different and require tweaks of these examples.</span>
+<span class="sd">        be slightly different and require tweaks of these examples::</span>
 
 <span class="sd">        &gt;&gt;&gt; # dict-of-set/list/tuple</span>
 <span class="sd">        &gt;&gt;&gt; adj = {1: {2, 3}, 2: {1, 3}, 3: {1, 2}}</span>
-<span class="sd">        &gt;&gt;&gt; e = [(u, v) for u, nbrs in adj.items() for v in  nbrs]</span>
+<span class="sd">        &gt;&gt;&gt; e = [(u, v) for u, nbrs in adj.items() for v in nbrs]</span>
 <span class="sd">        &gt;&gt;&gt; G.update(edges=e, nodes=adj)</span>
 
 <span class="sd">        &gt;&gt;&gt; DG = nx.DiGraph()</span>
 <span class="sd">        &gt;&gt;&gt; # dict-of-dict-of-attribute</span>
 <span class="sd">        &gt;&gt;&gt; adj = {1: {2: 1.3, 3: 0.7}, 2: {1: 1.4}, 3: {1: 0.7}}</span>
-<span class="sd">        &gt;&gt;&gt; e = [(u, v, {&#39;weight&#39;: d}) for u, nbrs in adj.items()</span>
-<span class="sd">        ...      for v, d in nbrs.items()]</span>
+<span class="sd">        &gt;&gt;&gt; e = [</span>
+<span class="sd">        ...     (u, v, {&quot;weight&quot;: d})</span>
+<span class="sd">        ...     for u, nbrs in adj.items()</span>
+<span class="sd">        ...     for v, d in nbrs.items()</span>
+<span class="sd">        ... ]</span>
 <span class="sd">        &gt;&gt;&gt; DG.update(edges=e, nodes=adj)</span>
 
 <span class="sd">        &gt;&gt;&gt; # dict-of-dict-of-dict</span>
-<span class="sd">        &gt;&gt;&gt; adj = {1: {2: {&#39;weight&#39;: 1.3}, 3: {&#39;color&#39;: 0.7, &#39;weight&#39;:1.2}}}</span>
-<span class="sd">        &gt;&gt;&gt; e = [(u, v, {&#39;weight&#39;: d}) for u, nbrs in adj.items()</span>
-<span class="sd">        ...      for v, d in nbrs.items()]</span>
+<span class="sd">        &gt;&gt;&gt; adj = {1: {2: {&quot;weight&quot;: 1.3}, 3: {&quot;color&quot;: 0.7, &quot;weight&quot;: 1.2}}}</span>
+<span class="sd">        &gt;&gt;&gt; e = [</span>
+<span class="sd">        ...     (u, v, {&quot;weight&quot;: d})</span>
+<span class="sd">        ...     for u, nbrs in adj.items()</span>
+<span class="sd">        ...     for v, d in nbrs.items()</span>
+<span class="sd">        ... ]</span>
 <span class="sd">        &gt;&gt;&gt; DG.update(edges=e, nodes=adj)</span>
 
 <span class="sd">        &gt;&gt;&gt; # predecessor adjacency (dict-of-set)</span>
@@ -1310,11 +1293,16 @@
 
 <span class="sd">        &gt;&gt;&gt; # MultiGraph dict-of-dict-of-dict-of-attribute</span>
 <span class="sd">        &gt;&gt;&gt; MDG = nx.MultiDiGraph()</span>
-<span class="sd">        &gt;&gt;&gt; adj = {1: {2: {0: {&#39;weight&#39;: 1.3}, 1: {&#39;weight&#39;: 1.2}}},</span>
-<span class="sd">        ...        3: {2: {0: {&#39;weight&#39;: 0.7}}}}</span>
-<span class="sd">        &gt;&gt;&gt; e = [(u, v, ekey, d) for u, nbrs in adj.items()</span>
-<span class="sd">        ...      for v, keydict in nbrs.items()</span>
-<span class="sd">        ...      for ekey, d in keydict.items()]</span>
+<span class="sd">        &gt;&gt;&gt; adj = {</span>
+<span class="sd">        ...     1: {2: {0: {&quot;weight&quot;: 1.3}, 1: {&quot;weight&quot;: 1.2}}},</span>
+<span class="sd">        ...     3: {2: {0: {&quot;weight&quot;: 0.7}}},</span>
+<span class="sd">        ... }</span>
+<span class="sd">        &gt;&gt;&gt; e = [</span>
+<span class="sd">        ...     (u, v, ekey, d)</span>
+<span class="sd">        ...     for u, nbrs in adj.items()</span>
+<span class="sd">        ...     for v, keydict in nbrs.items()</span>
+<span class="sd">        ...     for ekey, d in keydict.items()</span>
+<span class="sd">        ... ]</span>
 <span class="sd">        &gt;&gt;&gt; MDG.update(edges=e)</span>
 
 <span class="sd">        See Also</span>
@@ -1344,7 +1332,7 @@
             <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;update needs nodes or edges input&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">has_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns True if the edge (u, v) is in the graph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if the edge (u, v) is in the graph.</span>
 
 <span class="sd">        This is the same as `v in G[u]` without KeyError exceptions.</span>
 
@@ -1367,7 +1355,7 @@
 <span class="sd">        &gt;&gt;&gt; e = (0, 1)</span>
 <span class="sd">        &gt;&gt;&gt; G.has_edge(*e)  #  e is a 2-tuple (u, v)</span>
 <span class="sd">        True</span>
-<span class="sd">        &gt;&gt;&gt; e = (0, 1, {&#39;weight&#39;:7})</span>
+<span class="sd">        &gt;&gt;&gt; e = (0, 1, {&quot;weight&quot;: 7})</span>
 <span class="sd">        &gt;&gt;&gt; G.has_edge(*e[:2])  # e is a 3-tuple (u, v, data_dictionary)</span>
 <span class="sd">        True</span>
 
@@ -1385,7 +1373,7 @@
             <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">neighbors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns an iterator over all neighbors of node n.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an iterator over all neighbors of node n.</span>
 
 <span class="sd">        This is identical to `iter(G[n])`</span>
 
@@ -1412,12 +1400,11 @@
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-<span class="sd">        It is usually more convenient (and faster) to access the</span>
-<span class="sd">        adjacency dictionary as ``G[n]``:</span>
+<span class="sd">        Alternate ways to access the neighbors are ``G.adj[n]`` or ``G[n]``:</span>
 
-<span class="sd">        &gt;&gt;&gt; G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc</span>
-<span class="sd">        &gt;&gt;&gt; G.add_edge(&#39;a&#39;, &#39;b&#39;, weight=7)</span>
-<span class="sd">        &gt;&gt;&gt; G[&#39;a&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc</span>
+<span class="sd">        &gt;&gt;&gt; G.add_edge(&quot;a&quot;, &quot;b&quot;, weight=7)</span>
+<span class="sd">        &gt;&gt;&gt; G[&quot;a&quot;]</span>
 <span class="sd">        AtlasView({&#39;b&#39;: {&#39;weight&#39;: 7}})</span>
 <span class="sd">        &gt;&gt;&gt; G = nx.path_graph(4)</span>
 <span class="sd">        &gt;&gt;&gt; [n for n in G[0]]</span>
@@ -1425,12 +1412,12 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
-        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="s2">&quot;The node </span><span class="si">%s</span><span class="s2"> is not in the graph.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">n</span><span class="p">,))</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The node </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> is not in the graph.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;An EdgeView of the Graph as G.edges or G.edges().</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;An EdgeView of the Graph as G.edges or G.edges().</span>
 
 <span class="sd">        edges(self, nbunch=None, data=False, default=None)</span>
 
@@ -1447,7 +1434,7 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        nbunch : single node, container, or all nodes (default= all nodes)</span>
-<span class="sd">            The view will only report edges incident to these nodes.</span>
+<span class="sd">            The view will only report edges from these nodes.</span>
 <span class="sd">        data : string or bool, optional (default=False)</span>
 <span class="sd">            The edge attribute returned in 3-tuple (u, v, ddict[data]).</span>
 <span class="sd">            If True, return edge attribute dict in 3-tuple (u, v, ddict).</span>
@@ -1470,26 +1457,26 @@
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; G = nx.path_graph(3)   # or MultiGraph, etc</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.path_graph(3)  # or MultiGraph, etc</span>
 <span class="sd">        &gt;&gt;&gt; G.add_edge(2, 3, weight=5)</span>
 <span class="sd">        &gt;&gt;&gt; [e for e in G.edges]</span>
 <span class="sd">        [(0, 1), (1, 2), (2, 3)]</span>
 <span class="sd">        &gt;&gt;&gt; G.edges.data()  # default data is {} (empty dict)</span>
 <span class="sd">        EdgeDataView([(0, 1, {}), (1, 2, {}), (2, 3, {&#39;weight&#39;: 5})])</span>
-<span class="sd">        &gt;&gt;&gt; G.edges.data(&#39;weight&#39;, default=1)</span>
+<span class="sd">        &gt;&gt;&gt; G.edges.data(&quot;weight&quot;, default=1)</span>
 <span class="sd">        EdgeDataView([(0, 1, 1), (1, 2, 1), (2, 3, 5)])</span>
-<span class="sd">        &gt;&gt;&gt; G.edges([0, 3])  # only edges incident to these nodes</span>
+<span class="sd">        &gt;&gt;&gt; G.edges([0, 3])  # only edges from these nodes</span>
 <span class="sd">        EdgeDataView([(0, 1), (3, 2)])</span>
-<span class="sd">        &gt;&gt;&gt; G.edges(0)  # only edges incident to a single node (use G.adj[0]?)</span>
+<span class="sd">        &gt;&gt;&gt; G.edges(0)  # only edges from node 0</span>
 <span class="sd">        EdgeDataView([(0, 1)])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">EdgeView</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">get_edge_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the attribute dictionary associated with edge (u, v).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the attribute dictionary associated with edge (u, v).</span>
 
 <span class="sd">        This is identical to `G[u][v]` except the default is returned</span>
-<span class="sd">        instead of an exception is the edge doesn&#39;t exist.</span>
+<span class="sd">        instead of an exception if the edge doesn&#39;t exist.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1511,10 +1498,10 @@
 <span class="sd">        Warning: Assigning to `G[u][v]` is not permitted.</span>
 <span class="sd">        But it is safe to assign attributes `G[u][v][&#39;foo&#39;]`</span>
 
-<span class="sd">        &gt;&gt;&gt; G[0][1][&#39;weight&#39;] = 7</span>
-<span class="sd">        &gt;&gt;&gt; G[0][1][&#39;weight&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; G[0][1][&quot;weight&quot;] = 7</span>
+<span class="sd">        &gt;&gt;&gt; G[0][1][&quot;weight&quot;]</span>
 <span class="sd">        7</span>
-<span class="sd">        &gt;&gt;&gt; G[1][0][&#39;weight&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; G[1][0][&quot;weight&quot;]</span>
 <span class="sd">        7</span>
 
 <span class="sd">        &gt;&gt;&gt; G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc</span>
@@ -1523,7 +1510,7 @@
 <span class="sd">        &gt;&gt;&gt; e = (0, 1)</span>
 <span class="sd">        &gt;&gt;&gt; G.get_edge_data(*e)  # tuple form</span>
 <span class="sd">        {}</span>
-<span class="sd">        &gt;&gt;&gt; G.get_edge_data(&#39;a&#39;, &#39;b&#39;, default=0)  # edge not in graph, return 0</span>
+<span class="sd">        &gt;&gt;&gt; G.get_edge_data(&quot;a&quot;, &quot;b&quot;, default=0)  # edge not in graph, return 0</span>
 <span class="sd">        0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1532,7 +1519,7 @@
             <span class="k">return</span> <span class="n">default</span>
 
     <span class="k">def</span> <span class="nf">adjacency</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns an iterator over (node, adjacency dict) tuples for all nodes.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an iterator over (node, adjacency dict) tuples for all nodes.</span>
 
 <span class="sd">        For directed graphs, only outgoing neighbors/adjacencies are included.</span>
 
@@ -1553,7 +1540,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">degree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;A DegreeView for the Graph as G.degree or G.degree().</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A DegreeView for the Graph as G.degree or G.degree().</span>
 
 <span class="sd">        The node degree is the number of edges adjacent to the node.</span>
 <span class="sd">        The weighted node degree is the sum of the edge weights for</span>
@@ -1592,7 +1579,7 @@
         <span class="k">return</span> <span class="n">DegreeView</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove all nodes and edges from the graph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove all nodes and edges from the graph.</span>
 
 <span class="sd">        This also removes the name, and all graph, node, and edge attributes.</span>
 
@@ -1610,22 +1597,31 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
+    <span class="k">def</span> <span class="nf">clear_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove all edges from the graph without altering nodes.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.path_graph(4)  # or DiGraph, MultiGraph, MultiDiGraph, etc</span>
+<span class="sd">        &gt;&gt;&gt; G.clear_edges()</span>
+<span class="sd">        &gt;&gt;&gt; list(G.nodes)</span>
+<span class="sd">        [0, 1, 2, 3]</span>
+<span class="sd">        &gt;&gt;&gt; list(G.edges)</span>
+<span class="sd">        []</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">neighbours_dict</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">neighbours_dict</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
     <span class="k">def</span> <span class="nf">is_multigraph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns True if graph is a multigraph, False otherwise.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if graph is a multigraph, False otherwise.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">is_directed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns True if graph is directed, False otherwise.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns True if graph is directed, False otherwise.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">fresh_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># remove by v3 if not before</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;G.fresh_copy is deprecated. Use G.__class__ instead&#39;</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
-
     <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">as_view</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns a copy of the graph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a copy of the graph.</span>
 
 <span class="sd">        The copy method by default returns an independent shallow copy</span>
 <span class="sd">        of the graph and attributes. That is, if an attribute is a</span>
@@ -1678,7 +1674,7 @@
 <span class="sd">        structure without requiring any memory for copying the information.</span>
 
 <span class="sd">        See the Python copy module for more information on shallow</span>
-<span class="sd">        and deep copies, https://docs.python.org/2/library/copy.html.</span>
+<span class="sd">        and deep copies, https://docs.python.org/3/library/copy.html.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1706,13 +1702,15 @@
         <span class="n">G</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">()</span>
         <span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>
         <span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
-        <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">datadict</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
-                         <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">nbrs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-                         <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">datadict</span> <span class="ow">in</span> <span class="n">nbrs</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">datadict</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+            <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">nbrs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">datadict</span> <span class="ow">in</span> <span class="n">nbrs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">G</span>
 
     <span class="k">def</span> <span class="nf">to_directed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">as_view</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns a directed representation of the graph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a directed representation of the graph.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1731,7 +1729,7 @@
 <span class="sd">        shallow copy of the data.</span>
 
 <span class="sd">        See the Python copy module for more information on shallow</span>
-<span class="sd">        and deep copies, https://docs.python.org/2/library/copy.html.</span>
+<span class="sd">        and deep copies, https://docs.python.org/3/library/copy.html.</span>
 
 <span class="sd">        Warning: If you have subclassed Graph to use dict-like objects</span>
 <span class="sd">        in the data structure, those changes do not transfer to the</span>
@@ -1760,13 +1758,15 @@
         <span class="n">G</span> <span class="o">=</span> <span class="n">graph_class</span><span class="p">()</span>
         <span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">))</span>
         <span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">d</span><span class="p">))</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
-        <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
-                         <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">nbrs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-                         <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">nbrs</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">nbrs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">nbrs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">G</span>
 
     <span class="k">def</span> <span class="nf">to_undirected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">as_view</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns an undirected copy of the graph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an undirected copy of the graph.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1792,7 +1792,7 @@
 <span class="sd">        shallow copy of the data.</span>
 
 <span class="sd">        See the Python copy module for more information on shallow</span>
-<span class="sd">        and deep copies, https://docs.python.org/2/library/copy.html.</span>
+<span class="sd">        and deep copies, https://docs.python.org/3/library/copy.html.</span>
 
 <span class="sd">        Warning: If you have subclassed DiGraph to use dict-like objects</span>
 <span class="sd">        in the data structure, those changes do not transfer to the</span>
@@ -1800,7 +1800,7 @@
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        &gt;&gt;&gt; G = nx.path_graph(2)   # or MultiGraph, etc</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.path_graph(2)  # or MultiGraph, etc</span>
 <span class="sd">        &gt;&gt;&gt; H = G.to_directed()</span>
 <span class="sd">        &gt;&gt;&gt; list(H.edges)</span>
 <span class="sd">        [(0, 1), (1, 0)]</span>
@@ -1815,13 +1815,15 @@
         <span class="n">G</span> <span class="o">=</span> <span class="n">graph_class</span><span class="p">()</span>
         <span class="n">G</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">))</span>
         <span class="n">G</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">d</span><span class="p">))</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
-        <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
-                         <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">nbrs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-                         <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">nbrs</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="n">G</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">nbrs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">nbrs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">G</span>
 
     <span class="k">def</span> <span class="nf">subgraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns a SubGraph view of the subgraph induced on `nodes`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns a SubGraph view of the subgraph induced on `nodes`.</span>
 
 <span class="sd">        The induced subgraph of the graph contains the nodes in `nodes`</span>
 <span class="sd">        and the edges between those nodes.</span>
@@ -1859,7 +1861,7 @@
 <span class="sd">            # Create a subgraph SG based on a (possibly multigraph) G</span>
 <span class="sd">            SG = G.__class__()</span>
 <span class="sd">            SG.add_nodes_from((n, G.nodes[n]) for n in largest_wcc)</span>
-<span class="sd">            if SG.is_multigraph:</span>
+<span class="sd">            if SG.is_multigraph():</span>
 <span class="sd">                SG.add_edges_from((n, nbr, key, d)</span>
 <span class="sd">                    for n, nbrs in G.adj.items() if n in largest_wcc</span>
 <span class="sd">                    for nbr, keydict in nbrs.items() if nbr in largest_wcc</span>
@@ -1880,12 +1882,12 @@
         <span class="n">induced_nodes</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">filters</span><span class="o">.</span><span class="n">show_nodes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbunch_iter</span><span class="p">(</span><span class="n">nodes</span><span class="p">))</span>
         <span class="c1"># if already a subgraph, don&#39;t make a chain</span>
         <span class="n">subgraph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">graphviews</span><span class="o">.</span><span class="n">subgraph_view</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;_NODE_OK&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_NODE_OK&quot;</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">subgraph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span> <span class="n">induced_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_EDGE_OK</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">subgraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">induced_nodes</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">edge_subgraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the subgraph induced by the specified edges.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the subgraph induced by the specified edges.</span>
 
 <span class="sd">        The induced subgraph contains each edge in `edges` and each</span>
 <span class="sd">        node incident to any one of those edges.</span>
@@ -1910,7 +1912,7 @@
 <span class="sd">        To create a full graph version of the subgraph with its own copy</span>
 <span class="sd">        of the edge or node attributes, use::</span>
 
-<span class="sd">            &gt;&gt;&gt; G.edge_subgraph(edges).copy()  # doctest: +SKIP</span>
+<span class="sd">            G.edge_subgraph(edges).copy()</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -1925,7 +1927,7 @@
         <span class="k">return</span> <span class="n">nx</span><span class="o">.</span><span class="n">edge_subgraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edges</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the number of edges or total of all edge weights.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the number of edges or total of all edge weights.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -1952,12 +1954,12 @@
 <span class="sd">        &gt;&gt;&gt; G.size()</span>
 <span class="sd">        3</span>
 
-<span class="sd">        &gt;&gt;&gt; G = nx.Graph()   # or DiGraph, MultiGraph, MultiDiGraph, etc</span>
-<span class="sd">        &gt;&gt;&gt; G.add_edge(&#39;a&#39;, &#39;b&#39;, weight=2)</span>
-<span class="sd">        &gt;&gt;&gt; G.add_edge(&#39;b&#39;, &#39;c&#39;, weight=4)</span>
+<span class="sd">        &gt;&gt;&gt; G = nx.Graph()  # or DiGraph, MultiGraph, MultiDiGraph, etc</span>
+<span class="sd">        &gt;&gt;&gt; G.add_edge(&quot;a&quot;, &quot;b&quot;, weight=2)</span>
+<span class="sd">        &gt;&gt;&gt; G.add_edge(&quot;b&quot;, &quot;c&quot;, weight=4)</span>
 <span class="sd">        &gt;&gt;&gt; G.size()</span>
 <span class="sd">        2</span>
-<span class="sd">        &gt;&gt;&gt; G.size(weight=&#39;weight&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; G.size(weight=&quot;weight&quot;)</span>
 <span class="sd">        6.0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">s</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">d</span> <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">degree</span><span class="p">(</span><span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">))</span>
@@ -1968,7 +1970,7 @@
         <span class="k">return</span> <span class="n">s</span> <span class="o">//</span> <span class="mi">2</span> <span class="k">if</span> <span class="n">weight</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">s</span> <span class="o">/</span> <span class="mi">2</span>
 
     <span class="k">def</span> <span class="nf">number_of_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the number of edges between two nodes.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the number of edges between two nodes.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -2020,7 +2022,7 @@
         <span class="k">return</span> <span class="mi">0</span>
 
     <span class="k">def</span> <span class="nf">nbunch_iter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nbunch</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns an iterator over nodes contained in nbunch that are</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns an iterator over nodes contained in nbunch that are</span>
 <span class="sd">        also in the graph.</span>
 
 <span class="sd">        The nodes in nbunch are checked for membership in the graph</span>
@@ -2040,7 +2042,7 @@
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        NetworkXError</span>
-<span class="sd">            If nbunch is not a node or or sequence of nodes.</span>
+<span class="sd">            If nbunch is not a node or sequence of nodes.</span>
 <span class="sd">            If a node in nbunch is not hashable.</span>
 
 <span class="sd">        See Also</span>
@@ -2059,28 +2061,31 @@
 <span class="sd">        or None, a :exc:`NetworkXError` is raised.  Also, if any object in</span>
 <span class="sd">        nbunch is not hashable, a :exc:`NetworkXError` is raised.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">nbunch</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>   <span class="c1"># include all nodes via iterator</span>
+        <span class="k">if</span> <span class="n">nbunch</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># include all nodes via iterator</span>
             <span class="n">bunch</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">nbunch</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>  <span class="c1"># if nbunch is a single node</span>
             <span class="n">bunch</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">([</span><span class="n">nbunch</span><span class="p">])</span>
-        <span class="k">else</span><span class="p">:</span>                <span class="c1"># if nbunch is a sequence of nodes</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># if nbunch is a sequence of nodes</span>
+
             <span class="k">def</span> <span class="nf">bunch_iter</span><span class="p">(</span><span class="n">nlist</span><span class="p">,</span> <span class="n">adj</span><span class="p">):</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nlist</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">adj</span><span class="p">:</span>
                             <span class="k">yield</span> <span class="n">n</span>
-                <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="n">message</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                    <span class="n">exc</span><span class="p">,</span> <span class="n">message</span> <span class="o">=</span> <span class="n">err</span><span class="p">,</span> <span class="n">err</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                     <span class="c1"># capture error for non-sequence/iterator nbunch.</span>
-                    <span class="k">if</span> <span class="s1">&#39;iter&#39;</span> <span class="ow">in</span> <span class="n">message</span><span class="p">:</span>
-                        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;nbunch is not a node or a sequence of nodes.&quot;</span>
-                        <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="s2">&quot;iter&quot;</span> <span class="ow">in</span> <span class="n">message</span><span class="p">:</span>
+                        <span class="n">exc</span> <span class="o">=</span> <span class="n">NetworkXError</span><span class="p">(</span>
+                            <span class="s2">&quot;nbunch is not a node or a sequence of nodes.&quot;</span>
+                        <span class="p">)</span>
                     <span class="c1"># capture error for unhashable node.</span>
-                    <span class="k">elif</span> <span class="s1">&#39;hashable&#39;</span> <span class="ow">in</span> <span class="n">message</span><span class="p">:</span>
-                        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Node </span><span class="si">{}</span><span class="s2"> in sequence nbunch is not a valid node.&quot;</span>
-                        <span class="k">raise</span> <span class="n">NetworkXError</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="k">raise</span>
+                    <span class="k">if</span> <span class="s2">&quot;hashable&quot;</span> <span class="ow">in</span> <span class="n">message</span><span class="p">:</span>
+                        <span class="n">exc</span> <span class="o">=</span> <span class="n">NetworkXError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Node </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> in sequence nbunch is not a valid node.&quot;</span>
+                        <span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">exc</span>
+
             <span class="n">bunch</span> <span class="o">=</span> <span class="n">bunch_iter</span><span class="p">(</span><span class="n">nbunch</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adj</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">bunch</span>
 </pre></div>
