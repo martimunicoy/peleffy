@@ -8,6 +8,16 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
+1.4.5 - Corrections for alchemistry
+-----------------------------------
+
+This is a micro release of peleffy that contains corrections for alchemistry module.
+
+Bugfixes
+""""""""
+- `PR #180 <https://github.com/martimunicoy/peleffy/pull/180>`_: bug fixes for alchemical topologies
+
+
 1.4.4 - Corrections for alchemistry and new charge calculator
 -------------------------------------------------------------
 
