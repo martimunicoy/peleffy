@@ -964,6 +964,8 @@ class Alchemizer(object):
             for i, rotamer_branches in enumerate(rotamers):
                 if i > 0:
                     file.write('     newgrp &\n')
+
+                #visited_atoms = set()
                 for rotamer in rotamer_branches:
                     index1 = rotamer.index1
                     index2 = rotamer.index2
@@ -974,6 +976,12 @@ class Alchemizer(object):
 
                     atom_name1 = pdb_atom_names[index1]
                     atom_name2 = pdb_atom_names[index2]
+
+                    # Separate alchemical branches
+                    #if index1 in visited_atoms:
+                    #    file.write('     newgrp &\n')
+                    #visited_atoms.add(index1)
+
                     file.write('   sidelib FREE{} {} {} &\n'.format(
                         rotamer.resolution, atom_name1, atom_name2))
 
