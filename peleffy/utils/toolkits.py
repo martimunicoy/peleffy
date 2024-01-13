@@ -758,6 +758,7 @@ class RDKitToolkitWrapper(ToolkitWrapper):
         """
         import itertools
         from rdkit.Chem import AllChem
+        from rdkit.Chem.rdMolAlign import CalcRMS
 
         rdkit_mol1 = deepcopy(molecule1.rdkit_molecule)
         rdkit_mol2 = deepcopy(molecule2.rdkit_molecule)
