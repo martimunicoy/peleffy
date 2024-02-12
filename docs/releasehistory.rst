@@ -8,6 +8,17 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
+1.4.5 - Additional enhancements for alchemistry
+-----------------------------------------------
+
+This is a micro release of peleffy that contains additional enhancements for alchemistry module.
+
+New features
+""""""""""""
+- `PR #182 <https://github.com/martimunicoy/peleffy/pull/182>`_: better alchemical structure alignment
+- `PR #182 <https://github.com/martimunicoy/peleffy/pull/182>`_: more lambda types available (vdw1 and vdw2)
+
+
 1.4.5 - Corrections for alchemistry
 -----------------------------------
 
