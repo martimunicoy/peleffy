@@ -26,7 +26,8 @@ requirements:
     - networkx
     - rdkit
     - ambertools
-    - openff-toolkit==0.10.1
+    - openff-toolkit==0.10.7
+    - openff-forcefields==2023.05.1
 
 about:
   home: https://github.com/martimunicoy/peleffy
