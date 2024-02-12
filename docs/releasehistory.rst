@@ -8,10 +8,10 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
-1.4.6 - OpenFF upgrade and enhancements for alchemistry
+1.5.0 - OpenFF upgrade and enhancements for alchemistry
 -------------------------------------------------------
 
-This is a micro release of peleffy that supports the latest version of openff-toolkit 0.10. It also
+This is a minor release of peleffy that supports the latest version of openff-toolkit 0.10. It also
 contains additional enhancements for the alchemistry module.
 
 New features
