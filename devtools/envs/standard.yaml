@@ -9,8 +9,10 @@ dependencies:
   - pytest
   - pytest-cov
   - codecov
-  - coverage < 5.0
+  - coverage
   - ipython
   - ambertools
   - rdkit
-  - openff-toolkit==0.10.1
+  - openff-toolkit==0.10.7
+  - openff-forcefields==2023.05.1
+                        
