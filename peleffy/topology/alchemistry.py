@@ -162,7 +162,8 @@ class Alchemizer(object):
 
     def get_alchemical_topology(self, fep_lambda=None, coul_lambda=None,
                                 coul1_lambda=None, coul2_lambda=None,
-                                vdw_lambda=None, bonded_lambda=None):
+                                vdw_lambda=None, vdw1_lambda=None,
+                                vdw2_lambda=None, bonded_lambda=None):
         """
         Given a lambda, it returns an alchemical topology after
         combining both input topologies.
@@ -195,6 +196,20 @@ class Alchemizer(object):
             affects van der Waals parameters. It needs to be contained
             between 0 and 1. It has precedence over fep_lambda.
             Default is None
+        vdw1_lambda : float
+            The value to define a vdw lambda for exclusive atoms
+            of molecule 1. This lambda only affects van der Waals
+            parameters of exclusive atoms of molecule 1. It needs
+            to be contained between 0 and 1.
+            It has precedence over vdw_lambda and fep_lambda.
+            Default is None
+        vdw2_lambda : float
+            The value to define a vdw lambda for exclusive atoms
+            of molecule 2. This lambda only affects van der Waals
+            parameters of exclusive atoms of molecule 2. It needs
+            to be contained between 0 and 1.
+            It has precedence over vdw_lambda and fep_lambda.
+            Default is None
         bonded_lambda : float
             The value to define a coulombic lambda. This lambda only
             affects bonded parameters. It needs to be contained
@@ -212,10 +227,13 @@ class Alchemizer(object):
         coul1_lambda = Coulombic1Lambda(coul1_lambda)
         coul2_lambda = Coulombic2Lambda(coul2_lambda)
         vdw_lambda = VanDerWaalsLambda(vdw_lambda)
+        vdw1_lambda = VanDerWaals1Lambda(vdw1_lambda)
+        vdw2_lambda = VanDerWaals2Lambda(vdw2_lambda)
         bonded_lambda = BondedLambda(bonded_lambda)
 
         lambda_set = LambdaSet(fep_lambda, coul_lambda, coul1_lambda,
-                               coul2_lambda, vdw_lambda, bonded_lambda)
+                               coul2_lambda, vdw_lambda, vdw1_lambda,
+                               vdw2_lambda, bonded_lambda)
 
         alchemical_topology = self.topology_from_lambda_set(lambda_set)
 
@@ -251,7 +269,7 @@ class Alchemizer(object):
                 atom.apply_lambda(["sigma", "epsilon", "born_radius",
                                    "SASA_radius", "nonpolar_gamma",
                                    "nonpolar_alpha"],
-                                  lambda_set.get_lambda_for_vdw(),
+                                  lambda_set.get_lambda_for_vdw1(),
                                   reverse=False)
                 atom.apply_lambda(["charge"],
                                   lambda_set.get_lambda_for_coulomb1(),
@@ -261,7 +279,7 @@ class Alchemizer(object):
                 atom.apply_lambda(["sigma", "epsilon", "born_radius",
                                    "SASA_radius", "nonpolar_gamma",
                                    "nonpolar_alpha"],
-                                  lambda_set.get_lambda_for_vdw(),
+                                  lambda_set.get_lambda_for_vdw2(),
                                   reverse=True)
                 atom.apply_lambda(["charge"],
                                   lambda_set.get_lambda_for_coulomb2(),
@@ -873,6 +891,7 @@ class Alchemizer(object):
     def rotamer_library_to_file(self, path, fep_lambda=None,
                                 coul_lambda=None, coul1_lambda=None,
                                 coul2_lambda=None, vdw_lambda=None,
+                                vdw1_lambda=None, vdw2_lambda=None,
                                 bonded_lambda=None):
         """
         It saves the alchemical rotamer library, which is the combination
@@ -909,6 +928,20 @@ class Alchemizer(object):
             affects van der Waals parameters. It needs to be contained
             between 0 and 1. It has precedence over fep_lambda.
             Default is None
+        vdw1_lambda : float
+            The value to define a vdw lambda for exclusive atoms
+            of molecule 1. This lambda only affects van der Waals
+            parameters of exclusive atoms of molecule 1. It needs
+            to be contained between 0 and 1.
+            It has precedence over vdw_lambda and fep_lambda.
+            Default is None
+        vdw2_lambda : float
+            The value to define a vdw lambda for exclusive atoms
+            of molecule 2. This lambda only affects van der Waals
+            parameters of exclusive atoms of molecule 2. It needs
+            to be contained between 0 and 1.
+            It has precedence over vdw_lambda and fep_lambda.
+            Default is None
         bonded_lambda : float
             The value to define a coulombic lambda. This lambda only
             affects bonded parameters. It needs to be contained
@@ -927,14 +960,19 @@ class Alchemizer(object):
         coul1_lambda = Coulombic1Lambda(coul1_lambda)
         coul2_lambda = Coulombic2Lambda(coul2_lambda)
         vdw_lambda = VanDerWaalsLambda(vdw_lambda)
+        vdw1_lambda = VanDerWaals1Lambda(vdw1_lambda)
+        vdw2_lambda = VanDerWaals2Lambda(vdw2_lambda)
         bonded_lambda = BondedLambda(bonded_lambda)
 
         lambda_set = LambdaSet(fep_lambda, coul_lambda, coul1_lambda,
-                               coul2_lambda, vdw_lambda, bonded_lambda)
+                               coul2_lambda, vdw_lambda, vdw1_lambda,
+                               vdw2_lambda, bonded_lambda)
 
         if (at_least_one and
             lambda_set.get_lambda_for_bonded() == 0.0 and
             lambda_set.get_lambda_for_vdw() == 0.0 and
+            lambda_set.get_lambda_for_vdw1() == 0.0 and
+            lambda_set.get_lambda_for_vdw2() == 0.0 and
             lambda_set.get_lambda_for_coulomb() == 0.0 and
             lambda_set.get_lambda_for_coulomb1() == 0.0 and
                 lambda_set.get_lambda_for_coulomb2() == 0.0):
@@ -944,6 +982,8 @@ class Alchemizer(object):
         elif (at_least_one and
               lambda_set.get_lambda_for_bonded() == 1.0 and
               lambda_set.get_lambda_for_vdw() == 1.0 and
+              lambda_set.get_lambda_for_vdw1() == 1.0 and
+              lambda_set.get_lambda_for_vdw2() == 1.0 and
               lambda_set.get_lambda_for_coulomb() == 1.0 and
               lambda_set.get_lambda_for_coulomb1() == 1.0 and
                   lambda_set.get_lambda_for_coulomb2() == 1.0):
@@ -988,6 +1028,7 @@ class Alchemizer(object):
     def obc_parameters_to_file(self, path, fep_lambda=None,
                                coul_lambda=None, coul1_lambda=None,
                                coul2_lambda=None, vdw_lambda=None,
+                               vdw1_lambda=None, vdw2_lambda=None,
                                bonded_lambda=None):
         """
         It saves the alchemical OBC parameters, which is the combination
@@ -1030,6 +1071,20 @@ class Alchemizer(object):
             affects van der Waals parameters. It needs to be contained
             between 0 and 1. It has precedence over fep_lambda.
             Default is None
+        vdw1_lambda : float
+            The value to define a vdw lambda for exclusive atoms
+            of molecule 1. This lambda only affects van der Waals
+            parameters of exclusive atoms of molecule 1. It needs
+            to be contained between 0 and 1.
+            It has precedence over vdw_lambda and fep_lambda.
+            Default is None
+        vdw2_lambda : float
+            The value to define a vdw lambda for exclusive atoms
+            of molecule 2. This lambda only affects van der Waals
+            parameters of exclusive atoms of molecule 2. It needs
+            to be contained between 0 and 1.
+            It has precedence over vdw_lambda and fep_lambda.
+            Default is None
         bonded_lambda : float
             The value to define a coulombic lambda. This lambda only
             affects bonded parameters. It needs to be contained
@@ -1055,10 +1110,13 @@ class Alchemizer(object):
         coul1_lambda = Coulombic1Lambda(coul1_lambda)
         coul2_lambda = Coulombic2Lambda(coul2_lambda)
         vdw_lambda = VanDerWaalsLambda(vdw_lambda)
+        vdw1_lambda = VanDerWaals1Lambda(vdw1_lambda)
+        vdw2_lambda = VanDerWaals2Lambda(vdw2_lambda)
         bonded_lambda = BondedLambda(bonded_lambda)
 
         lambda_set = LambdaSet(fep_lambda, coul_lambda, coul1_lambda,
-                               coul2_lambda, vdw_lambda, bonded_lambda)
+                               coul2_lambda, vdw_lambda, vdw1_lambda,
+                               vdw2_lambda, bonded_lambda)
 
         # Define mappers
         mol1_mapped_atoms = [atom_pair[0] for atom_pair in self.mapping]
@@ -1257,6 +1315,20 @@ class VanDerWaalsLambda(Lambda):
     _TYPE = "vdw"
 
 
+class VanDerWaals1Lambda(Lambda):
+    """
+    It defines the VanDerWaalsLambda1 class. It affects only van der Waals
+    parameters involving exclusive atoms of molecule 1.
+    """
+    _TYPE = "vdw1"
+
+class VanDerWaals2Lambda(Lambda):
+    """
+    It defines the VanDerWaalsLambda1 class. It affects only van der Waals
+    parameters involving exclusive atoms of molecule 2.
+    """
+    _TYPE = "vdw2"
+
 class BondedLambda(Lambda):
     """
     It defines the BondedLambda class. It affects only bonded parameters.
@@ -1270,7 +1342,7 @@ class LambdaSet(object):
     """
 
     def __init__(self, fep_lambda, coul_lambda, coul1_lambda, coul2_lambda,
-                 vdw_lambda, bonded_lambda):
+                 vdw_lambda, vdw1_lambda, vdw2_lambda, bonded_lambda):
         """
         It initializes a LambdaSet object which stores all the different
         types of lambda.
@@ -1287,6 +1359,10 @@ class LambdaSet(object):
             The coulombic lambda for exclusive atoms of molecule 2
         vdw_lambda : a peleffy.topology.alchemy.VanDerWaalsLambda object
             The van der Waals lambda
+        vdw1_lambda : a peleffy.topology.alchemy.VanDerWaals1Lambda object
+            The van der Waals lambda for exclusive atoms of molecule 1
+        vdw2_lambda : a peleffy.topology.alchemy.VanDerWaals2Lambda object
+            The van der Waals lambda for exclusive atoms of molecule 2
         bonded_lambda : a peleffy.topology.alchemy.BondedLambda object
             The bonded lambda
         """
@@ -1308,6 +1384,12 @@ class LambdaSet(object):
         if not isinstance(vdw_lambda,
                           peleffy.topology.alchemistry.VanDerWaalsLambda):
             raise TypeError('Invalid vdw_lambda supplied to LambdaSet')
+        if not isinstance(vdw1_lambda,
+                          peleffy.topology.alchemistry.VanDerWaals1Lambda):
+            raise TypeError('Invalid vdw_lambda1 supplied to LambdaSet')
+        if not isinstance(vdw2_lambda,
+                          peleffy.topology.alchemistry.VanDerWaals2Lambda):
+            raise TypeError('Invalid vdw2_lambda supplied to LambdaSet')
         if not isinstance(bonded_lambda,
                           peleffy.topology.alchemistry.BondedLambda):
             raise TypeError('Invalid bonded_lambda supplied to LambdaSet')
@@ -1317,6 +1399,8 @@ class LambdaSet(object):
         self._coul1_lambda = coul1_lambda
         self._coul2_lambda = coul2_lambda
         self._vdw_lambda = vdw_lambda
+        self._vdw1_lambda = vdw1_lambda
+        self._vdw2_lambda = vdw2_lambda
         self._bonded_lambda = bonded_lambda
 
     @property
@@ -1380,6 +1464,30 @@ class LambdaSet(object):
         return self._vdw_lambda
 
     @property
+    def vdw1_lambda(self):
+        """
+        It returns the vdw1_lambda value.
+
+        Returns
+        -------
+        vdw1_lambda : float
+            The value of the vdw1_lambda
+        """
+        return self._vdw1_lambda
+
+    @property
+    def vdw2_lambda(self):
+        """
+        It returns the vdw2_lambda value.
+
+        Returns
+        -------
+        vdw2_lambda : float
+            The value of the vdw2_lambda
+        """
+        return self._vdw2_lambda
+
+    @property
     def bonded_lambda(self):
         """
         It returns the bonded_lambda value.
@@ -1393,14 +1501,66 @@ class LambdaSet(object):
 
     def get_lambda_for_vdw(self):
         """
-        It returns the lambda to be applied on van der Waals parameters.
+        It returns the lambda to be applied on van der Waals parameters of
+        both molecules.
 
         Returns
         -------
         lambda_value : float
-            The lambda value to be applied on van der Waals parameters
+            The lambda value to be applied on van der Waals parameters of
+            both molecules
         """
         if self.vdw_lambda.is_set:
+            lambda_value = self.vdw_lambda.value
+
+        elif self.fep_lambda.is_set:
+            lambda_value = self.fep_lambda.value
+
+        else:
+            lambda_value = 0.0
+
+        return lambda_value
+
+    def get_lambda_for_vdw1(self):
+        """
+        It returns the lambda to be applied on van der Waals parameters of
+        exclusive atoms of molecule 1.
+
+        Returns
+        -------
+        lambda_value : float
+            The lambda value to be applied on van der Waals parameters of
+            exclusive atoms of molecule 1
+        """
+        if self.vdw1_lambda.is_set:
+            lambda_value = self.vdw1_lambda.value
+
+        elif self.vdw_lambda.is_set:
+            lambda_value = self.vdw_lambda.value
+
+        elif self.fep_lambda.is_set:
+            lambda_value = self.fep_lambda.value
+
+        else:
+            lambda_value = 0.0
+
+        return lambda_value
+
+    def get_lambda_for_vdw2(self):
+        """
+        It returns the lambda to be applied on van der Waals parameters of
+        exclusive atoms of molecule 2.
+
+        Returns
+        -------
+        lambda_value : float
+            The lambda value to be applied on van der Waals parameters of
+            exclusive atoms of molecule 2
+        """
+        if self.vdw2_lambda.is_set:
+            lambda_value = self.vdw2_lambda.value
+
+        elif self.vdw_lambda.is_set:
             lambda_value = self.vdw_lambda.value
 
         elif self.fep_lambda.is_set:
