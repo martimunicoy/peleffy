@@ -8,15 +8,22 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
-1.4.5 - Additional enhancements for alchemistry
------------------------------------------------
+1.4.6 - OpenFF upgrade and enhancements for alchemistry
+-------------------------------------------------------
 
-This is a micro release of peleffy that contains additional enhancements for alchemistry module.
+This is a micro release of peleffy that supports the latest version of openff-toolkit 0.10. It also
+contains additional enhancements for the alchemistry module.
 
 New features
 """"""""""""
+- `PR #182 <https://github.com/martimunicoy/peleffy/pull/182>`_: support openff-toolkit 0.10.7 and openff-forcefield 2.1.0
 - `PR #182 <https://github.com/martimunicoy/peleffy/pull/182>`_: better alchemical structure alignment
 - `PR #182 <https://github.com/martimunicoy/peleffy/pull/182>`_: more lambda types available (vdw1 and vdw2)
+
+Tests added
+"""""""""""
+- `PR #182 <https://github.com/martimunicoy/peleffy/pull/182>`_: corrections for alchemical and mapper tests
+- `PR #182 <https://github.com/martimunicoy/peleffy/pull/182>`_: new test to check forcefield names
 
 
 1.4.5 - Corrections for alchemistry
