@@ -16,6 +16,8 @@ from simtk import unit
 
 from peleffy.utils import temporary_cd
 
+import parmed
+
 
 class ToolkitUnavailableException(Exception):
     """The requested toolkit is unavailable."""
@@ -29,6 +31,12 @@ class ChargeCalculationError(Exception):
 
 class ChargeMethodUnavailableError(Exception):
     """A toolkit does not support the requested partial_charge_method combination"""
+    pass
+
+class ForcefieldUnavailableError(Exception):
+    """
+
+    """
     pass
 
 
@@ -1370,3 +1378,86 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
 
                 with open('parameters.txt') as parameters_file:
                     return parameters_file.read()
+
+class FoyerToolkitWrapper(ToolkitWrapper):
+    """
+    FoyerToolkitWrapper class.
+    """
+
+    _toolkit_name = 'Foyer Toolkit'
+
+    def __init__(self):
+        """
+        It initializes a FoyerToolkitWrapper object.
+        """
+        super().__init__()
+
+        if not self.is_available():
+            raise ToolkitUnavailableException(
+                'The required toolkit {} is not '.format(self.toolkit_name)
+                + 'available.')
+
+    @staticmethod
+    def is_available():
+        """
+        Check whether the Foyer toolkit can be imported
+
+        Returns
+        -------
+        is_installed : bool
+            True if Foyer is installed, False otherwise.
+        """
+        try:
+            importlib.import_module('foyer')
+            return True
+        except ImportError:
+            return False
+
+    def load_oplsaa(self):
+        """
+        Load internal XML file for the packaged Foyer OPLS-AA forcefield.
+
+        Returns
+        -------
+        foyer.forcefield.Forcefield object.
+        """
+        from foyer.forcefields.forcefields import load_OPLSAA
+
+        return load_OPLSAA()
+
+    def parameterize_from_parmed(self, pdb_file_path, assert_params=True, forcefield='oplsaa'):
+        """
+        Load a pdb file into a parmed molecule object, apply the Foyer's OPLS_AA force field
+        to it, and return the parameterized molecule as a dictionary object.
+
+        Parameters
+        ----------
+        pdb_file_path: path-like object or str
+            String or path where the pdb file of interest is stored.
+        assert_params: bool (default is True)
+            Whether to check if bonds, angles and dihedrals are properly defined or not.
+        forcefield: str
+            Forcefield to be aplied to the input molecule. By default is 'oplsaa'.
+
+        Returns
+        -------
+        parameterized_molecule: dict
+            Dictionary object containing the attributes of the parameterized molecule.
+        """
+        parmed_molecule = parmed.load_file(pdb_file_path)
+
+        if forcefield.lower() == 'oplsaa':
+            parameterized_molecule = self.load_oplsaa().apply(
+                parmed_molecule,
+                references_file=None,
+                use_residue_map=True,
+                assert_bond_params=assert_params,
+                assert_angle_params=assert_params,
+                assert_dihedral_params=assert_params,
+                assert_improper_params=False,
+                verbose=False
+            )
+        else:
+            raise ForcefieldUnavailableError(f"Force field '{forcefield}' is not implemented.")
+
+        return parameterized_molecule.__dict__

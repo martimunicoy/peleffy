@@ -6,7 +6,8 @@ parameters.
 
 __all__ = ["OpenForceFieldParameterWrapper",
            "OPLS2005ParameterWrapper",
-           "OpenFFOPLS2005ParameterWrapper"]
+           "OpenFFOPLS2005ParameterWrapper",
+           "FoyerParameterWrapper"]
 
 
 from collections import defaultdict
@@ -14,6 +15,11 @@ from simtk import unit
 
 from peleffy.utils import get_data_file_path
 from peleffy.utils import Logger
+
+import re
+from simtk import unit
+from peleffy.utils.toolkits import RDKitToolkitWrapper, FoyerToolkitWrapper, ToolkitUnavailableException
+from openff.units.openmm import string_to_openmm_unit
 
 
 class BaseParameterWrapper(dict):
@@ -1507,3 +1513,354 @@ class OpenFFOPLS2005ParameterWrapper(BaseParameterWrapper):
     """
 
     _name = 'Openff + OPLS2005'
+
+
+class FoyerParameterWrapper(OPLS2005ParameterWrapper):
+    """
+    It defines a parameters wrapper for Foyer OPLS force field. Inherits the
+    adding solvent functions from OPLS2005ParameterWrapper.
+    """
+
+    _name = 'Foyer'
+
+    @staticmethod
+    def update_parameters(pdb_file_path, peleffy_molecule, assert_params=True, forcefield='oplsaa'):
+        """
+        Static method which returns a dictionary with the data regarding the molecule being
+        parameterized with a given force field (default is OPLS_AA).
+
+        Parameters
+        ----------
+        pdb_file_path: str
+            String or path-like object that defines the location of the pdb file to be loaded.
+        peleffy_molecule: peleffy.molecule.Molecule
+            Peleffy Molecule object of the molecule being parameterized.
+        assert_params: bool (default is True)
+            Whether to check if bonds, angles and dihedrals are properly defined or not.
+        forcefield: str
+            String defining the force field name to be used. Default is 'oplsaa'.
+        Returns
+        -------
+        foyer_params_wrapper: peleffy.forcefield.parameters.FoyerParameterWrapper (dict)
+            Dictionary with all the parameters regarding the parameterized molecule
+            by means of Foyer OPLS_AA force field.
+        """
+        log = Logger()
+
+        def sigma_from_rmin_half(rmin_half):
+            """
+            Method copied from peleffy.forcefield.parameters.py OpenForceFieldParameterWrapper class.
+            Returns the sigma value corresponding to a given rmin_half value.
+            """
+            I_6R_OF_2 = 0.8908987181403393
+            sigma = I_6R_OF_2 * 2 * rmin_half
+
+            return float(f"{sigma:.3f}")
+
+        try:
+            foyer_toolkit = FoyerToolkitWrapper()
+        except Exception:
+            raise ToolkitUnavailableException("Could not initialize 'FoyerToolkitWrapper'.")
+
+        foyer_oplsaa = foyer_toolkit.load_oplsaa()
+
+        parameterized_molecule = foyer_toolkit.parameterize_from_parmed(pdb_file_path, assert_params, forcefield)
+
+        n_atoms = len(parameterized_molecule['atoms'])
+        n_bonds = len(parameterized_molecule['bonds'])
+        n_angles = len(parameterized_molecule['angles'])
+        n_rb_torsions = len(parameterized_molecule['rb_torsions'])
+        n_impropers = len(parameterized_molecule['impropers'])
+        n_periodic_dihedrals = len(parameterized_molecule['dihedrals'])
+
+        params = defaultdict(list)
+
+        # Atoms
+        ## If whitespace is found in the atom names, replace them by '_'
+        if ' ' in getattr(parameterized_molecule['atoms'][0], 'name'):
+            params['atom_names'] = [getattr(parameterized_molecule['atoms'][i], 'name').replace(" ", "_") for i in n_atoms]
+
+        ## Otherwise do the corresponding alignment inserting underscores to the atom names
+        else:
+            params['atom_names'] = []
+            pattern = r'\d\d'  # If two consecutive digits are found, run rjust, else center
+
+            for i in range(n_atoms):
+                c_atom = getattr(parameterized_molecule['atoms'][i], 'name')
+                match = re.search(pattern, c_atom)
+                if match:
+                    params['atom_names'].append(c_atom.rjust(4, '_')) # Atom name should occupy at most 4 characters
+                else:
+                    params['atom_names'].append(c_atom.center(4, '_')) # If atom_name has 2 letters, adds '_' on the right too
+
+        # From the atom type (e.g. opls_140) get the mapped atom type class (e.g. CA)
+        for i in range(n_atoms):
+            try:
+                c_atom_type = foyer_oplsaa.atomTypeClasses[getattr(parameterized_molecule['atoms'][i], 'type')]
+            except AttributeError:
+                log.error(f"{parameterized_molecule['atoms'][i]} has no attribute 'type'")
+            except KeyError:
+                log.error(f"{getattr(parameterized_molecule['atoms'][i], 'type')} is not a valid AtomTypeClass.")
+            params['atom_types'].append(c_atom_type)
+
+        try:
+            params['charges'] = [unit.Quantity(float(f"{getattr(parameterized_molecule['atoms'][i], '_charge'):.3f}"),
+                                    unit.elementary_charge) for i in range(n_atoms)]
+        except AttributeError:
+            log.error(f"{parameterized_molecule['atoms'][i]} has no attribute '_charge'")
+
+        try:
+            params['sigmas'] = [unit.Quantity(sigma_from_rmin_half(getattr(parameterized_molecule['atoms'][i], 'rmin')),
+                                    unit.angstrom) for i in range(n_atoms)]
+        except AttributeError:
+            log.error(f"{parameterized_molecule['atoms'][i]} has no attribute 'rmin'")
+
+        try:
+            params['epsilons'] = [unit.Quantity(float(f"{getattr(parameterized_molecule['atoms'][i], 'epsilon'):.3f}"),
+                                    unit.kilocalorie_per_mole) for i in range(n_atoms)]
+        except AttributeError:
+            log.error(f"{parameterized_molecule['atoms'][i]} has no attribute 'epsilon'")
+
+        # Bonds
+        if 'bonds' in parameterized_molecule.keys():
+            for i in range(n_bonds):
+                atom1_idx = getattr(getattr(parameterized_molecule['bonds'][i], 'atom1'), 'idx')
+                atom2_idx = getattr(getattr(parameterized_molecule['bonds'][i], 'atom2'), 'idx')
+                spring_constant = unit.Quantity(float(f"{getattr(getattr(parameterized_molecule['bonds'][i], 'type'), 'k'):.3f}"),
+                                                unit.kilocalorie / (unit.angstrom ** 2 * unit.mole))
+                eq_dist = unit.Quantity(float(f"{getattr(getattr(parameterized_molecule['bonds'][i], 'type'), 'req'):.3f}"),
+                                        unit.angstrom)
+                c_bond = {
+                    'atom1_idx': atom1_idx,
+                    'atom2_idx': atom2_idx,
+                    'spring_constant': spring_constant,
+                    'eq_dist': eq_dist
+                }
+                params['bonds'].append(c_bond)
+        else:
+            log.warning("WATCH OUT! The parameterized molecule has no key 'bonds' assigned.")
+            raise KeyError()
+
+        # Angles
+        if 'angles' in parameterized_molecule.keys():
+            for i in range(n_angles):
+                atom1_idx = getattr(getattr(parameterized_molecule['angles'][i], 'atom1'), 'idx')
+                atom2_idx = getattr(getattr(parameterized_molecule['angles'][i], 'atom2'), 'idx')
+                atom3_idx = getattr(getattr(parameterized_molecule['angles'][i], 'atom3'), 'idx')
+                spring_constant = unit.Quantity(float(f"{getattr(getattr(parameterized_molecule['angles'][i], 'type'), 'k'):.3f}"),
+                                                unit.kilocalorie / (unit.mole * unit.radian**2))
+                eq_angle = unit.Quantity(float(f"{getattr(getattr(parameterized_molecule['angles'][i], 'type'), 'theteq'):.3f}"),
+                                         unit.degree)
+                c_angle = {
+                    'atom1_idx': atom1_idx,
+                    'atom2_idx': atom2_idx,
+                    'atom3_idx': atom3_idx,
+                    'spring_constant': spring_constant,
+                    'eq_angle': eq_angle
+                }
+                params['angles'].append(c_angle)
+        else:
+            log.warning("WATCH OUT! The parameterized molecule has no key 'angles' assigned.")
+            raise KeyError()
+
+        # Ryckaert-Bellemans proper torsions
+        if 'rb_torsions' in parameterized_molecule.keys():
+            for i in range(n_rb_torsions):
+                atom1_idx = getattr(getattr(parameterized_molecule['rb_torsions'][i], 'atom1'), 'idx')
+                atom2_idx = getattr(getattr(parameterized_molecule['rb_torsions'][i], 'atom2'), 'idx')
+                atom3_idx = getattr(getattr(parameterized_molecule['rb_torsions'][i], 'atom3'), 'idx')
+                atom4_idx = getattr(getattr(parameterized_molecule['rb_torsions'][i], 'atom4'), 'idx')
+
+                c0 = getattr(getattr(parameterized_molecule['rb_torsions'][i], 'type'), 'c0')
+                c1 = getattr(getattr(parameterized_molecule['rb_torsions'][i], 'type'), 'c1')
+                c2 = getattr(getattr(parameterized_molecule['rb_torsions'][i], 'type'), 'c2')
+                c3 = getattr(getattr(parameterized_molecule['rb_torsions'][i], 'type'), 'c3')
+                c4 = getattr(getattr(parameterized_molecule['rb_torsions'][i], 'type'), 'c4')
+                c5 = 0  # This term is set to 0 because it will NOT be used in further calculations
+
+                # Calculate F's from C's extracted from the force field rb_torsions, following https://manual.gromacs.org/current/reference-manual/functions/bonded-interactions.html#proper-dihedrals-ryckaert-bellemans-function
+                f1 = -2 * c1 - 3 * c3 / 2
+                f2 = -c2 + c4
+                f3 = -c3 / 2
+                f4 = -c4 / 4
+
+                # In case all four F's are zero, we still need to include the proper torsion to be used
+                # by PELE in the 1-4 interactions
+                if all([float(f) == 0.0 for f in [f1, f2, f3, f4]]):
+                    params['propers'].append({
+                        'atom1_idx': atom1_idx,
+                        'atom2_idx': atom2_idx,
+                        'atom3_idx': atom3_idx,
+                        'atom4_idx': atom4_idx,
+                        'periodicity': 1.0,
+                        'phase': unit.Quantity(0.0, unit.degree),
+                        'k': unit.Quantity(0.0, unit.kilocalorie / unit.mole),
+                        'idivf': 1.0
+                    })
+
+                else:
+                    # For each dihedral (rb_torsion) define the variables required by peleffy
+                    for f, periodicity, phase in zip([f1, f2, f3, f4],
+                                                     [1, 2, 3, 4],
+                                                     [unit.Quantity(0.0, unit.degree),
+                                                      unit.Quantity(180.0, unit.degree),
+                                                      unit.Quantity(0.0, unit.degree),
+                                                      unit.Quantity(180.0, unit.degree), ]):
+
+                        k = float(f"{f:.3f}")
+                        if k != 0.0:
+                            k = unit.Quantity(k, unit.kilocalorie / unit.mole)
+                            params['propers'].append({
+                                'atom1_idx': atom1_idx,
+                                'atom2_idx': atom2_idx,
+                                'atom3_idx': atom3_idx,
+                                'atom4_idx': atom4_idx,
+                                'periodicity': periodicity,
+                                'phase': phase,
+                                'k': k / 2.0,
+                                'idivf': 1.0
+                            })
+
+        else:
+            log.warning("WATCH OUT! The parameterized molecule has no proper key 'rb_torsions' assigned.")
+            raise KeyError()
+
+        # Ryckaert-Bellemans improper torsions
+        if 'impropers' in parameterized_molecule.keys():
+            for i in range(n_impropers):
+                atom1_idx = getattr(getattr(parameterized_molecule['impropers'][i], 'atom1'), 'idx')
+                atom2_idx = getattr(getattr(parameterized_molecule['impropers'][i], 'atom2'), 'idx')
+                atom3_idx = getattr(getattr(parameterized_molecule['impropers'][i], 'atom3'), 'idx')
+                atom4_idx = getattr(getattr(parameterized_molecule['impropers'][i], 'atom4'), 'idx')
+
+                c0 = getattr(getattr(parameterized_molecule['impropers'][i], 'type'), 'c0')
+                c1 = getattr(getattr(parameterized_molecule['impropers'][i], 'type'), 'c1')
+                c2 = getattr(getattr(parameterized_molecule['impropers'][i], 'type'), 'c2')
+                c3 = getattr(getattr(parameterized_molecule['impropers'][i], 'type'), 'c3')
+                c4 = getattr(getattr(parameterized_molecule['impropers'][i], 'type'), 'c4')
+                c5 = 0  # This term is set to 0 because it will NOT be used in further calculations
+
+                # Calculate F's from C's extracted from the force field impropers
+                f1 = -2 * c1 - 3 * c3 / 2
+                f2 = -c2 + c4
+                f3 = -c3 / 2
+                f4 = -c4 / 4
+
+                # In case all four F's are zero, we still need to include the proper torsion to be used
+                # by PELE in the 1-4 interactions
+                if all([float(f) == 0.0 for f in [f1, f2, f3, f4]]):
+                    params['impropers'].append(
+                        {'atom1_idx': atom1_idx,
+                         'atom2_idx': atom2_idx,
+                         'atom3_idx': atom3_idx,
+                         'atom4_idx': atom4_idx,
+                         'periodicity': 1.0,
+                         'phase': unit.Quantity(0.0, unit.degree),
+                         'k': unit.Quantity(0.0, unit.kilocalorie / unit.mole),
+                         'idivf': 1.0
+                         })
+
+                else:
+                    # For each dihedral (impropers) define the variables required by peleffy
+                    for f, periodicity, phase in zip([f1, f2, f3, f4],
+                                                     [1, 2, 3, 4],
+                                                     [unit.Quantity(0.0, unit.degree),
+                                                      unit.Quantity(180.0, unit.degree),
+                                                      unit.Quantity(0.0, unit.degree),
+                                                      unit.Quantity(180.0, unit.degree), ]):
+
+                        k = float(f"{f:.3f}")
+                        if k != 0.0:
+                            k = unit.Quantity(k, unit.kilocalorie / unit.mole)
+                            params['impropers'].append({
+                                'atom1_idx': atom1_idx,
+                                'atom2_idx': atom2_idx,
+                                'atom3_idx': atom3_idx,
+                                'atom4_idx': atom4_idx,
+                                'periodicity': periodicity,
+                                'phase': phase,
+                                'k': k / 2.0,
+                                'idivf': 1.0
+                            })
+        else:
+            log.warning("WATCH OUT! The parameterized molecule has no key 'impropers' assigned.")
+            raise KeyError()
+
+        # Periodic improper dihedrals
+        if 'dihedrals' in parameterized_molecule.keys():
+            for i in range(n_periodic_dihedrals):
+                if getattr(parameterized_molecule['dihedrals'][i], 'improper'):
+                    atom1_idx = getattr(getattr(parameterized_molecule['dihedrals'][i], 'atom4'), 'idx')
+                    atom2_idx = getattr(getattr(parameterized_molecule['dihedrals'][i], 'atom2'), 'idx')
+                    atom3_idx = getattr(getattr(parameterized_molecule['dihedrals'][i], 'atom3'), 'idx')
+                    atom4_idx = getattr(getattr(parameterized_molecule['dihedrals'][i], 'atom1'), 'idx')
+
+                    periodicity = int(getattr(getattr(parameterized_molecule['dihedrals'][i], 'type'), 'per'))
+                    phase = int(getattr(getattr(parameterized_molecule['dihedrals'][i], 'type'), 'phase'))
+                    k = getattr(getattr(parameterized_molecule['dihedrals'][i], 'type'), 'phi_k')
+
+                    params['impropers'].append(
+                        {'atom1_idx': atom1_idx,
+                         'atom2_idx': atom2_idx,
+                         'atom3_idx': atom3_idx,
+                         'atom4_idx': atom4_idx,
+                         'periodicity': periodicity,
+                         'phase': unit.Quantity(phase, unit.degree),
+                         'k': unit.Quantity(k, unit.kilocalorie / unit.mole),
+                         'idivf': 1.0
+                         })
+
+                elif hasattr(parameterized_molecule['dihedrals'][i], '_is_improper') \
+                    and getattr(parameterized_molecule['dihedrals'][i], '_is_improper'):
+                    # The order tries to match the one defined in Schrodinger's
+                    # MOD: 4,2,3,1 /// ORIGINAL: 1,2,3,4
+                    atom1_idx = getattr(getattr(parameterized_molecule['dihedrals'][i], 'atom4'), 'idx')
+                    atom2_idx = getattr(getattr(parameterized_molecule['dihedrals'][i], 'atom2'), 'idx')
+                    atom3_idx = getattr(getattr(parameterized_molecule['dihedrals'][i], 'atom3'), 'idx')
+                    atom4_idx = getattr(getattr(parameterized_molecule['dihedrals'][i], 'atom1'), 'idx')
+
+                    periodicity = int(getattr(getattr(parameterized_molecule['dihedrals'][i], 'type'), 'per'))
+                    phase = int(getattr(getattr(parameterized_molecule['dihedrals'][i], 'type'), 'phase'))
+                    k = getattr(getattr(parameterized_molecule['dihedrals'][i], 'type'), 'phi_k')
+
+                    params['impropers'].append(
+                        {'atom1_idx': atom1_idx,
+                         'atom2_idx': atom2_idx,
+                         'atom3_idx': atom3_idx,
+                         'atom4_idx': atom4_idx,
+                         'periodicity': periodicity,
+                         'phase': unit.Quantity(phase, unit.degree),
+                         'k': unit.Quantity(k, unit.kilocalorie / unit.mole),
+                         'idivf': 1.0
+                         })
+
+                elif not hasattr(parameterized_molecule['dihedrals'][i], '_is_improper'):
+                    log.warning("> Could not find attribute 'is_improper' in the"
+                                " input object.")
+        else:
+            log.warning(f"WATCH OUT! The parameterized molecule has no key 'dihedrals' assigned.")
+            raise KeyError()
+
+        foyer_params_wrapper = FoyerParameterWrapper(params)
+
+        # Add SGBNP parameters
+        FoyerParameterWrapper._add_SGBNP_solvent_parameters(foyer_params_wrapper)
+
+        # Add GBSA parameters
+        wrapper = RDKitToolkitWrapper()
+        atom_names = foyer_params_wrapper['atom_names']
+
+        degree_by_name = dict(zip(atom_names, wrapper.get_atom_degrees(peleffy_molecule)))
+        parent_by_name = dict(zip(atom_names, wrapper.get_hydrogen_parents(peleffy_molecule)))
+        element_by_name = dict(zip(atom_names, wrapper.get_elements(peleffy_molecule)))
+
+        if all([degree_by_name, parent_by_name, element_by_name]):
+            FoyerParameterWrapper._add_GBSA_solvent_parameters(foyer_params_wrapper,
+                                                               degree_by_name,
+                                                               parent_by_name,
+                                                               element_by_name)
+        else:
+            log.error("ERROR: 'degree_by_name', 'parent_by_name', or 'element_by_name' may be empty and '_add_GBSA_solvent_parameters' method could not be run on the 'FoyerParameterWrapper' object.")
+            raise Exception()
+
+        return foyer_params_wrapper

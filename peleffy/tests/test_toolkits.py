@@ -318,3 +318,61 @@ class TestRDKitToolkitWrapper(object):
         pdb_path2 = get_data_file_path('ligands/trimethylglycine_moved.pdb')
         m2 = Molecule(pdb_path2)
         np.testing.assert_almost_equal(wrapper.get_rmsd(m, m2), 0.3346, decimal=3)
+
+
+class TestFoyerToolkitWrapper(object):
+    """
+    It wraps all tests that check the FoyerToolkitWrapper class.
+    """
+
+    def test_load_oplsaa(self):
+        """
+        Test that loaded OPLS_AA force field by Foyer is indeed of its type.
+        """
+
+        from peleffy.utils.toolkits import FoyerToolkitWrapper
+        from foyer.forcefields.forcefields import load_OPLSAA
+
+        wrapper = FoyerToolkitWrapper()
+
+        assert type(wrapper.load_oplsaa()) == type(load_OPLSAA()), f"FoyerToolkitWrapper().load_oplsaa() returned an object of unexpected type ('{type(wrapper.load_oplsaa())}')."
+
+    def test_parameterize_from_parmed(self):
+        """
+        Check that the parmed molecule loaded from a pdb file using the OPLS_AA force field from Foyer has all the expected fields, and has at least data for the fields 'atoms', 'bonds' , and 'angles'.
+        """
+
+        from peleffy.utils.toolkits import FoyerToolkitWrapper
+        from peleffy.utils import get_data_file_path
+
+        wrapper = FoyerToolkitWrapper()
+
+        parameterized_molecule = wrapper.parameterize_from_parmed(get_data_file_path('ligands/toluene.pdb'), 'oplsaa')
+
+        assert isinstance(parameterized_molecule, dict), f"The object 'parameterized_molecule' is type '{type(parameterized_molecule)}'. Should be 'dict' type."
+        assert len(parameterized_molecule) > 0, f"The length of 'parameterized_molecule' object is 0."
+        assert ['atoms', 'residues', 'bonds', 'angles', 'dihedrals', 'rb_torsions', 'urey_bradleys', 'impropers',
+                'cmaps', 'trigonal_angles', 'out_of_plane_bends', 'pi_torsions', 'stretch_bends', 'torsion_torsions',
+                'chiral_frames', 'multipole_frames', 'adjusts', 'acceptors', 'donors', 'groups', 'bond_types',
+                'angle_types', 'dihedral_types', 'urey_bradley_types', 'improper_types', 'rb_torsion_types',
+                'cmap_types', 'trigonal_angle_types', 'out_of_plane_bend_types', 'pi_torsion_types',
+                'stretch_bend_types', 'torsion_torsion_types', 'adjust_types', 'links', '_box', '_coordinates',
+                'space_group', 'unknown_functional', 'nrexcl', 'title', '_combining_rule', 'symmetry', 'defaults'] == \
+               list(parameterized_molecule.keys()), \
+            "Some keys are missing in the output object from 'parameterize_from_parmed()'."
+        assert 0 not in [len(parameterized_molecule['atoms']),
+                         len(parameterized_molecule['bonds']),
+                         len(parameterized_molecule['angles'])], \
+            "Critical fields of the parmaeterized molecule dictionary have length==0."
+
+    def test_ForcefieldUnavailableError_class(self):
+        """
+        Check that when function parameterize_from_parmed() is called without a recognized 'forcefield' argument, it raises a 'ForcefieldUnavailableError'.
+        """
+        from peleffy.utils.toolkits import FoyerToolkitWrapper, ForcefieldUnavailableError
+        from peleffy.utils import get_data_file_path
+
+        wrapper = FoyerToolkitWrapper()
+
+        with pytest.raises(ForcefieldUnavailableError):
+            parameterized_molecule = wrapper.parameterize_from_parmed(get_data_file_path('ligands/toluene.pdb'), forcefield='dummy')
