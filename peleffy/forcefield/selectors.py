@@ -12,7 +12,10 @@ class ForceFieldSelector(object):
     It defines a force field selector.
     """
     _FF_TYPES = {'OPLS2005': ('OPLS2005', ),
-                 'OpenFF': ('openff_unconstrained-2.0.0.offxml',
+                 'OpenFF': ('openff_unconstrained-2.2.0.offxml',
+                            'openff_unconstrained-2.1.1.offxml',
+                            'openff_unconstrained-2.1.0.offxml',
+                            'openff_unconstrained-2.0.0.offxml',
                             'openff_unconstrained-1.3.0.offxml',
                             'openff_unconstrained-1.2.1.offxml',
                             'openff_unconstrained-1.2.0.offxml',
@@ -93,13 +96,15 @@ class ChargeCalculatorSelector(object):
                                                 Am1bccCalculator,
                                                 GasteigerCalculator,
                                                 DummyChargeCalculator,
-                                                MullikenCalculator)
+                                                MullikenCalculator,
+                                                MMFF94Calculator)
 
     _AVAILABLE_TYPES = {'opls2005': OPLSChargeCalculator,
                         'am1bcc': Am1bccCalculator,
                         'gasteiger': GasteigerCalculator,
                         'dummy': DummyChargeCalculator,
-                        'mulliken': MullikenCalculator
+                        'mulliken': MullikenCalculator,
+                        'mmff94': MMFF94Calculator
                         }
 
     def get_by_name(self, charge_method, molecule):

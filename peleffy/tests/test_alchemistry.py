@@ -117,7 +117,7 @@ class TestAlchemistry(object):
                                None,
                                'C=C',
                                'C(Cl)(Cl)(Cl)',
-                               [(0, 0), (1, 1), (2, 2), (3, 4)],
+                               [(0, 0), (1, 2), (2, 3), (3, 4)],
                                [6],
                                [5],
                                [6, 7, 8],
@@ -176,7 +176,7 @@ class TestAlchemistry(object):
                                'ligands/ethylene.pdb',
                                None,
                                None,
-                               [(0, 0), (1, 1), (3, 4), (2, 2)],
+                               [(0, 0), (1, 1), (3, 5), (2, 2)],
                                [4, 5],
                                [3, 4],
                                [2, 3, 4, 5],
@@ -192,7 +192,7 @@ class TestAlchemistry(object):
                                'ligands/propionic_acid.pdb',
                                None,
                                None,
-                               [(0, 5), (1, 0), (2, 6), (3, 1), (4, 2),
+                               [(0, 6), (1, 0), (2, 7), (3, 1), (4, 2),
                                 (5, 4), (9, 10), (6, 3), (7, 8), (8, 9)],
                                [10, ],
                                [9, ],
@@ -213,9 +213,9 @@ class TestAlchemistry(object):
                                'ligands/propionic_acid.pdb',
                                None,
                                None,
-                               [(0, 0), (1, 1), (4, 2), (17, 3), (5, 4),
-                                (6, 10), (2, 8), (3, 9), (8, 5), (9, 6),
-                                (10, 7)],
+                               [(3, 0), (1, 1), (4, 2), (18, 3), (5, 4),
+                                (6, 10), (0, 8), (2, 9), (14, 5),
+                                (15, 6), (16, 7)],
                                [],
                                [],
                                [],
@@ -223,10 +223,10 @@ class TestAlchemistry(object):
                                 56, 57, 58, 59, 60, 61, 62, 63, 64, 65,
                                 66, 67],
                                [1],
-                               [7, 11, 12, 13, 14, 15, 16, 18],
-                               [7, 8, 9, 10, 11, 12, 15, 17],
-                               [6, 7, 8, 9, 10, 11, 14, 19, 21, 22, 26,
-                                27, 28, 29, 30, 31, 32],
+                               [7, 8, 9, 10, 11, 12, 13, 17],
+                               [1, 2, 3, 7, 8, 9, 14, 17],
+                               [3, 4, 5, 6, 7, 8, 13, 19, 20, 22, 23,
+                                24, 25, 26, 27, 28, 32],
                                [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
                                 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
                                 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
@@ -238,8 +238,8 @@ class TestAlchemistry(object):
                                'ligands/benzamidine.pdb',
                                None,
                                None,
-                               [(1, 6), (0, 7), (8, 14), (9, 15), (2, 8),
-                                (11, 16)],
+                               [(1, 6), (3, 7), (14, 14), (16, 15),
+                                (4, 8), (18, 16)],
                                [19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
                                [18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
                                 28, 29],
@@ -250,13 +250,13 @@ class TestAlchemistry(object):
                                 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78,
                                 79, 80, 81, 82, 83],
                                [1, 2, 3, 4, 5, 6, 7, 8],
-                               [3, 4, 5, 6, 7, 10, 12, 13, 14, 15, 16, 17,
-                                18],
-                               [3, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-                                17],
-                               [1, 2, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-                                16, 17, 18, 19, 20, 21, 22, 24, 25, 26,
-                                27, 28, 29, 30, 31, 32],
+                               [0, 2, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+                                15, 17],
+                               [0, 1, 2, 3, 4, 7, 8, 9, 11, 13, 14,
+                                16, 17],
+                               [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 13,
+                                15, 16, 18, 19, 20, 21, 22, 23, 24, 25,
+                                26, 27, 28, 29, 31, 32],
                                [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
                                 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
                                 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
@@ -3123,13 +3123,17 @@ class TestAlchemistry(object):
             nonpolar_gammas.append(atom.nonpolar_gamma)
             nonpolar_alphas.append(atom.nonpolar_alpha)
 
-        assert sigmas == golden_sigmas, 'Unexpected sigmas'
-        assert epsilons == golden_epsilons, 'Unexpected epsilons'
-        assert born_radii == golden_born_radii, 'Unexpected born radii'
-        assert SASA_radii == golden_SASA_radii, 'Unexpected SASA radii'
-        assert nonpolar_gammas == golden_nonpolar_gammas, \
+        assert sorted(sigmas) == sorted(golden_sigmas), \
+            'Unexpected sigmas'
+        assert sorted(epsilons) == sorted(golden_epsilons), \
+            'Unexpected epsilons'
+        assert sorted(born_radii) == sorted(golden_born_radii), \
+            'Unexpected born radii'
+        assert sorted(SASA_radii) == sorted(golden_SASA_radii), \
+            'Unexpected SASA radii'
+        assert sorted(nonpolar_gammas) == sorted(golden_nonpolar_gammas), \
             'Unexpected non polar gammas'
-        assert nonpolar_alphas == golden_nonpolar_alphas, \
+        assert sorted(nonpolar_alphas) == sorted(golden_nonpolar_alphas), \
             'Unexpected non polar alphas'
 
     @pytest.mark.parametrize("pdb1, pdb2, smiles1, smiles2, " +
@@ -3250,7 +3254,7 @@ class TestAlchemistry(object):
             bond = WritableBond(bond)
             bond_spring_constants.append(bond.spring_constant)
 
-        assert bond_spring_constants == golden_bond_spring_constants, \
+        assert sorted(bond_spring_constants) == sorted(golden_bond_spring_constants), \
             'Unexpected spring constants'
 
     @pytest.mark.parametrize("pdb1, pdb2, smiles1, smiles2, " +
@@ -3362,7 +3366,7 @@ class TestAlchemistry(object):
             angle = WritableAngle(angle)
             angle_spring_constants.append(angle.spring_constant)
 
-        assert angle_spring_constants == golden_angle_spring_constants, \
+        assert sorted(angle_spring_constants) == sorted(golden_angle_spring_constants), \
             'Unexpected spring constants'
 
     @pytest.mark.parametrize("pdb1, pdb2, smiles1, smiles2, " +

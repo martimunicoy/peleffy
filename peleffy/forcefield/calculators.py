@@ -102,6 +102,34 @@ class MullikenCalculator(_PartialChargeCalculator):
     _name = 'mulliken'
 
 
+class MMFF94Calculator(_PartialChargeCalculator):
+    """
+    Implementation of the Merck Molecular Force Field partial charge
+    calculator (using RDKit).
+    """
+
+    _name = 'mmff94'
+
+    def get_partial_charges(self):
+        """
+        It returns the partial charges that correspond to the molecule's
+        atoms.
+
+        Returns
+        -------
+        partial_charges : simtk.unit.Quantity
+            The array of partial charges
+        """
+
+        from peleffy.utils.toolkits import RDKitToolkitWrapper
+
+        rdkit_toolkit_wrapper = RDKitToolkitWrapper()
+        charges = rdkit_toolkit_wrapper.get_mmff_charges(
+            self.molecule)
+
+        return charges
+
+
 class OPLSChargeCalculator(_PartialChargeCalculator):
     """
     Implementation of the calculator of OPLS partial charges (using

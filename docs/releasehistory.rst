@@ -8,6 +8,52 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
+1.6.0 - Latest force fields and charge calculators
+--------------------------------------------------
+
+This is a minor release of peleffy that supports the latest OpenFF force fields.
+It also contains a new charge method that assigns partial charges from the
+Merck Molecular Force Field.
+
+New features
+""""""""""""
+- `PR #183 <https://github.com/martimunicoy/peleffy/pull/183>`_: include new force fields 'openff_unconstrained-2.1.1.offxml' and 'openff_unconstrained-2.2.0.offxml'
+- `PR #183 <https://github.com/martimunicoy/peleffy/pull/183>`_: include 'mmff94' charge calculator
+
+Tests added
+"""""""""""
+- `PR #183 <https://github.com/martimunicoy/peleffy/pull/183>`_: include force fields 'openff_unconstrained-2.1.1.offxml' and 'openff_unconstrained-2.2.0.offxml' into the tests
+- `PR #183 <https://github.com/martimunicoy/peleffy/pull/183>`_: include 'mmff94' charge calculator into the tests
+
+
+1.5.0 - OpenFF upgrade and enhancements for alchemistry
+-------------------------------------------------------
+
+This is a minor release of peleffy that supports the latest version of openff-toolkit 0.10. It also
+contains additional enhancements for the alchemistry module.
+
+New features
+""""""""""""
+- `PR #182 <https://github.com/martimunicoy/peleffy/pull/182>`_: support openff-toolkit 0.10.7 and openff-forcefield 2.1.0
+- `PR #182 <https://github.com/martimunicoy/peleffy/pull/182>`_: better alchemical structure alignment
+- `PR #182 <https://github.com/martimunicoy/peleffy/pull/182>`_: more lambda types available (vdw1 and vdw2)
+
+Tests added
+"""""""""""
+- `PR #182 <https://github.com/martimunicoy/peleffy/pull/182>`_: corrections for alchemical and mapper tests
+- `PR #182 <https://github.com/martimunicoy/peleffy/pull/182>`_: new test to check forcefield names
+
+
+1.4.5 - Corrections for alchemistry
+-----------------------------------
+
+This is a micro release of peleffy that contains corrections for alchemistry module.
+
+Bugfixes
+""""""""
+- `PR #180 <https://github.com/martimunicoy/peleffy/pull/180>`_: bug fixes for alchemical topologies
+
+
 1.4.4 - Corrections for alchemistry and new charge calculator
 -------------------------------------------------------------
 

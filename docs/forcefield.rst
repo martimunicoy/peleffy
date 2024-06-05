@@ -32,6 +32,8 @@ Secondary objects
     calculators.Am1bccCalculator
     calculators.GasteigerCalculator
     calculators.OPLSChargeCalculator
+    calculators.MullikenCalculator
+    calculators.MMFF94Calculator
     calculators.DummyChargeCalculator
     selectors.ChargeCalculatorSelector
     parameters.BaseParameterWrapper

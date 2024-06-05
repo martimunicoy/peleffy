@@ -756,7 +756,9 @@ class RDKitToolkitWrapper(ToolkitWrapper):
             The list of atom pairs between both molecules, represented
             with tuples
         """
+        import itertools
         from rdkit.Chem import AllChem
+        from rdkit.Chem.rdMolAlign import CalcRMS
 
         rdkit_mol1 = deepcopy(molecule1.rdkit_molecule)
         rdkit_mol2 = deepcopy(molecule2.rdkit_molecule)
@@ -768,13 +770,13 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         # Map atoms between mol1 and MCS mol
         if rdkit_mol1.HasSubstructMatch(mcs_mol):
-            mol1_sub = rdkit_mol1.GetSubstructMatch(mcs_mol)
+            mol1_subs = rdkit_mol1.GetSubstructMatches(mcs_mol)
         else:
             raise ValueError('RDKit MCS Subgraph molecule 1 search failed')
 
         # Map atoms between mol2 and MCS mol
         if rdkit_mol2.HasSubstructMatch(mcs_mol):
-            mol2_sub = rdkit_mol2.GetSubstructMatch(mcs_mol)
+            mol2_subs = rdkit_mol2.GetSubstructMatches(mcs_mol)
         else:
             raise ValueError('RDKit MCS Subgraph molecule 2 search failed')
 
@@ -785,8 +787,26 @@ class RDKitToolkitWrapper(ToolkitWrapper):
             raise ValueError('RDKit MCS Subgraph search failed')
         """
 
+        # Find best mapping
+        best_mol1_sub = None
+        best_mol2_sub = None
+        best_rmsd = None
+        for mol1_sub, mol2_sub in itertools.product(mol1_subs, mol2_subs):
+            rmsd = CalcRMS(rdkit_mol1, rdkit_mol2,
+                           map=[list(zip(mol1_sub, mol2_sub)), ])
+
+            if best_rmsd is None:
+                best_mol1_sub = mol1_sub
+                best_mol2_sub = mol2_sub
+                best_rmsd = rmsd
+
+            elif rmsd < best_rmsd:
+                best_mol1_sub = mol1_sub
+                best_mol2_sub = mol2_sub
+                best_rmsd = rmsd
+
         # Map between the two molecules
-        mapping = list(zip(mol1_sub, mol2_sub))
+        mapping = list(zip(best_mol1_sub, best_mol2_sub))
 
         return mapping
 
@@ -963,6 +983,32 @@ class RDKitToolkitWrapper(ToolkitWrapper):
                          Chem.SANITIZE_ALL ^ Chem.SANITIZE_KEKULIZE ^ Chem.SANITIZE_SETAROMATICITY)
 
         return mol_combo
+
+    def get_mmff_charges(self, molecule):
+        """
+        Given a molecule, it assigns the charges according to the
+        Merck Molecular Force Field implemented in RDKit.
+
+        Parameters
+        ----------
+        molecule : an RDKit.molecule object
+            The molecule whose charges will be assigned
+        
+        Returns
+        -------
+        charges : simtk.unit.Quantity
+            The array of partial charges
+        """
+        from rdkit.Chem import AllChem
+
+        mmff_properties = AllChem.MMFFGetMoleculeProperties(
+            rdkit_molecule, "MMFF94")
+        charges = [mmff_properties.GetMMFFPartialCharge(i)
+                   for i in range(molecule.n_atoms)]
+
+        charges = unit.Quantity(charges, unit.elementary_charge)
+        
+        return charges
 
 
 class AmberToolkitWrapper(ToolkitWrapper):

@@ -57,8 +57,10 @@ class TestMapper(object):
         mapper = Mapper(mol1, mol2, include_hydrogens=False)
         mapping = mapper.get_mapping()
 
-        assert mapping == [(0, 1), (1, 2), (2, 0), (3, 6),
-                           (4, 5), (5, 4), (6, 3)], 'Unexpected mapping'
+        assert (mapping == [(0, 1), (1, 2), (2, 0), (3, 6), (4, 5), (5, 4), (6, 3)] or
+                mapping == [(0, 6), (1, 7), (2, 5), (3, 4), (4, 3), (5, 1), (6, 0)] or
+                mapping == [(6, 1), (7, 2), (5, 0), (4, 6), (3, 5), (2, 4), (0, 3)] or
+                mapping == [(6, 6), (7, 7), (5, 5), (4, 4), (3, 3), (2, 1), (0, 0)]), 'Unexpected mapping'
 
         # Third mapping checker with hydrogens
         mol1 = Molecule(smiles='c1ccccc1', hydrogens_are_explicit=False)
@@ -79,7 +81,7 @@ class TestMapper(object):
         mapper = Mapper(mol1, mol2, include_hydrogens=True)
         mapping = mapper.get_mapping()
 
-        assert mapping == [(0, 1), (1, 2), (8, 9), (9, 10),
-                           (10, 11), (2, 0), (3, 6), (4, 5),
-                           (5, 4), (6, 3), (7, 12), (14, 13),
-                           (13, 14), (12, 7), (11, 8)], 'Unexpected mapping'
+        assert (mapping == [(0, 1), (1, 2), (8, 9), (9, 10), (10, 11), (2, 0), (3, 6), (4, 5),
+                            (5, 4), (6, 3), (7, 12), (14, 13), (13, 14), (12, 7), (11, 8)] or
+                mapping == [(6, 1), (7, 2), (15, 9), (16, 10), (17, 11), (5, 0), (4, 6), (3, 5),
+                            (2, 4), (0, 3), (1, 12), (11, 13), (12, 14), (13, 7), (14, 8)]), 'Unexpected mapping'

@@ -17,7 +17,7 @@ from peleffy.utils import Logger, OutputPathHandler
 from peleffy.forcefield.selectors import ChargeCalculatorSelector
 
 
-DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-2.0.0.offxml'
+DEFAULT_OFF_FORCEFIELD = 'openff_unconstrained-2.2.0.offxml'
 DEFAULT_RESOLUTION = int(30)
 DEFAULT_CHARGE_METHOD = None  # Use FF's default
 IMPACT_TEMPLATE_PATH = 'DataLocal/Templates/OFF/Parsley/HeteroAtoms/'
