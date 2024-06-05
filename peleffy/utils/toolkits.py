@@ -984,6 +984,32 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         return mol_combo
 
+    def get_mmff_charges(self, molecule):
+        """
+        Given a molecule, it assigns the charges according to the
+        Merck Molecular Force Field implemented in RDKit.
+
+        Parameters
+        ----------
+        molecule : an RDKit.molecule object
+            The molecule whose charges will be assigned
+        
+        Returns
+        -------
+        charges : simtk.unit.Quantity
+            The array of partial charges
+        """
+        from rdkit.Chem import AllChem
+
+        mmff_properties = AllChem.MMFFGetMoleculeProperties(
+            rdkit_molecule, "MMFF94")
+        charges = [mmff_properties.GetMMFFPartialCharge(i)
+                   for i in range(molecule.n_atoms)]
+
+        charges = unit.Quantity(charges, unit.elementary_charge)
+        
+        return charges
+
 
 class AmberToolkitWrapper(ToolkitWrapper):
     """

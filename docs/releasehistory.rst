@@ -8,6 +8,24 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
+1.6.0 - Latest force fields and charge calculators
+--------------------------------------------------
+
+This is a minor release of peleffy that supports the latest OpenFF force fields.
+It also contains a new charge method that assigns partial charges from the
+Merck Molecular Force Field.
+
+New features
+""""""""""""
+- `PR #183 <https://github.com/martimunicoy/peleffy/pull/183>`_: include new force fields 'openff_unconstrained-2.1.1.offxml' and 'openff_unconstrained-2.2.0.offxml'
+- `PR #183 <https://github.com/martimunicoy/peleffy/pull/183>`_: include 'mmff94' charge calculator
+
+Tests added
+"""""""""""
+- `PR #183 <https://github.com/martimunicoy/peleffy/pull/183>`_: include force fields 'openff_unconstrained-2.1.1.offxml' and 'openff_unconstrained-2.2.0.offxml' into the tests
+- `PR #183 <https://github.com/martimunicoy/peleffy/pull/183>`_: include 'mmff94' charge calculator into the tests
+
+
 1.5.0 - OpenFF upgrade and enhancements for alchemistry
 -------------------------------------------------------
 

@@ -27,7 +27,7 @@ requirements:
     - rdkit
     - ambertools
     - openff-toolkit==0.10.7
-    - openff-forcefields==2023.05.1
+    - openff-forcefields==2024.04.0
 
 about:
   home: https://github.com/martimunicoy/peleffy
