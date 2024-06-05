@@ -113,7 +113,7 @@ def compare_dicts(dict1, dict2):
     try:
         for key, value in dict1.items():
 
-            if not isinstance(value)
+            #if not isinstance(value)
             yaml_string1 = value.replace("'", "\"")
             yaml_string2 = dict2[key].replace("'", "\"")
 
