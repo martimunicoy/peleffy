@@ -8,6 +8,17 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
+1.5.1 - Important bug fix for alchemistry
+-----------------------------------------
+
+This is a minor release of peleffy that corrects an important problem in alchemical
+templates.
+
+Bugfixes
+""""""""
+- `PR #183 <https://github.com/martimunicoy/peleffy/pull/183>`_: bug fixes for alchemical topologies
+
+
 1.5.0 - OpenFF upgrade and enhancements for alchemistry
 -------------------------------------------------------
 
