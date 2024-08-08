@@ -523,7 +523,7 @@ class Alchemizer(object):
             atom1_idx = proper.atom1_idx
             atom2_idx = proper.atom2_idx
             atom3_idx = proper.atom3_idx
-            atom4_idx = proper.atom1_idx
+            atom4_idx = proper.atom4_idx
 
             # Add a copy of the proper
             new_proper = deepcopy(proper)
@@ -547,7 +547,7 @@ class Alchemizer(object):
             atom1_idx = improper.atom1_idx
             atom2_idx = improper.atom2_idx
             atom3_idx = improper.atom3_idx
-            atom4_idx = improper.atom1_idx
+            atom4_idx = improper.atom4_idx
 
             # Add a copy of the improper
             new_improper = deepcopy(improper)
