@@ -1220,7 +1220,7 @@ class Dihedral(_TopologyElement):
 
         return hash((self.atom1_idx, self.atom2_idx, self.atom3_idx, self.atom4_idx,
                      self.periodicity, self.prefactor,
-                     self.phase.value_in_unit(unit.kilocalorie / unit.mole)))
+                     self.phase.value_in_unit(unit.degree)))
 
 
 class Proper(Dihedral):
@@ -1386,10 +1386,10 @@ class OFFDihedral(_TopologyElement):
         hash : int
             The hash value for this topological element
         """
-        
+
         return hash((self.atom1_idx, self.atom2_idx, self.atom3_idx, self.atom4_idx,
                      self.periodicity, self.prefactor,
-                     self.phase.value_in_unit(unit.kilocalorie / unit.mole)))
+                     self.phase.value_in_unit(unit.degree)))
 
 
 class OFFProper(OFFDihedral):
