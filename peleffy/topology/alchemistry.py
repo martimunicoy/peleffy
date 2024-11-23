@@ -377,6 +377,7 @@ class Alchemizer(object):
                         new_proper.set_constant(new_proper.constant + other_proper.constant)
 
                 summative_propers.append(new_proper)
+        alchemical_topology._propers = summative_propers
 
         # Joint topology cannot have mutual impropers
         for improper_idx, improper in enumerate(alchemical_topology.impropers):
@@ -400,6 +401,7 @@ class Alchemizer(object):
                         new_proper.set_constant(new_proper.constant + other_proper.constant)
 
                 summative_impropers.append(new_proper)
+        alchemical_topology._impropers = summative_impropers
 
         return alchemical_topology
 
