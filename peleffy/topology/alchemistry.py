@@ -403,6 +403,9 @@ class Alchemizer(object):
                 summative_impropers.append(new_proper)
         alchemical_topology._impropers = summative_impropers
 
+        # Choose which propers to be ignored in PELE's 1-4 list
+        alchemical_topology._handle_excluded_propers()
+
         return alchemical_topology
 
     def _join_topologies(self):
