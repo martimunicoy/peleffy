@@ -36,7 +36,8 @@ class TestWrapper(object):
         """
         from peleffy.forcefield.parameters \
             import (BaseParameterWrapper, OpenForceFieldParameterWrapper,
-                    OPLS2005ParameterWrapper, OpenFFOPLS2005ParameterWrapper)
+                    OPLS2005ParameterWrapper, OpenFFOPLS2005ParameterWrapper,
+                    FoyerParameterWrapper)
 
         p = BaseParameterWrapper()
 
@@ -79,6 +80,17 @@ class TestWrapper(object):
             forcefield_name='openff_unconstrained-1.2.1.offxml')
 
         assert p.forcefield_name == 'openff_unconstrained-1.2.1.offxml', \
+            'Unexpected force field name found in the parameters wrapper'
+
+        p = FoyerParameterWrapper()
+
+        assert p.forcefield_name == 'Foyer', \
+            'Unexpected force field name found in the parameters wrapper'
+
+        p = FoyerParameterWrapper(
+            forcefield_name='foyer')
+
+        assert p.forcefield_name == 'foyer', \
             'Unexpected force field name found in the parameters wrapper'
 
     def test_comparison(self):
@@ -298,6 +310,33 @@ class TestWrapper(object):
             impact_template_path = get_data_file_path('tests/metz')
             test_generate_OpenForceFieldParameterWrapper(molecule,
                                                          impact_template_path)
+
+class TestFoyerParameterWrapper(object):
+    """
+    Tests regarding the FoyerParameterWrapper class.
+    """
+
+    def test_update_parameters(self):
+        """
+        Check that the update_parameters() function creates a dictionary with all the required data when given a pdb
+        file and the corresponding peleffy.Molecule object.
+        """
+        from peleffy.forcefield.parameters import FoyerParameterWrapper
+        from peleffy.utils.utils import get_data_file_path
+        from peleffy.topology.molecule import Molecule
+
+        pdb_path = get_data_file_path('ligands/toluene.pdb')
+        peleffy_molecule = Molecule(pdb_path)
+
+        params = FoyerParameterWrapper.update_parameters(pdb_path, peleffy_molecule)
+
+        assert isinstance(params, FoyerParameterWrapper), \
+            "The parameters output object is not of type 'FoyerParameterWrapper'."
+        assert ['atom_names', 'atom_types', 'charges', 'sigmas', 'epsilons', 'SGB_radii', 'vdW_radii', 'gammas',
+                'alphas', 'GBSA_radii', 'GBSA_scales', 'bonds', 'angles', 'propers', 'impropers'] == list(params.keys()), \
+            "The 'FoyerParameterWrapper' object has not got all the expected keys."
+        assert all([len(params[key]) > 0 for key in params.keys()]), \
+            "Some fields from the 'FoyerParameterWrapper' object have length==0."
 
 
 class TestBonds(object):
