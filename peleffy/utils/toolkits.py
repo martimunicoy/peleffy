@@ -770,13 +770,13 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         # Map atoms between mol1 and MCS mol
         if rdkit_mol1.HasSubstructMatch(mcs_mol):
-            mol1_subs = rdkit_mol1.GetSubstructMatches(mcs_mol)
+            mol1_subs = rdkit_mol1.GetSubstructMatches(mcs_mol, uniquify=False)
         else:
             raise ValueError('RDKit MCS Subgraph molecule 1 search failed')
 
         # Map atoms between mol2 and MCS mol
         if rdkit_mol2.HasSubstructMatch(mcs_mol):
-            mol2_subs = rdkit_mol2.GetSubstructMatches(mcs_mol)
+            mol2_subs = rdkit_mol2.GetSubstructMatches(mcs_mol, uniquify=False)
         else:
             raise ValueError('RDKit MCS Subgraph molecule 2 search failed')
 
