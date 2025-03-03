@@ -3,10 +3,11 @@ This module defines the basic topology elements of a molecule.
 """
 
 
+from abc import ABC, abstractmethod
 from simtk import unit
 
 
-class _TopologyElement(object):
+class _TopologyElement(ABC):
     """
     A wrapper for any topological element.
     """
@@ -182,6 +183,37 @@ class _TopologyElement(object):
             The readable representation string
         """
         return self.__repr__()
+
+    @abstractmethod
+    def __hash__(self):
+        """
+        It returns the hash representation of this topological element.
+
+        Returns
+        -------
+        hash : int
+            The hash value for this topological element
+        """
+        raise NotImplementedError
+
+    def __eq__(self, other):
+        """
+        It compares this topological element with another for equality.
+
+        Parameters
+        ----------
+        other : peleffy.topology.elements._TopologyElement
+            The object to compare against
+            
+        Returns
+        -------
+        comparison : bool
+            True if the objects are equal, False otherwise
+        """
+        if isinstance(other, _TopologyElement):
+            return self.__hash__() == other.__hash__()
+        
+        return False
 
 
 class Atom(_TopologyElement):
@@ -602,6 +634,17 @@ class Atom(_TopologyElement):
         """
         return self._parent
 
+    def __hash__(self):
+        """
+        It returns the hash representation of this topological element.
+
+        Returns
+        -------
+        hash : int
+            The hash value for this topological element
+        """
+        return hash(self.index)
+
 
 class DummyAtom(Atom):
     """
@@ -752,6 +795,17 @@ class Bond(_TopologyElement):
             The equilibrium distance of this Bond object
         """
         return self._eq_dist
+
+    def __hash__(self):
+        """
+        It returns the hash representation of this topological element.
+
+        Returns
+        -------
+        hash : int
+            The hash value for this topological element
+        """
+        return hash((self.atom1_idx, self.atom2_idx))
 
 
 class Angle(_TopologyElement):
@@ -907,6 +961,17 @@ class Angle(_TopologyElement):
         """
         return self._eq_angle
 
+    def __hash__(self):
+        """
+        It returns the hash representation of this topological element.
+
+        Returns
+        -------
+        hash : int
+            The hash value for this topological element
+        """
+        return hash((self.atom1_idx, self.atom2_idx, self.atom3_idx))
+
 
 class Dihedral(_TopologyElement):
     """
@@ -1008,6 +1073,17 @@ class Dihedral(_TopologyElement):
             The index of the fourth atom involved in this Dihedral
         """
         self._atom4_idx = index
+    
+    def set_constant(self, constant):
+        """
+        It sets dihedral's constant.
+        
+        Parameters
+        ----------
+        constant : simtk.unit.Quantity
+            The constant of this Dihedral
+        """
+        self._constant = constant
 
     def plot(self):
         """
@@ -1131,6 +1207,20 @@ class Dihedral(_TopologyElement):
             The phase constant of this Dihedral object
         """
         return self._phase
+
+    def __hash__(self):
+        """
+        It returns the hash representation of this topological element.
+
+        Returns
+        -------
+        hash : int
+            The hash value for this topological element
+        """
+
+        return hash((self.atom1_idx, self.atom2_idx, self.atom3_idx, self.atom4_idx,
+                     self.periodicity, self.prefactor,
+                     self.phase.value_in_unit(unit.degree)))
 
 
 class Proper(Dihedral):
@@ -1286,6 +1376,20 @@ class OFFDihedral(_TopologyElement):
                     'r--')
 
         pyplot.show()
+
+    def __hash__(self):
+        """
+        It returns the hash representation of this topological element.
+
+        Returns
+        -------
+        hash : int
+            The hash value for this topological element
+        """
+
+        return hash((self.atom1_idx, self.atom2_idx, self.atom3_idx, self.atom4_idx,
+                     self.periodicity, self.prefactor,
+                     self.phase.value_in_unit(unit.degree)))
 
 
 class OFFProper(OFFDihedral):

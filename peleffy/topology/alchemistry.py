@@ -367,6 +367,18 @@ class Alchemizer(object):
                                     lambda_set.get_lambda_for_bonded(),
                                     reverse=True)
 
+        # Sum together propers that are duplicated
+        summative_propers = list()
+        for proper_idx, proper in enumerate(alchemical_topology.propers):
+            new_proper = deepcopy(proper)
+            if new_proper not in summative_propers:
+                for other_proper in alchemical_topology.propers[proper_idx + 1:]:
+                    if new_proper == other_proper:
+                        new_proper.set_constant(new_proper.constant + other_proper.constant)
+
+                summative_propers.append(new_proper)
+        alchemical_topology._propers = summative_propers
+
         # Joint topology cannot have mutual impropers
         for improper_idx, improper in enumerate(alchemical_topology.impropers):
             if improper_idx in self._exclusive_impropers:
@@ -378,6 +390,21 @@ class Alchemizer(object):
                 improper.apply_lambda(["constant"],
                                       lambda_set.get_lambda_for_bonded(),
                                       reverse=True)
+
+        # Sum together impropers that are duplicated
+        summative_impropers = list()
+        for proper_idx, proper in enumerate(alchemical_topology.impropers):
+            new_proper = deepcopy(proper)
+            if new_proper not in summative_impropers:
+                for other_proper in alchemical_topology.impropers[proper_idx + 1:]:
+                    if new_proper == other_proper:
+                        new_proper.set_constant(new_proper.constant + other_proper.constant)
+
+                summative_impropers.append(new_proper)
+        alchemical_topology._impropers = summative_impropers
+
+        # Choose which propers to be ignored in PELE's 1-4 list
+        alchemical_topology._handle_excluded_propers()
 
         return alchemical_topology
 

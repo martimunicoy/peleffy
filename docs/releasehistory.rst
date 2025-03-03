@@ -8,6 +8,20 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
 
+1.5.2 - Improvements for alchemistry
+------------------------------------
+
+This is a minor release of peleffy that adds several improvements to the alchemistry module
+
+New features
+""""""""""""
+- `PR #184 <https://github.com/martimunicoy/peleffy/pull/184>`_: fo not uniquify substructures in alchemical alignment
+- `PR #184 <https://github.com/martimunicoy/peleffy/pull/184>`_: apply 1-4 terms exclusion in alchemical topologies
+- `PR #184 <https://github.com/martimunicoy/peleffy/pull/184>`_: replace topology propers and impropers
+- `PR #184 <https://github.com/martimunicoy/peleffy/pull/184>`_: make dihedral's hash hashable
+- `PR #184 <https://github.com/martimunicoy/peleffy/pull/184>`_: acummulate identifical dihedrals
+
+
 1.5.1 - Important bug fix for alchemistry
 -----------------------------------------
 
