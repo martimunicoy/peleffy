@@ -42,9 +42,10 @@ class PDBFile(object):
             self.pdb_content = pdb_file.readlines()
 
     def _extract_molecules_from_chain(self, chain, rotamer_resolution,
-                                     exclude_terminal_rotamers,
-                                     allow_undefined_stereo,
-                                     core_constraints):
+                                      exclude_terminal_rotamers,
+                                      allow_undefined_stereo,
+                                      core_constraints,
+                                      only_hetero=True):
         """
         It extracts all hetero molecules found in the selected the chain
         of a PDB file.
@@ -68,6 +69,9 @@ class PDBFile(object):
             the core will be forced to contain them. Atoms can be specified
             through integers that match the atom index or strings that
             match with the atom PDB name
+        only_hetero : bool
+            Whether to extract only hetero molecules or not.
+            Default is True
 
         Returns
         -------
@@ -78,20 +82,20 @@ class PDBFile(object):
 
         # Check if there is more than one hetero molecule in the same chain
         residues_ids = set([line[22:26].strip() for line in self.pdb_content
-                            if line.startswith('HETATM')
+                            if (line.startswith('HETATM') or line.startswith('ATOM') and only_hetero)
                             and line[21:22] == chain
                             and not line[17:20].strip() == 'HOH'])
 
         molecules = []
         for residue_id in residues_ids:
             res_name = set([line[17:20].strip() for line in self.pdb_content
-                            if line.startswith('HETATM')
+                            if (line.startswith('HETATM') or line.startswith('ATOM') and only_hetero)
                             and line[21:22] == chain
                             and line[22:26].strip() == residue_id])
 
             # Select which atoms compose this hetero molecule
             atom_ids = [line[6:11].strip() for line in self.pdb_content
-                        if line.startswith('HETATM')
+                        if (line.startswith('HETATM') or line.startswith('ATOM') and only_hetero)
                         and line[21:22] == chain
                         and line[22:26].strip() == residue_id]
 
@@ -99,7 +103,8 @@ class PDBFile(object):
             pdb_block = []
             for line in self.pdb_content:
 
-                if line.startswith('HETATM') and line[6:11].strip() in atom_ids:
+                if ((line.startswith('HETATM') or line.startswith('ATOM') and only_hetero)
+                        and line[6:11].strip() in atom_ids):
                     pdb_block.append(line)
 
                 if line.startswith('CONECT'):
@@ -203,7 +208,7 @@ class PDBFile(object):
         Parameters
         ----------
         selected_chain : str
-            Chain Id.
+            Chain Id
         rotamer_resolution : float
             The resolution in degrees to discretize the rotamer's
             conformational space. Default is 30
@@ -222,23 +227,15 @@ class PDBFile(object):
             selected chain
         """
 
+
         chain_ids = set([line[21:22] for line in self.pdb_content
-                         if line.startswith('HETATM')
-                         and not line[17:20].strip() == 'HOH'])
+                         if line.startswith('ATOM')
+                         or line.startswith('HETATM')])
 
-        all_chain_ids = set([line[21:22] for line in self.pdb_content
-                             if line.startswith('ATOM')
-                             or line.startswith('HETATM')])
-
-        if not selected_chain in all_chain_ids:
+        if not selected_chain in chain_ids:
             raise ValueError('The selected chain {} '.format(selected_chain)
                              + 'is not a valid chain for this PDB. Available '
                              + 'chains to select are: {}'.format(chain_ids))
-
-        if not selected_chain in chain_ids and selected_chain in all_chain_ids:
-            raise ValueError('The selected chain {} '.format(selected_chain)
-                             + 'is not an hetero molecule. Peleffy '
-                             + 'is only compatible with hetero atoms.')
 
         molecules = self._extract_molecules_from_chain(
             chain=selected_chain,
@@ -248,6 +245,115 @@ class PDBFile(object):
             core_constraints=core_constraints)
 
         return molecules
+    
+    def get_molecule_from_residue_id(self, molecules_in_chain, selected_residue_id,
+                                     rotamer_resolution=30,
+                                     exclude_terminal_rotamers=True,
+                                     allow_undefined_stereo=False,
+                                     core_constraints=[]):
+        """
+        It returns all hetero molecule defined in a specific chain from the
+        PDB file. It handles the possible errors when selecting the chain
+        for a PDB.
+
+        Parameters
+        ----------
+        molecules_in_chain : list[peleffy.topology.Molecule]
+            List of peleffy's Molecule objects to search for the selected
+            residue id
+        selected_residue_id : int
+            Residue Id
+        rotamer_resolution : float
+            The resolution in degrees to discretize the rotamer's
+            conformational space. Default is 30
+        exclude_terminal_rotamers : bool
+            Whether to exclude terminal rotamers when generating the
+            rotamers library  or not
+        allow_undefined_stereo : bool
+            Whether to allow a molecule with undefined stereochemistry
+            to be defined or try to assign the stereochemistry and
+            raise a complaint if not possible. Default is False
+
+        Returns
+        -------
+        molecule : peleffy.topology.Molecule
+            The peleffy's Molecule object corresponding to the
+            selected residue id
+        """
+        from peleffy.utils.toolkits import RDKitToolkitWrapper
+
+        # Initialize RDKit toolkit
+        rdkit = RDKitToolkitWrapper()
+
+        # Get selected chain
+        selected_chain = rdkit.get_chain_id(molecules_in_chain[0])
+
+        if selected_chain is None:
+            raise ValueError('The selected chain is undefined')
+
+        residue_ids = set([line[22:26].strip() for line in self.pdb_content
+                           if line.startswith('ATOM') or line.startswith('HETATM')
+                           and line[21:22] == selected_chain
+                           and not line[17:20].strip() == 'HOH'])
+        
+        if len(residue_ids) == 0:
+            raise ValueError('The selected chain {} '.format(selected_chain)
+                             + 'does not contain any residues')
+                
+        for molecule, residue_id in zip(molecules_in_chain, residue_ids):
+            if residue_id == str(selected_residue_id):
+                return molecule
+        
+        raise ValueError('The selected chain {} '.format(selected_chain)
+                         + 'does not contain a residue with id '
+                         + '{}'.format(selected_residue_id))
+    
+    def get_covalent_molecules_to_residue_id(self, molecule, target_molecules):
+        """
+        It returns molecules defined in the input list that are
+        covalently bonded to the selected molecule.
+
+        Parameters
+        ----------
+        molecule : peleffy.topology.Molecule
+            The peleffy's Molecule object corresponding to the selected
+            residue id
+        target_molecules : list[peleffy.topology.Molecule]
+            List of peleffy's Molecule objects to search for the selected
+            residue id
+        
+        Returns
+        -------
+        covalent_molecules : list[peleffy.topology.Molecule]
+            The list of peleffy's Molecule objects corresponding to the
+            selected residue id
+        """
+        import numpy as np
+        from peleffy.utils.toolkits import RDKitToolkitWrapper
+
+        # Initialize RDKit toolkit
+        rdkit = RDKitToolkitWrapper()
+
+        # Extract coordinates of the selected residue
+        molecule_coordinates = rdkit.get_coordinates(molecule)
+                
+        # Iterate over all molecules to find the covalent ones
+        covalent_molecules = []
+        for target_molecule in target_molecules:
+            if rdkit.get_residue_id(target_molecule) == rdkit.get_residue_id(molecule):
+                continue
+            
+            # Extract coordinates of the molecule
+            target_molecule_coordinates = rdkit.get_coordinates(target_molecule)
+
+            # Check if the molecule is covalently bonded to the selected residue
+            distances = np.linalg.norm(molecule_coordinates[:, np.newaxis, :] - target_molecule_coordinates[np.newaxis, :, :], axis=2)
+            lowest_distance = np.min(distances)
+
+            if lowest_distance <= 1.5:
+                covalent_molecules.append(target_molecule)
+        
+        return covalent_molecules
 
     @property
     def is_complex(self):

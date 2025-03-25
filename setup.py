@@ -48,4 +48,9 @@ setup(
     cmdclass=versioneer.get_cmdclass(),
     package_data={'peleffy': find_package_data(
         'peleffy/data', 'peleffy')},
+    entry_points={
+        'console_scripts': [
+            'peleffy=peleffy.main:main',  # Ensure this points to the correct main function
+        ],
+    },
 )

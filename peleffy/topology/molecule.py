@@ -20,7 +20,7 @@ class Molecule(object):
                  rotamer_resolution=30,exclude_terminal_rotamers=True, name='',
                  tag='UNK', connectivity_template=None, core_constraints=[],
                  allow_undefined_stereo=False, hydrogens_are_explicit=True,
-                 fix_pdb=True):
+                 fix_pdb=True, residue_id=None):
         """
         It initializes a Molecule object through a PDB file or a SMILES
         tag.
@@ -60,6 +60,10 @@ class Molecule(object):
         fix_pdb : bool
             Activates or deactivate the PDB fixer that is executed
             prior parsing it
+        residue_id : int
+            The residue number of the molecule in the PDB file when
+            multiple residues are present when parameterizing 
+            covanlently bonded molecules. Default is None
 
         Examples
         --------
@@ -144,6 +148,7 @@ class Molecule(object):
         self._allow_undefined_stereo = allow_undefined_stereo
         self._hydrogens_are_explicit = hydrogens_are_explicit
         self._fix_pdb = fix_pdb
+        self._residue_id = residue_id
 
         # Deactivate OpenForceField toolkit warnings
         import logging
@@ -534,7 +539,8 @@ class Molecule(object):
                    exclude_terminal_rotamers=True, name='', tag='UNK',
                    connectivity_template=None, core_constraints=[],
                    allow_undefined_stereo=False,
-                   hydrogens_are_explicit=True):
+                   hydrogens_are_explicit=True,
+                   residue_id=None):
         """
         It initializes and returns a peleffy Molecule representation
         from an RDKit molecular representation.
@@ -570,7 +576,11 @@ class Molecule(object):
             Whether the input molecule has explicit information about
             hydrogen atoms or not. Otherwise, they will be added when
             the molecule is built. Default is True
-
+        residue_id : int
+            The residue number of the molecule in the PDB file when
+            multiple residues are present when parameterizing
+            covanlently bonded molecules. Default is None
+            
         Returns
         -------
         molecule : an peleffy.topology.Molecule
@@ -591,13 +601,14 @@ class Molecule(object):
 
         """
         molecule = Molecule(
-            rotamer_resolution=30,
+            rotamer_resolution=rotamer_resolution,
             exclude_terminal_rotamers=exclude_terminal_rotamers,
             name=name, tag=tag,
             connectivity_template=connectivity_template,
             core_constraints=core_constraints,
             allow_undefined_stereo=allow_undefined_stereo,
-            hydrogens_are_explicit=hydrogens_are_explicit)
+            hydrogens_are_explicit=hydrogens_are_explicit,
+            residue_id=residue_id)
 
         logger = Logger()
 
@@ -622,7 +633,8 @@ class Molecule(object):
                     exclude_terminal_rotamers=True, name='', tag='UNK',
                     connectivity_template=None, core_constraints=[],
                     allow_undefined_stereo=False,
-                    hydrogens_are_explicit=True):
+                    hydrogens_are_explicit=True,
+                    residue_id=None):
         """
         It initializes and returns a peleffy Molecule representation
         from an OpenForceField molecular representation.
@@ -658,6 +670,10 @@ class Molecule(object):
             Whether the input molecule has explicit information about
             hydrogen atoms or not. Otherwise, they will be added when
             the molecule is built. Default is True
+        residue_id : int
+            The residue number of the molecule in the PDB file when
+            multiple residues are present when parameterizing
+            covanlently bonded molecules. Default is None
 
         Returns
         -------
@@ -682,13 +698,14 @@ class Molecule(object):
             name = openff_molecule.name
 
         molecule = Molecule(
-            rotamer_resolution=30,
+            rotamer_resolution=rotamer_resolution,
             exclude_terminal_rotamers=exclude_terminal_rotamers,
             name=name, tag=tag,
             connectivity_template=connectivity_template,
             core_constraints=core_constraints,
             allow_undefined_stereo=allow_undefined_stereo,
-            hydrogens_are_explicit=hydrogens_are_explicit)
+            hydrogens_are_explicit=hydrogens_are_explicit,
+            residue_id=residue_id)
 
         logger = Logger()
 
@@ -704,6 +721,152 @@ class Molecule(object):
         molecule._build_rotamers()
 
         return molecule
+    
+    @classmethod
+    def from_molecule_bonded_to_residues(cls, molecule,
+                                         bound_residues):
+        """
+        It initializes a molecule covalently bonded to a set of
+        residues.
+
+        Parameters
+        ----------
+        molecule : an peleffy.topology.Molecule object
+            The molecule to be covalently bonded to the residues
+        bound_residues : list[peleffy.topology.Molecule]
+            The list of residues to be covalently bonded to the molecule
+        """
+        from peleffy.utils.toolkits import RDKitToolkitWrapper
+
+        # Initialize RDKit toolkit
+        rdkit_toolkit = RDKitToolkitWrapper()
+
+        # Join the molecule and the residues in an RDKIT molecule
+        # object
+        whole_molecule = molecule.rdkit_molecule
+        for residue in bound_residues:
+            whole_molecule = rdkit_toolkit.combine_molecules(
+                whole_molecule,
+                residue.rdkit_molecule)
+            
+        # Get molecule residue number
+        molecule_residue_number = rdkit_toolkit.get_residue_id(molecule)
+        
+        # Detect the bonds between the molecule and the residues
+        bonded_atoms = []
+        for atom in molecule.rdkit_molecule.GetAtoms():
+            atom_idx = atom.GetIdx()
+
+            whole_molecule_atom = whole_molecule.GetAtomWithIdx(atom_idx)
+            for bond in whole_molecule_atom.GetBonds():
+                other_atom = bond.GetOtherAtom(whole_molecule_atom)
+
+                other_atom_residue_number = other_atom.GetPDBResidueInfo().GetResidueNumber()
+                if other_atom_residue_number != molecule_residue_number:
+                    bonded_atoms.append(other_atom)
+        
+        # Get more bonded atoms, up to a depth of 2
+        depth = 2
+        for _ in range(depth):
+            new_bonded_atoms = []
+            for atom in bonded_atoms:
+                for bond in atom.GetBonds():
+                    other_atom = bond.GetOtherAtom(atom)
+                    if (other_atom.GetPDBResidueInfo().GetResidueNumber() != molecule_residue_number
+                            and other_atom not in bonded_atoms):
+                        new_bonded_atoms.append(other_atom)
+            bonded_atoms += new_bonded_atoms
+                
+        # Remove all other atoms
+        from rdkit import Chem
+        new_molecule = Chem.RWMol(whole_molecule)
+        atom_indices_to_remove = []
+        bonded_atom_idxs = [atom.GetIdx() for atom in bonded_atoms]
+        for atom in whole_molecule.GetAtoms():
+            if atom.GetIdx() not in bonded_atom_idxs and atom.GetPDBResidueInfo().GetResidueNumber() != molecule_residue_number:
+                atom_indices_to_remove.append(atom.GetIdx())
+        
+        for atom_idx in sorted(atom_indices_to_remove, reverse=True):
+            new_molecule.RemoveAtom(atom_idx)
+
+        whole_molecule = new_molecule.GetMol()
+
+        # Ensure bonded atoms are not marked as aromatic
+        for atom in whole_molecule.GetAtoms():
+            if atom.GetPDBResidueInfo().GetResidueNumber() != molecule_residue_number:
+                atom.SetIsAromatic(False)
+            
+                for bond in atom.GetBonds():
+                    bond.SetIsAromatic(False)
+
+                    if bond.GetBondType() == Chem.BondType.AROMATIC:
+                        bond.SetBondType(Chem.BondType.SINGLE)
+
+        # Add missing hydrogen atoms to bonded atoms
+        from rdkit import Chem
+        Chem.SanitizeMol(whole_molecule)
+        atoms_with_missing_hydrogens = []
+        for atom in whole_molecule.GetAtoms():
+            if atom.GetPDBResidueInfo().GetResidueNumber() != molecule_residue_number:
+                atoms_with_missing_hydrogens.append(atom.GetIdx())
+        whole_molecule = Chem.AddHs(whole_molecule,
+                                    onlyOnAtoms=atoms_with_missing_hydrogens,
+                                    addCoords=True)
+        
+        # Add PDB information to the new hydrogen atoms
+        pdb_atom_names = list()
+        for atom in whole_molecule.GetAtoms():
+            if atom.GetPDBResidueInfo() is None:
+                atom.SetMonomerInfo(Chem.AtomPDBResidueInfo())
+
+                if len(atom.GetNeighbors()) == 0:
+                    raise ValueError('Atom with no neighbors found')
+
+                # Get information from bonded atom
+                bonded_atom = atom.GetNeighbors()[0]
+                atom.GetPDBResidueInfo().SetChainId(bonded_atom.GetPDBResidueInfo().GetChainId())
+                atom.GetPDBResidueInfo().SetResidueNumber(bonded_atom.GetPDBResidueInfo().GetResidueNumber())
+                atom.GetPDBResidueInfo().SetResidueName(bonded_atom.GetPDBResidueInfo().GetResidueName())
+                atom.GetPDBResidueInfo().SetIsHeteroAtom(bonded_atom.GetPDBResidueInfo().GetIsHeteroAtom())
+            
+            else:
+                pdb_atom_names.append(atom.GetPDBResidueInfo().GetName())
+        
+        # Set unique PDB atom names to atoms belonging to different residues
+        name_index = 1
+        for atom in whole_molecule.GetAtoms():
+            if atom.GetPDBResidueInfo().GetResidueNumber() != molecule_residue_number:
+                atom_symbol = atom.GetSymbol()
+                tentative_name = '{:^4}'.format('{}{}'.format(atom_symbol, name_index))
+                while tentative_name in pdb_atom_names:
+                    name_index += 1
+                    tentative_name = '{:^4}'.format('{}{}'.format(atom_symbol, name_index))
+                atom.GetPDBResidueInfo().SetName(tentative_name)
+                pdb_atom_names.append(tentative_name)     
+            
+        # Reorder the atoms in the molecule by the residue number
+        residue_numbers = set()
+        for atom in whole_molecule.GetAtoms():
+            residue_numbers.add(atom.GetPDBResidueInfo().GetResidueNumber())
+
+        new_order = []
+        for residue_number in sorted(list(residue_numbers)):  
+            for atom in whole_molecule.GetAtoms():
+                if atom.GetPDBResidueInfo().GetResidueNumber() == residue_number:
+                    new_order.append(atom.GetIdx())
+        
+        whole_molecule = rdkit_toolkit.reorder_atoms(whole_molecule, new_order)
+
+        return cls.from_rdkit(whole_molecule,
+                              rotamer_resolution=molecule.rotamer_resolution,
+                              exclude_terminal_rotamers=molecule.exclude_terminal_rotamers,
+                              name=molecule.name,
+                              tag=molecule.tag,
+                              connectivity_template=molecule.connectivity_template,
+                              core_constraints=molecule.core_constraints,
+                              allow_undefined_stereo=molecule.allow_undefined_stereo,
+                              hydrogens_are_explicit=molecule.hydrogens_are_explicit,
+                              residue_id=molecule_residue_number)
 
     @property
     def rotamer_resolution(self):

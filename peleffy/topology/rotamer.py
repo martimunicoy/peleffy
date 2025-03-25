@@ -256,12 +256,21 @@ class MolecularGraph(nx.Graph):
             + 'molecule\'s atoms'
 
         for atom, name in zip(rdkit_molecule.GetAtoms(), atom_names):
+            # If atom belongs to another residue, skip it
+            if self.molecule._residue_id is not None:
+                if atom.GetPDBResidueInfo().GetResidueNumber() != self.molecule._residue_id:
+                    continue
+
             self.add_node(atom.GetIdx(), pdb_name=name,
                           nrot_neighbors=list())
 
         for bond in rdkit_molecule.GetBonds():
             atom1 = bond.GetBeginAtomIdx()
             atom2 = bond.GetEndAtomIdx()
+
+            # Skip bonds that do not belong to the molecule
+            if atom1 not in self.nodes or atom2 not in self.nodes:
+                continue
 
             if (frozenset([atom1, atom2]) in rot_bonds_atom_ids):
                 rotatable = True
@@ -275,6 +284,10 @@ class MolecularGraph(nx.Graph):
                           weight=int(rotatable))
 
         for i, j in rot_bonds_atom_ids:
+            # If atom does not belong to the molecule, skip it
+            if i not in self.nodes or j not in self.nodes:
+                continue
+            
             self[i][j]['weight'] = 1
             self.nodes[i]['rotatable'] = True
             self.nodes[j]['rotatable'] = True
