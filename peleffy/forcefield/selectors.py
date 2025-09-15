@@ -90,18 +90,21 @@ class ChargeCalculatorSelector(object):
     It defines a charge calculator selector.
     """
 
-    from peleffy.forcefield.calculators import (OPLSChargeCalculator,
-                                                Am1bccCalculator,
-                                                GasteigerCalculator,
-                                                DummyChargeCalculator,
-                                                MullikenCalculator)
+    @property
+    def _AVAILABLE_TYPES(self):
+        from peleffy.forcefield.calculators import (OPLSChargeCalculator,
+                                                    Am1bccCalculator,
+                                                    GasteigerCalculator,
+                                                    DummyChargeCalculator,
+                                                    MullikenCalculator)
 
-    _AVAILABLE_TYPES = {'opls2005': OPLSChargeCalculator,
-                        'am1bcc': Am1bccCalculator,
-                        'gasteiger': GasteigerCalculator,
-                        'dummy': DummyChargeCalculator,
-                        'mulliken': MullikenCalculator
-                        }
+        return {
+            'opls2005': OPLSChargeCalculator,
+            'am1bcc': Am1bccCalculator,
+            'gasteiger': GasteigerCalculator,
+            'dummy': DummyChargeCalculator,
+            'mulliken': MullikenCalculator
+        }
 
     def get_by_name(self, charge_method, molecule):
         """
