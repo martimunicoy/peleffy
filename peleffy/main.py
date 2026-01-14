@@ -75,11 +75,18 @@ def parse_args(args):
     parser.add_argument("--chain", metavar="CHAIN",
                         type=str, help="Chain of the molecule to parameterize",
                         default=None)
+    parser.add_argument("--residue_id", metavar="RESIDUE_ID",
+                        type=int, help="Residue ID of the molecule to " +
+                        "parameterize", default=None)
     parser.add_argument('--include_terminal_rotamers',
                         dest="include_terminal_rotamers",
                         action='store_true',
                         help="Not exclude terminal rotamers " +
                         "when building the rotamer library")
+    parser.add_argument('--allow_undefined_stereo',
+                        dest="allow_undefined_stereo",
+                        action='store_true',
+                        help="Allow undefined stereochemistry")
     parser.add_argument('-s', '--silent',
                         dest="silent",
                         action='store_true',
@@ -99,6 +106,7 @@ def parse_args(args):
 
     parser.set_defaults(as_datalocal=False)
     parser.set_defaults(with_solvent=False)
+    parser.set_defaults(include_terminal_rotamers=False)
     parser.set_defaults(include_terminal_rotamers=False)
     parser.set_defaults(silent=False)
     parser.set_defaults(debug=False)
@@ -138,7 +146,9 @@ def run_peleffy(pdb_file,
                 charge_method=DEFAULT_CHARGE_METHOD,
                 charges_from_file=None,
                 chain=None,
+                residue_id=None,
                 exclude_terminal_rotamers=True,
+                allow_undefined_stereo=False,
                 output=None, with_solvent=False, as_datalocal=False,
                 conformation_path=None,
                 for_amber=False):
@@ -160,9 +170,16 @@ def run_peleffy(pdb_file,
         The file containing the partial charges to assign to the
         molecule. Default is None
     chain : str
-        Chain to the molecule if the PDB contains multiple molecules.
+        Chain to the molecule if the PDB contains multiple molecules
+    residue_id : int
+        Residue ID of the molecule to parameterize. If other residues are
+        present in the PDB and a covalent bond is detected between the
+        selected residue and another residue, a covalent template will be
+        generated
     exclude_terminal_rotamers : bool
         Whether to exclude terminal rotamers or not
+    allow_undefined_stereo : bool
+        Whether to allow undefined stereochemistry or not
     output : str
         Path where output files will be saved
     with_solvent : bool
@@ -195,12 +212,17 @@ def run_peleffy(pdb_file,
     log.info('-' * 60)
     log.info(' - General:')
     log.info('   - Input PDB:', pdb_file)
+    if chain is not None:
+        log.info('   - Chain:', chain)
+    if residue_id is not None:
+        log.info('   - Residue ID:', residue_id)
     log.info('   - Output path:', output)
     log.info('   - Write solvent parameters:', with_solvent)
     log.info('   - DataLocal-like output:', as_datalocal)
     log.info(' - Parameterization:')
     log.info('   - Force field:', forcefield_name)
     log.info('   - Charge method:', charge_method_str)
+    log.info('   - Allow undefined stereo:', allow_undefined_stereo)
     log.info('   - For AMBER:', for_amber)
     log.info(' - Rotamer library:')
     log.info('   - Resolution:', resolution)
@@ -224,14 +246,37 @@ def run_peleffy(pdb_file,
         molecules = PDBreader.get_molecules_from_chain(
             selected_chain=chain,
             rotamer_resolution=resolution,
-            exclude_terminal_rotamers=exclude_terminal_rotamers)
+            exclude_terminal_rotamers=exclude_terminal_rotamers,
+            allow_undefined_stereo=allow_undefined_stereo)
         
-        if PDBreader.is_unique(molecules): 
-            molecule, = molecules 
-        else: 
-            raise ValueError('The selected chain must only contain a single '
-                             + 'molecule to be parameterized.')
+        if PDBreader.is_unique(molecules):
+            molecule, = molecules
+        elif residue_id is not None:
+            molecule = PDBreader.get_molecule_from_residue_id(
+                molecules,
+                selected_residue_id=residue_id,
+                rotamer_resolution=resolution,
+                exclude_terminal_rotamers=exclude_terminal_rotamers,
+                allow_undefined_stereo=allow_undefined_stereo)
+            
+            covalent_molecules = PDBreader.get_covalent_molecules_to_residue_id(
+                molecule,
+                molecules)
 
+            if len(covalent_molecules) > 0:
+                print(' - Covalent bond detected between the selected molecule '
+                      + 'and the following residue(s):')
+                for covalent_molecule in covalent_molecules:
+                    print('   - {}'.format(covalent_molecule.tag))
+            
+            # Prepare molecule
+            molecule = Molecule.from_molecule_bonded_to_residues(molecule,
+                                                                 covalent_molecules)
+
+        else:
+            raise ValueError('The selected chain must only contain a single '
+                             + 'molecule to be parameterized or a residue_id '
+                             + 'must be specified.')
     else:
         if PDBreader.is_complex:
             raise ValueError('To parameterize a ligand from a protein-ligand '
@@ -239,7 +284,8 @@ def run_peleffy(pdb_file,
         else:    
             molecule = Molecule(
             pdb_file, rotamer_resolution=resolution,
-            exclude_terminal_rotamers=exclude_terminal_rotamers)
+            exclude_terminal_rotamers=exclude_terminal_rotamers,
+            allow_undefined_stereo=allow_undefined_stereo)
 
     # Initialize force field
     ff_selector = ForceFieldSelector()
@@ -298,7 +344,7 @@ def run_peleffy(pdb_file,
     log.info('-' * 60)
 
 
-def main(args):
+def main(args=None):
     """
     It reads the command-line arguments and runs peleffy.
 
@@ -316,6 +362,9 @@ def main(args):
         -r 30 -o output_path/ --with_solvent --as_datalocal -c gasteiger
 
     """
+    if args is None:
+        import sys
+        args = parse_args(sys.argv[1:])
 
     exclude_terminal_rotamers = not args.include_terminal_rotamers
 
@@ -337,16 +386,16 @@ def main(args):
                 resolution=args.resolution,
                 charge_method=args.charge_method,
                 exclude_terminal_rotamers=exclude_terminal_rotamers,
+                allow_undefined_stereo=args.allow_undefined_stereo,
                 output=args.output,
                 with_solvent=args.with_solvent,
                 as_datalocal=args.as_datalocal,
                 chain=args.chain,
+                residue_id=args.residue_id,
                 conformation_path=args.conformations_info_path,
                 charges_from_file=args.charges_from_file,
                 for_amber=args.for_amber)
 
 
 if __name__ == '__main__':
-    import sys
-    args = parse_args(sys.argv[1:])
-    main(args)
+    main()

@@ -109,6 +109,13 @@ class Topology(object):
         for index, (atom_name, atom_type, sigma, epsilon, charge,
                     SGB_radius, vdW_radius, gamma, alpha) \
                 in enumerate(self.parameters.atom_iterator):
+            
+            # Skip atom if it does not belong to the molecule
+            # Needed when multiple residues are present when
+            # parameterizing covanlently bonded molecules
+            if index not in self.molecule.graph.nodes:
+                continue
+
             atom = Atom(index=index,
                         PDB_name=atom_name,
                         OPLS_type=atom_type,
@@ -158,11 +165,25 @@ class Topology(object):
         for atom in self.atoms:
             parent_idx = parent_idxs[atom.index]
             if parent_idx is not None:
-                atom.set_parent(self.atoms[parent_idx])
+                for parent in self.atoms:
+                    if parent.index == parent_idx:
+                        atom.set_parent(parent)
+                        break
+                else:
+                    logger.error(['Error: parent atom not found for ' +
+                                  f'atom {atom.index} in molecule ' +
+                                  f'{self.molecule.name}'])
 
     def _build_bonds(self):
         """It builds the bonds of the molecule."""
         for index, bond in enumerate(self.parameters['bonds']):
+            # Skip bond if it does not belong to the molecule
+            # Needed when multiple residues are present when
+            # parameterizing covanlently bonded molecules
+            if (bond['atom1_idx'] not in self.molecule.graph.nodes or
+                    bond['atom2_idx'] not in self.molecule.graph.nodes):
+                continue
+
             bond = Bond(index=index,
                         atom1_idx=bond['atom1_idx'],
                         atom2_idx=bond['atom2_idx'],
@@ -173,6 +194,15 @@ class Topology(object):
     def _build_angles(self):
         """It builds the angles of the molecule."""
         for index, angle in enumerate(self.parameters['angles']):
+            # Skip angle if it does not belong to the molecule
+            # Needed when multiple residues are present when
+            # parameterizing covanlently bonded molecules
+            if (angle['atom1_idx'] not in self.molecule.graph.nodes or
+                    angle['atom2_idx'] not in self.molecule.graph.nodes or
+                    angle['atom3_idx'] not in self.molecule.graph.nodes):
+                continue
+
+
             angle = Angle(index=index,
                           atom1_idx=angle['atom1_idx'],
                           atom2_idx=angle['atom2_idx'],
@@ -184,6 +214,15 @@ class Topology(object):
     def _build_propers(self):
         """It builds the propers of the molecule."""
         for index, proper in enumerate(self.parameters['propers']):
+            # Skip proper if it does not belong to the molecule
+            # Needed when multiple residues are present when
+            # parameterizing covanlently bonded molecules
+            if (proper['atom1_idx'] not in self.molecule.graph.nodes or
+                    proper['atom2_idx'] not in self.molecule.graph.nodes or
+                    proper['atom3_idx'] not in self.molecule.graph.nodes or
+                    proper['atom4_idx'] not in self.molecule.graph.nodes):
+                continue
+
             off_proper = OFFProper(atom1_idx=proper['atom1_idx'],
                                    atom2_idx=proper['atom2_idx'],
                                    atom3_idx=proper['atom3_idx'],
@@ -254,6 +293,15 @@ class Topology(object):
     def _build_impropers(self):
         """It builds the impropers of the molecule."""
         for index, improper in enumerate(self.parameters['impropers']):
+            # Skip improper if it does not belong to the molecule
+            # Needed when multiple residues are present when
+            # parameterizing covanlently bonded molecules
+            if (improper['atom1_idx'] not in self.molecule.graph.nodes or
+                    improper['atom2_idx'] not in self.molecule.graph.nodes or
+                    improper['atom3_idx'] not in self.molecule.graph.nodes or
+                    improper['atom4_idx'] not in self.molecule.graph.nodes):
+                continue
+
             off_improper = OFFImproper(atom1_idx=improper['atom1_idx'],
                                        atom2_idx=improper['atom2_idx'],
                                        atom3_idx=improper['atom3_idx'],

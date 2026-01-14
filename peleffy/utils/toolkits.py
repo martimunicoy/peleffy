@@ -245,6 +245,60 @@ class RDKitToolkitWrapper(ToolkitWrapper):
 
         # Add current conformer
         rdkit_molecule.AddConformer(conformer, assignId=True)
+    
+    def get_chain_id(self, molecule):
+        """
+        It returns the chain id of the molecule according to the RDKit
+        molecule object.
+
+        Parameters
+        ----------
+        molecule : an peleffy.topology.Molecule
+            The peleffy's Molecule object
+
+        Returns
+        -------
+        chain_id : str
+            The chain id of the molecule
+        """
+        rdkit_molecule = molecule.rdkit_molecule
+
+        first_atom = list(rdkit_molecule.GetAtoms())[0]
+
+        # Catch a None return
+        try:
+            chain_id = first_atom.GetPDBResidueInfo().GetChainId()
+        except AttributeError:
+            chain_id = None
+
+        return chain_id
+    
+    def get_residue_id(self, molecule):
+        """
+        It returns the residue id of the molecule according to the RDKit
+        molecule object.
+
+        Parameters
+        ----------
+        molecule : an peleffy.topology.Molecule
+            The peleffy's Molecule object
+
+        Returns
+        -------
+        residue_id : int
+            The residue id of the molecule
+        """
+        rdkit_molecule = molecule.rdkit_molecule
+
+        first_atom = list(rdkit_molecule.GetAtoms())[0]
+
+        # Catch a None return
+        try:
+            residue_id = first_atom.GetPDBResidueInfo().GetResidueNumber()
+        except AttributeError:
+            residue_id = None
+
+        return residue_id
 
     def get_residue_name(self, molecule):
         """
@@ -1027,6 +1081,97 @@ class RDKitToolkitWrapper(ToolkitWrapper):
                                  atomMap=inverse_mapping)
 
         return mol2
+
+    def reorder_atoms(self, molecule, new_order):
+        """
+        Reorder atoms in an RDKit molecule.
+
+        Parameters
+        ----------
+        molecule : rdkit.Chem.rdchem.Mol
+            The RDKit molecule to reorder.
+        new_order : list[int]
+            The new order of atom indices.
+
+        Returns
+        -------
+        reordered_molecule : rdkit.Chem.rdchem.Mol
+            The RDKit molecule with reordered atoms.
+        """
+        from rdkit import Chem
+
+        reordered_molecule = Chem.RenumberAtoms(molecule, new_order)
+        return reordered_molecule
+
+    def combine_molecules(self, mol1, mol2):
+        """
+        Combine two RDKit molecules into a single molecule.
+
+        Parameters
+        ----------
+        mol1 : rdkit.Chem.rdchem.Mol
+            The first RDKit molecule.
+        mol2 : rdkit.Chem.rdchem.Mol
+            The second RDKit molecule.
+
+        Returns
+        -------
+        combined_mol : rdkit.Chem.rdchem.Mol
+            The combined RDKit molecule.
+        """
+        from rdkit import Chem
+
+        # Generate PDB block for mol1
+        pdb_block1 = Chem.MolToPDBBlock(mol1)
+
+        # Generate PDB block for mol2
+        pdb_block2 = Chem.MolToPDBBlock(mol2)
+
+        # Reindex atom indices in mol2
+        reindexed_pdb_block2 = ""
+        reindex_map = dict()
+        mol2_offset = len(mol1.GetAtoms())
+        for pdb_line in pdb_block2.split('\n'):
+            if pdb_line.startswith('ATOM') or pdb_line.startswith('HETATM'):
+                atom_idx = int(pdb_line[6:11])
+                new_atom_idx = str(atom_idx + mol2_offset).rjust(5)
+
+                reindexed_pdb_block2 += f"{pdb_line[:6]}{new_atom_idx}{pdb_line[11:]}\n"
+                reindex_map[atom_idx] = atom_idx + mol2_offset
+        
+        # Reindex CONECT lines in mol2
+        for pdb_line in pdb_block2.split('\n'):
+            if pdb_line.startswith('CONECT'):
+                stripped_line = pdb_line.replace("CONECT", "")
+                ids_in_line = [stripped_line[i:i + 5] for i in
+                               range(0, len(stripped_line), 5)]
+                
+                new_ids_in_line = [str(reindex_map[int(atom_id)]).rjust(5)
+                                   for atom_id in ids_in_line]
+                reindexed_pdb_block2 += 'CONECT' + ''.join(new_ids_in_line) + '\n'
+
+        # Combine PDB blocks
+        pdb_block = pdb_block1 + reindexed_pdb_block2
+
+        # Remove END line
+        pdb_block = pdb_block.replace('END\n', '')
+
+        # Move CONECT lines to the end
+        pdb_block = '\n'.join([line for line in pdb_block.split('\n')
+                               if not line.startswith('CONECT')]) + '\n' + \
+                    '\n'.join([line for line in pdb_block.split('\n')
+                               if line.startswith('CONECT')]) + '\nEND\n'
+        
+        # Remove empty lines
+        pdb_block = '\n'.join([line for line in pdb_block.split('\n')
+                               if line.strip() != ''])
+
+        # Generate combined molecule
+        combined_mol = Chem.MolFromPDBBlock(pdb_block,
+                                            removeHs=False)
+
+        return combined_mol
+
 
     def alchemical_combination(self, mol1, mol2, atom_mapping,
                                connections):
