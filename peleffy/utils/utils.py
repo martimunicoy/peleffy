@@ -18,10 +18,14 @@ __all__ = ["get_data_file_path",
            ]
 
 
-from pkg_resources import resource_filename
+#from pkg_resources import resource_filename
+from importlib.resources import files
 import os
 import contextlib
-from simtk import unit
+try:
+    from simtk import unit
+except ImportError:
+    unit = None
 
 
 def get_data_file_path(relative_path):
@@ -38,8 +42,10 @@ def get_data_file_path(relative_path):
     output_path : str
         The path in the package's data location, if found
     """
-    output_path = resource_filename('peleffy', os.path.join(
-        'data', relative_path))
+    from importlib.resources import files, as_file
+    data_file = files('peleffy').joinpath('data', relative_path)
+    with as_file(data_file) as output_path:
+        output_path = str(output_path)
 
     if not os.path.exists(output_path):
         raise ValueError(
@@ -105,14 +111,11 @@ def create_path(path):
 
 def unit_to_string(input_unit):
     """
-    Serialize a simtk.unit.Unit and return it as a string.
-
-    Function modified from the OpenFF Toolkit
-    (https://github.com/openforcefield/openforcefield/).
+    Serialize a unit and return it as a string.
 
     Parameters
     ----------
-    input_unit : A simtk.unit
+    input_unit : a simtk.unit or pint Unit
         The unit to serialize
 
     Returns
@@ -120,8 +123,14 @@ def unit_to_string(input_unit):
     unit_string : str
         The serialized unit.
     """
+    try:
+        import pint
+        if isinstance(input_unit, pint.Unit):
+            return str(input_unit)
+    except ImportError:
+        pass
 
-    if input_unit == unit.dimensionless:
+    if unit is not None and input_unit == unit.dimensionless:
         return "dimensionless"
 
     # Decompose output_unit into a tuples of (base_dimension_unit, exponent)
@@ -147,14 +156,11 @@ def unit_to_string(input_unit):
 
 def quantity_to_string(input_quantity):
     """
-    Serialize a simtk.unit.Quantity to a string.
-
-    Function modified from the OpenFF Toolkit
-    (https://github.com/openforcefield/openforcefield/).
+    Serialize a unit Quantity to a string.
 
     Parameters
     ----------
-    input_quantity : simtk.unit.Quantity
+    input_quantity : simtk.unit.Quantity or pint.Quantity
         The quantity to serialize
 
     Returns
@@ -168,12 +174,27 @@ def quantity_to_string(input_quantity):
     if input_quantity is None:
         return None
 
+    # Handle pint Quantities
+    try:
+        import pint
+        if isinstance(input_quantity, pint.Quantity):
+            unitless_value = input_quantity.magnitude
+            if isinstance(unitless_value, np.ndarray):
+                unitless_value = [float(v) for v in unitless_value]
+            elif hasattr(unitless_value, 'item'):  # numpy scalar
+                unitless_value = unitless_value.item()
+            unit_string = str(input_quantity.units)
+            return '{} * {}'.format(unitless_value, unit_string)
+    except ImportError:
+        pass
+
+    # Handle simtk Quantities
     unitless_value = input_quantity.value_in_unit(input_quantity.unit)
 
     # The string representation of a numpy array doesn't have commas and
     # breaks the parser, thus we convert any arrays to list here
     if isinstance(unitless_value, np.ndarray):
-        unitless_value = list(unitless_value)
+        unitless_value = [float(v) for v in unitless_value]
 
     unit_string = unit_to_string(input_quantity.unit)
     output_string = '{} * {}'.format(unitless_value, unit_string)
@@ -218,10 +239,17 @@ def convert_all_quantities_to_string(data_structure):
             data_structure[index] = convert_all_quantities_to_string(item)
         obj_to_return = data_structure
 
-    elif isinstance(data_structure, unit.Quantity):
+    elif isinstance(data_structure, unit.Quantity) if unit is not None else False:
         obj_to_return = quantity_to_string(data_structure)
 
     else:
+        # Also handle pint Quantities
+        try:
+            import pint
+            if isinstance(data_structure, pint.Quantity):
+                return quantity_to_string(data_structure)
+        except ImportError:
+            pass
         obj_to_return = data_structure
 
     return obj_to_return
@@ -269,10 +297,10 @@ def _ast_eval(node):
 
 def string_to_quantity(quantity_string):
     """
-    Takes a string representation of a quantity and returns a unit.Quantity
+    Takes a string representation of a quantity and returns a Quantity.
 
-    Function modified from the OpenFF Toolkit
-    (https://github.com/openforcefield/openforcefield/).
+    Supports both simtk-style strings (e.g. '1.0 * angstrom') and
+    pint-style strings (e.g. '1.0 * kilocalorie / mole / radian ** 2').
 
     Parameters
     ----------
@@ -281,14 +309,38 @@ def string_to_quantity(quantity_string):
 
     Returns
     -------
-    output_quantity : simtk.unit.Quantity
+    output_quantity : pint.Quantity or simtk.unit.Quantity
         The deserialized quantity
     """
     import ast
+    import re
 
     if quantity_string is None:
         return None
 
+    # Try pint first (handles both pint and simtk-style strings)
+    try:
+        from openff.units import unit as off_unit
+        # Split on ' * ' to separate magnitude from unit
+        # Handle pint-style: '1.0 * kilocalorie / mole / radian ** 2'
+        # Handle simtk-style: '1.0 * angstrom'
+        # Handle list values: '[1.0, 2.0] * angstrom'
+        match = re.match(r'^(\[.*\]|[^*]+)\s*\*\s*(.+)$', quantity_string.strip())
+        if match:
+            value_str = match.group(1).strip()
+            unit_str = match.group(2).strip()
+            # Parse the value part
+            if value_str.startswith('['):
+                value = ast.literal_eval(value_str)
+            else:
+                value = float(value_str)
+            # Map common simtk unit names to pint names
+            unit_str = unit_str.replace('elementary_charge', 'elementary_charge')
+            return off_unit.Quantity(value, unit_str)
+    except Exception:
+        pass
+
+    # Fallback: simtk AST evaluation
     output_quantity = _ast_eval(ast.parse(quantity_string, mode="eval").body)
     return output_quantity
 

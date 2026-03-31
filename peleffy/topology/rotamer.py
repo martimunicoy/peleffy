@@ -475,20 +475,121 @@ class MolecularGraph(nx.Graph):
             The atom ids of all the graph's edges that belong to a rotatable
             bond
         """
-        rot_bonds_per_group = list()
-        for group in branch_groups:
-            rot_bonds = list()
-            visited_bonds = set()
-            for node in group:
-                bonds = self.edges(node)
-                for bond in bonds:
-                    if bond in visited_bonds:
-                        continue
-                    if self[bond[0]][bond[1]]['weight'] == 1:
-                        rot_bonds.append(bond)
-                    visited_bonds.add(bond)
-                    visited_bonds.add((bond[1], bond[0]))
-            rot_bonds_per_group.append(rot_bonds)
+        # Collect all rotatable bonds in the molecule (deduplicated)
+        all_rotatable_bonds = []
+        seen = set()
+        for node in self.nodes():
+            for neighbor in self.neighbors(node):
+                if self[node][neighbor]['weight'] == 1:
+                    key = frozenset([node, neighbor])
+                    if key not in seen:
+                        seen.add(key)
+                        all_rotatable_bonds.append((node, neighbor))
+
+        # Pre-compute distances once (used for tiebreaking below)
+        distances = dict(nx.shortest_path_length(self))
+
+        def dist_to_core(atom):
+            """
+            Minimum graph-distance from atom to any core node.
+            
+            Parameters
+            ----------
+            atom : int
+                The index of the atom to measure distance from
+            
+            Returns
+            -------
+            d : float
+                The minimum graph-distance from atom to any core node, or
+                infinity if no path exists
+            """
+            d = float('inf')
+            for core_node in self.core_nodes:
+                if atom in distances and core_node in distances[atom]:
+                    d = min(d, distances[atom][core_node])
+            return d
+
+        # For each bond, decide which group it belongs to.
+        # Rules (in priority order):
+        #   1. If one atom is in the core → assign to the group containing the other atom.
+        #   2. If both atoms appear in a common group → assign to the largest such group
+        #      (handles shared ring nodes between dominant and minority groups).
+        #   3. If atoms belong to different groups → assign to the group whose atom
+        #      is closer to core (i.e. the more "core-side" group).
+        #   4. Fallback: whichever group contains either atom (largest wins).
+
+        rot_bonds_per_group = [[] for _ in branch_groups]
+        assigned_bonds = set()   # frozenset keys of already-assigned bonds
+
+        for bond in all_rotatable_bonds:
+            key = frozenset(bond)
+            if key in assigned_bonds:
+                continue
+
+            atom1, atom2 = bond
+
+            # Which groups contain each atom?
+            groups_with_atom1 = [i for i, g in enumerate(branch_groups) if atom1 in g]
+            groups_with_atom2 = [i for i, g in enumerate(branch_groups) if atom2 in g]
+
+            in_core1 = atom1 in self.core_nodes
+            in_core2 = atom2 in self.core_nodes
+
+            target_group_idx = None
+
+            if in_core1 and groups_with_atom2:
+                # atom1 is in the core → the bond belongs to the branch group
+                # that contains atom2; if atom2 spans multiple groups, keep
+                # the largest one to stay with the dominant chain.
+                target_group_idx = max(groups_with_atom2,
+                                       key=lambda i: len(branch_groups[i]))
+
+            elif in_core2 and groups_with_atom1:
+                # Symmetric case: atom2 is in the core.
+                target_group_idx = max(groups_with_atom1,
+                                       key=lambda i: len(branch_groups[i]))
+
+            elif groups_with_atom1 and groups_with_atom2:
+                common = set(groups_with_atom1) & set(groups_with_atom2)
+                if common:
+                    # Both atoms appear in the same group(s) – e.g. a ring
+                    # node shared between the dominant and a minority group.
+                    # Pick the largest group to keep the bond with the dominant
+                    # chain.
+                    target_group_idx = max(common,
+                                           key=lambda i: len(branch_groups[i]))
+                else:
+                    # Atoms belong to different groups (e.g. a bond that
+                    # straddles a ring boundary). Assign the bond to the group
+                    # whose atom sits closer to the core so that the kinematic
+                    # chain remains directed from core outward.
+                    d1 = dist_to_core(atom1)
+                    d2 = dist_to_core(atom2)
+                    if d1 <= d2:
+                        target_group_idx = max(groups_with_atom1,
+                                               key=lambda i: len(branch_groups[i]))
+                    else:
+                        target_group_idx = max(groups_with_atom2,
+                                               key=lambda i: len(branch_groups[i]))
+
+            elif groups_with_atom1:
+                # Only atom1 appears in a known group; assign the bond there.
+                target_group_idx = max(groups_with_atom1,
+                                       key=lambda i: len(branch_groups[i]))
+
+            elif groups_with_atom2:
+                # Only atom2 appears in a known group; assign the bond there.
+                target_group_idx = max(groups_with_atom2,
+                                       key=lambda i: len(branch_groups[i]))
+
+            else:
+                # Neither atom maps to any branch group – this can happen for
+                # bonds that connect exclusively to core nodes. Skip silently.
+                continue
+
+            rot_bonds_per_group[target_group_idx].append(bond)
+            assigned_bonds.add(key)
 
         return rot_bonds_per_group
 
@@ -509,15 +610,41 @@ class MolecularGraph(nx.Graph):
         """
         core_atom_per_group = list()
         for rot_bonds in rot_bonds_per_group:
+            core_atom = None
+            
+            if not rot_bonds:
+                core_atom_per_group.append(None)
+                continue
+            
+            # Check if any bond atom is directly in the core
             for (a1, a2) in rot_bonds:
                 if a1 in self.core_nodes:
-                    core_atom_per_group.append(a1)
+                    core_atom = a1
                     break
                 elif a2 in self.core_nodes:
-                    core_atom_per_group.append(a2)
+                    core_atom = a2
                     break
-            else:
-                core_atom_per_group.append(None)
+            
+            # If no direct core atom found, find the closest core atom
+            if core_atom is None:
+                # Get all atoms in this branch
+                branch_atoms = set()
+                for bond in rot_bonds:
+                    branch_atoms.add(bond[0])
+                    branch_atoms.add(bond[1])
+                
+                # Find the atom in this branch that is closest to any core atom
+                min_distance = float('inf')
+                distances = dict(nx.shortest_path_length(self))
+                
+                for atom in branch_atoms:
+                    for core_node in self.core_nodes:
+                        if atom in distances and core_node in distances[atom]:
+                            if distances[atom][core_node] < min_distance:
+                                min_distance = distances[atom][core_node]
+                                core_atom = core_node
+            
+            core_atom_per_group.append(core_atom)
 
         return core_atom_per_group
 
@@ -546,15 +673,25 @@ class MolecularGraph(nx.Graph):
         sorted_rot_bonds_per_group = list()
         for core_atom, rot_bonds in zip(core_atom_per_group,
                                         rot_bonds_per_group):
+            if core_atom is None or not rot_bonds:
+                sorted_rot_bonds_per_group.append([])
+                continue
+                
             sorting_dict = dict()
             for bond in rot_bonds:
-                if (distances[core_atom][bond[0]] < 
-                        distances[core_atom][bond[1]]):
-                    sorting_dict[(bond[0], bond[1])] = \
-                        distances[core_atom][bond[0]]
+                if (core_atom in distances and 
+                    bond[0] in distances[core_atom] and 
+                    bond[1] in distances[core_atom]):
+                    if (distances[core_atom][bond[0]] < 
+                            distances[core_atom][bond[1]]):
+                        sorting_dict[(bond[0], bond[1])] = \
+                            distances[core_atom][bond[0]]
+                    else:
+                        sorting_dict[(bond[1], bond[0])] = \
+                            distances[core_atom][bond[1]]
                 else:
-                    sorting_dict[(bond[1], bond[0])] = \
-                        distances[core_atom][bond[1]]
+                    # Fallback: keep original bond order
+                    sorting_dict[bond] = 0
 
             sorted_rot_bonds_per_group.append(
                 [i[0] for i in
@@ -620,9 +757,411 @@ class MolecularGraph(nx.Graph):
 
         return filtered_rot_bonds_per_group
 
+    def _identify_rigid_rings(self, branch_nodes):
+        """
+        Identify rigid rings (sub-cores) within a branch using cycle detection.
+        
+        Parameters
+        ----------
+        branch_nodes : set[int]
+            The nodes in the branch to analyze
+            
+        Returns
+        -------
+        rigid_rings : list[set[int]]
+            List of node sets, each representing a rigid ring
+        """
+        # Build a subgraph from all bonds within the branch (rotatable and
+        # non-rotatable alike) so that ring-detection works on the full
+        # topology rather than just the rigid scaffold.
+        subgraph = nx.Graph()
+        subgraph.add_nodes_from(branch_nodes)
+        
+        non_rotatable_bonds = []
+        for node in branch_nodes:
+            for neighbor in self.neighbors(node):
+                if neighbor in branch_nodes:
+                    subgraph.add_edge(node, neighbor)
+                    if self[node][neighbor]['weight'] == 0:
+                        non_rotatable_bonds.append((node, neighbor))
+        
+        # Enumerate all independent cycles in the subgraph.
+        try:
+            cycles = nx.cycle_basis(subgraph)
+        except Exception:
+            cycles = []
+        
+        # Classify each cycle as a rigid ring or not.
+        # Criteria for a rigid ring:
+        #   - At least 5 atoms (i.e. not a 3- or 4-membered artefact).
+        #   - Fewer than 3 rotatable bonds around the ring perimeter, meaning
+        #     the ring is predominantly held together by non-rotatable bonds
+        #     and should be treated as a single rigid unit.
+        rigid_rings = []
+        for cycle in cycles:
+            if len(cycle) < 5:
+                # Tiny cycles (3- or 4-membered) are not handled as rigid
+                # sub-cores in the rotamer assignment.
+                continue
+            
+            # Walk every consecutive pair of atoms in the cycle and count
+            # how many of the ring bonds are rotatable.
+            rotatable_bonds_in_cycle = 0
+            for j in range(len(cycle)):
+                node1 = cycle[j]
+                node2 = cycle[(j + 1) % len(cycle)]  # wraps around at the last atom
+                if self.has_edge(node1, node2) and self[node1][node2]['weight'] == 1:
+                    rotatable_bonds_in_cycle += 1
+            
+            if rotatable_bonds_in_cycle < 3:
+                rigid_rings.append(set(cycle))
+        
+        # Second pass: build a subgraph using only non-rotatable bonds and
+        # run cycle detection again. This catches rigid rings whose perimeter
+        # bonds are exclusively non-rotatable (e.g. aromatic rings), which
+        # may have been missed or incorrectly excluded in the first pass due
+        # to the rotatable-bond threshold.
+        nonrot_subgraph = nx.Graph()
+        nonrot_subgraph.add_nodes_from(branch_nodes)
+        
+        for node in branch_nodes:
+            for neighbor in self.neighbors(node):
+                if neighbor in branch_nodes and self[node][neighbor]['weight'] == 0:
+                    nonrot_subgraph.add_edge(node, neighbor)
+        
+        try:
+            nonrot_cycles = nx.cycle_basis(nonrot_subgraph)
+            for cycle in nonrot_cycles:
+                if len(cycle) >= 5:
+                    cycle_set = set(cycle)
+                    # Only add the cycle if it has not already been captured
+                    # by the full-subgraph pass above.
+                    if not any(cycle_set == ring for ring in rigid_rings):
+                        rigid_rings.append(cycle_set)
+        except Exception:
+            pass
+        
+        return rigid_rings
+
+    def _split_branch_at_rings(self, branch_nodes):
+        """
+        Split a branch into hierarchical groups only at true bifurcation points.
+
+        A bifurcation occurs when a ring has 3+ rotatable bond connections
+        (one from the core/base direction and 2+ extending outward).
+
+        The algorithm is applied recursively:
+          1. Find all bifurcation rings in *candidate_nodes*, sorted by
+             distance to the current local core (closest first).
+          2. At the closest bifurcation ring, measure the total number of
+             rotatable bonds in each outward subbranch (all nodes reachable
+             beyond the ring in that direction, going all the way to the ends).
+          3. The dominant subbranch (most rotatable bonds) stays merged with
+             the base segment and the ring → one group.
+          4. Each minority subbranch becomes its own group (ring_nodes + all
+             nodes of that subbranch, minus any bonds already in the dominant).
+          5. The algorithm is then repeated on the dominant subbranch (with
+             the bifurcation ring acting as the new local core) and on each
+             minority subbranch independently.
+
+        Parameters
+        ----------
+        branch_nodes : set[int]
+            The nodes in the branch to split
+
+        Returns
+        -------
+        hierarchical_groups : list[set[int]]
+            List of node groups; each group carries a disjoint set of
+            rotatable bonds.
+        """
+        # ------------------------------------------------------------------
+        # Helpers
+        # ------------------------------------------------------------------
+        def collect_segment(start, candidate_nodes, exclude_nodes):
+            """
+            BFS over candidate_nodes from start, not crossing exclude_nodes.
+
+            Parameters
+            ----------
+            start : int
+                The starting node for the BFS
+            candidate_nodes : set[int]
+                The set of nodes to consider for the BFS
+            exclude_nodes : set[int]
+                The set of nodes to exclude from the BFS
+
+            Returns
+            -------
+            segment : set[int]
+                The set of nodes reached by the BFS
+            """
+            segment = set()
+            stack = [start]
+            visited = set()
+            while stack:
+                node = stack.pop()
+                if node in visited or node in exclude_nodes or node not in candidate_nodes:
+                    continue
+                visited.add(node)
+                segment.add(node)
+                for nb in self.neighbors(node):
+                    if nb not in visited and nb not in exclude_nodes and nb in candidate_nodes:
+                        stack.append(nb)
+            return segment
+
+        def count_rot_bonds_in_segment(segment):
+            """
+            Count rotatable bonds whose both endpoints lie within segment.
+            
+            Parameters
+            ----------
+            segment : set[int]
+                The set of nodes defining the segment
+
+            Returns
+            -------
+            count : int
+                The number of rotatable bonds within the segment
+            """
+            count = 0
+            seen = set()
+            for node in segment:
+                for nb in self.neighbors(node):
+                    if nb in segment and self[node][nb]['weight'] == 1:
+                        key = frozenset([node, nb])
+                        if key not in seen:
+                            seen.add(key)
+                            count += 1
+            return count
+
+        def dist_to_local_core(node, local_core_nodes):
+            """
+            Shortest unweighted path length from node to any local-core node.
+
+            Parameters
+            ----------
+            node : int
+                The node to measure distance from
+            local_core_nodes : set[int]
+                The nodes that act as the "core" for this recursion level
+            Returns
+            -------
+
+            best : float
+                The shortest unweighted path length from node to any local-core
+                node, or infinity if no path exists
+            """
+            best = float('inf')
+            for cn in local_core_nodes:
+                try:
+                    d = nx.shortest_path_length(self, node, cn)
+                    if d < best:
+                        best = d
+                except nx.NetworkXNoPath:
+                    pass
+            return best
+
+        # ------------------------------------------------------------------
+        # Recursive splitter.
+        #
+        # candidate_nodes  – the set of branch nodes still to be assigned
+        # local_core_nodes – nodes that act as the "core" for THIS recursion
+        #                    level (originally the molecule's real core, then
+        #                    the bifurcation ring found at the previous level)
+        # base_accumulated – nodes accumulated on the core-side *above* this
+        #                    recursion level (included in the dominant group)
+        # ------------------------------------------------------------------
+        def split_recursive(candidate_nodes, local_core_nodes, base_accumulated):
+            """
+            Returns a list of node-sets (groups).
+            The first element is always the dominant chain from local_core
+            toward the deepest dominant end.
+
+            Parameters
+            ----------
+            candidate_nodes : set[int]
+                The set of branch nodes still to be assigned
+            local_core_nodes : set[int]
+                Nodes that act as the "core" for THIS recursion level
+                (originally the molecule's real core, then the bifurcation
+                ring found at the previous level)
+            base_accumulated : set[int]
+                Nodes accumulated on the core-side *above* this recursion level
+                (included in the dominant group)
+
+            Returns
+            -------
+            groups : list[set[int]]
+                A list of node-sets (groups). The first element is always the
+                dominant chain from local_core toward the deepest dominant end.
+            """
+            # Detect rigid rings within the current candidate set and identify
+            # which of them are bifurcation points, i.e. rings that have 3 or
+            # more rotatable connections to the rest of the molecule (one
+            # inward toward the core and at least two outward into distinct
+            # sub-branches).
+            rings = self._identify_rigid_rings(candidate_nodes)
+
+            # --- Identify bifurcation rings ---------------------------------
+            bifurcation_rings = []
+            for ring_nodes in rings:
+                # Collect every rotatable bond that exits the ring, either
+                # toward the local-core or toward another candidate node that
+                # lies outside the ring.
+                rot_conns = []
+                for rn in ring_nodes:
+                    for nb in self.neighbors(rn):
+                        is_local_core = nb in local_core_nodes
+                        is_in_candidate_outside_ring = (
+                            nb in candidate_nodes and nb not in ring_nodes)
+                        if (is_local_core or is_in_candidate_outside_ring) \
+                                and self[rn][nb]['weight'] == 1:
+                            rot_conns.append((rn, nb))
+                if len(rot_conns) >= 3:
+                    bifurcation_rings.append((ring_nodes, rot_conns))
+
+            if not bifurcation_rings:
+                # No bifurcation ring found: the entire candidate set forms a
+                # single linear (or branching-but-not-ring-split) group.
+                group = base_accumulated | candidate_nodes
+                return [group]
+
+            # --- Sort bifurcation rings by distance to local core -----------
+            def ring_distance(ring_and_conns):
+                rn_set, _ = ring_and_conns
+                return min(dist_to_local_core(n, local_core_nodes)
+                           for n in rn_set)
+
+            bifurcation_rings.sort(key=ring_distance)
+            nearest_ring_nodes, connections = bifurcation_rings[0]
+
+            # --- Identify the core-direction connection ----------------------
+            # The inward connection is the rotatable bond that leads back
+            # toward the local core. Prefer a direct connection (the external
+            # node is already in local_core_nodes); fall back to the
+            # connection whose external node is closest to the local core.
+            inward_conn = None
+            for rn, nb in connections:
+                if nb in local_core_nodes:
+                    inward_conn = (rn, nb)
+                    break
+            if inward_conn is None:
+                min_d = float('inf')
+                for rn, nb in connections:
+                    d = dist_to_local_core(nb, local_core_nodes)
+                    if d < min_d:
+                        min_d = d
+                        inward_conn = (rn, nb)
+
+            # --- Base segment: nodes on the core-side of the ring -----------
+            # Collect all candidate nodes reachable from the inward external
+            # node without crossing the ring. These nodes form the "stem"
+            # that connects the local core to the bifurcation ring and will
+            # be merged into the dominant group.
+            inward_external = inward_conn[1]
+            if inward_external in candidate_nodes:
+                base_segment = collect_segment(
+                    inward_external,
+                    candidate_nodes=candidate_nodes,
+                    exclude_nodes=nearest_ring_nodes)
+            else:
+                # The ring is directly attached to the local core with no
+                # intermediate nodes.
+                base_segment = set()
+
+            # --- Outward connections (all except the inward one) ------------
+            # These are the rotatable bonds that exit the ring toward distinct
+            # sub-branches (i.e. the "forks" that justify the split).
+            outward_conns = [
+                (rn, nb) for rn, nb in connections
+                if nb not in local_core_nodes
+                and (rn, nb) != inward_conn
+            ]
+
+            # --- Collect full subbranch for each outward connection ---------
+            # A "full subbranch" is the set of all candidate nodes reachable
+            # from an outward exit node without re-crossing the bifurcation
+            # ring or the base segment. The total number of rotatable bonds
+            # within each subbranch (including the exit bond itself) is used
+            # to rank them.
+            excluded_base = nearest_ring_nodes | base_segment
+            outward_subbranches = []
+            for rn, nb in outward_conns:
+                if nb not in candidate_nodes:
+                    continue
+                full_sub = collect_segment(
+                    nb,
+                    candidate_nodes=candidate_nodes,
+                    exclude_nodes=excluded_base)
+                rot_count = count_rot_bonds_in_segment(full_sub)
+                # Include the rotatable bond from the ring into this subbranch
+                # in the count so that single-bond branches are not penalised.
+                if self[rn][nb]['weight'] == 1:
+                    rot_count += 1
+                outward_subbranches.append((nb, full_sub, rot_count))
+
+            if not outward_subbranches:
+                # All outward connections led outside the candidate set, so
+                # there is nothing to split – treat everything as one group.
+                group = base_accumulated | base_segment | nearest_ring_nodes | candidate_nodes
+                return [group]
+
+            # --- Select dominant subbranch (most rotatable bonds) -----------
+            # The dominant subbranch is the one with the highest total number
+            # of rotatable bonds; it stays merged with the core-side segment
+            # and the ring. All other subbranches become separate groups.
+            dom_idx = max(range(len(outward_subbranches)),
+                          key=lambda i: outward_subbranches[i][2])
+            dom_start, dom_sub, dom_rot = outward_subbranches[dom_idx]
+
+            # --- Build dominant group & recurse on it -----------------------
+            # The new "local core" for the dominant recursion is the ring itself.
+            dominant_base = base_accumulated | base_segment | nearest_ring_nodes
+            dominant_groups = split_recursive(
+                candidate_nodes=dom_sub,
+                local_core_nodes=nearest_ring_nodes,
+                base_accumulated=dominant_base)
+
+            # The first dominant_group absorbs dominant_base (already done
+            # inside the recursive call via base_accumulated).
+
+            # --- Build minority groups & recurse on each --------------------
+            # Each minority subbranch becomes its own group (or further splits
+            # if it itself contains bifurcation rings). The bifurcation ring is
+            # passed as the local-core for these sub-recursions so that bond
+            # ordering inside each minority branch is measured from the ring
+            # outward.
+            minority_groups = []
+            for i, (sub_start, sub_nodes, sub_rot) in enumerate(outward_subbranches):
+                if i == dom_idx:
+                    continue
+                min_groups = split_recursive(
+                    candidate_nodes=sub_nodes,
+                    local_core_nodes=nearest_ring_nodes,
+                    base_accumulated=nearest_ring_nodes.copy())
+                minority_groups.extend(min_groups)
+
+            all_groups = dominant_groups + minority_groups
+            return all_groups
+
+        # ------------------------------------------------------------------
+        # Entry point
+        # ------------------------------------------------------------------
+        # Find the node in branch_nodes that is directly connected to core
+        local_core = set(self.core_nodes)
+
+        # Start the recursion
+        groups = split_recursive(
+            candidate_nodes=branch_nodes,
+            local_core_nodes=local_core,
+            base_accumulated=set())
+
+        return groups
+
     def get_rotamers(self):
         """
-        It builds the RotamerLibrary object.
+        It builds the RotamerLibrary object with hierarchical branch splitting.
 
         Returns
         -------
@@ -633,35 +1172,43 @@ class MolecularGraph(nx.Graph):
 
         assert len(self.core_nodes) > 0, 'No core nodes were found'
 
+        # Remove core nodes to isolate the peripheral branches. Each connected
+        # component that remains is an independent branch originating from the
+        # core.
         branch_graph = deepcopy(self)
 
         for node in self.core_nodes:
             branch_graph.remove_node(node)
 
         branch_groups = list(nx.connected_components(branch_graph))
+        
+        # Attempt to split each branch at bifurcating rings. When a branch
+        # contains no ring-based bifurcations, _split_branch_at_rings returns
+        # the original node set unchanged (wrapped in a single-element list),
+        # so the extend call is always safe.
+        hierarchical_branch_groups = []
+        for branch_nodes in branch_groups:
+            split_groups = self._split_branch_at_rings(branch_nodes)
+            hierarchical_branch_groups.extend(split_groups)
 
-        rot_bonds_per_group = self._get_rot_bonds_per_group(branch_groups)
+        # Map every rotatable bond to its branch group, then determine the
+        # core-adjacent atom for each group so bonds can be sorted from the
+        # core outward.
+        rot_bonds_per_group = self._get_rot_bonds_per_group(hierarchical_branch_groups)
 
-        core_atom_per_group = self._get_core_atom_per_group(
-            rot_bonds_per_group)
+        core_atom_per_group = self._get_core_atom_per_group(rot_bonds_per_group)
 
+        # Sort rotatable bonds within each group by increasing graph distance
+        # from the group's core atom, ensuring a core-to-tip ordering.
         distances = dict(nx.shortest_path_length(self))
-
         sorted_rot_bonds_per_group = self._get_sorted_bonds_per_group(
             core_atom_per_group, rot_bonds_per_group, distances)
 
-        """
-        if not include_terminal_rotamers:
-            sorted_rot_bonds_per_group = \
-                self._ignore_terminal_rotatable_bonds(
-                    sorted_rot_bonds_per_group, distances)
-        """
-
         rotamers = list()
 
-        # TODO extend core by including one rotatable bond from the largest
-        # branch to increase the performance of the algorithm.
-        for group_id, rot_bonds in enumerate(sorted_rot_bonds_per_group):
+        # Build Rotamer objects from the ordered bond lists; skip any group
+        # that ended up with no rotatable bonds after filtering.
+        for rot_bonds in sorted_rot_bonds_per_group:
             branch_rotamers = list()
             for (atom1_index, atom2_index) in rot_bonds:
                 rotamer = Rotamer(atom1_index, atom2_index, resolution)
@@ -669,6 +1216,10 @@ class MolecularGraph(nx.Graph):
 
             if len(branch_rotamers) > 0:
                 rotamers.append(branch_rotamers)
+
+        # Place the group with the most rotatable bonds first so that PELE
+        # uses the longest chain as the primary branch.
+        rotamers.sort(key=len, reverse=True)
 
         return rotamers
 
@@ -848,7 +1399,7 @@ class CoreLessMolecularGraph(MolecularGraph):
 
     def get_rotamers(self):
         """
-        It builds the RotamerLibrary object.
+        It builds the RotamerLibrary object with hierarchical branch splitting.
 
         Returns
         -------
@@ -860,8 +1411,14 @@ class CoreLessMolecularGraph(MolecularGraph):
         branch_graph = deepcopy(self)
 
         branch_groups = list(nx.connected_components(branch_graph))
+        
+        # Apply hierarchical splitting to each branch
+        hierarchical_branch_groups = []
+        for branch_nodes in branch_groups:
+            split_groups = self._split_branch_at_rings(branch_nodes)
+            hierarchical_branch_groups.extend(split_groups)
 
-        rot_bonds_per_group = self._get_rot_bonds_per_group(branch_groups)
+        rot_bonds_per_group = self._get_rot_bonds_per_group(hierarchical_branch_groups)
 
         rotamers = list()
 

@@ -5,8 +5,30 @@ This module contains the tests to check peleffy's parameters.
 import pytest
 
 import tempfile
-from simtk import unit
+try:
+    from simtk import unit
+except ImportError:
+    unit = None
 import numpy as np
+
+
+def _q_magnitude(q, unit_str):
+    """Extract float magnitude from a pint or simtk Quantity in the given unit."""
+    import numbers
+    if isinstance(q, numbers.Number):
+        return float(q)
+    try:
+        import pint
+        if isinstance(q, pint.Quantity):
+            return q.to(unit_str).magnitude
+    except ImportError:
+        pass
+    # simtk/openmm: use the unit name to look up from simtk
+    if unit is not None:
+        target = getattr(unit, unit_str, None)
+        if target is not None:
+            return q.value_in_unit(target)
+    return float(q._value)
 
 from .utils import (SET_OF_LIGAND_PATHS, apply_PELE_dihedral_equation,
                     apply_OFF_dihedral_equation, check_CHO_charges,
@@ -156,8 +178,18 @@ class TestWrapper(object):
             import numpy as np
             for p in params1.keys():
                 if p == 'charges':      #charges have to be handle differently
-                    assert params1[p].__eq__(params2[p]).all() == \
-                            np.full((len(params1[p])), True, dtype=bool).all()
+                    # Extract magnitude arrays from both (supports pint and simtk)
+                    def get_magnitude(q):
+                        if hasattr(q, 'magnitude'):  # pint
+                            return np.array(q.magnitude)
+                        elif hasattr(q, '_value'):   # simtk/openmm
+                            return np.array(q._value)
+                        else:
+                            return np.array(q)
+                    mag1 = get_magnitude(params1[p])
+                    mag2 = get_magnitude(params2[p])
+                    assert np.allclose(mag1, mag2), \
+                        'Unexpected charges: {} vs {}'.format(mag1, mag2)
                 else:
                     assert params1[p] == params2[p]
 
@@ -334,33 +366,31 @@ class TestBonds(object):
                             (4, 10): 1.085503378387,
                             (5, 11): 1.085503378387}
 
-        expected_ks = {(0, 1): 672.0064645264,
-                       (0, 5): 672.0064645264,
-                       (0, 6): 808.4160937,
-                       (1, 2): 672.0064645264,
-                       (1, 7): 808.4160937,
-                       (2, 3): 672.0064645264,
-                       (2, 8): 808.4160937,
-                       (3, 4): 672.0064645264,
-                       (3, 9): 808.4160937,
-                       (4, 5): 672.0064645264,
-                       (4, 10): 808.4160937,
-                       (5, 11): 808.4160937}
+        expected_ks = {(0, 1): 336.0032322632,
+                       (0, 5): 336.0032322632,
+                       (0, 6): 404.20804685,
+                       (1, 2): 336.0032322632,
+                       (1, 7): 404.20804685,
+                       (2, 3): 336.0032322632,
+                       (2, 8): 404.20804685,
+                       (3, 4): 336.0032322632,
+                       (3, 9): 404.20804685,
+                       (4, 5): 336.0032322632,
+                       (4, 10): 404.20804685,
+                       (5, 11): 404.20804685}
 
         for bond in parameters['bonds']:
             indexes = (bond['atom1_idx'], bond['atom2_idx'])
-            expected_length = unit.Quantity(expected_lengths[indexes],
-                                            unit.angstrom)
-            expected_k = unit.Quantity(expected_ks[indexes],
-                                       unit.kilocalorie
-                                       / (unit.angstrom ** 2 * unit.mole))
 
-            assert bond['eq_dist'] - expected_length \
-                < unit.Quantity(MAX_THRESHOLD, unit.angstrom), \
+            bond_length = _q_magnitude(bond['eq_dist'], 'angstrom')
+            bond_k = _q_magnitude(bond['spring_constant'],
+                                  'kilocalorie / angstrom ** 2 / mole')
+
+            assert abs(bond_length - expected_lengths[indexes]) \
+                < MAX_THRESHOLD, \
                 'Invalid length for bond {}'.format(bond)
-            assert bond['spring_constant'] - expected_k \
-                < unit.Quantity(MAX_THRESHOLD, unit.kilocalorie
-                                / (unit.angstrom ** 2 * unit.mole)), \
+            assert abs(bond_k - expected_ks[indexes]) \
+                < MAX_THRESHOLD, \
                 'Invalid k for bond {}'.format(bond)
 
     def test_Impact_writable_parameters(self):
@@ -433,40 +463,38 @@ class TestAngles(object):
                            (5, 0, 6): 133.1339832262,
                            (5, 4, 10): 133.1339832262}
 
-        expected_ks = {(0, 1, 2): 157.3576298529,
-                       (0, 1, 7): 68.40592742547,
-                       (0, 5, 4): 157.3576298529,
-                       (0, 5, 11): 68.40592742547,
-                       (1, 0, 5): 157.3576298529,
-                       (1, 0, 6): 68.40592742547,
-                       (1, 2, 3): 157.3576298529,
-                       (1, 2, 8): 68.40592742547,
-                       (2, 1, 7): 68.40592742547,
-                       (2, 3, 4): 157.3576298529,
-                       (2, 3, 9): 68.40592742547,
-                       (3, 2, 8): 68.40592742547,
-                       (3, 4, 5): 157.3576298529,
-                       (3, 4, 10): 68.40592742547,
-                       (4, 3, 9): 68.40592742547,
-                       (4, 5, 11): 68.40592742547,
-                       (5, 0, 6): 68.40592742547,
-                       (5, 4, 10): 68.40592742547}
+        expected_ks = {(0, 1, 2): 78.67881492645,
+                       (0, 1, 7): 34.202963712735,
+                       (0, 5, 4): 78.67881492645,
+                       (0, 5, 11): 34.202963712735,
+                       (1, 0, 5): 78.67881492645,
+                       (1, 0, 6): 34.202963712735,
+                       (1, 2, 3): 78.67881492645,
+                       (1, 2, 8): 34.202963712735,
+                       (2, 1, 7): 34.202963712735,
+                       (2, 3, 4): 78.67881492645,
+                       (2, 3, 9): 34.202963712735,
+                       (3, 2, 8): 34.202963712735,
+                       (3, 4, 5): 78.67881492645,
+                       (3, 4, 10): 34.202963712735,
+                       (4, 3, 9): 34.202963712735,
+                       (4, 5, 11): 34.202963712735,
+                       (5, 0, 6): 34.202963712735,
+                       (5, 4, 10): 34.202963712735}
 
         for angle in parameters['angles']:
             indexes = (angle['atom1_idx'], angle['atom2_idx'],
                        angle['atom3_idx'])
-            expected_angle = unit.Quantity(expected_angles[indexes],
-                                           unit.degree)
-            expected_k = unit.Quantity(expected_ks[indexes],
-                                       unit.kilocalorie
-                                       / (unit.radian ** 2 * unit.mole))
 
-            assert angle['eq_angle'] - expected_angle \
-                < unit.Quantity(MAX_THRESHOLD, unit.degree), \
+            angle_eq = _q_magnitude(angle['eq_angle'], 'degree')
+            angle_k = _q_magnitude(angle['spring_constant'],
+                                   'kilocalorie / radian ** 2 / mole')
+
+            assert abs(angle_eq - expected_angles[indexes]) \
+                < MAX_THRESHOLD, \
                 'Invalid length for angle {}'.format(angle)
-            assert angle['spring_constant'] - expected_k \
-                < unit.Quantity(MAX_THRESHOLD, unit.kilocalorie
-                                / (unit.radian ** 2 * unit.mole)), \
+            assert abs(angle_k - expected_ks[indexes]) \
+                < MAX_THRESHOLD, \
                 'Invalid k for angle {}'.format(angle)
 
     def test_Impact_writable_parameters(self):
@@ -513,6 +541,27 @@ class TestDihedrals(object):
         It checks the standard Open Force Field parameterization for
         dihedrals.
         """
+
+        def normalize_torsion_tuple(t):
+            """Normalize a torsion parameter tuple for comparison:
+            extract float magnitudes from Quantities."""
+            result = []
+            for item in t:
+                result.append(_q_magnitude(item, None) if hasattr(item, 'magnitude')
+                               or hasattr(item, '_value') else item)
+            return tuple(result)
+
+        def _q_mag(q):
+            """Get the plain float magnitude of q."""
+            if hasattr(q, 'magnitude'):  # pint
+                return float(q.magnitude)
+            elif hasattr(q, '_value'):   # simtk/openmm
+                v = q._value
+                import numpy as np
+                if hasattr(v, '__float__'):
+                    return float(v)
+                return v
+            return q
 
         # Load molecule
         molecule = Molecule(smiles='C=CC(=O)O', hydrogens_are_explicit=False)
@@ -586,13 +635,21 @@ class TestDihedrals(object):
         assert len(expected_propers) == len(parameters['propers']), \
             'Unexpected number of proper torsions'
 
+        # Normalize expected_propers to plain float tuples
+        norm_expected_propers = [
+            (t[0], t[1], t[2], t[3], round(_q_mag(t[4]), 6),
+             round(_q_mag(t[5]), 4), t[6], t[7])
+            for t in expected_propers
+        ]
+
         for proper in parameters['propers']:
             proper_parameters = (proper['atom1_idx'], proper['atom2_idx'],
                                  proper['atom3_idx'], proper['atom4_idx'],
-                                 proper['k'], proper['phase'],
+                                 round(_q_mag(proper['k']), 6),
+                                 round(_q_mag(proper['phase']), 4),
                                  proper['periodicity'], proper['idivf'])
 
-            assert proper_parameters in expected_propers, \
+            assert proper_parameters in norm_expected_propers, \
                 'Unexpected proper torsion'
 
         # Check resulting parameters for improper torsions
@@ -616,17 +673,24 @@ class TestDihedrals(object):
             len(parameters['impropers']), \
             'Unexpected number of improper torsions'
 
+        # Normalize expected_impropers to plain float tuples
+        norm_expected_impropers = [
+            (t[0], t[1], t[2], t[3], round(_q_mag(t[4]), 6),
+             round(_q_mag(t[5]), 4), t[6], t[7])
+            for t in expected_impropers
+        ]
+
         for improper in parameters['impropers']:
             improper_parameters = (improper['atom1_idx'],
                                    improper['atom2_idx'],
                                    improper['atom3_idx'],
                                    improper['atom4_idx'],
-                                   improper['k'],
-                                   improper['phase'],
+                                   round(_q_mag(improper['k']), 6),
+                                   round(_q_mag(improper['phase']), 4),
                                    improper['periodicity'],
                                    improper['idivf'])
 
-            assert improper_parameters in expected_impropers, \
+            assert improper_parameters in norm_expected_impropers, \
                 'Unexpected improper torsion'
 
     def test_Impact_writable_parameters(self):

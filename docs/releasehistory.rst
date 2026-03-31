@@ -7,11 +7,37 @@ Releases follow the ``major.minor.micro`` scheme recommended by `PEP440 <https:/
 * ``minor`` increments add features but do not break API compatibility
 * ``micro`` increments represent bugfix releases or improvements in documentation
 
+1.6.0 - Migration to Python 3.12, OpenFF upgrade and NAGL charge method
+------------------------------------------------------------------------
+
+This is a major release of peleffy that migrates the package to Python 3.12 and upgrades
+the OpenFF toolkit and force fields to their latest versions. It also introduces a new
+``OpenFF230ForceField`` class and the NAGL charge assignment method, which uses a Graph
+Convolutional Network (GCN) model to assign AM1-BCC charges directly from the molecular
+graph without requiring 3D conformers.
+
+New features
+""""""""""""
+- Migration to Python 3.12 and upgrade of all core dependencies (RDKit, OpenFF Toolkit, OpenFF Force Fields)
+- Upgrade of ``versioneer`` to v0.29 for full Python 3.12 compatibility
+- New ``OpenFF230ForceField`` class in ``peleffy.forcefield`` that uses ``openff_unconstrained-2.3.0.offxml`` as the underlying force field. This version is specifically designed to be used with NAGL charges and enforces their use as the only compatible charge method
+- New ``NAGLCalculator`` class in ``peleffy.forcefield.calculators`` that assigns partial charges using the OpenFF NAGL GCN model ``openff-gnn-am1bcc-1.0.0.pt`` via the OpenFF Toolkit's ``assign_partial_charges`` method. Charges are computed directly from the molecular graph and do not require 3D conformers
+- ``ForceFieldSelector`` now returns ``OpenFF230ForceField`` when ``openff_unconstrained-2.3.0.offxml`` is requested, separating it from other OpenFF versions
+- ``ChargeCalculatorSelector`` now includes ``nagl`` as an available charge method
+- ``setup.py`` updated with ``python_requires='>=3.12'`` and Python 3.12 classifier
+- ``devtools/conda/meta.yaml`` updated to reflect current dependency versions including ``openff-nagl``
+
+Bugfixes
+""""""""
+- Fixed ``SyntaxWarning: invalid escape sequence '\s'`` in ``versioneer.py`` v0.18 that appeared on Python 3.12
+- Fixed amide bond detection in rotamer library: the SMARTS pattern for rotatable bonds used ``[NH]`` which failed to exclude amide C–N bonds when explicit hydrogens were present (``[NH]`` requires implicit H count, but RDKit assigns explicit H atoms). Changed to ``[N]`` to correctly exclude any nitrogen bonded to a carbonyl from being part of a rotatable bond, regardless of hydrogen representation
+- Fixed ``ffld_server`` output handling: replaced ``-out_file`` flag with Python-level stdout redirection
+
 
 1.5.2 - Improvements for alchemistry
 ------------------------------------
 
-This is a minor release of peleffy that adds several improvements to the alchemistry module
+This is a minor release of peleffy that adds several improvements to the alchemistry module.
 
 New features
 """"""""""""

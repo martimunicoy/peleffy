@@ -41,9 +41,11 @@ setup(
         "Topic :: Utilities",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.12",
         "Operating System :: Unix",
         "Operating System :: MacOS"
     ],
+    python_requires='>=3.12',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     package_data={'peleffy': find_package_data(

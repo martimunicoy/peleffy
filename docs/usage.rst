@@ -201,7 +201,7 @@ It sets the method to compute the partial charges.
 
 - Flag: ``-c NAME``, ``--charge_method NAME``
 - Type: ``string``
-- Choices: one of [``gasteiger``, ``am1bcc``, ``OPLS``]
+- Choices: one of [``gasteiger``, ``am1bcc``, ``OPLS``, ``mulliken``, ``nagl``]
 - Default: ``am1bcc``
 - Example: the code below will calculate partial charges using 'gasteiger' method
 
@@ -257,3 +257,12 @@ It generates an Impact template that will be compatible with PELE's AMBER force 
   .. code-block:: bash
 
         $ python -m peleffy.main path/to/my_ligand.pdb --for_amber
+
+OpenFF 2.3.0
+------------
+Version 2.3.0 of OpenFF requires a specific charge method, which is NAGL. To select this charge method along with OpenFF-2.3.0 use the following command:
+
+  .. code-block:: bash
+
+        $ python -m peleffy.main path/to/my_ligand.pdb -f openff_unconstrained-2.3.0.offxml -c nagl
+

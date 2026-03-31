@@ -10,7 +10,10 @@ __all__ = ["OpenForceFieldParameterWrapper",
 
 
 from collections import defaultdict
-from simtk import unit
+try:
+    from simtk import unit
+except ImportError:
+    unit = None
 
 from peleffy.utils import get_data_file_path
 from peleffy.utils import Logger
@@ -275,7 +278,7 @@ class BaseParameterWrapper(dict):
             # Dictionary relating parameters key with the expected data type
             dict_units = {
                 'alphas': float, 'gammas': float,
-                'charges':  simtk.unit.quantity.Quantity,
+                'charges':  'Quantity',
                 'sigmas': 'list_Quantity', 'epsilons': 'list_Quantity',
                 'SGB_radii': 'list_Quantity', 'vdW_radii': 'list_Quantity',
                 'angles': dict, 'bonds': dict, 'impropers': dict,
@@ -299,29 +302,27 @@ class BaseParameterWrapper(dict):
                     correct_value = [float(v) if not v is None else v
                                      for v in value]
 
-                if dict_units[label] is simtk.unit.quantity.Quantity:
+                if dict_units[label] == 'Quantity':
                     correct_value = string_to_quantity(value)
                     return correct_value
 
                 if dict_units[label] == 'list_Quantity':
-                    correct_value = \
-                            [unit.Quantity(value=string_to_quantity(v)._value,
-                                           unit=string_to_quantity(v).unit)
-                            for v in value]
+                    correct_value = []
+                    for v in value:
+                        q = string_to_quantity(v)
+                        correct_value.append(q)
 
                 if dict_units[label] is dict:
                     correct_value = []
                     for element in value:
                         correct_dict = dict()
-                        for k,v in element.items():
+                        for k, v in element.items():
                             if 'idx' in k:
                                 correct_dict[k] = int(v)
                             else:
                                 try:
-                                    correct_dict[k] = unit.Quantity(
-                                            value=string_to_quantity(v)._value,
-                                            unit=string_to_quantity(v).unit)
-                                except:
+                                    correct_dict[k] = string_to_quantity(v)
+                                except Exception:
                                     correct_dict[k] = v
                         correct_value.append(correct_dict)
                 return correct_value

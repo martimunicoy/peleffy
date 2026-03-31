@@ -158,6 +158,73 @@ class OPLSChargeCalculator(_PartialChargeCalculator):
             parameters['charges'] = partial_charges
 
 
+class NAGLCalculator(_PartialChargeCalculator):
+    """
+    Implementation of the NAGL partial charge calculator.
+
+    Uses the OpenFF Toolkit's ``assign_partial_charges`` method with the
+    'openff-gnn-am1bcc-1.0.0.pt' NAGL GCN model. Charges are computed
+    directly from the molecular graph and do not require 3D conformers.
+
+    Requires openff-nagl and openff-nagl-models to be installed.
+    """
+
+    _name = 'nagl'
+    _model_name = 'openff-gnn-am1bcc-1.0.0.pt'
+
+    @property
+    def model_name(self):
+        """
+        The NAGL model name used for charge assignment.
+
+        Returns
+        -------
+        model_name : str
+            The NAGL model name
+        """
+        return self._model_name
+
+    def get_partial_charges(self):
+        """
+        It returns the partial charges that correspond to the molecule's
+        atoms computed with a NAGL GCN model via the OpenFF Toolkit.
+
+        Returns
+        -------
+        charges : simtk.unit.Quantity
+            The array of partial charges
+
+        Raises
+        ------
+        ToolkitUnavailableException
+            If openff-nagl or openff-nagl-models are not available
+        ChargeCalculationError
+            If the NAGL charge calculation fails
+        """
+        from peleffy.utils.toolkits import ChargeCalculationError
+
+        off_molecule = self.molecule.off_molecule
+
+        try:
+            off_molecule.assign_partial_charges(
+                partial_charge_method=self._model_name)
+        except Exception as e:
+            raise ChargeCalculationError(
+                'NAGL partial charge calculation failed on molecule '
+                '{} (SMILES {}). '.format(
+                    self.molecule.tag,
+                    off_molecule.to_smiles())
+                + 'Original error: {}'.format(e))
+
+        # Convert from openff-units Quantity to simtk Quantity
+        off_charges = off_molecule.partial_charges
+        charges = unit.Quantity(
+            [c.magnitude for c in off_charges],
+            unit.elementary_charge)
+
+        return charges
+
+
 class DummyChargeCalculator(_PartialChargeCalculator):
     """
     Implementation of a dummy charge calculator that will not perform

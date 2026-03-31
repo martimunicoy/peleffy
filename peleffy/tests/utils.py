@@ -4,7 +4,10 @@ This module contains a variety of helpful tools for tests.
 
 
 import numpy as np
-from simtk import unit
+try:
+    from simtk import unit
+except ImportError:
+    unit = None
 
 from peleffy.forcefield.forcefield import _BaseForceField
 
@@ -22,11 +25,35 @@ def apply_PELE_dihedral_equation(proper, x):
     ----------
     proper : a peleffy.topology.Proper
         The proper whose parameters will be applied to equation
-    x : float
-        Equation's x value
+    x : float or Quantity
+        Equation's x value (in radians)
     """
-    return proper.constant * (1 + proper.prefactor
-                              * np.cos(proper.periodicity * x))
+    # Extract x as plain float array in radians
+    if hasattr(x, 'magnitude') and hasattr(x, 'to'):
+        x_rad = x.to('radian').magnitude
+    elif hasattr(x, 'value_in_unit'):
+        try:
+            from simtk import unit as simtk_unit
+            x_rad = x.value_in_unit(simtk_unit.radians)
+        except ImportError:
+            x_rad = x
+    else:
+        x_rad = x
+
+    # Extract constant as plain float in kcal/mol
+    c = proper.constant
+    if hasattr(c, 'magnitude'):
+        c_val = c.to('kilocalorie / mole').magnitude
+    elif hasattr(c, 'value_in_unit'):
+        try:
+            from simtk import unit as simtk_unit
+            c_val = c.value_in_unit(simtk_unit.kilocalorie / simtk_unit.mole)
+        except ImportError:
+            c_val = c
+    else:
+        c_val = c
+
+    return c_val * (1 + proper.prefactor * np.cos(proper.periodicity * x_rad))
 
 
 def apply_OFF_dihedral_equation(proper, x):
@@ -38,10 +65,53 @@ def apply_OFF_dihedral_equation(proper, x):
     ----------
     proper : a peleffy.topology.Proper
         The proper whose parameters will be applied to equation
-    x : float
-        Equation's x value
+    x : float or Quantity
+        Equation's x value (in radians)
     """
-    return proper.k * (1 + np.cos(proper.periodicity * x - proper.phase))
+    # Extract phase as a plain float in radians (supports pint and simtk)
+    phase = proper.phase
+    if hasattr(phase, 'magnitude') and hasattr(phase, 'to'):
+        # pint Quantity: convert to radians
+        import math
+        phase_rad = phase.to('radian').magnitude
+    elif hasattr(phase, 'value_in_unit'):
+        # simtk Quantity: convert to radians
+        try:
+            from simtk import unit as simtk_unit
+            phase_rad = phase.value_in_unit(simtk_unit.radians)
+        except ImportError:
+            import math
+            phase_rad = math.radians(float(phase))
+    else:
+        import math
+        phase_rad = math.radians(float(phase)) if phase is not None else 0.0
+
+    # Extract x as a plain float array in radians
+    if hasattr(x, 'magnitude') and hasattr(x, 'to'):
+        x_rad = x.to('radian').magnitude
+    elif hasattr(x, 'value_in_unit'):
+        try:
+            from simtk import unit as simtk_unit
+            x_rad = x.value_in_unit(simtk_unit.radians)
+        except ImportError:
+            x_rad = x
+    else:
+        x_rad = x
+
+    # Extract k as a plain float in kcal/mol
+    k = proper.k
+    if hasattr(k, 'magnitude'):
+        k_val = k.to('kilocalorie / mole').magnitude
+    elif hasattr(k, 'value_in_unit'):
+        try:
+            from simtk import unit as simtk_unit
+            k_val = k.value_in_unit(simtk_unit.kilocalorie / simtk_unit.mole)
+        except ImportError:
+            k_val = k
+    else:
+        k_val = k
+
+    return k_val * (1 + np.cos(proper.periodicity * x_rad - phase_rad))
 
 
 def check_CHO_charges(parameters):
@@ -62,7 +132,14 @@ def check_CHO_charges(parameters):
     """
 
     for name, charge in zip(parameters['atom_names'], parameters['charges']):
-        charge = charge.value_in_unit(unit.elementary_charge)
+        try:
+            import pint
+            if isinstance(charge, pint.Quantity):
+                charge = charge.to('elementary_charge').magnitude
+            elif hasattr(charge, 'value_in_unit'):
+                charge = charge.value_in_unit(unit.elementary_charge)
+        except ImportError:
+            charge = charge.value_in_unit(unit.elementary_charge)
 
         if 'C' in name:
             assert charge < 1.0 and charge > -0.23, \

@@ -3,9 +3,25 @@ This module contains any class or function related with PELE's Impact
 template.
 """
 
+import numbers
 from copy import deepcopy
 
 from simtk import unit
+
+
+def _quantity_to_float(quantity, simtk_unit):
+    """
+    Convert a quantity to a float in the given simtk unit, supporting both
+    simtk.unit.Quantity (legacy) and pint.Quantity (current OpenFF Toolkit),
+    as well as plain numbers (returned as-is).
+    """
+    if isinstance(quantity, numbers.Number):
+        return quantity
+    # pint.Quantity: use .to() with the unit symbol string
+    if hasattr(quantity, 'to') and hasattr(quantity, 'magnitude'):
+        return quantity.to(str(simtk_unit)).magnitude
+    # simtk.unit.Quantity: use .value_in_unit()
+    return quantity.value_in_unit(simtk_unit)
 
 from peleffy.topology import Atom, Bond, Angle, Proper, Improper
 from peleffy.topology import ZMatrix
@@ -1018,7 +1034,7 @@ class WritableWrapper(object):
         """
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
-            return out.value_in_unit(unit.angstrom)
+            return _quantity_to_float(out, unit.angstrom)
         return function_wrapper
 
     @staticmethod
@@ -1038,7 +1054,7 @@ class WritableWrapper(object):
         """
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
-            return out.value_in_unit(unit.kilocalorie / unit.mole)
+            return _quantity_to_float(out, unit.kilocalorie / unit.mole)
         return function_wrapper
 
     @staticmethod
@@ -1058,7 +1074,7 @@ class WritableWrapper(object):
         """
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
-            return out.value_in_unit(unit.elementary_charge)
+            return _quantity_to_float(out, unit.elementary_charge)
         return function_wrapper
 
     @staticmethod
@@ -1078,8 +1094,8 @@ class WritableWrapper(object):
         """
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
-            return out.value_in_unit(unit.kilocalorie
-                                     / (unit.radian**2 * unit.mole))
+            return _quantity_to_float(out, unit.kilocalorie
+                                      / (unit.radian**2 * unit.mole))
         return function_wrapper
 
     @staticmethod
@@ -1099,7 +1115,7 @@ class WritableWrapper(object):
         """
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
-            return out.value_in_unit(unit.degree)
+            return _quantity_to_float(out, unit.degree)
         return function_wrapper
 
     @staticmethod
@@ -1119,8 +1135,8 @@ class WritableWrapper(object):
         """
         def function_wrapper(*args, **kwargs):
             out = f(*args, **kwargs)
-            return out.value_in_unit(unit.kilocalorie
-                                     / (unit.angstrom**2 * unit.mole))
+            return _quantity_to_float(out, unit.kilocalorie
+                                      / (unit.angstrom**2 * unit.mole))
         return function_wrapper
 
 

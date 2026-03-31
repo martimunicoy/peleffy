@@ -9,8 +9,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macOS-latest]
-        python-version: [3.8, 3.9]
+        os: [ubuntu-latest, ]
+        python-version: [3.9, ]
+        #os: [ubuntu-latest, macOS-latest]  No need to make multiple releases anymore
+        #python-version: [3.8, 3.9]  No need to make multiple releases anymore
     name: Python ${{ matrix.python-version }} at ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4

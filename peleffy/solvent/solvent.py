@@ -3,10 +3,41 @@ This module contains classes and functions involved in the manipulation of
 PELE's solvent templates.
 """
 
-from simtk import unit
+try:
+    from simtk import unit
+except ImportError:
+    unit = None
 
 from peleffy.utils import get_data_file_path
 from peleffy.utils import Logger
+
+
+def _quantity_to_angstrom(q):
+    """Return a quantity value in angstroms as a float (pint or simtk)."""
+    import numbers
+    if isinstance(q, numbers.Number):
+        return float(q)
+    try:
+        import pint
+        if isinstance(q, pint.Quantity):
+            return q.to('angstrom').magnitude
+    except ImportError:
+        pass
+    return q.value_in_unit(unit.angstrom)
+
+
+def _quantity_to_kcal_per_angstrom2_mol(q):
+    """Return a quantity value in kcal/(angstrom^2 * mol) as float."""
+    import numbers
+    if isinstance(q, numbers.Number):
+        return float(q)
+    try:
+        import pint
+        if isinstance(q, pint.Quantity):
+            return q.to('kilocalorie / (angstrom ** 2 * mole)').magnitude
+    except ImportError:
+        pass
+    return q.value_in_unit(unit.kilocalorie / (unit.angstrom**2 * unit.mole))
 
 
 class _SolventWrapper(object):
@@ -170,10 +201,9 @@ class _OpenFFCompatibleSolvent(_SolventWrapper):
         data['SolventParameters']['General']['solute_dielectric'] = \
             round(self.solute_dielectric, 5)
         data['SolventParameters']['General']['solvent_radius'] = \
-            round(self.solvent_radius.value_in_unit(unit.angstrom), 5)
+            round(_quantity_to_angstrom(self.solvent_radius), 5)
         data['SolventParameters']['General']['surface_area_penalty'] = \
-            round(self.surface_area_penalty.value_in_unit(
-                unit.kilocalorie / (unit.angstrom**2 * unit.mole)), 8)
+            round(_quantity_to_kcal_per_angstrom2_mol(self.surface_area_penalty), 8)
 
         for topology, radii, scales in zip(self._topologies,
                                            self._radii, self._scales):
@@ -184,8 +214,8 @@ class _OpenFFCompatibleSolvent(_SolventWrapper):
             for index, name in enumerate(atom_names):
                 name = name.replace(' ', '_')
                 data['SolventParameters'][topology.molecule.tag][name] = \
-                    {'radius': round(radii[tuple((index, ))]
-                                     .value_in_unit(unit.angstrom), 5),
+                    {'radius': round(_quantity_to_angstrom(
+                                     radii[tuple((index, ))]), 5),
                      'scale': round(scales[tuple((index, ))], 5)}
         return data
 

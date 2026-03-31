@@ -12,7 +12,10 @@ class ForceFieldSelector(object):
     It defines a force field selector.
     """
     _FF_TYPES = {'OPLS2005': ('OPLS2005', ),
-                 'OpenFF': ('openff_unconstrained-2.1.0.offxml',
+                 'OpenFF230': ('openff_unconstrained-2.3.0.offxml', ),
+                 'OpenFF': ('openff_unconstrained-2.2.1.offxml',
+                            'openff_unconstrained-2.2.0.offxml',
+                            'openff_unconstrained-2.1.0.offxml',
                             'openff_unconstrained-2.0.0.offxml',
                             'openff_unconstrained-1.3.0.offxml',
                             'openff_unconstrained-1.2.1.offxml',
@@ -58,10 +61,13 @@ class ForceFieldSelector(object):
         log = Logger()
         log.info(' - Loading \'{}\''.format(forcefield_name))
 
-        from .forcefield import (OpenForceField, OPLS2005ForceField)
+        from .forcefield import (OpenForceField, OpenFF230ForceField,
+                                  OPLS2005ForceField)
 
         if forcefield_name.upper() in self._FF_TYPES['OPLS2005']:
             return OPLS2005ForceField()
+        elif forcefield_name in self._FF_TYPES['OpenFF230']:
+            return OpenFF230ForceField()
         elif forcefield_name in self._FF_TYPES['OpenFF']:
             return OpenForceField(forcefield_name=forcefield_name)
         else:
@@ -94,13 +100,15 @@ class ChargeCalculatorSelector(object):
                                                 Am1bccCalculator,
                                                 GasteigerCalculator,
                                                 DummyChargeCalculator,
-                                                MullikenCalculator)
+                                                MullikenCalculator,
+                                                NAGLCalculator)
 
     _AVAILABLE_TYPES = {'opls2005': OPLSChargeCalculator,
                         'am1bcc': Am1bccCalculator,
                         'gasteiger': GasteigerCalculator,
                         'dummy': DummyChargeCalculator,
-                        'mulliken': MullikenCalculator
+                        'mulliken': MullikenCalculator,
+                        'nagl': NAGLCalculator
                         }
 
     def get_by_name(self, charge_method, molecule):
@@ -132,9 +140,9 @@ class ChargeCalculatorSelector(object):
             raise ValueError('Charge method \'{}\' '.format(charge_method)
                              + 'is unknown')
 
-        charge_method = self._AVAILABLE_TYPES[charge_method.lower()]
+        calculator_class = self._AVAILABLE_TYPES[charge_method.lower()]
 
-        return charge_method(molecule)
+        return calculator_class(molecule)
 
     def get_list(self):
         """

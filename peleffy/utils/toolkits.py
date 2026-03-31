@@ -1351,22 +1351,22 @@ class SchrodingerToolkitWrapper(ToolkitWrapper):
 
         ffld_server_exec = self.path_to_ffld_server()
 
+        schrodinger_root = os.environ.get('SCHRODINGER')
+        schrodinger_root = schrodinger_root + '/run'
+
         with tempfile.TemporaryDirectory() as tmpdir:
             with temporary_cd(tmpdir):
                 self._rdkit_toolkit_wrapper.to_sdf_file(
                     molecule, tmpdir + '/molecule.sdf')
 
-                errors = subprocess.check_output([ffld_server_exec,
-                                                  "-isdf", "molecule.sdf",
-                                                  "-version", "14",
-                                                  "-print_parameters",
-                                                  "-out_file",
-                                                  "parameters.txt"])
-
-                if errors:
-                    logger.warning('FFLD_SERVER has produced the ' +
-                                   'following error message: \n ' +
-                                   '{}'.format(errors.decode("utf-8")))
+                with open('parameters.txt', 'w') as parameters_file:
+                    errors = subprocess.check_output([schrodinger_root,
+                                                      "ffld_server",
+                                                      "-isdf", "molecule.sdf",
+                                                      "-version", "14",
+                                                      "-print_parameters"],
+                                                     stderr=subprocess.STDOUT)
+                    parameters_file.write(errors.decode("utf-8"))
 
                 with open('parameters.txt') as parameters_file:
                     return parameters_file.read()
