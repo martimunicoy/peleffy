@@ -6,6 +6,7 @@ import pytest
 
 import tempfile
 
+import peleffy.topology
 from peleffy.topology import Molecule
 from peleffy.utils import get_data_file_path, temporary_cd
 
@@ -300,6 +301,23 @@ class TestMolecule(object):
         with tempfile.TemporaryDirectory() as tmpdir:
             with temporary_cd(tmpdir):
                 mol.to_pdb_file('molecule.pdb')
+
+    def test_from_parmed(self):
+        """
+        It checks the initialization of a peleffy Molecule from a ParmEd
+        molecular representation.
+        """
+        import parmed
+
+        pdb_path = get_data_file_path('ligands/toluene.pdb')
+        toluene = parmed.load_file(pdb_path)
+        assert type(toluene) == parmed.structure.Structure, f"The loaded molecule is not a {parmed.structure.Structure}" \
+                                                            f" object!"
+
+        peleffy_molecule = Molecule.from_parmed(toluene)
+        assert peleffy_molecule is not None, f"The peleffy.topology.Molecule object is None!"
+        assert type(peleffy_molecule) == peleffy.topology.Molecule, f"The loaded object is not from" \
+                                                                    f" peleffy.topology.Molecule class!"
 
     def test_from_rdkit(self):
         """

@@ -72,6 +72,30 @@ class TestTopology(object):
         assert topology1.impropers == topology2.impropers, \
             'The impropers of boths topologies should match'
 
+    def test_from_foyer(self):
+        """
+        It checks that `from_foyer()` is working as expected and creates a Topology instance.
+        """
+        from peleffy.topology import Topology
+        from peleffy.topology import Molecule
+        from peleffy.forcefield.parameters import FoyerParameterWrapper
+        from peleffy.utils import get_data_file_path
+
+        params_key_list = ['atom_names', 'atom_types', 'charges', 'sigmas', 'epsilons', 'SGB_radii', 'vdW_radii', 'gammas', 'alphas', 'GBSA_radii', 'GBSA_scales', 'bonds', 'angles', 'propers', 'impropers']
+
+        molecule = Molecule(get_data_file_path('ligands/methane.pdb'))
+        foyer_opls_params = FoyerParameterWrapper.update_parameters(get_data_file_path('ligands/methane.pdb'), molecule)
+        topology_instance = Topology.from_foyer(pdb_file_path=get_data_file_path('ligands/methane.pdb'))
+
+        assert type(topology_instance) == Topology, "The topology object is not a 'peleffy.topology.topology.Topology'"\
+                                                    " instance."
+        assert type(topology_instance.molecule) == type(molecule), "Class of `topology_instance.molecule` is not equal"\
+                                                                   " to the one of `molecule`."
+        assert topology_instance.parameters == foyer_opls_params, "Attribute `parameters` from `Topology`" \
+                                                                  " instance is not equal to variable `foyer_opls_params`."
+        assert topology_instance.parameters.keys() == params_key_list, "The parameters' names are different from the " \
+                                                                       "value expected."
+
     def test_openff_parameterizer(self):
         """
         It checks the behaviour of the Topology with the OpenFF

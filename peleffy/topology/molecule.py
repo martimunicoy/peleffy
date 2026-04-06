@@ -529,6 +529,34 @@ class Molecule(object):
 
         return rdkit_toolkit.get_coordinates(self)
 
+    @classmethod
+    def from_parmed(cls, parmed_molecule, allow_undefined_stereo=True):
+        """
+        It initializes and returns a peleffy.topology.molecule.Molecule instance from a
+        parmed.structure.Structure object.
+
+        Parameters
+        ----------
+        parmed_molecule: a parmed.structure.Structure object.
+            The parmed Structure object to be used to create a peleffy Molecule object.
+        allow_undefined_stereo: bool
+            Boolean, defaults to True. Whether to allow undefined stereo in the created molecule or not.
+
+        Returns
+        --------
+        A peleffy.topology.molecule.Molecule instance.
+        """
+
+        import os
+        import tempfile
+        from peleffy.utils import temporary_cd
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with temporary_cd(tmpdir):
+                output_tmp_path = os.path.join(tmpdir, 'tmp_parmed_molecule.pdb')
+                parmed_molecule.save(output_tmp_path, overwrite=True) # Save pdb in a temp dir
+                return cls(output_tmp_path, allow_undefined_stereo=allow_undefined_stereo)
+
     @staticmethod
     def from_rdkit(rdkit_molecule, rotamer_resolution=30,
                    exclude_terminal_rotamers=True, name='', tag='UNK',
