@@ -3,7 +3,7 @@ channels:
   - conda-forge
 
 dependencies:
-  - python
+  - python=3.12
   - pip
   - flake8
   - pytest
@@ -12,7 +12,8 @@ dependencies:
   - coverage
   - ipython
   - ambertools
-  - rdkit
-  - openff-toolkit==0.10.7
-  - openff-forcefields==2023.05.1
+  - rdkit==2025.03.6
+  - openff-toolkit==0.18.0
+  - openff-forcefields==2026.01.0
+  - openff-nagl==0.5.4
                         

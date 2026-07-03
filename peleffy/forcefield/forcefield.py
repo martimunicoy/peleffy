@@ -3,7 +3,7 @@ This module contains classes that handle force field representations.
 """
 
 
-__all__ = ["OpenForceField", "OPLS2005ForceField",
+__all__ = ["OpenForceField", "OpenFF230ForceField", "OPLS2005ForceField",
            "OpenFFOPLS2005ForceField"]
 
 
@@ -79,6 +79,13 @@ class _BaseForceField(object):
         # If charge method is not supplied, use force field's default
         if charge_method is None:
             charge_method = self._default_charge_method
+
+        # NAGL is only compatible with OpenFF 2.3.0
+        if charge_method == 'nagl' and not isinstance(self, OpenFF230ForceField):
+            raise ValueError(
+                'The nagl charge method is only compatible with the '
+                'OpenFF230ForceField (openff_unconstrained-2.3.0.offxml). '
+                'Use OpenFF230ForceField instead of OpenForceField.')
 
         selector = ChargeCalculatorSelector()
         return selector.get_by_name(charge_method, molecule)
@@ -182,6 +189,72 @@ class OpenForceField(_BaseForceField):
 
         return OpenForceFieldParameterWrapper.from_label_molecules(
             molecule, parameters, self.name)
+
+
+class OpenFF230ForceField(OpenForceField):
+    """
+    It defines the OpenFF 2.3.0 force field.
+
+    This force field is specifically designed to be used with NAGL
+    partial charges (openff-gnn-am1bcc-1.0.0.pt), which is set as the
+    default charge method. Using any other charge method with this
+    force field is not allowed.
+    """
+
+    _FORCEFIELD_NAME = 'openff_unconstrained-2.3.0.offxml'
+    _default_charge_method = 'nagl'
+
+    def __init__(self):
+        """
+        It initializes the OpenFF230ForceField class.
+
+        Examples
+        --------
+
+        Load a molecule and generate its parameters with the OpenFF 2.3.0
+        force field using NAGL charges
+
+        >>> from peleffy.topology import Molecule
+
+        >>> molecule = Molecule('molecule.pdb', smiles='CCO')
+
+        >>> from peleffy.forcefield import OpenFF230ForceField
+
+        >>> openff230 = OpenFF230ForceField()
+        >>> parameters = openff230.parameterize(molecule)
+
+        """
+        super().__init__(self._FORCEFIELD_NAME)
+
+    def _get_charge_calculator(self, charge_method, molecule):
+        """
+        It returns the NAGL charge calculator, which is the only charge
+        method allowed for this force field.
+
+        Parameters
+        ----------
+        charge_method : str or None
+            Must be None or 'nagl'. Any other value raises an error.
+        molecule : a peleffy.topology.Molecule
+            The peleffy's Molecule object to parameterize
+
+        Returns
+        -------
+        charge_calculator : a NAGLCalculator object
+            The NAGL charge calculator
+
+        Raises
+        ------
+        ValueError
+            If a charge method other than 'nagl' is requested
+        """
+        if charge_method is not None and charge_method != 'nagl':
+            raise ValueError(
+                'OpenFF230ForceField only supports the nagl charge method. '
+                'Got \'{}\''.format(charge_method))
+
+        selector = ChargeCalculatorSelector()
+        return selector.get_by_name('nagl', molecule)
 
 
 class OPLS2005ForceField(_BaseForceField):

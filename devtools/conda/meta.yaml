@@ -18,16 +18,17 @@ requirements:
     - setuptools
 
   run:
-    - python
+    - python >=3.12
     - numpy
     - ipython
     - matplotlib
     - pytest
     - networkx
-    - rdkit
+    - rdkit >=2025.03.6
     - ambertools
-    - openff-toolkit==0.10.7
-    - openff-forcefields==2023.05.1
+    - openff-toolkit ==0.18.0
+    - openff-forcefields ==2026.01.0
+    - openff-nagl ==0.5.4
 
 about:
   home: https://github.com/martimunicoy/peleffy

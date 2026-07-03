@@ -1,2 +1,3 @@
 offPELE/_version.py export-subst
 *.py diff=python
+peleffy/_version.py export-subst

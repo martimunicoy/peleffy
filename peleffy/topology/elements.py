@@ -4,7 +4,29 @@ This module defines the basic topology elements of a molecule.
 
 
 from abc import ABC, abstractmethod
+import numbers
 from simtk import unit
+
+
+def _phase_in_degrees(phase):
+    """
+    Return the numeric value of a phase quantity in degrees.
+
+    Supports both simtk.unit.Quantity (legacy) and pint.Quantity (current
+    OpenFF Toolkit), as well as plain numbers (assumed to already be in
+    degrees). Returns 0.0 for None.
+    """
+    if phase is None:
+        return 0.0
+    if isinstance(phase, numbers.Number):
+        return phase
+    # pint.Quantity exposes .to() and .magnitude
+    if hasattr(phase, 'to') and hasattr(phase, 'magnitude'):
+        return phase.to('degree').magnitude
+    # simtk.unit.Quantity exposes .value_in_unit()
+    if hasattr(phase, 'value_in_unit'):
+        return phase.value_in_unit(unit.degree)
+    return float(phase)
 
 
 class _TopologyElement(ABC):
@@ -1220,7 +1242,7 @@ class Dihedral(_TopologyElement):
 
         return hash((self.atom1_idx, self.atom2_idx, self.atom3_idx, self.atom4_idx,
                      self.periodicity, self.prefactor,
-                     self.phase.value_in_unit(unit.degree)))
+                     _phase_in_degrees(self.phase)))
 
 
 class Proper(Dihedral):
@@ -1343,7 +1365,7 @@ class OFFDihedral(_TopologyElement):
 
         PELE_phase = self.phase
 
-        if self.phase.value_in_unit(unit.degree) == 180:
+        if _phase_in_degrees(self.phase) == 180:
             PELE_prefactor = -1
             PELE_phase = unit.Quantity(value=0.0, unit=unit.degree)
         else:
@@ -1389,7 +1411,7 @@ class OFFDihedral(_TopologyElement):
 
         return hash((self.atom1_idx, self.atom2_idx, self.atom3_idx, self.atom4_idx,
                      self.periodicity, self.prefactor,
-                     self.phase.value_in_unit(unit.degree)))
+                     _phase_in_degrees(self.phase)))
 
 
 class OFFProper(OFFDihedral):
@@ -1424,7 +1446,7 @@ class OFFProper(OFFDihedral):
 
         # The next version of PELE will be compatible with phase values
         # other than 0 and 180 degrees to fully cover all OpenFF dihedrals
-        # assert self.phase.value_in_unit(unit.degree) in (0, 180), \
+        # assert _phase_in_degrees(self.phase) in (0, 180), \
         #     'Expected values for phase are 0 or 180, obtained ' \
         #     '{}'.format(self.phase)
 
@@ -1455,6 +1477,6 @@ class OFFImproper(OFFDihedral):
             'for periodicity are 1, 2, 3, 4, 5 or 6, obtained ' \
             '{}'.format(self.periodicity)
 
-        assert self.phase.value_in_unit(unit.degree) in (0, 180), \
+        assert _phase_in_degrees(self.phase) in (0, 180), \
             'Expected values for phase are 0 or 180 in impropers, ' \
             'obtained {}'.format(self.phase)
